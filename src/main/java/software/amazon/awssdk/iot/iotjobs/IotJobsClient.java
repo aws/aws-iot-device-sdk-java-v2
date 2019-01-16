@@ -63,14 +63,14 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
-import java.util.concurrent.Future;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
-public class IotJobs {
+public class IotJobsClient {
     private MqttConnection connection = null;
     private final Gson gson = getGson();
 
-    public IotJobs(MqttConnection connection) {
+    public IotJobsClient(MqttConnection connection) {
         this.connection = connection;
     }
 
@@ -134,7 +134,7 @@ private String interpolateTokens(String template, Object context) {
         gson.registerTypeAdapter(RejectedErrorCode.class, new EnumSerializer<RejectedErrorCode>());
         gson.registerTypeAdapter(RejectedErrorCode.class, new EnumDeserializer<RejectedErrorCode>());
     }
-    Future<Integer> SubscribeToJobExecutionsChangedEvents(
+    CompletableFuture<Integer> SubscribeToJobExecutionsChangedEvents(
         JobExecutionsChangedSubscriptionRequest request,
         Consumer<JobExecutionsChangedEvent> handler,
         Consumer<Exception> exceptionHandler) {
@@ -153,10 +153,10 @@ private String interpolateTokens(String template, Object context) {
         return connection.subscribe(topic, QualityOfService.EXACTLY_ONCE, messageHandler);
     }
 
-    Future<Integer> SubscribeToJobExecutionsChangedEvents(JobExecutionsChangedSubscriptionRequest request, Consumer<JobExecutionsChangedEvent> handler) {
+    CompletableFuture<Integer> SubscribeToJobExecutionsChangedEvents(JobExecutionsChangedSubscriptionRequest request, Consumer<JobExecutionsChangedEvent> handler) {
         return SubscribeToJobExecutionsChangedEvents(request, handler, null);
     }
-    Future<Integer> SubscribeToStartNextPendingJobExecutionAccepted(
+    CompletableFuture<Integer> SubscribeToStartNextPendingJobExecutionAccepted(
         StartNextPendingJobExecutionSubscriptionRequest request,
         Consumer<StartNextJobExecutionResponse> handler,
         Consumer<Exception> exceptionHandler) {
@@ -175,10 +175,10 @@ private String interpolateTokens(String template, Object context) {
         return connection.subscribe(topic, QualityOfService.EXACTLY_ONCE, messageHandler);
     }
 
-    Future<Integer> SubscribeToStartNextPendingJobExecutionAccepted(StartNextPendingJobExecutionSubscriptionRequest request, Consumer<StartNextJobExecutionResponse> handler) {
+    CompletableFuture<Integer> SubscribeToStartNextPendingJobExecutionAccepted(StartNextPendingJobExecutionSubscriptionRequest request, Consumer<StartNextJobExecutionResponse> handler) {
         return SubscribeToStartNextPendingJobExecutionAccepted(request, handler, null);
     }
-    Future<Integer> SubscribeToDescribeJobExecutionRejected(
+    CompletableFuture<Integer> SubscribeToDescribeJobExecutionRejected(
         DescribeJobExecutionSubscriptionRequest request,
         Consumer<RejectedError> handler,
         Consumer<Exception> exceptionHandler) {
@@ -197,10 +197,10 @@ private String interpolateTokens(String template, Object context) {
         return connection.subscribe(topic, QualityOfService.EXACTLY_ONCE, messageHandler);
     }
 
-    Future<Integer> SubscribeToDescribeJobExecutionRejected(DescribeJobExecutionSubscriptionRequest request, Consumer<RejectedError> handler) {
+    CompletableFuture<Integer> SubscribeToDescribeJobExecutionRejected(DescribeJobExecutionSubscriptionRequest request, Consumer<RejectedError> handler) {
         return SubscribeToDescribeJobExecutionRejected(request, handler, null);
     }
-    Future<Integer> SubscribeToNextJobExecutionChangedEvents(
+    CompletableFuture<Integer> SubscribeToNextJobExecutionChangedEvents(
         NextJobExecutionChangedSubscriptionRequest request,
         Consumer<NextJobExecutionChangedEvent> handler,
         Consumer<Exception> exceptionHandler) {
@@ -219,10 +219,10 @@ private String interpolateTokens(String template, Object context) {
         return connection.subscribe(topic, QualityOfService.EXACTLY_ONCE, messageHandler);
     }
 
-    Future<Integer> SubscribeToNextJobExecutionChangedEvents(NextJobExecutionChangedSubscriptionRequest request, Consumer<NextJobExecutionChangedEvent> handler) {
+    CompletableFuture<Integer> SubscribeToNextJobExecutionChangedEvents(NextJobExecutionChangedSubscriptionRequest request, Consumer<NextJobExecutionChangedEvent> handler) {
         return SubscribeToNextJobExecutionChangedEvents(request, handler, null);
     }
-    Future<Integer> SubscribeToUpdateJobExecutionRejected(
+    CompletableFuture<Integer> SubscribeToUpdateJobExecutionRejected(
         UpdateJobExecutionSubscriptionRequest request,
         Consumer<RejectedError> handler,
         Consumer<Exception> exceptionHandler) {
@@ -241,10 +241,10 @@ private String interpolateTokens(String template, Object context) {
         return connection.subscribe(topic, QualityOfService.EXACTLY_ONCE, messageHandler);
     }
 
-    Future<Integer> SubscribeToUpdateJobExecutionRejected(UpdateJobExecutionSubscriptionRequest request, Consumer<RejectedError> handler) {
+    CompletableFuture<Integer> SubscribeToUpdateJobExecutionRejected(UpdateJobExecutionSubscriptionRequest request, Consumer<RejectedError> handler) {
         return SubscribeToUpdateJobExecutionRejected(request, handler, null);
     }
-    Future<Integer> SubscribeToUpdateJobExecutionAccepted(
+    CompletableFuture<Integer> SubscribeToUpdateJobExecutionAccepted(
         UpdateJobExecutionSubscriptionRequest request,
         Consumer<UpdateJobExecutionResponse> handler,
         Consumer<Exception> exceptionHandler) {
@@ -263,10 +263,10 @@ private String interpolateTokens(String template, Object context) {
         return connection.subscribe(topic, QualityOfService.EXACTLY_ONCE, messageHandler);
     }
 
-    Future<Integer> SubscribeToUpdateJobExecutionAccepted(UpdateJobExecutionSubscriptionRequest request, Consumer<UpdateJobExecutionResponse> handler) {
+    CompletableFuture<Integer> SubscribeToUpdateJobExecutionAccepted(UpdateJobExecutionSubscriptionRequest request, Consumer<UpdateJobExecutionResponse> handler) {
         return SubscribeToUpdateJobExecutionAccepted(request, handler, null);
     }
-    Future<Integer> PublishUpdateJobExecution(UpdateJobExecutionRequest request) {
+    CompletableFuture<Integer> PublishUpdateJobExecution(UpdateJobExecutionRequest request) {
         String topic = interpolateTokens("$aws/things/{thingName}/jobs/{jobId}/update", request);
         String payloadJson = gson.toJson(request);
         ByteBuffer payload = ByteBuffer.allocateDirect(payloadJson.length());
@@ -274,7 +274,7 @@ private String interpolateTokens(String template, Object context) {
         MqttMessage message = new MqttMessage(topic, payload);
         return connection.publish(message, QualityOfService.EXACTLY_ONCE, false);
     }
-    Future<Integer> SubscribeToDescribeJobExecutionAccepted(
+    CompletableFuture<Integer> SubscribeToDescribeJobExecutionAccepted(
         DescribeJobExecutionSubscriptionRequest request,
         Consumer<DescribeJobExecutionResponse> handler,
         Consumer<Exception> exceptionHandler) {
@@ -293,10 +293,10 @@ private String interpolateTokens(String template, Object context) {
         return connection.subscribe(topic, QualityOfService.EXACTLY_ONCE, messageHandler);
     }
 
-    Future<Integer> SubscribeToDescribeJobExecutionAccepted(DescribeJobExecutionSubscriptionRequest request, Consumer<DescribeJobExecutionResponse> handler) {
+    CompletableFuture<Integer> SubscribeToDescribeJobExecutionAccepted(DescribeJobExecutionSubscriptionRequest request, Consumer<DescribeJobExecutionResponse> handler) {
         return SubscribeToDescribeJobExecutionAccepted(request, handler, null);
     }
-    Future<Integer> PublishGetPendingJobExecutions(GetPendingJobExecutionsRequest request) {
+    CompletableFuture<Integer> PublishGetPendingJobExecutions(GetPendingJobExecutionsRequest request) {
         String topic = interpolateTokens("$aws/things/{thingName}/jobs/get", request);
         String payloadJson = gson.toJson(request);
         ByteBuffer payload = ByteBuffer.allocateDirect(payloadJson.length());
@@ -304,7 +304,7 @@ private String interpolateTokens(String template, Object context) {
         MqttMessage message = new MqttMessage(topic, payload);
         return connection.publish(message, QualityOfService.EXACTLY_ONCE, false);
     }
-    Future<Integer> SubscribeToGetPendingJobExecutionsAccepted(
+    CompletableFuture<Integer> SubscribeToGetPendingJobExecutionsAccepted(
         GetPendingJobExecutionsSubscriptionRequest request,
         Consumer<GetPendingJobExecutionsResponse> handler,
         Consumer<Exception> exceptionHandler) {
@@ -323,10 +323,10 @@ private String interpolateTokens(String template, Object context) {
         return connection.subscribe(topic, QualityOfService.EXACTLY_ONCE, messageHandler);
     }
 
-    Future<Integer> SubscribeToGetPendingJobExecutionsAccepted(GetPendingJobExecutionsSubscriptionRequest request, Consumer<GetPendingJobExecutionsResponse> handler) {
+    CompletableFuture<Integer> SubscribeToGetPendingJobExecutionsAccepted(GetPendingJobExecutionsSubscriptionRequest request, Consumer<GetPendingJobExecutionsResponse> handler) {
         return SubscribeToGetPendingJobExecutionsAccepted(request, handler, null);
     }
-    Future<Integer> SubscribeToStartNextPendingJobExecutionRejected(
+    CompletableFuture<Integer> SubscribeToStartNextPendingJobExecutionRejected(
         StartNextPendingJobExecutionSubscriptionRequest request,
         Consumer<RejectedError> handler,
         Consumer<Exception> exceptionHandler) {
@@ -345,10 +345,10 @@ private String interpolateTokens(String template, Object context) {
         return connection.subscribe(topic, QualityOfService.EXACTLY_ONCE, messageHandler);
     }
 
-    Future<Integer> SubscribeToStartNextPendingJobExecutionRejected(StartNextPendingJobExecutionSubscriptionRequest request, Consumer<RejectedError> handler) {
+    CompletableFuture<Integer> SubscribeToStartNextPendingJobExecutionRejected(StartNextPendingJobExecutionSubscriptionRequest request, Consumer<RejectedError> handler) {
         return SubscribeToStartNextPendingJobExecutionRejected(request, handler, null);
     }
-    Future<Integer> PublishStartNextPendingJobExecution(StartNextPendingJobExecutionRequest request) {
+    CompletableFuture<Integer> PublishStartNextPendingJobExecution(StartNextPendingJobExecutionRequest request) {
         String topic = interpolateTokens("$aws/things/{thingName}/jobs/start-next", request);
         String payloadJson = gson.toJson(request);
         ByteBuffer payload = ByteBuffer.allocateDirect(payloadJson.length());
@@ -356,7 +356,7 @@ private String interpolateTokens(String template, Object context) {
         MqttMessage message = new MqttMessage(topic, payload);
         return connection.publish(message, QualityOfService.EXACTLY_ONCE, false);
     }
-    Future<Integer> SubscribeToGetPendingJobExecutionsRejected(
+    CompletableFuture<Integer> SubscribeToGetPendingJobExecutionsRejected(
         GetPendingJobExecutionsSubscriptionRequest request,
         Consumer<RejectedError> handler,
         Consumer<Exception> exceptionHandler) {
@@ -375,10 +375,10 @@ private String interpolateTokens(String template, Object context) {
         return connection.subscribe(topic, QualityOfService.EXACTLY_ONCE, messageHandler);
     }
 
-    Future<Integer> SubscribeToGetPendingJobExecutionsRejected(GetPendingJobExecutionsSubscriptionRequest request, Consumer<RejectedError> handler) {
+    CompletableFuture<Integer> SubscribeToGetPendingJobExecutionsRejected(GetPendingJobExecutionsSubscriptionRequest request, Consumer<RejectedError> handler) {
         return SubscribeToGetPendingJobExecutionsRejected(request, handler, null);
     }
-    Future<Integer> PublishDescribeJobExecution(DescribeJobExecutionRequest request) {
+    CompletableFuture<Integer> PublishDescribeJobExecution(DescribeJobExecutionRequest request) {
         String topic = interpolateTokens("$aws/things/{thingName}/jobs/{jobId}/get", request);
         String payloadJson = gson.toJson(request);
         ByteBuffer payload = ByteBuffer.allocateDirect(payloadJson.length());
