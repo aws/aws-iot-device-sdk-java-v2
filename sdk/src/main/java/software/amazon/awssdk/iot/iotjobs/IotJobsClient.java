@@ -74,7 +74,7 @@ public class IotJobsClient {
         this.connection = connection;
     }
 
-private class EnumSerializer<E> implements JsonSerializer<E> {
+    private class EnumSerializer<E> implements JsonSerializer<E> {
         public JsonElement serialize(E enumValue, Type typeOfEnum, JsonSerializationContext context) {
             return new JsonPrimitive(enumValue.toString());
         }
