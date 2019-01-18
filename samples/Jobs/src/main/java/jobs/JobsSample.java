@@ -1,3 +1,17 @@
+/* Copyright 2010-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License").
+ * You may not use this file except in compliance with the License.
+ * A copy of the License is located at
+ *
+ *  http://aws.amazon.com/apache2.0
+ *
+ * or in the "license" file accompanying this file. This file is distributed
+ * on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing
+ * permissions and limitations under the License.
+ */
+
 package jobs;
 
 import software.amazon.awssdk.crt.CRT;
@@ -19,26 +33,38 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 public class JobsSample {
+    static String clientId = "samples-client-id";
     static String rootCaPath;
     static String certPath;
     static String keyPath;
     static String endpoint;
+    static boolean showHelp = false;
     static int port = 8883;
 
     static void printUsage() {
         System.out.println(
                 "Usage:\n"+
-                        "  -e|--endpoint AWS IoT service endpoint hostname\n"+
-                        "  -p|--port     Port to connect to on the endpoint\n"+
-                        "  -r|--rootca   Path to the root certificate\n"+
-                        "  -c|--cert     Path to the IoT thing certificate"+
-                        "  -k|--key      Path to the IoT thing public key"
+                "  --help        This message\n"+
+                "  --clientId    Client ID to use when connecting (optional)\n"+
+                "  -e|--endpoint AWS IoT service endpoint hostname\n"+
+                "  -p|--port     Port to connect to on the endpoint\n"+
+                "  -r|--rootca   Path to the root certificate\n"+
+                "  -c|--cert     Path to the IoT thing certificate\n"+
+                "  -k|--key      Path to the IoT thing public key"
         );
     }
 
     static void parseCommandLine(String[] args) {
         for (int idx = 0; idx < args.length; ++idx) {
             switch (args[idx]) {
+                case "--help":
+                    showHelp = true;
+                    break;
+                case "--clientId":
+                    if (idx + 1 < args.length) {
+                        clientId = args[++idx];
+                    }
+                    break;
                 case "-e":
                 case "--endpoint":
                     if (idx + 1 < args.length) {
@@ -81,7 +107,7 @@ public class JobsSample {
 
     public static void main(String[] args) {
         parseCommandLine(args);
-        if (endpoint == null || rootCaPath == null || certPath == null || keyPath == null) {
+        if (showHelp || endpoint == null || rootCaPath == null || certPath == null || keyPath == null) {
             printUsage();
             return;
         }
@@ -104,7 +130,7 @@ public class JobsSample {
 
                 @Override
                 public void onConnectionResumed(boolean sessionPresent) {
-                    System.out.println("Connection resumed: " + (sessionPresent ? "existing session" : "new session"));
+                    System.out.println("Connection resumed: " + (sessionPresent ? "existing session" : "clean session"));
                 }
             });
             IotJobsClient jobs = new IotJobsClient(connection);
@@ -112,7 +138,7 @@ public class JobsSample {
             CompletableFuture<Void> gotJobs = new CompletableFuture<>();
 
             CompletableFuture<Boolean> connected = connection.connect(
-                    "sdk-java",
+                    clientId,
                     endpoint, port,
                     null, tlsContext, true, 0)
                     .exceptionally((ex) -> {
