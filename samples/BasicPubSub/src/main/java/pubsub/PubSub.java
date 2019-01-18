@@ -124,10 +124,11 @@ class PubSub {
             GetPendingJobExecutionsSubscriptionRequest getPendingJobExecutionsSubscriptionRequest = new GetPendingJobExecutionsSubscriptionRequest();
             getPendingJobExecutionsSubscriptionRequest.thingName = "crt-test";
             CompletableFuture<Integer> subscribed = jobs.SubscribeToGetPendingJobExecutionsAccepted(getPendingJobExecutionsSubscriptionRequest, (response) -> {
-                System.out.println("Pending Jobs:");
+                System.out.println("Pending Jobs: " + (response.queuedJobs.size() == 0 ? "none" : ""));
                 for (JobExecutionSummary job : response.queuedJobs) {
                     System.out.println("  " + job.jobId + " @ " + job.lastUpdatedAt.toString());
                 }
+                gotJobs.complete(null);
             })
             .exceptionally((ex) -> {
                 System.out.println("Failed to subscribe to GetPendingJobExecutions: " + ex.toString());
@@ -154,9 +155,12 @@ class PubSub {
             published.get();
 
             gotJobs.get();
-            System.out.println("Complete!");
+            CompletableFuture<Void> disconnected = connection.disconnect();
+            disconnected.get();
         } catch (CrtRuntimeException | InterruptedException | ExecutionException ex) {
             System.out.println("Exception encountered: " + ex.toString());
         }
+
+        System.out.println("Complete!");
     }
 }
