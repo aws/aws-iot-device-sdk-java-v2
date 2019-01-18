@@ -15,8 +15,13 @@
 */
 
 
-package software.amazon.awssdk.iot.iotjobs.model;
+package software.amazon.awssdk.iot.iotshadow.model;
 
+import software.amazon.awssdk.iot.Timestamp;
+import software.amazon.awssdk.iot.iotshadow.model.ShadowUpdatedSnapshot;
 
-public class JobDocument {
+public class ShadowUpdatedEvent {
+    public ShadowUpdatedSnapshot previous;
+    public ShadowUpdatedSnapshot current;
+    public Timestamp timestamp;
 }

@@ -15,21 +15,11 @@
 */
 
 
-package software.amazon.awssdk.iot.iotjobs.model;
+package software.amazon.awssdk.iot.iotshadow.model;
 
 import java.util.HashMap;
-import software.amazon.awssdk.iot.Timestamp;
-import software.amazon.awssdk.iot.iotjobs.model.JobStatus;
 
-public class JobExecutionData {
-    public String jobId;
-    public String thingName;
-    public HashMap<String, Object> jobDocument;
-    public long executionNumber;
-    public HashMap<String, String> statusDetails;
-    public JobStatus status;
-    public int versionNumber;
-    public Timestamp queuedAt;
-    public Timestamp lastUpdatedAt;
-    public Timestamp startedAt;
+public class ShadowMetadata {
+    public HashMap<String, Object> desired;
+    public HashMap<String, Object> reported;
 }

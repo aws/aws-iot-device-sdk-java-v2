@@ -1,0 +1,377 @@
+/* Copyright 2010-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+*
+* Licensed under the Apache License, Version 2.0 (the "License").
+* You may not use this file except in compliance with the License.
+* A copy of the License is located at
+*
+*  http://aws.amazon.com/apache2.0
+*
+* or in the "license" file accompanying this file. This file is distributed
+* on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+* express or implied. See the License for the specific language governing
+* permissions and limitations under the License.
+
+* This file is generated
+*/
+
+package software.amazon.awssdk.iot.iotshadow;
+
+import java.util.HashMap;
+import software.amazon.awssdk.iot.iotshadow.model.DeleteShadowRequest;
+import software.amazon.awssdk.iot.iotshadow.model.DeleteShadowResponse;
+import software.amazon.awssdk.iot.iotshadow.model.DeleteShadowSubscriptionRequest;
+import software.amazon.awssdk.iot.iotshadow.model.ErrorResponse;
+import software.amazon.awssdk.iot.iotshadow.model.GetShadowRequest;
+import software.amazon.awssdk.iot.iotshadow.model.GetShadowResponse;
+import software.amazon.awssdk.iot.iotshadow.model.GetShadowSubscriptionRequest;
+import software.amazon.awssdk.iot.iotshadow.model.ShadowDeltaUpdatedEvent;
+import software.amazon.awssdk.iot.iotshadow.model.ShadowDeltaUpdatedSubscriptionRequest;
+import software.amazon.awssdk.iot.iotshadow.model.ShadowMetadata;
+import software.amazon.awssdk.iot.iotshadow.model.ShadowState;
+import software.amazon.awssdk.iot.iotshadow.model.ShadowStateWithDelta;
+import software.amazon.awssdk.iot.iotshadow.model.ShadowUpdatedEvent;
+import software.amazon.awssdk.iot.iotshadow.model.ShadowUpdatedSnapshot;
+import software.amazon.awssdk.iot.iotshadow.model.ShadowUpdatedSubscriptionRequest;
+import software.amazon.awssdk.iot.iotshadow.model.UpdateShadowRequest;
+import software.amazon.awssdk.iot.iotshadow.model.UpdateShadowResponse;
+import software.amazon.awssdk.iot.iotshadow.model.UpdateShadowSubscriptionRequest;
+
+import software.amazon.awssdk.crt.mqtt.MqttConnection;
+import software.amazon.awssdk.crt.mqtt.QualityOfService;
+import software.amazon.awssdk.crt.mqtt.MqttException;
+import software.amazon.awssdk.crt.mqtt.MqttMessage;
+
+import software.amazon.awssdk.iot.Timestamp;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSerializer;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonParseException;
+
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import java.nio.ByteBuffer;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
+
+public class IotShadowClient {
+    private MqttConnection connection = null;
+    private final Gson gson = getGson();
+
+    public IotShadowClient(MqttConnection connection) {
+        this.connection = connection;
+    }
+
+private class EnumSerializer<E> implements JsonSerializer<E> {
+        public JsonElement serialize(E enumValue, Type typeOfEnum, JsonSerializationContext context) {
+            return new JsonPrimitive(enumValue.toString());
+        }
+    }
+
+    private class EnumDeserializer<E> implements JsonDeserializer<E> {
+        private Method fromString;
+        public E deserialize(JsonElement json, Type typeOfEnum, JsonDeserializationContext context)
+            throws JsonParseException {
+            if (fromString == null) {
+                Class<?> c = (Class<?>)typeOfEnum;
+                for (Method m : c.getDeclaredMethods()) {
+                    if (m.getName() == "fromString") {
+                        fromString = m;
+                        break;
+                    }
+                }
+            }
+            try {
+                @SuppressWarnings("unchecked")
+                E value = (E) fromString.invoke(null, json.getAsJsonPrimitive().getAsString());
+                return value;
+            } catch (Exception ex) {
+                @SuppressWarnings("unchecked")
+                Class<E> c = (Class<E>)typeOfEnum;
+                return c.getEnumConstants()[0];
+            }
+        }
+    }
+
+    private Gson getGson() {
+        GsonBuilder gson = new GsonBuilder();
+        gson.registerTypeAdapter(Timestamp.class, new Timestamp.Serializer());
+        gson.registerTypeAdapter(Timestamp.class, new Timestamp.Deserializer());
+        addTypeAdapters(gson);
+        return gson.create();
+    }
+    private void addTypeAdapters(GsonBuilder gson) {
+    }
+    public CompletableFuture<Integer> SubscribeToUpdateShadowRejected(
+        UpdateShadowSubscriptionRequest request,
+        Consumer<ErrorResponse> handler,
+        Consumer<Exception> exceptionHandler) {
+        String topic = "$aws/things/{thingName}/shadow/update/rejected";
+        if (request.thingName == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("UpdateShadowSubscriptionRequest must have a non-null thingName"));
+            return result;
+        }
+        topic = topic.replace("{thingName}", request.thingName);
+        Consumer<MqttMessage> messageHandler = (message) -> {
+            try {
+                String payload = new String(message.getPayload().array(), "UTF-8");
+                ErrorResponse response = gson.fromJson(payload, ErrorResponse.class);
+                handler.accept(response);
+            } catch (UnsupportedEncodingException ex) {
+                if (exceptionHandler != null) {
+                    exceptionHandler.accept(ex);
+                }
+            };
+        };
+        return connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, messageHandler);
+    }
+
+    public CompletableFuture<Integer> SubscribeToUpdateShadowRejected(UpdateShadowSubscriptionRequest request, Consumer<ErrorResponse> handler) {
+        return SubscribeToUpdateShadowRejected(request, handler, null);
+    }
+    public CompletableFuture<Integer> PublishUpdateShadow(UpdateShadowRequest request) {
+        String topic = "$aws/things/{thingName}/shadow/update";
+        if (request.thingName == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("UpdateShadowRequest must have a non-null thingName"));
+            return result;
+        }
+        topic = topic.replace("{thingName}", request.thingName);
+        String payloadJson = gson.toJson(request);
+        ByteBuffer payload = ByteBuffer.allocateDirect(payloadJson.length());
+        payload.put(payloadJson.getBytes());
+        MqttMessage message = new MqttMessage(topic, payload);
+        return connection.publish(message, QualityOfService.AT_LEAST_ONCE, false);
+    }
+    public CompletableFuture<Integer> PublishGetShadow(GetShadowRequest request) {
+        String topic = "$aws/things/{thingName}/shadow/get";
+        if (request.thingName == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("GetShadowRequest must have a non-null thingName"));
+            return result;
+        }
+        topic = topic.replace("{thingName}", request.thingName);
+        String payloadJson = gson.toJson(request);
+        ByteBuffer payload = ByteBuffer.allocateDirect(payloadJson.length());
+        payload.put(payloadJson.getBytes());
+        MqttMessage message = new MqttMessage(topic, payload);
+        return connection.publish(message, QualityOfService.AT_LEAST_ONCE, false);
+    }
+    public CompletableFuture<Integer> SubscribeToShadowDeltaUpdatedEvents(
+        ShadowDeltaUpdatedSubscriptionRequest request,
+        Consumer<ShadowDeltaUpdatedEvent> handler,
+        Consumer<Exception> exceptionHandler) {
+        String topic = "$aws/things/{thingName}/shadow/update/delta";
+        if (request.thingName == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("ShadowDeltaUpdatedSubscriptionRequest must have a non-null thingName"));
+            return result;
+        }
+        topic = topic.replace("{thingName}", request.thingName);
+        Consumer<MqttMessage> messageHandler = (message) -> {
+            try {
+                String payload = new String(message.getPayload().array(), "UTF-8");
+                ShadowDeltaUpdatedEvent response = gson.fromJson(payload, ShadowDeltaUpdatedEvent.class);
+                handler.accept(response);
+            } catch (UnsupportedEncodingException ex) {
+                if (exceptionHandler != null) {
+                    exceptionHandler.accept(ex);
+                }
+            };
+        };
+        return connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, messageHandler);
+    }
+
+    public CompletableFuture<Integer> SubscribeToShadowDeltaUpdatedEvents(ShadowDeltaUpdatedSubscriptionRequest request, Consumer<ShadowDeltaUpdatedEvent> handler) {
+        return SubscribeToShadowDeltaUpdatedEvents(request, handler, null);
+    }
+    public CompletableFuture<Integer> SubscribeToUpdateShadowAccepted(
+        UpdateShadowSubscriptionRequest request,
+        Consumer<UpdateShadowResponse> handler,
+        Consumer<Exception> exceptionHandler) {
+        String topic = "$aws/things/{thingName}/shadow/update/accepted";
+        if (request.thingName == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("UpdateShadowSubscriptionRequest must have a non-null thingName"));
+            return result;
+        }
+        topic = topic.replace("{thingName}", request.thingName);
+        Consumer<MqttMessage> messageHandler = (message) -> {
+            try {
+                String payload = new String(message.getPayload().array(), "UTF-8");
+                UpdateShadowResponse response = gson.fromJson(payload, UpdateShadowResponse.class);
+                handler.accept(response);
+            } catch (UnsupportedEncodingException ex) {
+                if (exceptionHandler != null) {
+                    exceptionHandler.accept(ex);
+                }
+            };
+        };
+        return connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, messageHandler);
+    }
+
+    public CompletableFuture<Integer> SubscribeToUpdateShadowAccepted(UpdateShadowSubscriptionRequest request, Consumer<UpdateShadowResponse> handler) {
+        return SubscribeToUpdateShadowAccepted(request, handler, null);
+    }
+    public CompletableFuture<Integer> PublishDeleteShadow(DeleteShadowRequest request) {
+        String topic = "$aws/things/{thingName}/shadow/delete";
+        if (request.thingName == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("DeleteShadowRequest must have a non-null thingName"));
+            return result;
+        }
+        topic = topic.replace("{thingName}", request.thingName);
+        String payloadJson = gson.toJson(request);
+        ByteBuffer payload = ByteBuffer.allocateDirect(payloadJson.length());
+        payload.put(payloadJson.getBytes());
+        MqttMessage message = new MqttMessage(topic, payload);
+        return connection.publish(message, QualityOfService.AT_LEAST_ONCE, false);
+    }
+    public CompletableFuture<Integer> SubscribeToDeleteShadowAccepted(
+        DeleteShadowSubscriptionRequest request,
+        Consumer<DeleteShadowResponse> handler,
+        Consumer<Exception> exceptionHandler) {
+        String topic = "$aws/things/{thingName}/shadow/delete/accepted";
+        if (request.thingName == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("DeleteShadowSubscriptionRequest must have a non-null thingName"));
+            return result;
+        }
+        topic = topic.replace("{thingName}", request.thingName);
+        Consumer<MqttMessage> messageHandler = (message) -> {
+            try {
+                String payload = new String(message.getPayload().array(), "UTF-8");
+                DeleteShadowResponse response = gson.fromJson(payload, DeleteShadowResponse.class);
+                handler.accept(response);
+            } catch (UnsupportedEncodingException ex) {
+                if (exceptionHandler != null) {
+                    exceptionHandler.accept(ex);
+                }
+            };
+        };
+        return connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, messageHandler);
+    }
+
+    public CompletableFuture<Integer> SubscribeToDeleteShadowAccepted(DeleteShadowSubscriptionRequest request, Consumer<DeleteShadowResponse> handler) {
+        return SubscribeToDeleteShadowAccepted(request, handler, null);
+    }
+    public CompletableFuture<Integer> SubscribeToGetShadowAccepted(
+        GetShadowSubscriptionRequest request,
+        Consumer<GetShadowResponse> handler,
+        Consumer<Exception> exceptionHandler) {
+        String topic = "$aws/things/{thingName}/shadow/get/accepted";
+        if (request.thingName == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("GetShadowSubscriptionRequest must have a non-null thingName"));
+            return result;
+        }
+        topic = topic.replace("{thingName}", request.thingName);
+        Consumer<MqttMessage> messageHandler = (message) -> {
+            try {
+                String payload = new String(message.getPayload().array(), "UTF-8");
+                GetShadowResponse response = gson.fromJson(payload, GetShadowResponse.class);
+                handler.accept(response);
+            } catch (UnsupportedEncodingException ex) {
+                if (exceptionHandler != null) {
+                    exceptionHandler.accept(ex);
+                }
+            };
+        };
+        return connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, messageHandler);
+    }
+
+    public CompletableFuture<Integer> SubscribeToGetShadowAccepted(GetShadowSubscriptionRequest request, Consumer<GetShadowResponse> handler) {
+        return SubscribeToGetShadowAccepted(request, handler, null);
+    }
+    public CompletableFuture<Integer> SubscribeToShadowUpdatedEvents(
+        ShadowUpdatedSubscriptionRequest request,
+        Consumer<ShadowUpdatedEvent> handler,
+        Consumer<Exception> exceptionHandler) {
+        String topic = "$aws/things/{thingName}/shadow/update/documents";
+        if (request.thingName == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("ShadowUpdatedSubscriptionRequest must have a non-null thingName"));
+            return result;
+        }
+        topic = topic.replace("{thingName}", request.thingName);
+        Consumer<MqttMessage> messageHandler = (message) -> {
+            try {
+                String payload = new String(message.getPayload().array(), "UTF-8");
+                ShadowUpdatedEvent response = gson.fromJson(payload, ShadowUpdatedEvent.class);
+                handler.accept(response);
+            } catch (UnsupportedEncodingException ex) {
+                if (exceptionHandler != null) {
+                    exceptionHandler.accept(ex);
+                }
+            };
+        };
+        return connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, messageHandler);
+    }
+
+    public CompletableFuture<Integer> SubscribeToShadowUpdatedEvents(ShadowUpdatedSubscriptionRequest request, Consumer<ShadowUpdatedEvent> handler) {
+        return SubscribeToShadowUpdatedEvents(request, handler, null);
+    }
+    public CompletableFuture<Integer> SubscribeToDeleteShadowRejected(
+        DeleteShadowSubscriptionRequest request,
+        Consumer<ErrorResponse> handler,
+        Consumer<Exception> exceptionHandler) {
+        String topic = "$aws/things/{thingName}/shadow/delete/rejected";
+        if (request.thingName == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("DeleteShadowSubscriptionRequest must have a non-null thingName"));
+            return result;
+        }
+        topic = topic.replace("{thingName}", request.thingName);
+        Consumer<MqttMessage> messageHandler = (message) -> {
+            try {
+                String payload = new String(message.getPayload().array(), "UTF-8");
+                ErrorResponse response = gson.fromJson(payload, ErrorResponse.class);
+                handler.accept(response);
+            } catch (UnsupportedEncodingException ex) {
+                if (exceptionHandler != null) {
+                    exceptionHandler.accept(ex);
+                }
+            };
+        };
+        return connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, messageHandler);
+    }
+
+    public CompletableFuture<Integer> SubscribeToDeleteShadowRejected(DeleteShadowSubscriptionRequest request, Consumer<ErrorResponse> handler) {
+        return SubscribeToDeleteShadowRejected(request, handler, null);
+    }
+    public CompletableFuture<Integer> SubscribeToGetShadowRejected(
+        GetShadowSubscriptionRequest request,
+        Consumer<ErrorResponse> handler,
+        Consumer<Exception> exceptionHandler) {
+        String topic = "$aws/things/{thingName}/shadow/get/rejected";
+        if (request.thingName == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("GetShadowSubscriptionRequest must have a non-null thingName"));
+            return result;
+        }
+        topic = topic.replace("{thingName}", request.thingName);
+        Consumer<MqttMessage> messageHandler = (message) -> {
+            try {
+                String payload = new String(message.getPayload().array(), "UTF-8");
+                ErrorResponse response = gson.fromJson(payload, ErrorResponse.class);
+                handler.accept(response);
+            } catch (UnsupportedEncodingException ex) {
+                if (exceptionHandler != null) {
+                    exceptionHandler.accept(ex);
+                }
+            };
+        };
+        return connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, messageHandler);
+    }
+
+    public CompletableFuture<Integer> SubscribeToGetShadowRejected(GetShadowSubscriptionRequest request, Consumer<ErrorResponse> handler) {
+        return SubscribeToGetShadowRejected(request, handler, null);
+    }
+}
