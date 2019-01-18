@@ -1,5 +1,4 @@
-
-package pubsub;
+package jobs;
 
 import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.crt.CrtRuntimeException;
@@ -10,40 +9,30 @@ import software.amazon.awssdk.crt.io.TlsContextOptions;
 import software.amazon.awssdk.crt.mqtt.MqttClient;
 import software.amazon.awssdk.crt.mqtt.MqttConnection;
 import software.amazon.awssdk.crt.mqtt.MqttConnectionEvents;
-import software.amazon.awssdk.crt.mqtt.MqttMessage;
-import software.amazon.awssdk.crt.mqtt.QualityOfService;
 import software.amazon.awssdk.iot.iotjobs.IotJobsClient;
 import software.amazon.awssdk.iot.iotjobs.model.GetPendingJobExecutionsRequest;
 import software.amazon.awssdk.iot.iotjobs.model.GetPendingJobExecutionsSubscriptionRequest;
 import software.amazon.awssdk.iot.iotjobs.model.JobExecutionSummary;
 import software.amazon.awssdk.iot.iotjobs.model.RejectedError;
 
-import java.io.UnsupportedEncodingException;
-import java.nio.ByteBuffer;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-class PubSub {
+public class JobsSample {
     static String rootCaPath;
     static String certPath;
     static String keyPath;
     static String endpoint;
-    static String topic = "/sdk-java/pubsub/test";
-    static String message = "Hello World!";
-    static int    messagesToPublish = 10;
     static int port = 8883;
 
     static void printUsage() {
         System.out.println(
                 "Usage:\n"+
-                "  -e|--endpoint AWS IoT service endpoint hostname\n"+
-                "  -p|--port     Port to connect to on the endpoint\n"+
-                "  -r|--rootca   Path to the root certificate\n"+
-                "  -c|--cert     Path to the IoT thing certificate\n"+
-                "  -k|--key      Path to the IoT thing public key\n"+
-                "  -t|--topic    Topic to subscribe/publish to (optional)\n"+
-                "  -m|--message  Message to publish (optional)\n"+
-                "  -n|--count    Number of messages to publish (optional)"
+                        "  -e|--endpoint AWS IoT service endpoint hostname\n"+
+                        "  -p|--port     Port to connect to on the endpoint\n"+
+                        "  -r|--rootca   Path to the root certificate\n"+
+                        "  -c|--cert     Path to the IoT thing certificate"+
+                        "  -k|--key      Path to the IoT thing public key"
         );
     }
 
@@ -78,24 +67,6 @@ class PubSub {
                 case "--key":
                     if (idx + 1 < args.length) {
                         keyPath = args[++idx];
-                    }
-                    break;
-                case "-t":
-                case "--topic":
-                    if (idx + 1 < args.length) {
-                        topic = args[++idx];
-                    }
-                    break;
-                case "-m":
-                case "--message":
-                    if (idx + 1 < args.length) {
-                        message = args[++idx];
-                    }
-                    break;
-                case "-n":
-                case "--count":
-                    if (idx + 1 < args.length) {
-                        messagesToPublish = Integer.parseInt(args[++idx]);
                     }
                     break;
                 default:
@@ -136,39 +107,55 @@ class PubSub {
                     System.out.println("Connection resumed: " + (sessionPresent ? "existing session" : "new session"));
                 }
             });
+            IotJobsClient jobs = new IotJobsClient(connection);
 
             CompletableFuture<Void> gotJobs = new CompletableFuture<>();
 
             CompletableFuture<Boolean> connected = connection.connect(
-                "sdk-java",
-                endpoint, port,
-                null, tlsContext, true, 0)
-                .exceptionally((ex) -> {
-                    System.out.println("Exception occurred during connect: " + ex.toString());
-                    return null;
-                });
+                    "sdk-java",
+                    endpoint, port,
+                    null, tlsContext, true, 0)
+                    .exceptionally((ex) -> {
+                        System.out.println("Exception occurred during connect: " + ex.toString());
+                        return null;
+                    });
             boolean sessionPresent = connected.get();
             System.out.println("Connected to " + (!sessionPresent ? "new" : "existing") + " session!");
 
-            CompletableFuture<Integer> subscribed = connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, (message) -> {
-                try {
-                    String payload = new String(message.getPayload().array(), "UTF-8");
-                    System.out.println("MESSAGE: " + payload);
-                } catch (UnsupportedEncodingException ex) {
-                    System.out.println("Unable to decode payload: " + ex.getMessage());
+            GetPendingJobExecutionsSubscriptionRequest getPendingJobExecutionsSubscriptionRequest = new GetPendingJobExecutionsSubscriptionRequest();
+            getPendingJobExecutionsSubscriptionRequest.thingName = "crt-test";
+            CompletableFuture<Integer> subscribed = jobs.SubscribeToGetPendingJobExecutionsAccepted(getPendingJobExecutionsSubscriptionRequest, (response) -> {
+                System.out.println("Pending Jobs: " + (response.queuedJobs.size() == 0 ? "none" : ""));
+                for (JobExecutionSummary job : response.queuedJobs) {
+                    System.out.println("  " + job.jobId + " @ " + job.lastUpdatedAt.toString());
                 }
-            });
-
+                gotJobs.complete(null);
+            })
+                    .exceptionally((ex) -> {
+                        System.out.println("Failed to subscribe to GetPendingJobExecutions: " + ex.toString());
+                        return null;
+                    });
             subscribed.get();
+            System.out.println("Subscribed to GetPendingJobExecutionsAccepted");
 
-            int count = 0;
-            while (count++ <= messagesToPublish) {
-                ByteBuffer payload = ByteBuffer.allocateDirect(message.length());
-                payload.put(message.getBytes());
-                CompletableFuture<Integer> published = connection.publish(new MqttMessage(topic, payload), QualityOfService.AT_LEAST_ONCE, false);
-                published.get();
-            }
+            subscribed = jobs.SubscribeToGetPendingJobExecutionsRejected(getPendingJobExecutionsSubscriptionRequest, (error) -> {
+                onRejectedError(error);
+                gotJobs.complete(null);
+            });
+            subscribed.get();
+            System.out.println("Subscribed to GetPendingJobExecutionsRejected");
 
+            GetPendingJobExecutionsRequest getPendingJobExecutionsRequest = new GetPendingJobExecutionsRequest();
+            getPendingJobExecutionsRequest.thingName = "crt-test";
+            CompletableFuture<Integer> published = jobs.PublishGetPendingJobExecutions(getPendingJobExecutionsRequest)
+                    .exceptionally((ex) -> {
+                        System.out.println("Exception occurred during publish: " + ex.toString());
+                        gotJobs.complete(null);
+                        return null;
+                    });
+            published.get();
+
+            gotJobs.get();
             CompletableFuture<Void> disconnected = connection.disconnect();
             disconnected.get();
         } catch (CrtRuntimeException | InterruptedException | ExecutionException ex) {

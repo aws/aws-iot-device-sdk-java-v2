@@ -9,5 +9,6 @@
     <modules>
         <module>sdk</module>
         <module>samples/BasicPubSub</module>
+        <module>samples/Jobs</module>
     </modules>
 </project>
