@@ -152,7 +152,7 @@ private String interpolateTokens(String template, Object context) {
                 }
             };
         };
-        return connection.subscribe(topic, QualityOfService.EXACTLY_ONCE, messageHandler);
+        return connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, messageHandler);
     }
 
     public CompletableFuture<Integer> SubscribeToJobExecutionsChangedEvents(JobExecutionsChangedSubscriptionRequest request, Consumer<JobExecutionsChangedEvent> handler) {
@@ -174,7 +174,7 @@ private String interpolateTokens(String template, Object context) {
                 }
             };
         };
-        return connection.subscribe(topic, QualityOfService.EXACTLY_ONCE, messageHandler);
+        return connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, messageHandler);
     }
 
     public CompletableFuture<Integer> SubscribeToStartNextPendingJobExecutionAccepted(StartNextPendingJobExecutionSubscriptionRequest request, Consumer<StartNextJobExecutionResponse> handler) {
@@ -196,7 +196,7 @@ private String interpolateTokens(String template, Object context) {
                 }
             };
         };
-        return connection.subscribe(topic, QualityOfService.EXACTLY_ONCE, messageHandler);
+        return connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, messageHandler);
     }
 
     public CompletableFuture<Integer> SubscribeToDescribeJobExecutionRejected(DescribeJobExecutionSubscriptionRequest request, Consumer<RejectedError> handler) {
@@ -218,7 +218,7 @@ private String interpolateTokens(String template, Object context) {
                 }
             };
         };
-        return connection.subscribe(topic, QualityOfService.EXACTLY_ONCE, messageHandler);
+        return connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, messageHandler);
     }
 
     public CompletableFuture<Integer> SubscribeToNextJobExecutionChangedEvents(NextJobExecutionChangedSubscriptionRequest request, Consumer<NextJobExecutionChangedEvent> handler) {
@@ -240,7 +240,7 @@ private String interpolateTokens(String template, Object context) {
                 }
             };
         };
-        return connection.subscribe(topic, QualityOfService.EXACTLY_ONCE, messageHandler);
+        return connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, messageHandler);
     }
 
     public CompletableFuture<Integer> SubscribeToUpdateJobExecutionRejected(UpdateJobExecutionSubscriptionRequest request, Consumer<RejectedError> handler) {
@@ -262,7 +262,7 @@ private String interpolateTokens(String template, Object context) {
                 }
             };
         };
-        return connection.subscribe(topic, QualityOfService.EXACTLY_ONCE, messageHandler);
+        return connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, messageHandler);
     }
 
     public CompletableFuture<Integer> SubscribeToUpdateJobExecutionAccepted(UpdateJobExecutionSubscriptionRequest request, Consumer<UpdateJobExecutionResponse> handler) {
@@ -274,7 +274,7 @@ private String interpolateTokens(String template, Object context) {
         ByteBuffer payload = ByteBuffer.allocateDirect(payloadJson.length());
         payload.put(payloadJson.getBytes());
         MqttMessage message = new MqttMessage(topic, payload);
-        return connection.publish(message, QualityOfService.EXACTLY_ONCE, false);
+        return connection.publish(message, QualityOfService.AT_LEAST_ONCE, false);
     }
     public CompletableFuture<Integer> SubscribeToDescribeJobExecutionAccepted(
         DescribeJobExecutionSubscriptionRequest request,
@@ -292,7 +292,7 @@ private String interpolateTokens(String template, Object context) {
                 }
             };
         };
-        return connection.subscribe(topic, QualityOfService.EXACTLY_ONCE, messageHandler);
+        return connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, messageHandler);
     }
 
     public CompletableFuture<Integer> SubscribeToDescribeJobExecutionAccepted(DescribeJobExecutionSubscriptionRequest request, Consumer<DescribeJobExecutionResponse> handler) {
@@ -304,7 +304,7 @@ private String interpolateTokens(String template, Object context) {
         ByteBuffer payload = ByteBuffer.allocateDirect(payloadJson.length());
         payload.put(payloadJson.getBytes());
         MqttMessage message = new MqttMessage(topic, payload);
-        return connection.publish(message, QualityOfService.EXACTLY_ONCE, false);
+        return connection.publish(message, QualityOfService.AT_LEAST_ONCE, false);
     }
     public CompletableFuture<Integer> SubscribeToGetPendingJobExecutionsAccepted(
         GetPendingJobExecutionsSubscriptionRequest request,
@@ -322,7 +322,7 @@ private String interpolateTokens(String template, Object context) {
                 }
             };
         };
-        return connection.subscribe(topic, QualityOfService.EXACTLY_ONCE, messageHandler);
+        return connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, messageHandler);
     }
 
     public CompletableFuture<Integer> SubscribeToGetPendingJobExecutionsAccepted(GetPendingJobExecutionsSubscriptionRequest request, Consumer<GetPendingJobExecutionsResponse> handler) {
@@ -344,7 +344,7 @@ private String interpolateTokens(String template, Object context) {
                 }
             };
         };
-        return connection.subscribe(topic, QualityOfService.EXACTLY_ONCE, messageHandler);
+        return connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, messageHandler);
     }
 
     public CompletableFuture<Integer> SubscribeToStartNextPendingJobExecutionRejected(StartNextPendingJobExecutionSubscriptionRequest request, Consumer<RejectedError> handler) {
@@ -356,7 +356,7 @@ private String interpolateTokens(String template, Object context) {
         ByteBuffer payload = ByteBuffer.allocateDirect(payloadJson.length());
         payload.put(payloadJson.getBytes());
         MqttMessage message = new MqttMessage(topic, payload);
-        return connection.publish(message, QualityOfService.EXACTLY_ONCE, false);
+        return connection.publish(message, QualityOfService.AT_LEAST_ONCE, false);
     }
     public CompletableFuture<Integer> SubscribeToGetPendingJobExecutionsRejected(
         GetPendingJobExecutionsSubscriptionRequest request,
@@ -374,7 +374,7 @@ private String interpolateTokens(String template, Object context) {
                 }
             };
         };
-        return connection.subscribe(topic, QualityOfService.EXACTLY_ONCE, messageHandler);
+        return connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, messageHandler);
     }
 
     public CompletableFuture<Integer> SubscribeToGetPendingJobExecutionsRejected(GetPendingJobExecutionsSubscriptionRequest request, Consumer<RejectedError> handler) {
@@ -386,6 +386,6 @@ private String interpolateTokens(String template, Object context) {
         ByteBuffer payload = ByteBuffer.allocateDirect(payloadJson.length());
         payload.put(payloadJson.getBytes());
         MqttMessage message = new MqttMessage(topic, payload);
-        return connection.publish(message, QualityOfService.EXACTLY_ONCE, false);
+        return connection.publish(message, QualityOfService.AT_LEAST_ONCE, false);
     }
 }
