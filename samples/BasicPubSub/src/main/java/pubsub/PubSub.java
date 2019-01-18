@@ -98,7 +98,9 @@ class PubSub {
             MqttConnection connection = new MqttConnection(client, new MqttConnectionEvents() {
                 @Override
                 public void onConnectionInterrupted(int errorCode) {
-                    System.out.println("Connection interrupted: " + errorCode + ": " + CRT.awsErrorString(errorCode));
+                    if (errorCode != 0) {
+                        System.out.println("Connection interrupted: " + errorCode + ": " + CRT.awsErrorString(errorCode));
+                    }
                 }
 
                 @Override
