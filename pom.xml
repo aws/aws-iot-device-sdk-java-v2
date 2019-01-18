@@ -1,34 +1,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-<modelVersion>4.0.0</modelVersion>
-<groupId>software.amazon.awssdk.iot</groupId>
-<artifactId>aws-iot-device-sdk-java</artifactId>
-<packaging>jar</packaging>
-<version>1.0-SNAPSHOT</version>
-<url>http://maven.apache.org</url>
-<properties>
-  <maven.compiler.source>1.8</maven.compiler.source>
-  <maven.compiler.target>1.8</maven.compiler.target>
-  <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-</properties>
-<dependencies>
-  <dependency>
-    <groupId>software.amazon.awssdk.crt</groupId>
-    <artifactId>aws-crt-java</artifactId>
-    <version>1.0</version>
-    <scope>compile</scope>
-  </dependency>
-  <dependency>
-    <groupId>junit</groupId>
-    <artifactId>junit</artifactId>
-    <version>4.12</version>
-    <scope>test</scope>
-  </dependency>
-  <dependency>
-    <groupId>com.google.code.gson</groupId>
-    <artifactId>gson</artifactId>
-    <version>2.8.5</version>
-    <scope>compile</scope>
-  </dependency>
-</dependencies>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>software.amazon.awssdk.iot</groupId>
+    <artifactId>AwsIotSdkJava</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0-SNAPSHOT</version>
+
+    <modules>
+        <module>sdk</module>
+        <module>samples/BasicPubSub</module>
+        <module>samples/Jobs</module>
+    </modules>
 </project>

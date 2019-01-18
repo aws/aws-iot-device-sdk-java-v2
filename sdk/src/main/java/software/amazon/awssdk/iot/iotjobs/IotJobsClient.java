@@ -74,23 +74,7 @@ public class IotJobsClient {
         this.connection = connection;
     }
 
-private String interpolateTokens(String template, Object context) {
-        String result = template;
-        try {
-            Field[] fields = context.getClass().getDeclaredFields();
-            for (Field field : fields) {
-                String name = field.getName();
-                Object value = field.get(context);
-                String pattern = String.format("{%s}", name);
-                result = result.replace(pattern, value.toString());
-            }
-        } catch (IllegalAccessException ex) {
-            System.out.println(ex.getMessage());
-        }
-        return result;
-    }
-
-    private class EnumSerializer<E> implements JsonSerializer<E> {
+private class EnumSerializer<E> implements JsonSerializer<E> {
         public JsonElement serialize(E enumValue, Type typeOfEnum, JsonSerializationContext context) {
             return new JsonPrimitive(enumValue.toString());
         }
@@ -134,11 +118,17 @@ private String interpolateTokens(String template, Object context) {
         gson.registerTypeAdapter(RejectedErrorCode.class, new EnumSerializer<RejectedErrorCode>());
         gson.registerTypeAdapter(RejectedErrorCode.class, new EnumDeserializer<RejectedErrorCode>());
     }
-    CompletableFuture<Integer> SubscribeToJobExecutionsChangedEvents(
+    public CompletableFuture<Integer> SubscribeToJobExecutionsChangedEvents(
         JobExecutionsChangedSubscriptionRequest request,
         Consumer<JobExecutionsChangedEvent> handler,
         Consumer<Exception> exceptionHandler) {
-        String topic = interpolateTokens("$aws/things/{thingName}/jobs/notify", request);
+        String topic = "$aws/things/{thingName}/jobs/notify";
+        if (request.thingName == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("JobExecutionsChangedSubscriptionRequest must have a non-null thingName"));
+            return result;
+        }
+        topic = topic.replace("{thingName}", request.thingName);
         Consumer<MqttMessage> messageHandler = (message) -> {
             try {
                 String payload = new String(message.getPayload().array(), "UTF-8");
@@ -150,17 +140,23 @@ private String interpolateTokens(String template, Object context) {
                 }
             };
         };
-        return connection.subscribe(topic, QualityOfService.EXACTLY_ONCE, messageHandler);
+        return connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, messageHandler);
     }
 
-    CompletableFuture<Integer> SubscribeToJobExecutionsChangedEvents(JobExecutionsChangedSubscriptionRequest request, Consumer<JobExecutionsChangedEvent> handler) {
+    public CompletableFuture<Integer> SubscribeToJobExecutionsChangedEvents(JobExecutionsChangedSubscriptionRequest request, Consumer<JobExecutionsChangedEvent> handler) {
         return SubscribeToJobExecutionsChangedEvents(request, handler, null);
     }
-    CompletableFuture<Integer> SubscribeToStartNextPendingJobExecutionAccepted(
+    public CompletableFuture<Integer> SubscribeToStartNextPendingJobExecutionAccepted(
         StartNextPendingJobExecutionSubscriptionRequest request,
         Consumer<StartNextJobExecutionResponse> handler,
         Consumer<Exception> exceptionHandler) {
-        String topic = interpolateTokens("$aws/things/{thingName}/jobs/start-next/accepted", request);
+        String topic = "$aws/things/{thingName}/jobs/start-next/accepted";
+        if (request.thingName == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("StartNextPendingJobExecutionSubscriptionRequest must have a non-null thingName"));
+            return result;
+        }
+        topic = topic.replace("{thingName}", request.thingName);
         Consumer<MqttMessage> messageHandler = (message) -> {
             try {
                 String payload = new String(message.getPayload().array(), "UTF-8");
@@ -172,17 +168,29 @@ private String interpolateTokens(String template, Object context) {
                 }
             };
         };
-        return connection.subscribe(topic, QualityOfService.EXACTLY_ONCE, messageHandler);
+        return connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, messageHandler);
     }
 
-    CompletableFuture<Integer> SubscribeToStartNextPendingJobExecutionAccepted(StartNextPendingJobExecutionSubscriptionRequest request, Consumer<StartNextJobExecutionResponse> handler) {
+    public CompletableFuture<Integer> SubscribeToStartNextPendingJobExecutionAccepted(StartNextPendingJobExecutionSubscriptionRequest request, Consumer<StartNextJobExecutionResponse> handler) {
         return SubscribeToStartNextPendingJobExecutionAccepted(request, handler, null);
     }
-    CompletableFuture<Integer> SubscribeToDescribeJobExecutionRejected(
+    public CompletableFuture<Integer> SubscribeToDescribeJobExecutionRejected(
         DescribeJobExecutionSubscriptionRequest request,
         Consumer<RejectedError> handler,
         Consumer<Exception> exceptionHandler) {
-        String topic = interpolateTokens("$aws/things/{thingName}/jobs/{jobId}/get/rejected", request);
+        String topic = "$aws/things/{thingName}/jobs/{jobId}/get/rejected";
+        if (request.thingName == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("DescribeJobExecutionSubscriptionRequest must have a non-null thingName"));
+            return result;
+        }
+        topic = topic.replace("{thingName}", request.thingName);
+        if (request.jobId == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("DescribeJobExecutionSubscriptionRequest must have a non-null jobId"));
+            return result;
+        }
+        topic = topic.replace("{jobId}", request.jobId);
         Consumer<MqttMessage> messageHandler = (message) -> {
             try {
                 String payload = new String(message.getPayload().array(), "UTF-8");
@@ -194,17 +202,23 @@ private String interpolateTokens(String template, Object context) {
                 }
             };
         };
-        return connection.subscribe(topic, QualityOfService.EXACTLY_ONCE, messageHandler);
+        return connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, messageHandler);
     }
 
-    CompletableFuture<Integer> SubscribeToDescribeJobExecutionRejected(DescribeJobExecutionSubscriptionRequest request, Consumer<RejectedError> handler) {
+    public CompletableFuture<Integer> SubscribeToDescribeJobExecutionRejected(DescribeJobExecutionSubscriptionRequest request, Consumer<RejectedError> handler) {
         return SubscribeToDescribeJobExecutionRejected(request, handler, null);
     }
-    CompletableFuture<Integer> SubscribeToNextJobExecutionChangedEvents(
+    public CompletableFuture<Integer> SubscribeToNextJobExecutionChangedEvents(
         NextJobExecutionChangedSubscriptionRequest request,
         Consumer<NextJobExecutionChangedEvent> handler,
         Consumer<Exception> exceptionHandler) {
-        String topic = interpolateTokens("$aws/things/{thingName}/jobs/notify-next", request);
+        String topic = "$aws/things/{thingName}/jobs/notify-next";
+        if (request.thingName == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("NextJobExecutionChangedSubscriptionRequest must have a non-null thingName"));
+            return result;
+        }
+        topic = topic.replace("{thingName}", request.thingName);
         Consumer<MqttMessage> messageHandler = (message) -> {
             try {
                 String payload = new String(message.getPayload().array(), "UTF-8");
@@ -216,17 +230,29 @@ private String interpolateTokens(String template, Object context) {
                 }
             };
         };
-        return connection.subscribe(topic, QualityOfService.EXACTLY_ONCE, messageHandler);
+        return connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, messageHandler);
     }
 
-    CompletableFuture<Integer> SubscribeToNextJobExecutionChangedEvents(NextJobExecutionChangedSubscriptionRequest request, Consumer<NextJobExecutionChangedEvent> handler) {
+    public CompletableFuture<Integer> SubscribeToNextJobExecutionChangedEvents(NextJobExecutionChangedSubscriptionRequest request, Consumer<NextJobExecutionChangedEvent> handler) {
         return SubscribeToNextJobExecutionChangedEvents(request, handler, null);
     }
-    CompletableFuture<Integer> SubscribeToUpdateJobExecutionRejected(
+    public CompletableFuture<Integer> SubscribeToUpdateJobExecutionRejected(
         UpdateJobExecutionSubscriptionRequest request,
         Consumer<RejectedError> handler,
         Consumer<Exception> exceptionHandler) {
-        String topic = interpolateTokens("$aws/things/{thingName}/jobs/{jobId}/update/rejected", request);
+        String topic = "$aws/things/{thingName}/jobs/{jobId}/update/rejected";
+        if (request.thingName == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("UpdateJobExecutionSubscriptionRequest must have a non-null thingName"));
+            return result;
+        }
+        topic = topic.replace("{thingName}", request.thingName);
+        if (request.jobId == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("UpdateJobExecutionSubscriptionRequest must have a non-null jobId"));
+            return result;
+        }
+        topic = topic.replace("{jobId}", request.jobId);
         Consumer<MqttMessage> messageHandler = (message) -> {
             try {
                 String payload = new String(message.getPayload().array(), "UTF-8");
@@ -238,17 +264,29 @@ private String interpolateTokens(String template, Object context) {
                 }
             };
         };
-        return connection.subscribe(topic, QualityOfService.EXACTLY_ONCE, messageHandler);
+        return connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, messageHandler);
     }
 
-    CompletableFuture<Integer> SubscribeToUpdateJobExecutionRejected(UpdateJobExecutionSubscriptionRequest request, Consumer<RejectedError> handler) {
+    public CompletableFuture<Integer> SubscribeToUpdateJobExecutionRejected(UpdateJobExecutionSubscriptionRequest request, Consumer<RejectedError> handler) {
         return SubscribeToUpdateJobExecutionRejected(request, handler, null);
     }
-    CompletableFuture<Integer> SubscribeToUpdateJobExecutionAccepted(
+    public CompletableFuture<Integer> SubscribeToUpdateJobExecutionAccepted(
         UpdateJobExecutionSubscriptionRequest request,
         Consumer<UpdateJobExecutionResponse> handler,
         Consumer<Exception> exceptionHandler) {
-        String topic = interpolateTokens("$aws/things/{thingName}/jobs/{jobId}/update/accepted", request);
+        String topic = "$aws/things/{thingName}/jobs/{jobId}/update/accepted";
+        if (request.thingName == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("UpdateJobExecutionSubscriptionRequest must have a non-null thingName"));
+            return result;
+        }
+        topic = topic.replace("{thingName}", request.thingName);
+        if (request.jobId == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("UpdateJobExecutionSubscriptionRequest must have a non-null jobId"));
+            return result;
+        }
+        topic = topic.replace("{jobId}", request.jobId);
         Consumer<MqttMessage> messageHandler = (message) -> {
             try {
                 String payload = new String(message.getPayload().array(), "UTF-8");
@@ -260,25 +298,49 @@ private String interpolateTokens(String template, Object context) {
                 }
             };
         };
-        return connection.subscribe(topic, QualityOfService.EXACTLY_ONCE, messageHandler);
+        return connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, messageHandler);
     }
 
-    CompletableFuture<Integer> SubscribeToUpdateJobExecutionAccepted(UpdateJobExecutionSubscriptionRequest request, Consumer<UpdateJobExecutionResponse> handler) {
+    public CompletableFuture<Integer> SubscribeToUpdateJobExecutionAccepted(UpdateJobExecutionSubscriptionRequest request, Consumer<UpdateJobExecutionResponse> handler) {
         return SubscribeToUpdateJobExecutionAccepted(request, handler, null);
     }
-    CompletableFuture<Integer> PublishUpdateJobExecution(UpdateJobExecutionRequest request) {
-        String topic = interpolateTokens("$aws/things/{thingName}/jobs/{jobId}/update", request);
+    public CompletableFuture<Integer> PublishUpdateJobExecution(UpdateJobExecutionRequest request) {
+        String topic = "$aws/things/{thingName}/jobs/{jobId}/update";
+        if (request.thingName == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("UpdateJobExecutionRequest must have a non-null thingName"));
+            return result;
+        }
+        topic = topic.replace("{thingName}", request.thingName);
+        if (request.jobId == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("UpdateJobExecutionRequest must have a non-null jobId"));
+            return result;
+        }
+        topic = topic.replace("{jobId}", request.jobId);
         String payloadJson = gson.toJson(request);
         ByteBuffer payload = ByteBuffer.allocateDirect(payloadJson.length());
         payload.put(payloadJson.getBytes());
         MqttMessage message = new MqttMessage(topic, payload);
-        return connection.publish(message, QualityOfService.EXACTLY_ONCE, false);
+        return connection.publish(message, QualityOfService.AT_LEAST_ONCE, false);
     }
-    CompletableFuture<Integer> SubscribeToDescribeJobExecutionAccepted(
+    public CompletableFuture<Integer> SubscribeToDescribeJobExecutionAccepted(
         DescribeJobExecutionSubscriptionRequest request,
         Consumer<DescribeJobExecutionResponse> handler,
         Consumer<Exception> exceptionHandler) {
-        String topic = interpolateTokens("$aws/things/{thingName}/jobs/{jobId}/get/accepted", request);
+        String topic = "$aws/things/{thingName}/jobs/{jobId}/get/accepted";
+        if (request.thingName == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("DescribeJobExecutionSubscriptionRequest must have a non-null thingName"));
+            return result;
+        }
+        topic = topic.replace("{thingName}", request.thingName);
+        if (request.jobId == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("DescribeJobExecutionSubscriptionRequest must have a non-null jobId"));
+            return result;
+        }
+        topic = topic.replace("{jobId}", request.jobId);
         Consumer<MqttMessage> messageHandler = (message) -> {
             try {
                 String payload = new String(message.getPayload().array(), "UTF-8");
@@ -290,25 +352,37 @@ private String interpolateTokens(String template, Object context) {
                 }
             };
         };
-        return connection.subscribe(topic, QualityOfService.EXACTLY_ONCE, messageHandler);
+        return connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, messageHandler);
     }
 
-    CompletableFuture<Integer> SubscribeToDescribeJobExecutionAccepted(DescribeJobExecutionSubscriptionRequest request, Consumer<DescribeJobExecutionResponse> handler) {
+    public CompletableFuture<Integer> SubscribeToDescribeJobExecutionAccepted(DescribeJobExecutionSubscriptionRequest request, Consumer<DescribeJobExecutionResponse> handler) {
         return SubscribeToDescribeJobExecutionAccepted(request, handler, null);
     }
-    CompletableFuture<Integer> PublishGetPendingJobExecutions(GetPendingJobExecutionsRequest request) {
-        String topic = interpolateTokens("$aws/things/{thingName}/jobs/get", request);
+    public CompletableFuture<Integer> PublishGetPendingJobExecutions(GetPendingJobExecutionsRequest request) {
+        String topic = "$aws/things/{thingName}/jobs/get";
+        if (request.thingName == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("GetPendingJobExecutionsRequest must have a non-null thingName"));
+            return result;
+        }
+        topic = topic.replace("{thingName}", request.thingName);
         String payloadJson = gson.toJson(request);
         ByteBuffer payload = ByteBuffer.allocateDirect(payloadJson.length());
         payload.put(payloadJson.getBytes());
         MqttMessage message = new MqttMessage(topic, payload);
-        return connection.publish(message, QualityOfService.EXACTLY_ONCE, false);
+        return connection.publish(message, QualityOfService.AT_LEAST_ONCE, false);
     }
-    CompletableFuture<Integer> SubscribeToGetPendingJobExecutionsAccepted(
+    public CompletableFuture<Integer> SubscribeToGetPendingJobExecutionsAccepted(
         GetPendingJobExecutionsSubscriptionRequest request,
         Consumer<GetPendingJobExecutionsResponse> handler,
         Consumer<Exception> exceptionHandler) {
-        String topic = interpolateTokens("$aws/things/{thingName}/jobs/get/accepted", request);
+        String topic = "$aws/things/{thingName}/jobs/get/accepted";
+        if (request.thingName == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("GetPendingJobExecutionsSubscriptionRequest must have a non-null thingName"));
+            return result;
+        }
+        topic = topic.replace("{thingName}", request.thingName);
         Consumer<MqttMessage> messageHandler = (message) -> {
             try {
                 String payload = new String(message.getPayload().array(), "UTF-8");
@@ -320,17 +394,23 @@ private String interpolateTokens(String template, Object context) {
                 }
             };
         };
-        return connection.subscribe(topic, QualityOfService.EXACTLY_ONCE, messageHandler);
+        return connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, messageHandler);
     }
 
-    CompletableFuture<Integer> SubscribeToGetPendingJobExecutionsAccepted(GetPendingJobExecutionsSubscriptionRequest request, Consumer<GetPendingJobExecutionsResponse> handler) {
+    public CompletableFuture<Integer> SubscribeToGetPendingJobExecutionsAccepted(GetPendingJobExecutionsSubscriptionRequest request, Consumer<GetPendingJobExecutionsResponse> handler) {
         return SubscribeToGetPendingJobExecutionsAccepted(request, handler, null);
     }
-    CompletableFuture<Integer> SubscribeToStartNextPendingJobExecutionRejected(
+    public CompletableFuture<Integer> SubscribeToStartNextPendingJobExecutionRejected(
         StartNextPendingJobExecutionSubscriptionRequest request,
         Consumer<RejectedError> handler,
         Consumer<Exception> exceptionHandler) {
-        String topic = interpolateTokens("$aws/things/{thingName}/jobs/start-next/rejected", request);
+        String topic = "$aws/things/{thingName}/jobs/start-next/rejected";
+        if (request.thingName == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("StartNextPendingJobExecutionSubscriptionRequest must have a non-null thingName"));
+            return result;
+        }
+        topic = topic.replace("{thingName}", request.thingName);
         Consumer<MqttMessage> messageHandler = (message) -> {
             try {
                 String payload = new String(message.getPayload().array(), "UTF-8");
@@ -342,25 +422,37 @@ private String interpolateTokens(String template, Object context) {
                 }
             };
         };
-        return connection.subscribe(topic, QualityOfService.EXACTLY_ONCE, messageHandler);
+        return connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, messageHandler);
     }
 
-    CompletableFuture<Integer> SubscribeToStartNextPendingJobExecutionRejected(StartNextPendingJobExecutionSubscriptionRequest request, Consumer<RejectedError> handler) {
+    public CompletableFuture<Integer> SubscribeToStartNextPendingJobExecutionRejected(StartNextPendingJobExecutionSubscriptionRequest request, Consumer<RejectedError> handler) {
         return SubscribeToStartNextPendingJobExecutionRejected(request, handler, null);
     }
-    CompletableFuture<Integer> PublishStartNextPendingJobExecution(StartNextPendingJobExecutionRequest request) {
-        String topic = interpolateTokens("$aws/things/{thingName}/jobs/start-next", request);
+    public CompletableFuture<Integer> PublishStartNextPendingJobExecution(StartNextPendingJobExecutionRequest request) {
+        String topic = "$aws/things/{thingName}/jobs/start-next";
+        if (request.thingName == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("StartNextPendingJobExecutionRequest must have a non-null thingName"));
+            return result;
+        }
+        topic = topic.replace("{thingName}", request.thingName);
         String payloadJson = gson.toJson(request);
         ByteBuffer payload = ByteBuffer.allocateDirect(payloadJson.length());
         payload.put(payloadJson.getBytes());
         MqttMessage message = new MqttMessage(topic, payload);
-        return connection.publish(message, QualityOfService.EXACTLY_ONCE, false);
+        return connection.publish(message, QualityOfService.AT_LEAST_ONCE, false);
     }
-    CompletableFuture<Integer> SubscribeToGetPendingJobExecutionsRejected(
+    public CompletableFuture<Integer> SubscribeToGetPendingJobExecutionsRejected(
         GetPendingJobExecutionsSubscriptionRequest request,
         Consumer<RejectedError> handler,
         Consumer<Exception> exceptionHandler) {
-        String topic = interpolateTokens("$aws/things/{thingName}/jobs/get/rejected", request);
+        String topic = "$aws/things/{thingName}/jobs/get/rejected";
+        if (request.thingName == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("GetPendingJobExecutionsSubscriptionRequest must have a non-null thingName"));
+            return result;
+        }
+        topic = topic.replace("{thingName}", request.thingName);
         Consumer<MqttMessage> messageHandler = (message) -> {
             try {
                 String payload = new String(message.getPayload().array(), "UTF-8");
@@ -372,18 +464,30 @@ private String interpolateTokens(String template, Object context) {
                 }
             };
         };
-        return connection.subscribe(topic, QualityOfService.EXACTLY_ONCE, messageHandler);
+        return connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, messageHandler);
     }
 
-    CompletableFuture<Integer> SubscribeToGetPendingJobExecutionsRejected(GetPendingJobExecutionsSubscriptionRequest request, Consumer<RejectedError> handler) {
+    public CompletableFuture<Integer> SubscribeToGetPendingJobExecutionsRejected(GetPendingJobExecutionsSubscriptionRequest request, Consumer<RejectedError> handler) {
         return SubscribeToGetPendingJobExecutionsRejected(request, handler, null);
     }
-    CompletableFuture<Integer> PublishDescribeJobExecution(DescribeJobExecutionRequest request) {
-        String topic = interpolateTokens("$aws/things/{thingName}/jobs/{jobId}/get", request);
+    public CompletableFuture<Integer> PublishDescribeJobExecution(DescribeJobExecutionRequest request) {
+        String topic = "$aws/things/{thingName}/jobs/{jobId}/get";
+        if (request.jobId == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("DescribeJobExecutionRequest must have a non-null jobId"));
+            return result;
+        }
+        topic = topic.replace("{jobId}", request.jobId);
+        if (request.thingName == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("DescribeJobExecutionRequest must have a non-null thingName"));
+            return result;
+        }
+        topic = topic.replace("{thingName}", request.thingName);
         String payloadJson = gson.toJson(request);
         ByteBuffer payload = ByteBuffer.allocateDirect(payloadJson.length());
         payload.put(payloadJson.getBytes());
         MqttMessage message = new MqttMessage(topic, payload);
-        return connection.publish(message, QualityOfService.EXACTLY_ONCE, false);
+        return connection.publish(message, QualityOfService.AT_LEAST_ONCE, false);
     }
 }
