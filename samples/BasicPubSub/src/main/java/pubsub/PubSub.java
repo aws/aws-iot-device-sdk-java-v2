@@ -137,8 +137,6 @@ class PubSub {
                 }
             });
 
-            CompletableFuture<Void> gotJobs = new CompletableFuture<>();
-
             CompletableFuture<Boolean> connected = connection.connect(
                 "sdk-java",
                 endpoint, port,
