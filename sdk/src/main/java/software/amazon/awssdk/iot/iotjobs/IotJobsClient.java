@@ -16,13 +16,13 @@
 
 package software.amazon.awssdk.iot.iotjobs;
 
+import java.util.HashMap;
 import software.amazon.awssdk.iot.iotjobs.model.DescribeJobExecutionRequest;
 import software.amazon.awssdk.iot.iotjobs.model.DescribeJobExecutionResponse;
 import software.amazon.awssdk.iot.iotjobs.model.DescribeJobExecutionSubscriptionRequest;
 import software.amazon.awssdk.iot.iotjobs.model.GetPendingJobExecutionsRequest;
 import software.amazon.awssdk.iot.iotjobs.model.GetPendingJobExecutionsResponse;
 import software.amazon.awssdk.iot.iotjobs.model.GetPendingJobExecutionsSubscriptionRequest;
-import software.amazon.awssdk.iot.iotjobs.model.JobDocument;
 import software.amazon.awssdk.iot.iotjobs.model.JobExecutionData;
 import software.amazon.awssdk.iot.iotjobs.model.JobExecutionState;
 import software.amazon.awssdk.iot.iotjobs.model.JobExecutionSummary;
@@ -58,11 +58,9 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonParseException;
 
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.nio.ByteBuffer;
-import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
@@ -113,10 +111,10 @@ private class EnumSerializer<E> implements JsonSerializer<E> {
         return gson.create();
     }
     private void addTypeAdapters(GsonBuilder gson) {
-        gson.registerTypeAdapter(JobStatus.class, new EnumSerializer<JobStatus>());
-        gson.registerTypeAdapter(JobStatus.class, new EnumDeserializer<JobStatus>());
         gson.registerTypeAdapter(RejectedErrorCode.class, new EnumSerializer<RejectedErrorCode>());
         gson.registerTypeAdapter(RejectedErrorCode.class, new EnumDeserializer<RejectedErrorCode>());
+        gson.registerTypeAdapter(JobStatus.class, new EnumSerializer<JobStatus>());
+        gson.registerTypeAdapter(JobStatus.class, new EnumDeserializer<JobStatus>());
     }
     public CompletableFuture<Integer> SubscribeToJobExecutionsChangedEvents(
         JobExecutionsChangedSubscriptionRequest request,
