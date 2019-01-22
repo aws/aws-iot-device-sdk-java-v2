@@ -72,7 +72,7 @@ Your Thing's
 must provide privileges for this sample to connect, subscribe, publish,
 and receive.
 
-<detail>
+<details>
 <summary>Sample Policy</summary>
 <pre>
 {
@@ -122,7 +122,7 @@ and receive.
   ]
 }
 </pre>
-</detail>
+</details>
 
 ## Jobs
 
@@ -142,7 +142,7 @@ Your Thing's
 must provide privileges for this sample to connect, subscribe, publish,
 and receive.
 
-<detail>
+<details>
 <summary>Sample Policy</summary>
 <pre>
 {
@@ -192,7 +192,7 @@ and receive.
   ]
 }
 </pre>
-</detail>
+</details>
 
 # License
 
