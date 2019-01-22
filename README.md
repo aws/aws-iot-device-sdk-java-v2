@@ -72,8 +72,9 @@ Your Thing's
 must provide privileges for this sample to connect, subscribe, publish,
 and receive.
 
-Sample Policy:
-```json
+<detail>
+<summary>Sample Policy</summary>
+<pre>
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -120,7 +121,8 @@ Sample Policy:
     }
   ]
 }
-```
+</pre>
+</detail>
 
 ## Jobs
 
@@ -140,8 +142,9 @@ Your Thing's
 must provide privileges for this sample to connect, subscribe, publish,
 and receive.
 
-Sample Policy:
-```json
+<detail>
+<summary>Sample Policy</summary>
+<pre>
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -188,7 +191,8 @@ Sample Policy:
     }
   ]
 }
-```
+</pre>
+</detail>
 
 # License
 
