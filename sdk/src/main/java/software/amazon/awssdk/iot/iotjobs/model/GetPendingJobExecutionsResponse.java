@@ -18,13 +18,12 @@
 package software.amazon.awssdk.iot.iotjobs.model;
 
 import java.util.List;
-import java.util.Optional;
 import software.amazon.awssdk.iot.Timestamp;
 import software.amazon.awssdk.iot.iotjobs.model.JobExecutionSummary;
 
 public class GetPendingJobExecutionsResponse {
-    public Optional<String> clientToken;
-    public Optional<List<software.amazon.awssdk.iot.iotjobs.model.JobExecutionSummary>> queuedJobs;
-    public Optional<Timestamp> timestamp;
-    public Optional<List<software.amazon.awssdk.iot.iotjobs.model.JobExecutionSummary>> inProgressJobs;
+    public String clientToken;
+    public List<software.amazon.awssdk.iot.iotjobs.model.JobExecutionSummary> queuedJobs;
+    public Timestamp timestamp;
+    public List<software.amazon.awssdk.iot.iotjobs.model.JobExecutionSummary> inProgressJobs;
 }

@@ -18,12 +18,11 @@
 package software.amazon.awssdk.iot.iotshadow.model;
 
 import java.util.HashMap;
-import java.util.Optional;
 import software.amazon.awssdk.iot.Timestamp;
 
 public class ShadowDeltaUpdatedEvent {
-    public Optional<HashMap<String, Object>> metadata;
-    public Optional<Integer> version;
-    public Optional<Timestamp> timestamp;
-    public Optional<HashMap<String, Object>> state;
+    public HashMap<String, Object> metadata;
+    public int version;
+    public Timestamp timestamp;
+    public HashMap<String, Object> state;
 }

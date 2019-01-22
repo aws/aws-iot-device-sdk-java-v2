@@ -18,13 +18,12 @@
 package software.amazon.awssdk.iot.iotjobs.model;
 
 import java.util.HashMap;
-import java.util.Optional;
 import software.amazon.awssdk.iot.Timestamp;
 import software.amazon.awssdk.iot.iotjobs.model.JobExecutionState;
 
 public class UpdateJobExecutionResponse {
     public Timestamp timestamp;
-    public Optional<String> clientToken;
+    public String clientToken;
     public HashMap<String, Object> jobDocument;
     public JobExecutionState executionState;
 }

@@ -17,14 +17,13 @@
 
 package software.amazon.awssdk.iot.iotjobs.model;
 
-import java.util.Optional;
 import software.amazon.awssdk.iot.Timestamp;
 
 public class JobExecutionSummary {
-    public Optional<Timestamp> lastUpdatedAt;
-    public Optional<Long> executionNumber;
-    public Optional<Integer> versionNumber;
-    public Optional<String> jobId;
-    public Optional<Timestamp> startedAt;
-    public Optional<Timestamp> queuedAt;
+    public Timestamp lastUpdatedAt;
+    public long executionNumber;
+    public int versionNumber;
+    public String jobId;
+    public Timestamp startedAt;
+    public Timestamp queuedAt;
 }

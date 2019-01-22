@@ -17,12 +17,11 @@
 
 package software.amazon.awssdk.iot.iotshadow.model;
 
-import java.util.Optional;
 import software.amazon.awssdk.iot.Timestamp;
 import software.amazon.awssdk.iot.iotshadow.model.ShadowUpdatedSnapshot;
 
 public class ShadowUpdatedEvent {
-    public Optional<ShadowUpdatedSnapshot> previous;
-    public Optional<ShadowUpdatedSnapshot> current;
-    public Optional<Timestamp> timestamp;
+    public ShadowUpdatedSnapshot previous;
+    public ShadowUpdatedSnapshot current;
+    public Timestamp timestamp;
 }

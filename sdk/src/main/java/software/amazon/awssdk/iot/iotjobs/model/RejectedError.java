@@ -17,15 +17,14 @@
 
 package software.amazon.awssdk.iot.iotjobs.model;
 
-import java.util.Optional;
 import software.amazon.awssdk.iot.Timestamp;
 import software.amazon.awssdk.iot.iotjobs.model.JobExecutionState;
 import software.amazon.awssdk.iot.iotjobs.model.RejectedErrorCode;
 
 public class RejectedError {
-    public Optional<Timestamp> timestamp;
-    public Optional<String> clientToken;
+    public Timestamp timestamp;
+    public String clientToken;
     public RejectedErrorCode code;
-    public Optional<JobExecutionState> executionState;
-    public Optional<String> message;
+    public JobExecutionState executionState;
+    public String message;
 }

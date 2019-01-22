@@ -17,9 +17,8 @@
 
 package software.amazon.awssdk.iot.iotjobs.model;
 
-import java.util.Optional;
 
 public class GetPendingJobExecutionsRequest {
     public String thingName;
-    public Optional<String> clientToken;
+    public String clientToken;
 }

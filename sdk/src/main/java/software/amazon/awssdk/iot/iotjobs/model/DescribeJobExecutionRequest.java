@@ -17,12 +17,11 @@
 
 package software.amazon.awssdk.iot.iotjobs.model;
 
-import java.util.Optional;
 
 public class DescribeJobExecutionRequest {
-    public Optional<Boolean> includeJobDocument;
+    public boolean includeJobDocument;
     public String jobId;
-    public Optional<String> clientToken;
-    public Optional<Long> executionNumber;
+    public String clientToken;
+    public long executionNumber;
     public String thingName;
 }

@@ -18,11 +18,10 @@
 package software.amazon.awssdk.iot.iotjobs.model;
 
 import java.util.HashMap;
-import java.util.Optional;
 import software.amazon.awssdk.iot.iotjobs.model.JobStatus;
 
 public class JobExecutionState {
-    public Optional<Integer> versionNumber;
-    public Optional<HashMap<String, String>> statusDetails;
-    public Optional<JobStatus> status;
+    public int versionNumber;
+    public HashMap<String, String> statusDetails;
+    public JobStatus status;
 }

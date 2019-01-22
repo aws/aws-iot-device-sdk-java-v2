@@ -18,19 +18,18 @@
 package software.amazon.awssdk.iot.iotjobs.model;
 
 import java.util.HashMap;
-import java.util.Optional;
 import software.amazon.awssdk.iot.Timestamp;
 import software.amazon.awssdk.iot.iotjobs.model.JobStatus;
 
 public class JobExecutionData {
-    public Optional<String> jobId;
-    public Optional<String> thingName;
-    public Optional<HashMap<String, Object>> jobDocument;
-    public Optional<Long> executionNumber;
-    public Optional<HashMap<String, String>> statusDetails;
-    public Optional<JobStatus> status;
-    public Optional<Integer> versionNumber;
-    public Optional<Timestamp> queuedAt;
-    public Optional<Timestamp> lastUpdatedAt;
-    public Optional<Timestamp> startedAt;
+    public String jobId;
+    public String thingName;
+    public HashMap<String, Object> jobDocument;
+    public long executionNumber;
+    public HashMap<String, String> statusDetails;
+    public JobStatus status;
+    public int versionNumber;
+    public Timestamp queuedAt;
+    public Timestamp lastUpdatedAt;
+    public Timestamp startedAt;
 }
