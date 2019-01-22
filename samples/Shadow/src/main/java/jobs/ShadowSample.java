@@ -55,8 +55,9 @@ public class ShadowSample {
 
     static MqttConnection connection;
     static IotShadowClient shadow;
-    static String localValue = "";
+    static String localValue = null;
     static int shadowVersion = 1;
+    static CompletableFuture<Void> gotResponse;
 
     static void printUsage() {
         System.out.println(
@@ -123,11 +124,12 @@ public class ShadowSample {
     static void onGetShadowAccepted(GetShadowResponse response) {
         System.out.println("Received initial shadow state");
 
-        if (response.state != null) {
+        shadowVersion = response.version;
+        if (response.state != null && localValue == null) {
+            gotResponse.complete(null);
             if (response.state.delta != null) {
                 String value = response.state.delta.get(SHADOW_PROPERTY).toString();
                 System.out.println("  Shadow delta value: " + value);
-                shadowVersion = response.version;
                 return;
             }
             if (response.state.reported != null) {
@@ -135,7 +137,6 @@ public class ShadowSample {
                 System.out.println("  Shadow reported value: " + value);
                 // Initialize local value to match the reported shadow value
                 localValue = value;
-                shadowVersion = response.version;
                 return;
             }
         }
@@ -150,12 +151,14 @@ public class ShadowSample {
             changeShadowValue(SHADOW_VALUE_DEFAULT);
             return;
         }
+        gotResponse.complete(null);
         System.out.println("GetShadow request was rejected: code: " + response.code + " message: " + response.message);
         System.exit(1);
     }
 
     static void onShadowDeltaUpdated(ShadowDeltaUpdatedEvent response) {
         System.out.println("Shadow delta updated");
+        shadowVersion = response.version;
         if (response.state != null && response.state.containsKey(SHADOW_PROPERTY)) {
             String value = response.state.get(SHADOW_PROPERTY).toString();
             System.out.println("  Delta wants to change value to '" + value + "'. Changing local value...");
@@ -169,6 +172,7 @@ public class ShadowSample {
         String value = response.state.reported.get(SHADOW_PROPERTY).toString();
         System.out.println("Shadow updated, value is " + value);
         shadowVersion = response.version;
+        gotResponse.complete(null);
     }
 
     static void onUpdateShadowRejected(ErrorResponse response) {
@@ -279,11 +283,14 @@ public class ShadowSample {
             subscribedToGetShadowAccepted.get();
             subscribedToGetShadowRejected.get();
 
+            gotResponse = new CompletableFuture<>();
+
             System.out.println("Requesting current shadow state...");
             GetShadowRequest getShadowRequest = new GetShadowRequest();
             getShadowRequest.thingName = thingName;
             CompletableFuture<Integer> publishedGetShadow = shadow.PublishGetShadow(getShadowRequest);
             publishedGetShadow.get();
+            gotResponse.get();
 
             String newValue = "";
             Scanner scanner = new Scanner(System.in);
@@ -294,8 +301,9 @@ public class ShadowSample {
                 if (newValue.compareToIgnoreCase("quit") == 0) {
                     break;
                 }
+                gotResponse = new CompletableFuture<>();
                 changeShadowValue(newValue).get();
-                Thread.sleep(1000);
+                gotResponse.get();
             }
 
             CompletableFuture<Void> disconnected = connection.disconnect();
