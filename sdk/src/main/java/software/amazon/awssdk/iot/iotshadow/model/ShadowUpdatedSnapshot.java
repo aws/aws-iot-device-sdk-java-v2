@@ -17,11 +17,12 @@
 
 package software.amazon.awssdk.iot.iotshadow.model;
 
+import java.util.Optional;
 import software.amazon.awssdk.iot.iotshadow.model.ShadowMetadata;
 import software.amazon.awssdk.iot.iotshadow.model.ShadowState;
 
 public class ShadowUpdatedSnapshot {
-    public int version;
-    public ShadowState state;
-    public ShadowMetadata metadata;
+    public Optional<Integer> version;
+    public Optional<ShadowState> state;
+    public Optional<ShadowMetadata> metadata;
 }

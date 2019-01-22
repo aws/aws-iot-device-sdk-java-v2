@@ -17,11 +17,12 @@
 
 package software.amazon.awssdk.iot.iotshadow.model;
 
+import java.util.Optional;
 import software.amazon.awssdk.iot.Timestamp;
 
 public class ErrorResponse {
-    public String message;
-    public String clientToken;
-    public Timestamp timestamp;
+    public Optional<String> message;
+    public Optional<String> clientToken;
+    public Optional<Timestamp> timestamp;
     public int code;
 }

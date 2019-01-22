@@ -17,11 +17,12 @@
 
 package software.amazon.awssdk.iot.iotshadow.model;
 
+import java.util.Optional;
 import software.amazon.awssdk.iot.iotshadow.model.ShadowState;
 
 public class UpdateShadowRequest {
-    public ShadowState state;
+    public Optional<ShadowState> state;
     public String thingName;
-    public String clientToken;
-    public int version;
+    public Optional<String> clientToken;
+    public Optional<Integer> version;
 }

@@ -17,11 +17,12 @@
 
 package software.amazon.awssdk.iot.iotjobs.model;
 
+import java.util.Optional;
 import software.amazon.awssdk.iot.Timestamp;
 import software.amazon.awssdk.iot.iotjobs.model.JobExecutionData;
 
 public class DescribeJobExecutionResponse {
     public JobExecutionData execution;
-    public String clientToken;
+    public Optional<String> clientToken;
     public Timestamp timestamp;
 }

@@ -17,14 +17,15 @@
 
 package software.amazon.awssdk.iot.iotshadow.model;
 
+import java.util.Optional;
 import software.amazon.awssdk.iot.Timestamp;
 import software.amazon.awssdk.iot.iotshadow.model.ShadowMetadata;
 import software.amazon.awssdk.iot.iotshadow.model.ShadowState;
 
 public class UpdateShadowResponse {
-    public ShadowState state;
-    public String clientToken;
-    public int version;
-    public ShadowMetadata metadata;
-    public Timestamp timestamp;
+    public Optional<ShadowState> state;
+    public Optional<String> clientToken;
+    public Optional<Integer> version;
+    public Optional<ShadowMetadata> metadata;
+    public Optional<Timestamp> timestamp;
 }

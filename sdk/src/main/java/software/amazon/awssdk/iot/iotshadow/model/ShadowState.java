@@ -18,8 +18,9 @@
 package software.amazon.awssdk.iot.iotshadow.model;
 
 import java.util.HashMap;
+import java.util.Optional;
 
 public class ShadowState {
-    public HashMap<String, Object> desired;
-    public HashMap<String, Object> reported;
+    public Optional<HashMap<String, Object>> desired;
+    public Optional<HashMap<String, Object>> reported;
 }

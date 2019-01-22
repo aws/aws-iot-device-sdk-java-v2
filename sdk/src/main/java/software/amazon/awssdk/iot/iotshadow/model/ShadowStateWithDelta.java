@@ -18,9 +18,10 @@
 package software.amazon.awssdk.iot.iotshadow.model;
 
 import java.util.HashMap;
+import java.util.Optional;
 
 public class ShadowStateWithDelta {
-    public HashMap<String, Object> reported;
-    public HashMap<String, Object> delta;
-    public HashMap<String, Object> desired;
+    public Optional<HashMap<String, Object>> reported;
+    public Optional<HashMap<String, Object>> delta;
+    public Optional<HashMap<String, Object>> desired;
 }

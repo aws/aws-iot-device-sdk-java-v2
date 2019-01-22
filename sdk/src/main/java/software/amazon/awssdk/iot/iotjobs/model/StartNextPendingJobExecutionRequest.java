@@ -18,10 +18,11 @@
 package software.amazon.awssdk.iot.iotjobs.model;
 
 import java.util.HashMap;
+import java.util.Optional;
 
 public class StartNextPendingJobExecutionRequest {
-    public String clientToken;
+    public Optional<String> clientToken;
     public String thingName;
-    public HashMap<String, String> statusDetails;
-    public long stepTimeoutInMinutes;
+    public Optional<HashMap<String, String>> statusDetails;
+    public Optional<Long> stepTimeoutInMinutes;
 }

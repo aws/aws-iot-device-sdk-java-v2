@@ -18,16 +18,17 @@
 package software.amazon.awssdk.iot.iotjobs.model;
 
 import java.util.HashMap;
+import java.util.Optional;
 import software.amazon.awssdk.iot.iotjobs.model.JobStatus;
 
 public class UpdateJobExecutionRequest {
     public String thingName;
-    public int expectedVersion;
-    public long executionNumber;
-    public boolean includeJobDocument;
-    public HashMap<String, String> statusDetails;
-    public boolean includeJobExecutionState;
+    public Optional<Integer> expectedVersion;
+    public Optional<Long> executionNumber;
+    public Optional<Boolean> includeJobDocument;
+    public Optional<HashMap<String, String>> statusDetails;
+    public Optional<Boolean> includeJobExecutionState;
     public JobStatus status;
     public String jobId;
-    public String clientToken;
+    public Optional<String> clientToken;
 }
