@@ -46,20 +46,12 @@ import software.amazon.awssdk.crt.mqtt.MqttException;
 import software.amazon.awssdk.crt.mqtt.MqttMessage;
 
 import software.amazon.awssdk.iot.Timestamp;
+import software.amazon.awssdk.iot.EnumSerializer;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonSerializer;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonParseException;
 
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.nio.ByteBuffer;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -72,38 +64,7 @@ public class IotJobsClient {
         this.connection = connection;
     }
 
-private class EnumSerializer<E> implements JsonSerializer<E> {
-        public JsonElement serialize(E enumValue, Type typeOfEnum, JsonSerializationContext context) {
-            return new JsonPrimitive(enumValue.toString());
-        }
-    }
-
-    private class EnumDeserializer<E> implements JsonDeserializer<E> {
-        private Method fromString;
-        public E deserialize(JsonElement json, Type typeOfEnum, JsonDeserializationContext context)
-            throws JsonParseException {
-            if (fromString == null) {
-                Class<?> c = (Class<?>)typeOfEnum;
-                for (Method m : c.getDeclaredMethods()) {
-                    if (m.getName() == "fromString") {
-                        fromString = m;
-                        break;
-                    }
-                }
-            }
-            try {
-                @SuppressWarnings("unchecked")
-                E value = (E) fromString.invoke(null, json.getAsJsonPrimitive().getAsString());
-                return value;
-            } catch (Exception ex) {
-                @SuppressWarnings("unchecked")
-                Class<E> c = (Class<E>)typeOfEnum;
-                return c.getEnumConstants()[0];
-            }
-        }
-    }
-
-    private Gson getGson() {
+private Gson getGson() {
         GsonBuilder gson = new GsonBuilder();
         gson.registerTypeAdapter(Timestamp.class, new Timestamp.Serializer());
         gson.registerTypeAdapter(Timestamp.class, new Timestamp.Deserializer());
@@ -112,9 +73,7 @@ private class EnumSerializer<E> implements JsonSerializer<E> {
     }
     private void addTypeAdapters(GsonBuilder gson) {
         gson.registerTypeAdapter(RejectedErrorCode.class, new EnumSerializer<RejectedErrorCode>());
-        gson.registerTypeAdapter(RejectedErrorCode.class, new EnumDeserializer<RejectedErrorCode>());
         gson.registerTypeAdapter(JobStatus.class, new EnumSerializer<JobStatus>());
-        gson.registerTypeAdapter(JobStatus.class, new EnumDeserializer<JobStatus>());
     }
     public CompletableFuture<Integer> SubscribeToJobExecutionsChangedEvents(
         JobExecutionsChangedSubscriptionRequest request,
