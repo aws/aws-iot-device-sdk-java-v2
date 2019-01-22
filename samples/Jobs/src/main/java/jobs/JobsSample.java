@@ -24,16 +24,23 @@ import software.amazon.awssdk.crt.mqtt.MqttClient;
 import software.amazon.awssdk.crt.mqtt.MqttConnection;
 import software.amazon.awssdk.crt.mqtt.MqttConnectionEvents;
 import software.amazon.awssdk.iot.iotjobs.IotJobsClient;
+import software.amazon.awssdk.iot.iotjobs.model.DescribeJobExecutionRequest;
+import software.amazon.awssdk.iot.iotjobs.model.DescribeJobExecutionResponse;
+import software.amazon.awssdk.iot.iotjobs.model.DescribeJobExecutionSubscriptionRequest;
 import software.amazon.awssdk.iot.iotjobs.model.GetPendingJobExecutionsRequest;
+import software.amazon.awssdk.iot.iotjobs.model.GetPendingJobExecutionsResponse;
 import software.amazon.awssdk.iot.iotjobs.model.GetPendingJobExecutionsSubscriptionRequest;
 import software.amazon.awssdk.iot.iotjobs.model.JobExecutionSummary;
 import software.amazon.awssdk.iot.iotjobs.model.RejectedError;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 public class JobsSample {
     static String clientId = "samples-client-id";
+    static String thingName;
     static String rootCaPath;
     static String certPath;
     static String keyPath;
@@ -41,10 +48,14 @@ public class JobsSample {
     static boolean showHelp = false;
     static int port = 8883;
 
+    static CompletableFuture<Void> gotResponse;
+    static List<String> availableJobs = new LinkedList<>();
+
     static void printUsage() {
         System.out.println(
                 "Usage:\n"+
                 "  --help        This message\n"+
+                "  --thingName   The name of the IoT thing\n"+
                 "  --clientId    Client ID to use when connecting (optional)\n"+
                 "  -e|--endpoint AWS IoT service endpoint hostname\n"+
                 "  -p|--port     Port to connect to on the endpoint\n"+
@@ -63,6 +74,11 @@ public class JobsSample {
                 case "--clientId":
                     if (idx + 1 < args.length) {
                         clientId = args[++idx];
+                    }
+                    break;
+                case "--thingName":
+                    if (idx + 1 < args.length) {
+                        thingName = args[++idx];
                     }
                     break;
                 case "-e":
@@ -103,11 +119,31 @@ public class JobsSample {
 
     static void onRejectedError(RejectedError error) {
         System.out.println("Request rejected: " + error.code.toString() + ": " + error.message);
+        System.exit(1);
+    }
+
+    static void onGetPendingJobExecutionsAccepted(GetPendingJobExecutionsResponse response) {
+        System.out.println("Pending Jobs: " + (response.queuedJobs.size() == 0 ? "none" : ""));
+        for (JobExecutionSummary job : response.queuedJobs) {
+            availableJobs.add(job.jobId);
+            System.out.println("  " + job.jobId + " @ " + job.lastUpdatedAt.toString());
+        }
+        gotResponse.complete(null);
+    }
+
+    static void onDescribeJobExecutionAccepted(DescribeJobExecutionResponse response) {
+        System.out.println("Job: " + response.execution.jobId);
+        if (response.execution.jobDocument != null) {
+            response.execution.jobDocument.forEach((key, value) -> {
+                System.out.println("  " + key + ": " + value);
+            });
+        }
+        gotResponse.complete(null);
     }
 
     public static void main(String[] args) {
         parseCommandLine(args);
-        if (showHelp || endpoint == null || rootCaPath == null || certPath == null || keyPath == null) {
+        if (showHelp || thingName == null || endpoint == null || rootCaPath == null || certPath == null || keyPath == null) {
             printUsage();
             return;
         }
@@ -135,8 +171,6 @@ public class JobsSample {
             });
             IotJobsClient jobs = new IotJobsClient(connection);
 
-            CompletableFuture<Void> gotJobs = new CompletableFuture<>();
-
             CompletableFuture<Boolean> connected = connection.connect(
                     clientId,
                     endpoint, port,
@@ -150,13 +184,8 @@ public class JobsSample {
 
             GetPendingJobExecutionsSubscriptionRequest getPendingJobExecutionsSubscriptionRequest = new GetPendingJobExecutionsSubscriptionRequest();
             getPendingJobExecutionsSubscriptionRequest.thingName = "crt-test";
-            CompletableFuture<Integer> subscribed = jobs.SubscribeToGetPendingJobExecutionsAccepted(getPendingJobExecutionsSubscriptionRequest, (response) -> {
-                System.out.println("Pending Jobs: " + (response.queuedJobs.size() == 0 ? "none" : ""));
-                for (JobExecutionSummary job : response.queuedJobs) {
-                    System.out.println("  " + job.jobId + " @ " + job.lastUpdatedAt.toString());
-                }
-                gotJobs.complete(null);
-            })
+            CompletableFuture<Integer> subscribed = jobs.SubscribeToGetPendingJobExecutionsAccepted(
+                    getPendingJobExecutionsSubscriptionRequest, JobsSample::onGetPendingJobExecutionsAccepted)
                     .exceptionally((ex) -> {
                         System.out.println("Failed to subscribe to GetPendingJobExecutions: " + ex.toString());
                         return null;
@@ -164,24 +193,41 @@ public class JobsSample {
             subscribed.get();
             System.out.println("Subscribed to GetPendingJobExecutionsAccepted");
 
-            subscribed = jobs.SubscribeToGetPendingJobExecutionsRejected(getPendingJobExecutionsSubscriptionRequest, (error) -> {
-                onRejectedError(error);
-                gotJobs.complete(null);
-            });
+            gotResponse = new CompletableFuture<>();
+
+            subscribed = jobs.SubscribeToGetPendingJobExecutionsRejected(getPendingJobExecutionsSubscriptionRequest, JobsSample::onRejectedError);
             subscribed.get();
             System.out.println("Subscribed to GetPendingJobExecutionsRejected");
 
             GetPendingJobExecutionsRequest getPendingJobExecutionsRequest = new GetPendingJobExecutionsRequest();
-            getPendingJobExecutionsRequest.thingName = "crt-test";
+            getPendingJobExecutionsRequest.thingName = thingName;
             CompletableFuture<Integer> published = jobs.PublishGetPendingJobExecutions(getPendingJobExecutionsRequest)
                     .exceptionally((ex) -> {
                         System.out.println("Exception occurred during publish: " + ex.toString());
-                        gotJobs.complete(null);
+                        gotResponse.complete(null);
                         return null;
                     });
             published.get();
 
-            gotJobs.get();
+            gotResponse.get();
+
+            for (String jobId : availableJobs) {
+                gotResponse = new CompletableFuture<>();
+                DescribeJobExecutionSubscriptionRequest describeJobExecutionSubscriptionRequest = new DescribeJobExecutionSubscriptionRequest();
+                describeJobExecutionSubscriptionRequest.thingName = thingName;
+                describeJobExecutionSubscriptionRequest.jobId = jobId;
+                jobs.SubscribeToDescribeJobExecutionAccepted(describeJobExecutionSubscriptionRequest, JobsSample::onDescribeJobExecutionAccepted);
+                jobs.SubscribeToDescribeJobExecutionRejected(describeJobExecutionSubscriptionRequest, JobsSample::onRejectedError);
+
+                DescribeJobExecutionRequest describeJobExecutionRequest = new DescribeJobExecutionRequest();
+                describeJobExecutionRequest.thingName = thingName;
+                describeJobExecutionRequest.jobId = jobId;
+                describeJobExecutionRequest.includeJobDocument = true;
+                describeJobExecutionRequest.executionNumber = 1;
+                jobs.PublishDescribeJobExecution(describeJobExecutionRequest);
+                gotResponse.get();
+            }
+
             CompletableFuture<Void> disconnected = connection.disconnect();
             disconnected.get();
         } catch (CrtRuntimeException | InterruptedException | ExecutionException ex) {
