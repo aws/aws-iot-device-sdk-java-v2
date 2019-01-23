@@ -252,7 +252,7 @@ public class JobsSample {
                 publishRequest.thingName = thingName;
                 publishRequest.jobId = jobId;
                 publishRequest.includeJobDocument = true;
-                publishRequest.executionNumber = 1;
+                publishRequest.executionNumber = 1L;
                 jobs.PublishDescribeJobExecution(publishRequest);
                 gotResponse.get();
             }
@@ -270,7 +270,7 @@ public class JobsSample {
 
                     StartNextPendingJobExecutionRequest publishRequest = new StartNextPendingJobExecutionRequest();
                     publishRequest.thingName = thingName;
-                    publishRequest.stepTimeoutInMinutes = 15;
+                    publishRequest.stepTimeoutInMinutes = 15L;
                     jobs.PublishStartNextPendingJobExecution(publishRequest);
 
                     gotResponse.get();
