@@ -23,5 +23,5 @@ public class ErrorResponse {
     public String message;
     public String clientToken;
     public Timestamp timestamp;
-    public int code;
+    public Integer code;
 }

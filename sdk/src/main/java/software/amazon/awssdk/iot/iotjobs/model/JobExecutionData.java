@@ -25,10 +25,10 @@ public class JobExecutionData {
     public String jobId;
     public String thingName;
     public HashMap<String, Object> jobDocument;
-    public long executionNumber;
+    public Long executionNumber;
     public HashMap<String, String> statusDetails;
     public JobStatus status;
-    public int versionNumber;
+    public Integer versionNumber;
     public Timestamp queuedAt;
     public Timestamp lastUpdatedAt;
     public Timestamp startedAt;

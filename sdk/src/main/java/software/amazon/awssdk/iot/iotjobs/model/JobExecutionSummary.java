@@ -21,8 +21,8 @@ import software.amazon.awssdk.iot.Timestamp;
 
 public class JobExecutionSummary {
     public Timestamp lastUpdatedAt;
-    public long executionNumber;
-    public int versionNumber;
+    public Long executionNumber;
+    public Integer versionNumber;
     public String jobId;
     public Timestamp startedAt;
     public Timestamp queuedAt;

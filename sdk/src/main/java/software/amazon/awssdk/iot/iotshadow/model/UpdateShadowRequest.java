@@ -23,5 +23,5 @@ public class UpdateShadowRequest {
     public ShadowState state;
     public String thingName;
     public String clientToken;
-    public int version;
+    public Integer version;
 }
