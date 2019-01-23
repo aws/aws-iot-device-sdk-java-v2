@@ -21,5 +21,5 @@ import software.amazon.awssdk.iot.Timestamp;
 
 public class DeleteShadowResponse {
     public Timestamp timestamp;
-    public int version;
+    public Integer version;
 }

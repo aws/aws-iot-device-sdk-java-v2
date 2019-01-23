@@ -23,5 +23,5 @@ public class StartNextPendingJobExecutionRequest {
     public String clientToken;
     public String thingName;
     public HashMap<String, String> statusDetails;
-    public long stepTimeoutInMinutes;
+    public Long stepTimeoutInMinutes;
 }

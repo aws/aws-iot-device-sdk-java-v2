@@ -21,7 +21,7 @@ import java.util.HashMap;
 import software.amazon.awssdk.iot.iotjobs.model.JobStatus;
 
 public class JobExecutionState {
-    public int versionNumber;
+    public Integer versionNumber;
     public HashMap<String, String> statusDetails;
     public JobStatus status;
 }
