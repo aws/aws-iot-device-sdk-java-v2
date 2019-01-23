@@ -56,7 +56,6 @@ public class ShadowSample {
     static MqttConnection connection;
     static IotShadowClient shadow;
     static String localValue = null;
-    static int shadowVersion = 1;
     static CompletableFuture<Void> gotResponse;
 
     static void printUsage() {
@@ -124,7 +123,6 @@ public class ShadowSample {
     static void onGetShadowAccepted(GetShadowResponse response) {
         System.out.println("Received initial shadow state");
 
-        shadowVersion = response.version;
         if (response.state != null && localValue == null) {
             gotResponse.complete(null);
             if (response.state.delta != null) {
@@ -158,7 +156,6 @@ public class ShadowSample {
 
     static void onShadowDeltaUpdated(ShadowDeltaUpdatedEvent response) {
         System.out.println("Shadow delta updated");
-        shadowVersion = response.version;
         if (response.state != null && response.state.containsKey(SHADOW_PROPERTY)) {
             String value = response.state.get(SHADOW_PROPERTY).toString();
             System.out.println("  Delta wants to change value to '" + value + "'. Changing local value...");
@@ -171,7 +168,6 @@ public class ShadowSample {
     static void onUpdateShadowAccepted(UpdateShadowResponse response) {
         String value = response.state.reported.get(SHADOW_PROPERTY).toString();
         System.out.println("Shadow updated, value is " + value);
-        shadowVersion = response.version;
         gotResponse.complete(null);
     }
 
@@ -195,7 +191,6 @@ public class ShadowSample {
         // build a request to let the service know our current value and desired value, and that we only want
         // to update if the version matches the version we know about
         UpdateShadowRequest request = new UpdateShadowRequest();
-        request.version = shadowVersion;
         request.thingName = thingName;
         request.state = new ShadowState();
         request.state.reported = new HashMap<String, Object>() {{
@@ -295,7 +290,7 @@ public class ShadowSample {
             String newValue = "";
             Scanner scanner = new Scanner(System.in);
             while (true) {
-                System.out.print(SHADOW_PROPERTY + "(" + shadowVersion + ")> ");
+                System.out.print(SHADOW_PROPERTY + "> ");
                 System.out.flush();
                 newValue = scanner.next();
                 if (newValue.compareToIgnoreCase("quit") == 0) {
