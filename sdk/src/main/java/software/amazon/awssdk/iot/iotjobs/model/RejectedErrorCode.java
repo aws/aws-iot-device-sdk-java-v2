@@ -42,7 +42,7 @@ public enum RejectedErrorCode {
 
     static RejectedErrorCode fromString(String val) {
         for (RejectedErrorCode e : RejectedErrorCode.class.getEnumConstants()) {
-            if (e.toString() == val) {
+            if (e.toString().compareTo(val) == 0) {
                 return e;
             }
         }

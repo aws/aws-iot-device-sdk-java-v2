@@ -41,7 +41,7 @@ public enum JobStatus {
 
     static JobStatus fromString(String val) {
         for (JobStatus e : JobStatus.class.getEnumConstants()) {
-            if (e.toString() == val) {
+            if (e.toString().compareTo(val) == 0) {
                 return e;
             }
         }
