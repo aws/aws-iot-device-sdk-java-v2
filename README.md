@@ -30,17 +30,14 @@ is provided by code that been generated from a model of the service.
 
 ## Build from source
 ```
-git clone --branch 0.1.0 https://github.com/awslabs/aws-crt-java.git
+git clone --branch v0.1.1 https://github.com/awslabs/aws-crt-java.git
 git clone https://github.com/awslabs/aws-iot-device-sdk-java-v2.git
 cd aws-crt-java
-./build-deps.sh (or build_deps.bat on windows)
 mvn package -Dmaven.test.skip=true
 maven install:install-file -Dfile=target/aws-crt-java-1.0.jar -DpomFile=pom.xml
-cd ..
-cd aws-iot-device-sdk-java-v2
+cd ../aws-iot-device-sdk-java-v2
 mvn package
 maven install:install-file -Dfile=target/aws-iot-device-sdk-java-1.0-SNAPSHOT.jar -DpomFile=pom.xml
-
 ```
 
 # Samples
