@@ -23,6 +23,7 @@ import software.amazon.awssdk.crt.io.TlsContextOptions;
 import software.amazon.awssdk.crt.mqtt.MqttClient;
 import software.amazon.awssdk.crt.mqtt.MqttConnection;
 import software.amazon.awssdk.crt.mqtt.MqttConnectionEvents;
+import software.amazon.awssdk.crt.mqtt.QualityOfService;
 import software.amazon.awssdk.iot.iotshadow.IotShadowClient;
 import software.amazon.awssdk.iot.iotshadow.model.ErrorResponse;
 import software.amazon.awssdk.iot.iotshadow.model.GetShadowRequest;
@@ -201,7 +202,7 @@ public class ShadowSample {
         }};
 
         // Publish the request
-        return shadow.PublishUpdateShadow(request).thenRun(() -> {
+        return shadow.PublishUpdateShadow(request, QualityOfService.AT_LEAST_ONCE).thenRun(() -> {
             System.out.println("Update request published");
         }).exceptionally((ex) -> {
             System.out.println("Update request failed: " + ex.getMessage());
@@ -255,16 +256,25 @@ public class ShadowSample {
             ShadowDeltaUpdatedSubscriptionRequest requestShadowDeltaUpdated = new ShadowDeltaUpdatedSubscriptionRequest();
             requestShadowDeltaUpdated.thingName = thingName;
             CompletableFuture<Integer> subscribedToDeltas =
-                    shadow.SubscribeToShadowDeltaUpdatedEvents(requestShadowDeltaUpdated, ShadowSample::onShadowDeltaUpdated);
+                    shadow.SubscribeToShadowDeltaUpdatedEvents(
+                            requestShadowDeltaUpdated,
+                            QualityOfService.AT_LEAST_ONCE,
+                            ShadowSample::onShadowDeltaUpdated);
             subscribedToDeltas.get();
 
             System.out.println("Subscribing to update respones...");
             UpdateShadowSubscriptionRequest requestUpdateShadow = new UpdateShadowSubscriptionRequest();
             requestUpdateShadow.thingName = thingName;
             CompletableFuture<Integer> subscribedToUpdateAccepted =
-                    shadow.SubscribeToUpdateShadowAccepted(requestUpdateShadow, ShadowSample::onUpdateShadowAccepted);
+                    shadow.SubscribeToUpdateShadowAccepted(
+                            requestUpdateShadow,
+                            QualityOfService.AT_LEAST_ONCE,
+                            ShadowSample::onUpdateShadowAccepted);
             CompletableFuture<Integer> subscribedToUpdateRejected =
-                    shadow.SubscribeToUpdateShadowRejected(requestUpdateShadow, ShadowSample::onUpdateShadowRejected);
+                    shadow.SubscribeToUpdateShadowRejected(
+                            requestUpdateShadow,
+                            QualityOfService.AT_LEAST_ONCE,
+                            ShadowSample::onUpdateShadowRejected);
             subscribedToUpdateAccepted.get();
             subscribedToUpdateRejected.get();
 
@@ -272,9 +282,15 @@ public class ShadowSample {
             GetShadowSubscriptionRequest requestGetShadow = new GetShadowSubscriptionRequest();
             requestGetShadow.thingName = thingName;
             CompletableFuture<Integer> subscribedToGetShadowAccepted =
-                    shadow.SubscribeToGetShadowAccepted(requestGetShadow, ShadowSample::onGetShadowAccepted);
+                    shadow.SubscribeToGetShadowAccepted(
+                            requestGetShadow,
+                            QualityOfService.AT_LEAST_ONCE,
+                            ShadowSample::onGetShadowAccepted);
             CompletableFuture<Integer> subscribedToGetShadowRejected =
-                    shadow.SubscribeToGetShadowRejected(requestGetShadow, ShadowSample::onGetShadowRejected);
+                    shadow.SubscribeToGetShadowRejected(
+                            requestGetShadow,
+                            QualityOfService.AT_LEAST_ONCE,
+                            ShadowSample::onGetShadowRejected);
             subscribedToGetShadowAccepted.get();
             subscribedToGetShadowRejected.get();
 
@@ -283,7 +299,9 @@ public class ShadowSample {
             System.out.println("Requesting current shadow state...");
             GetShadowRequest getShadowRequest = new GetShadowRequest();
             getShadowRequest.thingName = thingName;
-            CompletableFuture<Integer> publishedGetShadow = shadow.PublishGetShadow(getShadowRequest);
+            CompletableFuture<Integer> publishedGetShadow = shadow.PublishGetShadow(
+                    getShadowRequest,
+                    QualityOfService.AT_LEAST_ONCE);
             publishedGetShadow.get();
             gotResponse.get();
 

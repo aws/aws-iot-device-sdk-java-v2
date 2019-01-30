@@ -71,6 +71,7 @@ private Gson getGson() {
     }
     public CompletableFuture<Integer> SubscribeToUpdateShadowRejected(
         UpdateShadowSubscriptionRequest request,
+        QualityOfService qos,
         Consumer<ErrorResponse> handler,
         Consumer<Exception> exceptionHandler) {
         String topic = "$aws/things/{thingName}/shadow/update/rejected";
@@ -91,13 +92,18 @@ private Gson getGson() {
                 }
             };
         };
-        return connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, messageHandler);
+        return connection.subscribe(topic, qos, messageHandler);
     }
 
-    public CompletableFuture<Integer> SubscribeToUpdateShadowRejected(UpdateShadowSubscriptionRequest request, Consumer<ErrorResponse> handler) {
-        return SubscribeToUpdateShadowRejected(request, handler, null);
+    public CompletableFuture<Integer> SubscribeToUpdateShadowRejected(
+        UpdateShadowSubscriptionRequest request,
+        QualityOfService qos,
+        Consumer<ErrorResponse> handler) {
+        return SubscribeToUpdateShadowRejected(request, qos, handler, null);
     }
-    public CompletableFuture<Integer> PublishUpdateShadow(UpdateShadowRequest request) {
+    public CompletableFuture<Integer> PublishUpdateShadow(
+        UpdateShadowRequest request,
+        QualityOfService qos) {
         String topic = "$aws/things/{thingName}/shadow/update";
         if (request.thingName == null) {
             CompletableFuture<Integer> result = new CompletableFuture<Integer>();
@@ -109,9 +115,11 @@ private Gson getGson() {
         ByteBuffer payload = ByteBuffer.allocateDirect(payloadJson.length());
         payload.put(payloadJson.getBytes());
         MqttMessage message = new MqttMessage(topic, payload);
-        return connection.publish(message, QualityOfService.AT_LEAST_ONCE, false);
+        return connection.publish(message, qos, false);
     }
-    public CompletableFuture<Integer> PublishGetShadow(GetShadowRequest request) {
+    public CompletableFuture<Integer> PublishGetShadow(
+        GetShadowRequest request,
+        QualityOfService qos) {
         String topic = "$aws/things/{thingName}/shadow/get";
         if (request.thingName == null) {
             CompletableFuture<Integer> result = new CompletableFuture<Integer>();
@@ -123,10 +131,11 @@ private Gson getGson() {
         ByteBuffer payload = ByteBuffer.allocateDirect(payloadJson.length());
         payload.put(payloadJson.getBytes());
         MqttMessage message = new MqttMessage(topic, payload);
-        return connection.publish(message, QualityOfService.AT_LEAST_ONCE, false);
+        return connection.publish(message, qos, false);
     }
     public CompletableFuture<Integer> SubscribeToShadowDeltaUpdatedEvents(
         ShadowDeltaUpdatedSubscriptionRequest request,
+        QualityOfService qos,
         Consumer<ShadowDeltaUpdatedEvent> handler,
         Consumer<Exception> exceptionHandler) {
         String topic = "$aws/things/{thingName}/shadow/update/delta";
@@ -147,14 +156,18 @@ private Gson getGson() {
                 }
             };
         };
-        return connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, messageHandler);
+        return connection.subscribe(topic, qos, messageHandler);
     }
 
-    public CompletableFuture<Integer> SubscribeToShadowDeltaUpdatedEvents(ShadowDeltaUpdatedSubscriptionRequest request, Consumer<ShadowDeltaUpdatedEvent> handler) {
-        return SubscribeToShadowDeltaUpdatedEvents(request, handler, null);
+    public CompletableFuture<Integer> SubscribeToShadowDeltaUpdatedEvents(
+        ShadowDeltaUpdatedSubscriptionRequest request,
+        QualityOfService qos,
+        Consumer<ShadowDeltaUpdatedEvent> handler) {
+        return SubscribeToShadowDeltaUpdatedEvents(request, qos, handler, null);
     }
     public CompletableFuture<Integer> SubscribeToUpdateShadowAccepted(
         UpdateShadowSubscriptionRequest request,
+        QualityOfService qos,
         Consumer<UpdateShadowResponse> handler,
         Consumer<Exception> exceptionHandler) {
         String topic = "$aws/things/{thingName}/shadow/update/accepted";
@@ -175,13 +188,18 @@ private Gson getGson() {
                 }
             };
         };
-        return connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, messageHandler);
+        return connection.subscribe(topic, qos, messageHandler);
     }
 
-    public CompletableFuture<Integer> SubscribeToUpdateShadowAccepted(UpdateShadowSubscriptionRequest request, Consumer<UpdateShadowResponse> handler) {
-        return SubscribeToUpdateShadowAccepted(request, handler, null);
+    public CompletableFuture<Integer> SubscribeToUpdateShadowAccepted(
+        UpdateShadowSubscriptionRequest request,
+        QualityOfService qos,
+        Consumer<UpdateShadowResponse> handler) {
+        return SubscribeToUpdateShadowAccepted(request, qos, handler, null);
     }
-    public CompletableFuture<Integer> PublishDeleteShadow(DeleteShadowRequest request) {
+    public CompletableFuture<Integer> PublishDeleteShadow(
+        DeleteShadowRequest request,
+        QualityOfService qos) {
         String topic = "$aws/things/{thingName}/shadow/delete";
         if (request.thingName == null) {
             CompletableFuture<Integer> result = new CompletableFuture<Integer>();
@@ -193,10 +211,11 @@ private Gson getGson() {
         ByteBuffer payload = ByteBuffer.allocateDirect(payloadJson.length());
         payload.put(payloadJson.getBytes());
         MqttMessage message = new MqttMessage(topic, payload);
-        return connection.publish(message, QualityOfService.AT_LEAST_ONCE, false);
+        return connection.publish(message, qos, false);
     }
     public CompletableFuture<Integer> SubscribeToDeleteShadowAccepted(
         DeleteShadowSubscriptionRequest request,
+        QualityOfService qos,
         Consumer<DeleteShadowResponse> handler,
         Consumer<Exception> exceptionHandler) {
         String topic = "$aws/things/{thingName}/shadow/delete/accepted";
@@ -217,14 +236,18 @@ private Gson getGson() {
                 }
             };
         };
-        return connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, messageHandler);
+        return connection.subscribe(topic, qos, messageHandler);
     }
 
-    public CompletableFuture<Integer> SubscribeToDeleteShadowAccepted(DeleteShadowSubscriptionRequest request, Consumer<DeleteShadowResponse> handler) {
-        return SubscribeToDeleteShadowAccepted(request, handler, null);
+    public CompletableFuture<Integer> SubscribeToDeleteShadowAccepted(
+        DeleteShadowSubscriptionRequest request,
+        QualityOfService qos,
+        Consumer<DeleteShadowResponse> handler) {
+        return SubscribeToDeleteShadowAccepted(request, qos, handler, null);
     }
     public CompletableFuture<Integer> SubscribeToGetShadowAccepted(
         GetShadowSubscriptionRequest request,
+        QualityOfService qos,
         Consumer<GetShadowResponse> handler,
         Consumer<Exception> exceptionHandler) {
         String topic = "$aws/things/{thingName}/shadow/get/accepted";
@@ -245,14 +268,18 @@ private Gson getGson() {
                 }
             };
         };
-        return connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, messageHandler);
+        return connection.subscribe(topic, qos, messageHandler);
     }
 
-    public CompletableFuture<Integer> SubscribeToGetShadowAccepted(GetShadowSubscriptionRequest request, Consumer<GetShadowResponse> handler) {
-        return SubscribeToGetShadowAccepted(request, handler, null);
+    public CompletableFuture<Integer> SubscribeToGetShadowAccepted(
+        GetShadowSubscriptionRequest request,
+        QualityOfService qos,
+        Consumer<GetShadowResponse> handler) {
+        return SubscribeToGetShadowAccepted(request, qos, handler, null);
     }
     public CompletableFuture<Integer> SubscribeToShadowUpdatedEvents(
         ShadowUpdatedSubscriptionRequest request,
+        QualityOfService qos,
         Consumer<ShadowUpdatedEvent> handler,
         Consumer<Exception> exceptionHandler) {
         String topic = "$aws/things/{thingName}/shadow/update/documents";
@@ -273,14 +300,18 @@ private Gson getGson() {
                 }
             };
         };
-        return connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, messageHandler);
+        return connection.subscribe(topic, qos, messageHandler);
     }
 
-    public CompletableFuture<Integer> SubscribeToShadowUpdatedEvents(ShadowUpdatedSubscriptionRequest request, Consumer<ShadowUpdatedEvent> handler) {
-        return SubscribeToShadowUpdatedEvents(request, handler, null);
+    public CompletableFuture<Integer> SubscribeToShadowUpdatedEvents(
+        ShadowUpdatedSubscriptionRequest request,
+        QualityOfService qos,
+        Consumer<ShadowUpdatedEvent> handler) {
+        return SubscribeToShadowUpdatedEvents(request, qos, handler, null);
     }
     public CompletableFuture<Integer> SubscribeToDeleteShadowRejected(
         DeleteShadowSubscriptionRequest request,
+        QualityOfService qos,
         Consumer<ErrorResponse> handler,
         Consumer<Exception> exceptionHandler) {
         String topic = "$aws/things/{thingName}/shadow/delete/rejected";
@@ -301,14 +332,18 @@ private Gson getGson() {
                 }
             };
         };
-        return connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, messageHandler);
+        return connection.subscribe(topic, qos, messageHandler);
     }
 
-    public CompletableFuture<Integer> SubscribeToDeleteShadowRejected(DeleteShadowSubscriptionRequest request, Consumer<ErrorResponse> handler) {
-        return SubscribeToDeleteShadowRejected(request, handler, null);
+    public CompletableFuture<Integer> SubscribeToDeleteShadowRejected(
+        DeleteShadowSubscriptionRequest request,
+        QualityOfService qos,
+        Consumer<ErrorResponse> handler) {
+        return SubscribeToDeleteShadowRejected(request, qos, handler, null);
     }
     public CompletableFuture<Integer> SubscribeToGetShadowRejected(
         GetShadowSubscriptionRequest request,
+        QualityOfService qos,
         Consumer<ErrorResponse> handler,
         Consumer<Exception> exceptionHandler) {
         String topic = "$aws/things/{thingName}/shadow/get/rejected";
@@ -329,10 +364,13 @@ private Gson getGson() {
                 }
             };
         };
-        return connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, messageHandler);
+        return connection.subscribe(topic, qos, messageHandler);
     }
 
-    public CompletableFuture<Integer> SubscribeToGetShadowRejected(GetShadowSubscriptionRequest request, Consumer<ErrorResponse> handler) {
-        return SubscribeToGetShadowRejected(request, handler, null);
+    public CompletableFuture<Integer> SubscribeToGetShadowRejected(
+        GetShadowSubscriptionRequest request,
+        QualityOfService qos,
+        Consumer<ErrorResponse> handler) {
+        return SubscribeToGetShadowRejected(request, qos, handler, null);
     }
 }
