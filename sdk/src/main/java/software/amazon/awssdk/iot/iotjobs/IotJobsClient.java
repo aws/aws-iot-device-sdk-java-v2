@@ -72,11 +72,12 @@ private Gson getGson() {
         return gson.create();
     }
     private void addTypeAdapters(GsonBuilder gson) {
-        gson.registerTypeAdapter(RejectedErrorCode.class, new EnumSerializer<RejectedErrorCode>());
         gson.registerTypeAdapter(JobStatus.class, new EnumSerializer<JobStatus>());
+        gson.registerTypeAdapter(RejectedErrorCode.class, new EnumSerializer<RejectedErrorCode>());
     }
     public CompletableFuture<Integer> SubscribeToJobExecutionsChangedEvents(
         JobExecutionsChangedSubscriptionRequest request,
+        QualityOfService qos,
         Consumer<JobExecutionsChangedEvent> handler,
         Consumer<Exception> exceptionHandler) {
         String topic = "$aws/things/{thingName}/jobs/notify";
@@ -97,14 +98,18 @@ private Gson getGson() {
                 }
             };
         };
-        return connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, messageHandler);
+        return connection.subscribe(topic, qos, messageHandler);
     }
 
-    public CompletableFuture<Integer> SubscribeToJobExecutionsChangedEvents(JobExecutionsChangedSubscriptionRequest request, Consumer<JobExecutionsChangedEvent> handler) {
-        return SubscribeToJobExecutionsChangedEvents(request, handler, null);
+    public CompletableFuture<Integer> SubscribeToJobExecutionsChangedEvents(
+        JobExecutionsChangedSubscriptionRequest request,
+        QualityOfService qos,
+        Consumer<JobExecutionsChangedEvent> handler) {
+        return SubscribeToJobExecutionsChangedEvents(request, qos, handler, null);
     }
     public CompletableFuture<Integer> SubscribeToStartNextPendingJobExecutionAccepted(
         StartNextPendingJobExecutionSubscriptionRequest request,
+        QualityOfService qos,
         Consumer<StartNextJobExecutionResponse> handler,
         Consumer<Exception> exceptionHandler) {
         String topic = "$aws/things/{thingName}/jobs/start-next/accepted";
@@ -125,14 +130,18 @@ private Gson getGson() {
                 }
             };
         };
-        return connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, messageHandler);
+        return connection.subscribe(topic, qos, messageHandler);
     }
 
-    public CompletableFuture<Integer> SubscribeToStartNextPendingJobExecutionAccepted(StartNextPendingJobExecutionSubscriptionRequest request, Consumer<StartNextJobExecutionResponse> handler) {
-        return SubscribeToStartNextPendingJobExecutionAccepted(request, handler, null);
+    public CompletableFuture<Integer> SubscribeToStartNextPendingJobExecutionAccepted(
+        StartNextPendingJobExecutionSubscriptionRequest request,
+        QualityOfService qos,
+        Consumer<StartNextJobExecutionResponse> handler) {
+        return SubscribeToStartNextPendingJobExecutionAccepted(request, qos, handler, null);
     }
     public CompletableFuture<Integer> SubscribeToDescribeJobExecutionRejected(
         DescribeJobExecutionSubscriptionRequest request,
+        QualityOfService qos,
         Consumer<RejectedError> handler,
         Consumer<Exception> exceptionHandler) {
         String topic = "$aws/things/{thingName}/jobs/{jobId}/get/rejected";
@@ -159,14 +168,18 @@ private Gson getGson() {
                 }
             };
         };
-        return connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, messageHandler);
+        return connection.subscribe(topic, qos, messageHandler);
     }
 
-    public CompletableFuture<Integer> SubscribeToDescribeJobExecutionRejected(DescribeJobExecutionSubscriptionRequest request, Consumer<RejectedError> handler) {
-        return SubscribeToDescribeJobExecutionRejected(request, handler, null);
+    public CompletableFuture<Integer> SubscribeToDescribeJobExecutionRejected(
+        DescribeJobExecutionSubscriptionRequest request,
+        QualityOfService qos,
+        Consumer<RejectedError> handler) {
+        return SubscribeToDescribeJobExecutionRejected(request, qos, handler, null);
     }
     public CompletableFuture<Integer> SubscribeToNextJobExecutionChangedEvents(
         NextJobExecutionChangedSubscriptionRequest request,
+        QualityOfService qos,
         Consumer<NextJobExecutionChangedEvent> handler,
         Consumer<Exception> exceptionHandler) {
         String topic = "$aws/things/{thingName}/jobs/notify-next";
@@ -187,14 +200,18 @@ private Gson getGson() {
                 }
             };
         };
-        return connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, messageHandler);
+        return connection.subscribe(topic, qos, messageHandler);
     }
 
-    public CompletableFuture<Integer> SubscribeToNextJobExecutionChangedEvents(NextJobExecutionChangedSubscriptionRequest request, Consumer<NextJobExecutionChangedEvent> handler) {
-        return SubscribeToNextJobExecutionChangedEvents(request, handler, null);
+    public CompletableFuture<Integer> SubscribeToNextJobExecutionChangedEvents(
+        NextJobExecutionChangedSubscriptionRequest request,
+        QualityOfService qos,
+        Consumer<NextJobExecutionChangedEvent> handler) {
+        return SubscribeToNextJobExecutionChangedEvents(request, qos, handler, null);
     }
     public CompletableFuture<Integer> SubscribeToUpdateJobExecutionRejected(
         UpdateJobExecutionSubscriptionRequest request,
+        QualityOfService qos,
         Consumer<RejectedError> handler,
         Consumer<Exception> exceptionHandler) {
         String topic = "$aws/things/{thingName}/jobs/{jobId}/update/rejected";
@@ -221,14 +238,18 @@ private Gson getGson() {
                 }
             };
         };
-        return connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, messageHandler);
+        return connection.subscribe(topic, qos, messageHandler);
     }
 
-    public CompletableFuture<Integer> SubscribeToUpdateJobExecutionRejected(UpdateJobExecutionSubscriptionRequest request, Consumer<RejectedError> handler) {
-        return SubscribeToUpdateJobExecutionRejected(request, handler, null);
+    public CompletableFuture<Integer> SubscribeToUpdateJobExecutionRejected(
+        UpdateJobExecutionSubscriptionRequest request,
+        QualityOfService qos,
+        Consumer<RejectedError> handler) {
+        return SubscribeToUpdateJobExecutionRejected(request, qos, handler, null);
     }
     public CompletableFuture<Integer> SubscribeToUpdateJobExecutionAccepted(
         UpdateJobExecutionSubscriptionRequest request,
+        QualityOfService qos,
         Consumer<UpdateJobExecutionResponse> handler,
         Consumer<Exception> exceptionHandler) {
         String topic = "$aws/things/{thingName}/jobs/{jobId}/update/accepted";
@@ -255,13 +276,18 @@ private Gson getGson() {
                 }
             };
         };
-        return connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, messageHandler);
+        return connection.subscribe(topic, qos, messageHandler);
     }
 
-    public CompletableFuture<Integer> SubscribeToUpdateJobExecutionAccepted(UpdateJobExecutionSubscriptionRequest request, Consumer<UpdateJobExecutionResponse> handler) {
-        return SubscribeToUpdateJobExecutionAccepted(request, handler, null);
+    public CompletableFuture<Integer> SubscribeToUpdateJobExecutionAccepted(
+        UpdateJobExecutionSubscriptionRequest request,
+        QualityOfService qos,
+        Consumer<UpdateJobExecutionResponse> handler) {
+        return SubscribeToUpdateJobExecutionAccepted(request, qos, handler, null);
     }
-    public CompletableFuture<Integer> PublishUpdateJobExecution(UpdateJobExecutionRequest request) {
+    public CompletableFuture<Integer> PublishUpdateJobExecution(
+        UpdateJobExecutionRequest request,
+        QualityOfService qos) {
         String topic = "$aws/things/{thingName}/jobs/{jobId}/update";
         if (request.thingName == null) {
             CompletableFuture<Integer> result = new CompletableFuture<Integer>();
@@ -279,10 +305,11 @@ private Gson getGson() {
         ByteBuffer payload = ByteBuffer.allocateDirect(payloadJson.length());
         payload.put(payloadJson.getBytes());
         MqttMessage message = new MqttMessage(topic, payload);
-        return connection.publish(message, QualityOfService.AT_LEAST_ONCE, false);
+        return connection.publish(message, qos, false);
     }
     public CompletableFuture<Integer> SubscribeToDescribeJobExecutionAccepted(
         DescribeJobExecutionSubscriptionRequest request,
+        QualityOfService qos,
         Consumer<DescribeJobExecutionResponse> handler,
         Consumer<Exception> exceptionHandler) {
         String topic = "$aws/things/{thingName}/jobs/{jobId}/get/accepted";
@@ -309,13 +336,18 @@ private Gson getGson() {
                 }
             };
         };
-        return connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, messageHandler);
+        return connection.subscribe(topic, qos, messageHandler);
     }
 
-    public CompletableFuture<Integer> SubscribeToDescribeJobExecutionAccepted(DescribeJobExecutionSubscriptionRequest request, Consumer<DescribeJobExecutionResponse> handler) {
-        return SubscribeToDescribeJobExecutionAccepted(request, handler, null);
+    public CompletableFuture<Integer> SubscribeToDescribeJobExecutionAccepted(
+        DescribeJobExecutionSubscriptionRequest request,
+        QualityOfService qos,
+        Consumer<DescribeJobExecutionResponse> handler) {
+        return SubscribeToDescribeJobExecutionAccepted(request, qos, handler, null);
     }
-    public CompletableFuture<Integer> PublishGetPendingJobExecutions(GetPendingJobExecutionsRequest request) {
+    public CompletableFuture<Integer> PublishGetPendingJobExecutions(
+        GetPendingJobExecutionsRequest request,
+        QualityOfService qos) {
         String topic = "$aws/things/{thingName}/jobs/get";
         if (request.thingName == null) {
             CompletableFuture<Integer> result = new CompletableFuture<Integer>();
@@ -327,10 +359,11 @@ private Gson getGson() {
         ByteBuffer payload = ByteBuffer.allocateDirect(payloadJson.length());
         payload.put(payloadJson.getBytes());
         MqttMessage message = new MqttMessage(topic, payload);
-        return connection.publish(message, QualityOfService.AT_LEAST_ONCE, false);
+        return connection.publish(message, qos, false);
     }
     public CompletableFuture<Integer> SubscribeToGetPendingJobExecutionsAccepted(
         GetPendingJobExecutionsSubscriptionRequest request,
+        QualityOfService qos,
         Consumer<GetPendingJobExecutionsResponse> handler,
         Consumer<Exception> exceptionHandler) {
         String topic = "$aws/things/{thingName}/jobs/get/accepted";
@@ -351,14 +384,18 @@ private Gson getGson() {
                 }
             };
         };
-        return connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, messageHandler);
+        return connection.subscribe(topic, qos, messageHandler);
     }
 
-    public CompletableFuture<Integer> SubscribeToGetPendingJobExecutionsAccepted(GetPendingJobExecutionsSubscriptionRequest request, Consumer<GetPendingJobExecutionsResponse> handler) {
-        return SubscribeToGetPendingJobExecutionsAccepted(request, handler, null);
+    public CompletableFuture<Integer> SubscribeToGetPendingJobExecutionsAccepted(
+        GetPendingJobExecutionsSubscriptionRequest request,
+        QualityOfService qos,
+        Consumer<GetPendingJobExecutionsResponse> handler) {
+        return SubscribeToGetPendingJobExecutionsAccepted(request, qos, handler, null);
     }
     public CompletableFuture<Integer> SubscribeToStartNextPendingJobExecutionRejected(
         StartNextPendingJobExecutionSubscriptionRequest request,
+        QualityOfService qos,
         Consumer<RejectedError> handler,
         Consumer<Exception> exceptionHandler) {
         String topic = "$aws/things/{thingName}/jobs/start-next/rejected";
@@ -379,28 +416,18 @@ private Gson getGson() {
                 }
             };
         };
-        return connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, messageHandler);
+        return connection.subscribe(topic, qos, messageHandler);
     }
 
-    public CompletableFuture<Integer> SubscribeToStartNextPendingJobExecutionRejected(StartNextPendingJobExecutionSubscriptionRequest request, Consumer<RejectedError> handler) {
-        return SubscribeToStartNextPendingJobExecutionRejected(request, handler, null);
-    }
-    public CompletableFuture<Integer> PublishStartNextPendingJobExecution(StartNextPendingJobExecutionRequest request) {
-        String topic = "$aws/things/{thingName}/jobs/start-next";
-        if (request.thingName == null) {
-            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
-            result.completeExceptionally(new MqttException("StartNextPendingJobExecutionRequest must have a non-null thingName"));
-            return result;
-        }
-        topic = topic.replace("{thingName}", request.thingName);
-        String payloadJson = gson.toJson(request);
-        ByteBuffer payload = ByteBuffer.allocateDirect(payloadJson.length());
-        payload.put(payloadJson.getBytes());
-        MqttMessage message = new MqttMessage(topic, payload);
-        return connection.publish(message, QualityOfService.AT_LEAST_ONCE, false);
+    public CompletableFuture<Integer> SubscribeToStartNextPendingJobExecutionRejected(
+        StartNextPendingJobExecutionSubscriptionRequest request,
+        QualityOfService qos,
+        Consumer<RejectedError> handler) {
+        return SubscribeToStartNextPendingJobExecutionRejected(request, qos, handler, null);
     }
     public CompletableFuture<Integer> SubscribeToGetPendingJobExecutionsRejected(
         GetPendingJobExecutionsSubscriptionRequest request,
+        QualityOfService qos,
         Consumer<RejectedError> handler,
         Consumer<Exception> exceptionHandler) {
         String topic = "$aws/things/{thingName}/jobs/get/rejected";
@@ -421,13 +448,34 @@ private Gson getGson() {
                 }
             };
         };
-        return connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, messageHandler);
+        return connection.subscribe(topic, qos, messageHandler);
     }
 
-    public CompletableFuture<Integer> SubscribeToGetPendingJobExecutionsRejected(GetPendingJobExecutionsSubscriptionRequest request, Consumer<RejectedError> handler) {
-        return SubscribeToGetPendingJobExecutionsRejected(request, handler, null);
+    public CompletableFuture<Integer> SubscribeToGetPendingJobExecutionsRejected(
+        GetPendingJobExecutionsSubscriptionRequest request,
+        QualityOfService qos,
+        Consumer<RejectedError> handler) {
+        return SubscribeToGetPendingJobExecutionsRejected(request, qos, handler, null);
     }
-    public CompletableFuture<Integer> PublishDescribeJobExecution(DescribeJobExecutionRequest request) {
+    public CompletableFuture<Integer> PublishStartNextPendingJobExecution(
+        StartNextPendingJobExecutionRequest request,
+        QualityOfService qos) {
+        String topic = "$aws/things/{thingName}/jobs/start-next";
+        if (request.thingName == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("StartNextPendingJobExecutionRequest must have a non-null thingName"));
+            return result;
+        }
+        topic = topic.replace("{thingName}", request.thingName);
+        String payloadJson = gson.toJson(request);
+        ByteBuffer payload = ByteBuffer.allocateDirect(payloadJson.length());
+        payload.put(payloadJson.getBytes());
+        MqttMessage message = new MqttMessage(topic, payload);
+        return connection.publish(message, qos, false);
+    }
+    public CompletableFuture<Integer> PublishDescribeJobExecution(
+        DescribeJobExecutionRequest request,
+        QualityOfService qos) {
         String topic = "$aws/things/{thingName}/jobs/{jobId}/get";
         if (request.jobId == null) {
             CompletableFuture<Integer> result = new CompletableFuture<Integer>();
@@ -445,6 +493,6 @@ private Gson getGson() {
         ByteBuffer payload = ByteBuffer.allocateDirect(payloadJson.length());
         payload.put(payloadJson.getBytes());
         MqttMessage message = new MqttMessage(topic, payload);
-        return connection.publish(message, QualityOfService.AT_LEAST_ONCE, false);
+        return connection.publish(message, qos, false);
     }
 }
