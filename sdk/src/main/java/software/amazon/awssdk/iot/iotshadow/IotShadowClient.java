@@ -60,15 +60,17 @@ public class IotShadowClient {
         this.connection = connection;
     }
 
-private Gson getGson() {
+    private Gson getGson() {
         GsonBuilder gson = new GsonBuilder();
         gson.registerTypeAdapter(Timestamp.class, new Timestamp.Serializer());
         gson.registerTypeAdapter(Timestamp.class, new Timestamp.Deserializer());
         addTypeAdapters(gson);
         return gson.create();
     }
+
     private void addTypeAdapters(GsonBuilder gson) {
     }
+
     public CompletableFuture<Integer> SubscribeToUpdateShadowRejected(
         UpdateShadowSubscriptionRequest request,
         QualityOfService qos,
@@ -101,6 +103,7 @@ private Gson getGson() {
         Consumer<ErrorResponse> handler) {
         return SubscribeToUpdateShadowRejected(request, qos, handler, null);
     }
+
     public CompletableFuture<Integer> PublishUpdateShadow(
         UpdateShadowRequest request,
         QualityOfService qos) {
@@ -117,6 +120,7 @@ private Gson getGson() {
         MqttMessage message = new MqttMessage(topic, payload);
         return connection.publish(message, qos, false);
     }
+
     public CompletableFuture<Integer> PublishGetShadow(
         GetShadowRequest request,
         QualityOfService qos) {
@@ -133,6 +137,7 @@ private Gson getGson() {
         MqttMessage message = new MqttMessage(topic, payload);
         return connection.publish(message, qos, false);
     }
+
     public CompletableFuture<Integer> SubscribeToShadowDeltaUpdatedEvents(
         ShadowDeltaUpdatedSubscriptionRequest request,
         QualityOfService qos,
@@ -165,6 +170,7 @@ private Gson getGson() {
         Consumer<ShadowDeltaUpdatedEvent> handler) {
         return SubscribeToShadowDeltaUpdatedEvents(request, qos, handler, null);
     }
+
     public CompletableFuture<Integer> SubscribeToUpdateShadowAccepted(
         UpdateShadowSubscriptionRequest request,
         QualityOfService qos,
@@ -197,6 +203,7 @@ private Gson getGson() {
         Consumer<UpdateShadowResponse> handler) {
         return SubscribeToUpdateShadowAccepted(request, qos, handler, null);
     }
+
     public CompletableFuture<Integer> PublishDeleteShadow(
         DeleteShadowRequest request,
         QualityOfService qos) {
@@ -213,6 +220,7 @@ private Gson getGson() {
         MqttMessage message = new MqttMessage(topic, payload);
         return connection.publish(message, qos, false);
     }
+
     public CompletableFuture<Integer> SubscribeToDeleteShadowAccepted(
         DeleteShadowSubscriptionRequest request,
         QualityOfService qos,
@@ -245,6 +253,7 @@ private Gson getGson() {
         Consumer<DeleteShadowResponse> handler) {
         return SubscribeToDeleteShadowAccepted(request, qos, handler, null);
     }
+
     public CompletableFuture<Integer> SubscribeToGetShadowAccepted(
         GetShadowSubscriptionRequest request,
         QualityOfService qos,
@@ -277,6 +286,7 @@ private Gson getGson() {
         Consumer<GetShadowResponse> handler) {
         return SubscribeToGetShadowAccepted(request, qos, handler, null);
     }
+
     public CompletableFuture<Integer> SubscribeToShadowUpdatedEvents(
         ShadowUpdatedSubscriptionRequest request,
         QualityOfService qos,
@@ -309,6 +319,7 @@ private Gson getGson() {
         Consumer<ShadowUpdatedEvent> handler) {
         return SubscribeToShadowUpdatedEvents(request, qos, handler, null);
     }
+
     public CompletableFuture<Integer> SubscribeToDeleteShadowRejected(
         DeleteShadowSubscriptionRequest request,
         QualityOfService qos,
@@ -341,6 +352,7 @@ private Gson getGson() {
         Consumer<ErrorResponse> handler) {
         return SubscribeToDeleteShadowRejected(request, qos, handler, null);
     }
+
     public CompletableFuture<Integer> SubscribeToGetShadowRejected(
         GetShadowSubscriptionRequest request,
         QualityOfService qos,
@@ -373,4 +385,5 @@ private Gson getGson() {
         Consumer<ErrorResponse> handler) {
         return SubscribeToGetShadowRejected(request, qos, handler, null);
     }
+
 }

@@ -14,7 +14,6 @@
 * This file is generated
 */
 
-
 package software.amazon.awssdk.iot.iotshadow.model;
 
 import software.amazon.awssdk.iot.iotshadow.model.ShadowState;
