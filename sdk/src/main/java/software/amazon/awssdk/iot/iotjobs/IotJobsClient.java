@@ -64,17 +64,19 @@ public class IotJobsClient {
         this.connection = connection;
     }
 
-private Gson getGson() {
+    private Gson getGson() {
         GsonBuilder gson = new GsonBuilder();
         gson.registerTypeAdapter(Timestamp.class, new Timestamp.Serializer());
         gson.registerTypeAdapter(Timestamp.class, new Timestamp.Deserializer());
         addTypeAdapters(gson);
         return gson.create();
     }
+
     private void addTypeAdapters(GsonBuilder gson) {
-        gson.registerTypeAdapter(JobStatus.class, new EnumSerializer<JobStatus>());
         gson.registerTypeAdapter(RejectedErrorCode.class, new EnumSerializer<RejectedErrorCode>());
+        gson.registerTypeAdapter(JobStatus.class, new EnumSerializer<JobStatus>());
     }
+
     public CompletableFuture<Integer> SubscribeToJobExecutionsChangedEvents(
         JobExecutionsChangedSubscriptionRequest request,
         QualityOfService qos,
@@ -107,6 +109,7 @@ private Gson getGson() {
         Consumer<JobExecutionsChangedEvent> handler) {
         return SubscribeToJobExecutionsChangedEvents(request, qos, handler, null);
     }
+
     public CompletableFuture<Integer> SubscribeToStartNextPendingJobExecutionAccepted(
         StartNextPendingJobExecutionSubscriptionRequest request,
         QualityOfService qos,
@@ -139,6 +142,7 @@ private Gson getGson() {
         Consumer<StartNextJobExecutionResponse> handler) {
         return SubscribeToStartNextPendingJobExecutionAccepted(request, qos, handler, null);
     }
+
     public CompletableFuture<Integer> SubscribeToDescribeJobExecutionRejected(
         DescribeJobExecutionSubscriptionRequest request,
         QualityOfService qos,
@@ -177,6 +181,7 @@ private Gson getGson() {
         Consumer<RejectedError> handler) {
         return SubscribeToDescribeJobExecutionRejected(request, qos, handler, null);
     }
+
     public CompletableFuture<Integer> SubscribeToNextJobExecutionChangedEvents(
         NextJobExecutionChangedSubscriptionRequest request,
         QualityOfService qos,
@@ -209,6 +214,7 @@ private Gson getGson() {
         Consumer<NextJobExecutionChangedEvent> handler) {
         return SubscribeToNextJobExecutionChangedEvents(request, qos, handler, null);
     }
+
     public CompletableFuture<Integer> SubscribeToUpdateJobExecutionRejected(
         UpdateJobExecutionSubscriptionRequest request,
         QualityOfService qos,
@@ -247,6 +253,7 @@ private Gson getGson() {
         Consumer<RejectedError> handler) {
         return SubscribeToUpdateJobExecutionRejected(request, qos, handler, null);
     }
+
     public CompletableFuture<Integer> SubscribeToUpdateJobExecutionAccepted(
         UpdateJobExecutionSubscriptionRequest request,
         QualityOfService qos,
@@ -285,6 +292,7 @@ private Gson getGson() {
         Consumer<UpdateJobExecutionResponse> handler) {
         return SubscribeToUpdateJobExecutionAccepted(request, qos, handler, null);
     }
+
     public CompletableFuture<Integer> PublishUpdateJobExecution(
         UpdateJobExecutionRequest request,
         QualityOfService qos) {
@@ -307,6 +315,7 @@ private Gson getGson() {
         MqttMessage message = new MqttMessage(topic, payload);
         return connection.publish(message, qos, false);
     }
+
     public CompletableFuture<Integer> SubscribeToDescribeJobExecutionAccepted(
         DescribeJobExecutionSubscriptionRequest request,
         QualityOfService qos,
@@ -345,6 +354,7 @@ private Gson getGson() {
         Consumer<DescribeJobExecutionResponse> handler) {
         return SubscribeToDescribeJobExecutionAccepted(request, qos, handler, null);
     }
+
     public CompletableFuture<Integer> PublishGetPendingJobExecutions(
         GetPendingJobExecutionsRequest request,
         QualityOfService qos) {
@@ -361,6 +371,7 @@ private Gson getGson() {
         MqttMessage message = new MqttMessage(topic, payload);
         return connection.publish(message, qos, false);
     }
+
     public CompletableFuture<Integer> SubscribeToGetPendingJobExecutionsAccepted(
         GetPendingJobExecutionsSubscriptionRequest request,
         QualityOfService qos,
@@ -393,6 +404,7 @@ private Gson getGson() {
         Consumer<GetPendingJobExecutionsResponse> handler) {
         return SubscribeToGetPendingJobExecutionsAccepted(request, qos, handler, null);
     }
+
     public CompletableFuture<Integer> SubscribeToStartNextPendingJobExecutionRejected(
         StartNextPendingJobExecutionSubscriptionRequest request,
         QualityOfService qos,
@@ -425,6 +437,7 @@ private Gson getGson() {
         Consumer<RejectedError> handler) {
         return SubscribeToStartNextPendingJobExecutionRejected(request, qos, handler, null);
     }
+
     public CompletableFuture<Integer> SubscribeToGetPendingJobExecutionsRejected(
         GetPendingJobExecutionsSubscriptionRequest request,
         QualityOfService qos,
@@ -457,6 +470,7 @@ private Gson getGson() {
         Consumer<RejectedError> handler) {
         return SubscribeToGetPendingJobExecutionsRejected(request, qos, handler, null);
     }
+
     public CompletableFuture<Integer> PublishStartNextPendingJobExecution(
         StartNextPendingJobExecutionRequest request,
         QualityOfService qos) {
@@ -473,6 +487,7 @@ private Gson getGson() {
         MqttMessage message = new MqttMessage(topic, payload);
         return connection.publish(message, qos, false);
     }
+
     public CompletableFuture<Integer> PublishDescribeJobExecution(
         DescribeJobExecutionRequest request,
         QualityOfService qos) {
@@ -495,4 +510,5 @@ private Gson getGson() {
         MqttMessage message = new MqttMessage(topic, payload);
         return connection.publish(message, qos, false);
     }
+
 }

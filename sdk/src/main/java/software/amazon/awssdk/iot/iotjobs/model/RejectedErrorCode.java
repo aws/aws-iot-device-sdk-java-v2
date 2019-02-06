@@ -14,7 +14,6 @@
 * This file is generated
 */
 
-
 package software.amazon.awssdk.iot.iotjobs.model;
 
 public enum RejectedErrorCode {
