@@ -34,10 +34,10 @@ git clone --branch v0.1.1 https://github.com/awslabs/aws-crt-java.git
 git clone https://github.com/awslabs/aws-iot-device-sdk-java-v2.git
 cd aws-crt-java
 mvn package -Dmaven.test.skip=true
-maven install:install-file -Dfile=target/aws-crt-java-1.0.jar -DpomFile=pom.xml
+mvn install:install-file -Dfile=target/aws-crt-java-1.0.jar -DpomFile=pom.xml
 cd ../aws-iot-device-sdk-java-v2
 mvn package
-maven install:install-file -Dfile=target/aws-iot-device-sdk-java-1.0-SNAPSHOT.jar -DpomFile=pom.xml
+mvn install:install-file -Dfile=sdk/target/aws-iot-device-sdk-java-1.0-SNAPSHOT.jar -DpomFile=pom.xml
 ```
 
 # Samples
