@@ -40,7 +40,7 @@
   <dependencies>
     <dependency>
       <groupId>software.amazon.awssdk.crt</groupId>
-      <artifactId>aws-crt-java</artifactId>
+      <artifactId>aws-crt</artifactId>
       <version>0.3.8</version>
       <scope>compile</scope>
     </dependency>
