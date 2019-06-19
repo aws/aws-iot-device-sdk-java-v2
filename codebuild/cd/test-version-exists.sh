@@ -13,7 +13,7 @@ if [ "$CURRENT_TAG" != "$CURRENT_TAG_VERSION" ]; then
     exit 1
 fi
 
-PUBLISHED_TAG_VERSION=$(curl -s "https://repo.maven.apache.org/maven2/software/amazon/awssdk/crt/aws-crt/maven-metadata.xml" | grep "<latest>" | cut -f2 -d ">" | cut -f1 -d "<")
+PUBLISHED_TAG_VERSION=$(curl -s "https://repo.maven.apache.org/maven2/software/amazon/awssdk/iotdevicesdk/aws-iot-device-sdk/maven-metadata.xml" | grep "<latest>" | cut -f2 -d ">" | cut -f1 -d "<")
 if [ "$PUBLISHED_TAG_VERSION" == "$CURRENT_TAG_VERSION" ]; then
     echo "$CURRENT_TAG_VERSION is already in Sonatype, cut a new tag if you want to upload another version."
     exit 1
