@@ -25,6 +25,7 @@ is provided by code that been generated from a model of the service.
 ## Minimum Requirements
 *   Java 8 or above
 *   Maven
+## Requirements to build the AWS CRT locally
 *   CMake 3.1+
 *   Clang 3.9+ or GCC 4.4+ or MSVC 2015+
 
@@ -33,11 +34,9 @@ is provided by code that been generated from a model of the service.
 git clone --branch v0.1.1 https://github.com/awslabs/aws-crt-java.git
 git clone https://github.com/awslabs/aws-iot-device-sdk-java-v2.git
 cd aws-crt-java
-mvn package -Dmaven.test.skip=true
-mvn install:install-file -Dfile=target/aws-crt-java-1.0.jar -DpomFile=pom.xml
+mvn install -Dmaven.test.skip=true
 cd ../aws-iot-device-sdk-java-v2
-mvn package
-mvn install:install-file -Dfile=sdk/target/aws-iot-device-sdk-java-1.0-SNAPSHOT.jar -DpomFile=pom.xml
+mvn install
 ```
 
 # Samples
