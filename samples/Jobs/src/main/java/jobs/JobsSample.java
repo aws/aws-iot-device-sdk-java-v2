@@ -172,8 +172,7 @@ public class JobsSample {
         }
 
         try {
-            EventLoopGroup eventLoopGroup = new EventLoopGroup(1);
-            ClientBootstrap clientBootstrap = new ClientBootstrap(eventLoopGroup);
+            ClientBootstrap clientBootstrap = new ClientBootstrap(1);
             TlsContextOptions tlsContextOptions = TlsContextOptions.createWithMTLS(certPath, keyPath);
             tlsContextOptions.overrideDefaultTrustStore(null, rootCaPath);
             TlsContext tlsContext = new TlsContext(tlsContextOptions);

@@ -137,8 +137,7 @@ class PubSub {
         }
 
         try {
-            EventLoopGroup eventLoopGroup = new EventLoopGroup(1);
-            ClientBootstrap clientBootstrap = new ClientBootstrap(eventLoopGroup);
+            ClientBootstrap clientBootstrap = new ClientBootstrap(1);
             TlsContextOptions tlsContextOptions = TlsContextOptions.createWithMTLS(certPath, keyPath);
             tlsContextOptions.overrideDefaultTrustStore(null, rootCaPath);
             TlsContext tlsContext = new TlsContext(tlsContextOptions);
@@ -161,7 +160,7 @@ class PubSub {
             CompletableFuture<Boolean> connected = connection.connect(
                 clientId,
                 endpoint, port,
-                null, tlsContext, true, 0)
+                null, tlsContext, true, 0, 0)
                 .exceptionally((ex) -> {
                     System.out.println("Exception occurred during connect: " + ex.toString());
                     return null;
