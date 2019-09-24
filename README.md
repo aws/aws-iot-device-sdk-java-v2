@@ -33,7 +33,7 @@ is provided by code that been generated from a model of the service.
 ```
 git clone https://github.com/awslabs/aws-iot-device-sdk-java-v2.git
 # update the version of the CRT being used
-mvn versions:use-latest-versions
+mvn versions:use-latest-versions -Dincludes="software.amazon.awssdk.crt*"
 mvn install
 ```
 
