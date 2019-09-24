@@ -15,9 +15,9 @@
     </properties>
     <dependencies>
         <dependency>
-            <groupId>software.amazon.awssdk.iot</groupId>
-            <artifactId>aws-iot-device-sdk-java</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <groupId>software.amazon.awssdk.iotdevicesdk</groupId>
+            <artifactId>aws-iot-device-sdk</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>
