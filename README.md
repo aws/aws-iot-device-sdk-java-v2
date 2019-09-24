@@ -29,9 +29,18 @@ is provided by code that been generated from a model of the service.
 *   CMake 3.1+
 *   Clang 3.9+ or GCC 4.4+ or MSVC 2015+
 
-## Build from source
+## Build IoT Device SDK from source
 ```
-git clone --branch v0.1.1 https://github.com/awslabs/aws-crt-java.git
+git clone https://github.com/awslabs/aws-iot-device-sdk-java-v2.git
+# update the version of the CRT being used
+mvn versions:use-latest-versions
+mvn install
+```
+
+## Build CRT from source
+```
+# NOTE: use the latest version of the CRT here
+git clone --branch v0.3.22 https://github.com/awslabs/aws-crt-java.git
 git clone https://github.com/awslabs/aws-iot-device-sdk-java-v2.git
 cd aws-crt-java
 mvn install -Dmaven.test.skip=true
