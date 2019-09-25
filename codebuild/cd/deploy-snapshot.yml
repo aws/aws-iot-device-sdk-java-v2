@@ -25,6 +25,8 @@ phases:
   build:
     commands:
       - cd $CODEBUILD_SRC_DIR/aws-iot-device-sdk-java-v2/sdk
+      # update the CRT dependency to the latest released version
+      - mvn -B versions:use-latest-versions -Dincludes=software.amazon.awssdk.crt*
       # update the version to match the git tag, make a snapshot version we can test
       - mvn -B versions:set -DnewVersion=${PKG_VERSION}-SNAPSHOT
       # do a full build/deploy, but skip tests, since the shared libs were artifacts above
