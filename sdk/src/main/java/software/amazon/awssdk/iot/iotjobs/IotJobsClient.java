@@ -40,7 +40,7 @@ import software.amazon.awssdk.iot.iotjobs.model.UpdateJobExecutionRequest;
 import software.amazon.awssdk.iot.iotjobs.model.UpdateJobExecutionResponse;
 import software.amazon.awssdk.iot.iotjobs.model.UpdateJobExecutionSubscriptionRequest;
 
-import software.amazon.awssdk.crt.mqtt.MqttConnection;
+import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
 import software.amazon.awssdk.crt.mqtt.QualityOfService;
 import software.amazon.awssdk.crt.mqtt.MqttException;
 import software.amazon.awssdk.crt.mqtt.MqttMessage;
@@ -57,10 +57,10 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 public class IotJobsClient {
-    private MqttConnection connection = null;
+    private MqttClientConnection connection = null;
     private final Gson gson = getGson();
 
-    public IotJobsClient(MqttConnection connection) {
+    public IotJobsClient(MqttClientConnection connection) {
         this.connection = connection;
     }
 

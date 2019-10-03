@@ -21,8 +21,8 @@ import software.amazon.awssdk.crt.io.EventLoopGroup;
 import software.amazon.awssdk.crt.io.TlsContext;
 import software.amazon.awssdk.crt.io.TlsContextOptions;
 import software.amazon.awssdk.crt.mqtt.MqttClient;
-import software.amazon.awssdk.crt.mqtt.MqttConnection;
-import software.amazon.awssdk.crt.mqtt.MqttConnectionEvents;
+import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
+import software.amazon.awssdk.crt.mqtt.MqttClientConnectionEvents;
 import software.amazon.awssdk.crt.mqtt.QualityOfService;
 import software.amazon.awssdk.iot.iotshadow.IotShadowClient;
 import software.amazon.awssdk.iot.iotshadow.model.ErrorResponse;
@@ -54,7 +54,7 @@ public class ShadowSample {
     final static String SHADOW_PROPERTY = "color";
     final static String SHADOW_VALUE_DEFAULT = "off";
 
-    static MqttConnection connection;
+    static MqttClientConnection connection;
     static IotShadowClient shadow;
     static String localValue = null;
     static CompletableFuture<Void> gotResponse;
@@ -223,8 +223,8 @@ public class ShadowSample {
             tlsContextOptions.overrideDefaultTrustStore(null, rootCaPath);
 
             try(TlsContext tlsContext = new TlsContext(tlsContextOptions);
-                MqttClient client = new MqttClient(clientBootstrap);
-                MqttConnection connection = new MqttConnection(client, new MqttConnectionEvents() {
+                MqttClient client = new MqttClient(clientBootstrap, tlsContext);
+                MqttClientConnection connection = new MqttClientConnection(client, new MqttClientConnectionEvents() {
                     @Override
                     public void onConnectionInterrupted(int errorCode) {
                         if (errorCode != 0) {
@@ -242,7 +242,7 @@ public class ShadowSample {
                 CompletableFuture<Boolean> connected = connection.connect(
                         clientId,
                         endpoint, port,
-                        null, tlsContext, true, 0, 0)
+                        null, true, 0, 0)
                         .exceptionally((ex) -> {
                             System.out.println("Exception occurred during connect: " + ex.toString());
                             return null;
