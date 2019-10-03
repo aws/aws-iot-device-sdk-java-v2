@@ -12,7 +12,7 @@
  * permissions and limitations under the License.
  */
 
-package jobs;
+package shadow;
 
 import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.crt.CrtRuntimeException;
@@ -21,8 +21,8 @@ import software.amazon.awssdk.crt.io.EventLoopGroup;
 import software.amazon.awssdk.crt.io.TlsContext;
 import software.amazon.awssdk.crt.io.TlsContextOptions;
 import software.amazon.awssdk.crt.mqtt.MqttClient;
-import software.amazon.awssdk.crt.mqtt.MqttConnection;
-import software.amazon.awssdk.crt.mqtt.MqttConnectionEvents;
+import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
+import software.amazon.awssdk.crt.mqtt.MqttClientConnectionEvents;
 import software.amazon.awssdk.crt.mqtt.QualityOfService;
 import software.amazon.awssdk.iot.iotshadow.IotShadowClient;
 import software.amazon.awssdk.iot.iotshadow.model.ErrorResponse;
@@ -54,7 +54,7 @@ public class ShadowSample {
     final static String SHADOW_PROPERTY = "color";
     final static String SHADOW_VALUE_DEFAULT = "off";
 
-    static MqttConnection connection;
+    static MqttClientConnection connection;
     static IotShadowClient shadow;
     static String localValue = null;
     static CompletableFuture<Void> gotResponse;
@@ -218,108 +218,108 @@ public class ShadowSample {
             return;
         }
 
-        try {
-            ClientBootstrap clientBootstrap = new ClientBootstrap(1);
-            TlsContextOptions tlsContextOptions = TlsContextOptions.createWithMTLS(certPath, keyPath);
+        try(ClientBootstrap clientBootstrap = new ClientBootstrap(1);
+            TlsContextOptions tlsContextOptions = TlsContextOptions.createWithMTLS(certPath, keyPath)) {
             tlsContextOptions.overrideDefaultTrustStore(null, rootCaPath);
-            TlsContext tlsContext = new TlsContext(tlsContextOptions);
-            MqttClient client = new MqttClient(clientBootstrap, tlsContext);
 
-            connection = new MqttConnection(client, new MqttConnectionEvents() {
-                @Override
-                public void onConnectionInterrupted(int errorCode) {
-                    if (errorCode != 0) {
-                        System.out.println("Connection interrupted: " + errorCode + ": " + CRT.awsErrorString(errorCode));
+            try(TlsContext tlsContext = new TlsContext(tlsContextOptions);
+                MqttClient client = new MqttClient(clientBootstrap, tlsContext);
+                MqttClientConnection connection = new MqttClientConnection(client, new MqttClientConnectionEvents() {
+                    @Override
+                    public void onConnectionInterrupted(int errorCode) {
+                        if (errorCode != 0) {
+                            System.out.println("Connection interrupted: " + errorCode + ": " + CRT.awsErrorString(errorCode));
+                        }
                     }
-                }
 
-                @Override
-                public void onConnectionResumed(boolean sessionPresent) {
-                    System.out.println("Connection resumed: " + (sessionPresent ? "existing session" : "clean session"));
-                }
-            });
-            shadow = new IotShadowClient(connection);
+                    @Override
+                    public void onConnectionResumed(boolean sessionPresent) {
+                        System.out.println("Connection resumed: " + (sessionPresent ? "existing session" : "clean session"));
+                    }
+                })) {
+                shadow = new IotShadowClient(connection);
 
-            CompletableFuture<Boolean> connected = connection.connect(
-                    clientId,
-                    endpoint, port,
-                    null, tlsContext, true, 0)
-                    .exceptionally((ex) -> {
-                        System.out.println("Exception occurred during connect: " + ex.toString());
-                        return null;
-                    });
-            boolean sessionPresent = connected.get();
-            System.out.println("Connected to " + (!sessionPresent ? "clean" : "existing") + " session!");
+                CompletableFuture<Boolean> connected = connection.connect(
+                        clientId,
+                        endpoint, port,
+                        null, true, 0, 0)
+                        .exceptionally((ex) -> {
+                            System.out.println("Exception occurred during connect: " + ex.toString());
+                            return null;
+                        });
+                boolean sessionPresent = connected.get();
+                System.out.println("Connected to " + (!sessionPresent ? "clean" : "existing") + " session!");
 
-            System.out.println("Subscribing to shadow delta events...");
-            ShadowDeltaUpdatedSubscriptionRequest requestShadowDeltaUpdated = new ShadowDeltaUpdatedSubscriptionRequest();
-            requestShadowDeltaUpdated.thingName = thingName;
-            CompletableFuture<Integer> subscribedToDeltas =
-                    shadow.SubscribeToShadowDeltaUpdatedEvents(
-                            requestShadowDeltaUpdated,
-                            QualityOfService.AT_LEAST_ONCE,
-                            ShadowSample::onShadowDeltaUpdated);
-            subscribedToDeltas.get();
+                System.out.println("Subscribing to shadow delta events...");
+                ShadowDeltaUpdatedSubscriptionRequest requestShadowDeltaUpdated = new ShadowDeltaUpdatedSubscriptionRequest();
+                requestShadowDeltaUpdated.thingName = thingName;
+                CompletableFuture<Integer> subscribedToDeltas =
+                        shadow.SubscribeToShadowDeltaUpdatedEvents(
+                                requestShadowDeltaUpdated,
+                                QualityOfService.AT_LEAST_ONCE,
+                                ShadowSample::onShadowDeltaUpdated);
+                subscribedToDeltas.get();
 
-            System.out.println("Subscribing to update respones...");
-            UpdateShadowSubscriptionRequest requestUpdateShadow = new UpdateShadowSubscriptionRequest();
-            requestUpdateShadow.thingName = thingName;
-            CompletableFuture<Integer> subscribedToUpdateAccepted =
-                    shadow.SubscribeToUpdateShadowAccepted(
-                            requestUpdateShadow,
-                            QualityOfService.AT_LEAST_ONCE,
-                            ShadowSample::onUpdateShadowAccepted);
-            CompletableFuture<Integer> subscribedToUpdateRejected =
-                    shadow.SubscribeToUpdateShadowRejected(
-                            requestUpdateShadow,
-                            QualityOfService.AT_LEAST_ONCE,
-                            ShadowSample::onUpdateShadowRejected);
-            subscribedToUpdateAccepted.get();
-            subscribedToUpdateRejected.get();
+                System.out.println("Subscribing to update respones...");
+                UpdateShadowSubscriptionRequest requestUpdateShadow = new UpdateShadowSubscriptionRequest();
+                requestUpdateShadow.thingName = thingName;
+                CompletableFuture<Integer> subscribedToUpdateAccepted =
+                        shadow.SubscribeToUpdateShadowAccepted(
+                                requestUpdateShadow,
+                                QualityOfService.AT_LEAST_ONCE,
+                                ShadowSample::onUpdateShadowAccepted);
+                CompletableFuture<Integer> subscribedToUpdateRejected =
+                        shadow.SubscribeToUpdateShadowRejected(
+                                requestUpdateShadow,
+                                QualityOfService.AT_LEAST_ONCE,
+                                ShadowSample::onUpdateShadowRejected);
+                subscribedToUpdateAccepted.get();
+                subscribedToUpdateRejected.get();
 
-            System.out.println("Subscribing to get responses...");
-            GetShadowSubscriptionRequest requestGetShadow = new GetShadowSubscriptionRequest();
-            requestGetShadow.thingName = thingName;
-            CompletableFuture<Integer> subscribedToGetShadowAccepted =
-                    shadow.SubscribeToGetShadowAccepted(
-                            requestGetShadow,
-                            QualityOfService.AT_LEAST_ONCE,
-                            ShadowSample::onGetShadowAccepted);
-            CompletableFuture<Integer> subscribedToGetShadowRejected =
-                    shadow.SubscribeToGetShadowRejected(
-                            requestGetShadow,
-                            QualityOfService.AT_LEAST_ONCE,
-                            ShadowSample::onGetShadowRejected);
-            subscribedToGetShadowAccepted.get();
-            subscribedToGetShadowRejected.get();
+                System.out.println("Subscribing to get responses...");
+                GetShadowSubscriptionRequest requestGetShadow = new GetShadowSubscriptionRequest();
+                requestGetShadow.thingName = thingName;
+                CompletableFuture<Integer> subscribedToGetShadowAccepted =
+                        shadow.SubscribeToGetShadowAccepted(
+                                requestGetShadow,
+                                QualityOfService.AT_LEAST_ONCE,
+                                ShadowSample::onGetShadowAccepted);
+                CompletableFuture<Integer> subscribedToGetShadowRejected =
+                        shadow.SubscribeToGetShadowRejected(
+                                requestGetShadow,
+                                QualityOfService.AT_LEAST_ONCE,
+                                ShadowSample::onGetShadowRejected);
+                subscribedToGetShadowAccepted.get();
+                subscribedToGetShadowRejected.get();
 
-            gotResponse = new CompletableFuture<>();
-
-            System.out.println("Requesting current shadow state...");
-            GetShadowRequest getShadowRequest = new GetShadowRequest();
-            getShadowRequest.thingName = thingName;
-            CompletableFuture<Integer> publishedGetShadow = shadow.PublishGetShadow(
-                    getShadowRequest,
-                    QualityOfService.AT_LEAST_ONCE);
-            publishedGetShadow.get();
-            gotResponse.get();
-
-            String newValue = "";
-            Scanner scanner = new Scanner(System.in);
-            while (true) {
-                System.out.print(SHADOW_PROPERTY + "> ");
-                System.out.flush();
-                newValue = scanner.next();
-                if (newValue.compareToIgnoreCase("quit") == 0) {
-                    break;
-                }
                 gotResponse = new CompletableFuture<>();
-                changeShadowValue(newValue).get();
-                gotResponse.get();
-            }
 
-            CompletableFuture<Void> disconnected = connection.disconnect();
-            disconnected.get();
+                System.out.println("Requesting current shadow state...");
+                GetShadowRequest getShadowRequest = new GetShadowRequest();
+                getShadowRequest.thingName = thingName;
+                CompletableFuture<Integer> publishedGetShadow = shadow.PublishGetShadow(
+                        getShadowRequest,
+                        QualityOfService.AT_LEAST_ONCE);
+                publishedGetShadow.get();
+                gotResponse.get();
+
+                String newValue = "";
+                Scanner scanner = new Scanner(System.in);
+                while (true) {
+                    System.out.print(SHADOW_PROPERTY + "> ");
+                    System.out.flush();
+                    newValue = scanner.next();
+                    if (newValue.compareToIgnoreCase("quit") == 0) {
+                        break;
+                    }
+                    gotResponse = new CompletableFuture<>();
+                    changeShadowValue(newValue).get();
+                    gotResponse.get();
+                }
+
+                CompletableFuture<Void> disconnected = connection.disconnect();
+                disconnected.get();
+            }
         } catch (CrtRuntimeException | InterruptedException | ExecutionException ex) {
             System.out.println("Exception encountered: " + ex.toString());
         }

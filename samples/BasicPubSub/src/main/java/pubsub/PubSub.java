@@ -21,8 +21,8 @@ import software.amazon.awssdk.crt.io.EventLoopGroup;
 import software.amazon.awssdk.crt.io.TlsContext;
 import software.amazon.awssdk.crt.io.TlsContextOptions;
 import software.amazon.awssdk.crt.mqtt.MqttClient;
-import software.amazon.awssdk.crt.mqtt.MqttConnection;
-import software.amazon.awssdk.crt.mqtt.MqttConnectionEvents;
+import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
+import software.amazon.awssdk.crt.mqtt.MqttClientConnectionEvents;
 import software.amazon.awssdk.crt.mqtt.MqttMessage;
 import software.amazon.awssdk.crt.mqtt.QualityOfService;
 import software.amazon.awssdk.iot.iotjobs.model.RejectedError;
@@ -136,60 +136,60 @@ class PubSub {
             return;
         }
 
-        try {
-            ClientBootstrap clientBootstrap = new ClientBootstrap(1);
-            TlsContextOptions tlsContextOptions = TlsContextOptions.createWithMTLS(certPath, keyPath);
+        try(ClientBootstrap clientBootstrap = new ClientBootstrap(1);
+            TlsContextOptions tlsContextOptions = TlsContextOptions.createWithMTLS(certPath, keyPath)) {
             tlsContextOptions.overrideDefaultTrustStore(null, rootCaPath);
-            TlsContext tlsContext = new TlsContext(tlsContextOptions);
-            MqttClient client = new MqttClient(clientBootstrap, tlsContext);
 
-            MqttConnection connection = new MqttConnection(client, new MqttConnectionEvents() {
-                @Override
-                public void onConnectionInterrupted(int errorCode) {
-                    if (errorCode != 0) {
-                        System.out.println("Connection interrupted: " + errorCode + ": " + CRT.awsErrorString(errorCode));
+            try(TlsContext tlsContext = new TlsContext(tlsContextOptions);
+                MqttClient client = new MqttClient(clientBootstrap, tlsContext);
+                MqttClientConnection connection = new MqttClientConnection(client, new MqttClientConnectionEvents() {
+                    @Override
+                    public void onConnectionInterrupted(int errorCode) {
+                        if (errorCode != 0) {
+                            System.out.println("Connection interrupted: " + errorCode + ": " + CRT.awsErrorString(errorCode));
+                        }
                     }
-                }
 
-                @Override
-                public void onConnectionResumed(boolean sessionPresent) {
-                    System.out.println("Connection resumed: " + (sessionPresent ? "existing session" : "clean session"));
-                }
-            });
+                    @Override
+                    public void onConnectionResumed(boolean sessionPresent) {
+                        System.out.println("Connection resumed: " + (sessionPresent ? "existing session" : "clean session"));
+                    }
+                })) {
 
-            CompletableFuture<Boolean> connected = connection.connect(
-                clientId,
-                endpoint, port,
-                null, tlsContext, true, 0, 0)
-                .exceptionally((ex) -> {
-                    System.out.println("Exception occurred during connect: " + ex.toString());
-                    return null;
+                CompletableFuture<Boolean> connected = connection.connect(
+                        clientId,
+                        endpoint, port,
+                        null, true, 0, 0)
+                        .exceptionally((ex) -> {
+                            System.out.println("Exception occurred during connect: " + ex.toString());
+                            return null;
+                        });
+                boolean sessionPresent = connected.get();
+                System.out.println("Connected to " + (!sessionPresent ? "new" : "existing") + " session!");
+
+                CompletableFuture<Integer> subscribed = connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, (message) -> {
+                    try {
+                        String payload = new String(message.getPayload().array(), "UTF-8");
+                        System.out.println("MESSAGE: " + payload);
+                    } catch (UnsupportedEncodingException ex) {
+                        System.out.println("Unable to decode payload: " + ex.getMessage());
+                    }
                 });
-            boolean sessionPresent = connected.get();
-            System.out.println("Connected to " + (!sessionPresent ? "new" : "existing") + " session!");
 
-            CompletableFuture<Integer> subscribed = connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, (message) -> {
-                try {
-                    String payload = new String(message.getPayload().array(), "UTF-8");
-                    System.out.println("MESSAGE: " + payload);
-                } catch (UnsupportedEncodingException ex) {
-                    System.out.println("Unable to decode payload: " + ex.getMessage());
+                subscribed.get();
+
+                int count = 0;
+                while (count++ < messagesToPublish) {
+                    ByteBuffer payload = ByteBuffer.allocateDirect(message.length());
+                    payload.put(message.getBytes());
+                    CompletableFuture<Integer> published = connection.publish(new MqttMessage(topic, payload), QualityOfService.AT_LEAST_ONCE, false);
+                    published.get();
+                    Thread.sleep(1000);
                 }
-            });
 
-            subscribed.get();
-
-            int count = 0;
-            while (count++ < messagesToPublish) {
-                ByteBuffer payload = ByteBuffer.allocateDirect(message.length());
-                payload.put(message.getBytes());
-                CompletableFuture<Integer> published = connection.publish(new MqttMessage(topic, payload), QualityOfService.AT_LEAST_ONCE, false);
-                published.get();
-                Thread.sleep(1000);
+                CompletableFuture<Void> disconnected = connection.disconnect();
+                disconnected.get();
             }
-
-            CompletableFuture<Void> disconnected = connection.disconnect();
-            disconnected.get();
         } catch (CrtRuntimeException | InterruptedException | ExecutionException ex) {
             System.out.println("Exception encountered: " + ex.toString());
         }
