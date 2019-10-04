@@ -2,10 +2,8 @@ version: 0.2
 #this build spec assumes the ubuntu aws/codebuild/java:openjdk-8 image
 phases:
   install:
-    commands:
-      - sudo add-apt-repository ppa:openjdk-r/ppa
-      - sudo add-apt-repository ppa:ubuntu-toolchain-r/test
-      - sudo apt-get update -y
+    runtime-versions:
+      java: openjdk8
   build:
     commands:
       - echo Build started on `date`
@@ -14,9 +12,3 @@ phases:
     commands:
       - echo Build completed on `date`
 
-artifacts:
-  discard-paths: yes
-  files: 
-    - 'target/surefire-reports/**'
-    - 'hs_err_pid*'
-    - 'core*'
