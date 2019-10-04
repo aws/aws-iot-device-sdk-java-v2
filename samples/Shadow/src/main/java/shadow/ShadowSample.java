@@ -239,8 +239,6 @@ public class ShadowSample {
                 })) {
                 shadow = new IotShadowClient(connection);
 
-                this is a compile error
-                        
                 CompletableFuture<Boolean> connected = connection.connect(
                         clientId,
                         endpoint, port,
