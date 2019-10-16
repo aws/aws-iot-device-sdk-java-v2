@@ -137,8 +137,8 @@ class PubSub {
         }
 
         try(ClientBootstrap clientBootstrap = new ClientBootstrap(1);
-            TlsContextOptions tlsContextOptions = TlsContextOptions.createWithMTLS(certPath, keyPath)) {
-            tlsContextOptions.overrideDefaultTrustStore(null, rootCaPath);
+            TlsContextOptions tlsContextOptions = TlsContextOptions.createWithMTLSFromPath(certPath, keyPath)) {
+            tlsContextOptions.overrideDefaultTrustStoreFromPath(null, rootCaPath);
 
             try(TlsContext tlsContext = new TlsContext(tlsContextOptions);
                 MqttClient client = new MqttClient(clientBootstrap, tlsContext);
