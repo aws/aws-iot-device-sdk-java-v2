@@ -29,10 +29,13 @@ import software.amazon.awssdk.iot.iotjobs.model.RejectedError;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 class PubSub {
+    private static final int PROGRESS_OP_COUNT = 100;
+
     static String clientId = "samples-client-id";
     static String rootCaPath;
     static String certPath;
@@ -43,6 +46,10 @@ class PubSub {
     static int    messagesToPublish = 10;
     static boolean showHelp = false;
     static int port = 8883;
+    static int connectionCount = 1;
+
+    private static Map<String, MqttClientConnection> connections = new HashMap<>();
+    private static List<Integer> validIndices = new ArrayList<>();
 
     static void printUsage() {
         System.out.println(
@@ -119,6 +126,11 @@ class PubSub {
                         messagesToPublish = Integer.parseInt(args[++idx]);
                     }
                     break;
+                case "--connections":
+                    if (idx + 1 < args.length) {
+                        connectionCount = Integer.parseInt(args[++idx]);
+                    }
+                    break;
                 default:
                     System.out.println("Unrecognized argument: " + args[idx]);
             }
@@ -127,6 +139,126 @@ class PubSub {
 
     static void onRejectedError(RejectedError error) {
         System.out.println("Request rejected: " + error.code.toString() + ": " + error.message);
+    }
+
+    static class ConnectionState {
+        public ConnectionState() {}
+
+        public String clientId;
+        public MqttClientConnection connection;
+        public CompletableFuture<Boolean> connectFuture;
+        public CompletableFuture<Integer> subscribeFuture;
+    }
+
+    static void initConnections(MqttClient client) {
+        List<ConnectionState> connectionsInProgress = new ArrayList<>();
+
+        for (int i = 0; i < connectionCount; ++i) {
+            try {
+                MqttClientConnection connection = new MqttClientConnection(client, new MqttClientConnectionEvents() {
+                    @Override
+                    public void onConnectionInterrupted(int errorCode) {
+                        if (errorCode != 0) {
+                            System.out.println("Connection interrupted: " + errorCode + ": " + CRT.awsErrorString(errorCode));
+                        }
+                    }
+
+                    @Override
+                    public void onConnectionResumed(boolean sessionPresent) {
+                        System.out.println("Connection resumed: " + (sessionPresent ? "existing session" : "clean session"));
+                    }
+                });
+
+                ConnectionState connectionState = new ConnectionState();
+                connectionState.clientId = String.format("%s%d", clientId, i);
+                connectionState.connection = connection;
+
+                connectionsInProgress.add(connectionState);
+
+                connectionState.connectFuture = connection.connect(
+                        connectionState.clientId,
+                        endpoint, port,
+                        null, true, 0, 0)
+                        .exceptionally((ex) -> {
+                            System.out.println("Exception occurred during connect: " + ex.toString());
+                            return null;
+                        });
+
+                if (i % PROGRESS_OP_COUNT == 0) {
+                    System.out.println(String.format("(Main Thread) Connect start count: %d", i));
+                }
+
+                Thread.sleep(5);
+            } catch (Exception ignored) {
+                ;
+            }
+        }
+
+        for (int i = 0; i < connectionsInProgress.size(); ++i) {
+            ConnectionState connectionState = connectionsInProgress.get(i);
+            CompletableFuture<Boolean> connectFuture = connectionState.connectFuture;
+            if (connectFuture == null) {
+                continue;
+            }
+
+            try {
+                connectFuture.get();
+                String clientTopic = String.format("%s%d", topic, i);
+                connectionState.subscribeFuture = connectionState.connection.subscribe(clientTopic, QualityOfService.AT_LEAST_ONCE, (message) -> {
+                    try {
+                        String payload = new String(message.getPayload().array(), "UTF-8");
+                        System.out.println(String.format("(Topic %s): MESSAGE: %s", clientTopic, payload));
+                    } catch (UnsupportedEncodingException ex) {
+                        System.out.println(String.format("(Topic %s): Unable to decode payload: %s", clientTopic, ex.getMessage()));
+                    }
+                });
+
+                if (i % PROGRESS_OP_COUNT == 0) {
+                    System.out.println(String.format("(Main Thread) Subscribe start count: %d", i));
+                }
+
+                Thread.sleep(5);
+            } catch (Exception e) {
+                ;
+            }
+        }
+
+        for (int i = 0; i < connectionsInProgress.size(); ++i) {
+            ConnectionState connectionState = connectionsInProgress.get(i);
+            CompletableFuture<Integer> subscribeFuture = connectionState.subscribeFuture;
+
+            try {
+                subscribeFuture.get();
+                connections.put(connectionState.clientId, connectionState.connection);
+                validIndices.add(i);
+            } catch (Exception e) {
+                // Includes null dereferences for connection failures
+                connectionState.connection.disconnect();
+                connectionState.connection.close();
+            }
+        }
+
+        System.out.println(String.format("(Main Thread) Successfully established %d connections", connections.size()));
+    }
+
+    private static void cleanupConnections() {
+        List<CompletableFuture<Void>> disconnectFutures = new ArrayList<>();
+
+        for (MqttClientConnection connection : connections.values()) {
+            disconnectFutures.add(connection.disconnect());
+        }
+
+        for (CompletableFuture<Void> future : disconnectFutures) {
+            try {
+                future.get();
+            } catch (Exception e) {
+                ;
+            }
+        }
+
+        for (MqttClientConnection connection : connections.values()) {
+            connection.close();
+        }
     }
 
     public static void main(String[] args) {
@@ -141,57 +273,36 @@ class PubSub {
             tlsContextOptions.overrideDefaultTrustStoreFromPath(null, rootCaPath);
 
             try(TlsContext tlsContext = new TlsContext(tlsContextOptions);
-                MqttClient client = new MqttClient(clientBootstrap, tlsContext);
-                MqttClientConnection connection = new MqttClientConnection(client, new MqttClientConnectionEvents() {
-                    @Override
-                    public void onConnectionInterrupted(int errorCode) {
-                        if (errorCode != 0) {
-                            System.out.println("Connection interrupted: " + errorCode + ": " + CRT.awsErrorString(errorCode));
-                        }
-                    }
+                MqttClient client = new MqttClient(clientBootstrap, tlsContext)) {
 
-                    @Override
-                    public void onConnectionResumed(boolean sessionPresent) {
-                        System.out.println("Connection resumed: " + (sessionPresent ? "existing session" : "clean session"));
-                    }
-                })) {
+                initConnections(client);
 
-                CompletableFuture<Boolean> connected = connection.connect(
-                        clientId,
-                        endpoint, port,
-                        null, true, 0, 0)
-                        .exceptionally((ex) -> {
-                            System.out.println("Exception occurred during connect: " + ex.toString());
-                            return null;
-                        });
-                boolean sessionPresent = connected.get();
-                System.out.println("Connected to " + (!sessionPresent ? "new" : "existing") + " session!");
+                Random rng = new Random();
 
-                CompletableFuture<Integer> subscribed = connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, (message) -> {
-                    try {
-                        String payload = new String(message.getPayload().array(), "UTF-8");
-                        System.out.println("MESSAGE: " + payload);
-                    } catch (UnsupportedEncodingException ex) {
-                        System.out.println("Unable to decode payload: " + ex.getMessage());
-                    }
-                });
-
-                subscribed.get();
-
-                int count = 0;
-                while (count++ < messagesToPublish) {
+                for(int count = 0; count < messagesToPublish; ++count) {
                     ByteBuffer payload = ByteBuffer.allocateDirect(message.length());
                     payload.put(message.getBytes());
-                    CompletableFuture<Integer> published = connection.publish(new MqttMessage(topic, payload), QualityOfService.AT_LEAST_ONCE, false);
-                    published.get();
-                    Thread.sleep(1000);
+
+                    // Pick a random connection to publish from
+                    int connectionIndex = validIndices.get(rng.nextInt() % validIndices.size());
+                    String clientId = String.format("%s%d", topic, connectionIndex);
+                    MqttClientConnection connection = connections.get(clientId);
+
+                    // Pick a random subscribed topic to publish to
+                    int topicIndex = validIndices.get(rng.nextInt() % validIndices.size());
+                    String publishTopic = String.format("%s%d", topic, topicIndex);
+
+                    connection.publish(new MqttMessage(topic, payload), QualityOfService.AT_LEAST_ONCE, false);
+
+                    if (count % PROGRESS_OP_COUNT == 0) {
+                        System.out.println(String.format("(Main Thread) Message publish count: %d", count));
+                    }
                 }
 
-                CompletableFuture<Void> disconnected = connection.disconnect();
-                disconnected.get();
+                cleanupConnections();
             }
-        } catch (CrtRuntimeException | InterruptedException | ExecutionException ex) {
-            System.out.println("Exception encountered: " + ex.toString());
+        } catch (Exception e) {
+            System.out.println("Exception encountered: " + e.toString());
         }
 
         System.out.println("Complete!");
