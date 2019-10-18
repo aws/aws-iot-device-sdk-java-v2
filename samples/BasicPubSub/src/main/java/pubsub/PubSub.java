@@ -20,6 +20,7 @@ import software.amazon.awssdk.crt.io.ClientBootstrap;
 import software.amazon.awssdk.crt.io.EventLoopGroup;
 import software.amazon.awssdk.crt.io.TlsContext;
 import software.amazon.awssdk.crt.io.TlsContextOptions;
+import software.amazon.awssdk.crt.Log;
 import software.amazon.awssdk.crt.mqtt.MqttClient;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnectionEvents;
@@ -47,6 +48,7 @@ class PubSub {
     static boolean showHelp = false;
     static int port = 8883;
     static int connectionCount = 1;
+    static int eventLoopThreadCount = 1;
 
     private static Map<String, MqttClientConnection> connections = new HashMap<>();
     private static List<Integer> validIndices = new ArrayList<>();
@@ -63,7 +65,9 @@ class PubSub {
                 "  -k|--key      Path to the IoT thing public key\n"+
                 "  -t|--topic    Topic to subscribe/publish to (optional)\n"+
                 "  -m|--message  Message to publish (optional)\n"+
-                "  -n|--count    Number of messages to publish (optional)"
+                "  -n|--count    Number of messages to publish (optional)\n"+
+                "  --connections Number of connections to make (optional)\n"+
+                "  --threads     Number of IO threads to use (optional)"
         );
     }
 
@@ -131,6 +135,11 @@ class PubSub {
                         connectionCount = Integer.parseInt(args[++idx]);
                     }
                     break;
+                case "--threads":
+                    if (idx + 1 < args.length) {
+                        eventLoopThreadCount = Integer.parseInt(args[++idx]);
+                    }
+                    break;
                 default:
                     System.out.println("Unrecognized argument: " + args[idx]);
             }
@@ -184,15 +193,18 @@ class PubSub {
                             return null;
                         });
 
-                if (i % PROGRESS_OP_COUNT == 0) {
-                    System.out.println(String.format("(Main Thread) Connect start count: %d", i));
+                if ((i + 1) % PROGRESS_OP_COUNT == 0) {
+                    System.out.println(String.format("(Main Thread) Connect start count: %d", i + 1));
                 }
 
+                // Simple throttle to avoid Iot Connect/Second limit
                 Thread.sleep(5);
             } catch (Exception ignored) {
                 ;
             }
         }
+
+        System.out.println(String.format("(Main Thread) Started %d connections", connectionsInProgress.size()));
 
         for (int i = 0; i < connectionsInProgress.size(); ++i) {
             ConnectionState connectionState = connectionsInProgress.get(i);
@@ -203,6 +215,10 @@ class PubSub {
 
             try {
                 connectFuture.get();
+                if (connectFuture.isCancelled() || connectFuture.isCompletedExceptionally()) {
+                    continue;
+                }
+
                 String clientTopic = String.format("%s%d", topic, i);
                 connectionState.subscribeFuture = connectionState.connection.subscribe(clientTopic, QualityOfService.AT_LEAST_ONCE, (message) -> {
                     try {
@@ -213,15 +229,18 @@ class PubSub {
                     }
                 });
 
-                if (i % PROGRESS_OP_COUNT == 0) {
-                    System.out.println(String.format("(Main Thread) Subscribe start count: %d", i));
+                if ((i + 1) % PROGRESS_OP_COUNT == 0) {
+                    System.out.println(String.format("(Main Thread) Subscribe start count: %d", i + 1));
                 }
 
+                // Simple throttle to avoid Iot Subscribe/Second limit
                 Thread.sleep(5);
             } catch (Exception e) {
                 ;
             }
         }
+
+        System.out.println(String.format("(Main Thread) Started subscriptions for %d connections", connectionsInProgress.size()));
 
         for (int i = 0; i < connectionsInProgress.size(); ++i) {
             ConnectionState connectionState = connectionsInProgress.get(i);
@@ -229,6 +248,10 @@ class PubSub {
 
             try {
                 subscribeFuture.get();
+                if (subscribeFuture.isCancelled() || subscribeFuture.isCompletedExceptionally()) {
+                    continue;
+                }
+
                 connections.put(connectionState.clientId, connectionState.connection);
                 validIndices.add(i);
             } catch (Exception e) {
@@ -268,7 +291,7 @@ class PubSub {
             return;
         }
 
-        try(ClientBootstrap clientBootstrap = new ClientBootstrap(1);
+        try(ClientBootstrap clientBootstrap = new ClientBootstrap(eventLoopThreadCount);
             TlsContextOptions tlsContextOptions = TlsContextOptions.createWithMTLSFromPath(certPath, keyPath)) {
             tlsContextOptions.overrideDefaultTrustStoreFromPath(null, rootCaPath);
 
@@ -277,27 +300,40 @@ class PubSub {
 
                 initConnections(client);
 
-                Random rng = new Random();
+                Log.log(Log.LogLevel.Info, Log.LogSubject.MqttGeneral, "START OF PUBLISH......");
+
+                Random rng = new Random(0);
+
+                List<CompletableFuture<Integer>> publishFutures = new ArrayList<>();
 
                 for(int count = 0; count < messagesToPublish; ++count) {
-                    ByteBuffer payload = ByteBuffer.allocateDirect(message.length());
-                    payload.put(message.getBytes());
+                    String messageContent = String.format("%s #%d", message, count + 1);
+                    ByteBuffer payload = ByteBuffer.allocateDirect(messageContent.length());
+                    payload.put(messageContent.getBytes());
 
                     // Pick a random connection to publish from
-                    int connectionIndex = validIndices.get(rng.nextInt() % validIndices.size());
-                    String clientId = String.format("%s%d", topic, connectionIndex);
-                    MqttClientConnection connection = connections.get(clientId);
+                    int connectionIndex = validIndices.get(Math.abs(rng.nextInt()) % validIndices.size());
+                    String connectionId = String.format("%s%d", clientId, connectionIndex);
+                    MqttClientConnection connection = connections.get(connectionId);
 
                     // Pick a random subscribed topic to publish to
-                    int topicIndex = validIndices.get(rng.nextInt() % validIndices.size());
+                    int topicIndex = validIndices.get(Math.abs(rng.nextInt()) % validIndices.size());
                     String publishTopic = String.format("%s%d", topic, topicIndex);
 
-                    connection.publish(new MqttMessage(topic, payload), QualityOfService.AT_LEAST_ONCE, false);
+                    publishFutures.add(connection.publish(new MqttMessage(publishTopic, payload), QualityOfService.AT_LEAST_ONCE, false));
 
                     if (count % PROGRESS_OP_COUNT == 0) {
                         System.out.println(String.format("(Main Thread) Message publish count: %d", count));
                     }
                 }
+
+                for (CompletableFuture<Integer> publishFuture : publishFutures) {
+                    publishFuture.get();
+                }
+
+                System.out.println("zzzzz");
+
+                Thread.sleep(1000);
 
                 cleanupConnections();
             }
