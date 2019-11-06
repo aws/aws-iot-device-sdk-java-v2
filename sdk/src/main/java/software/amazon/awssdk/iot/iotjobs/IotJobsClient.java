@@ -364,8 +364,7 @@ public class IotJobsClient {
         }
         topic = topic.replace("{thingName}", request.thingName);
         String payloadJson = gson.toJson(request);
-        ByteBuffer payload = ByteBuffer.allocateDirect(payloadJson.length());
-        payload.put(payloadJson.getBytes());MqttMessage message = new MqttMessage(topic, payloadJson.getBytes());
+        MqttMessage message = new MqttMessage(topic, payloadJson.getBytes());
         return connection.publish(message, qos, false);
     }
 
@@ -479,8 +478,7 @@ public class IotJobsClient {
         }
         topic = topic.replace("{thingName}", request.thingName);
         String payloadJson = gson.toJson(request);
-        ByteBuffer payload = ByteBuffer.allocateDirect(payloadJson.length());
-        payload.put(payloadJson.getBytes());MqttMessage message = new MqttMessage(topic, payloadJson.getBytes());
+        MqttMessage message = new MqttMessage(topic, payloadJson.getBytes());
         return connection.publish(message, qos, false);
     }
 
@@ -501,8 +499,7 @@ public class IotJobsClient {
         }
         topic = topic.replace("{thingName}", request.thingName);
         String payloadJson = gson.toJson(request);
-        ByteBuffer payload = ByteBuffer.allocateDirect(payloadJson.length());
-        payload.put(payloadJson.getBytes());MqttMessage message = new MqttMessage(topic, payloadJson.getBytes());
+        MqttMessage message = new MqttMessage(topic, payloadJson.getBytes());
         return connection.publish(message, qos, false);
     }
 
