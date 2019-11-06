@@ -17,7 +17,6 @@ package pubsub;
 import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.crt.CrtRuntimeException;
 import software.amazon.awssdk.crt.io.ClientBootstrap;
-import software.amazon.awssdk.crt.io.EventLoopGroup;
 import software.amazon.awssdk.crt.io.TlsContext;
 import software.amazon.awssdk.crt.io.TlsContextOptions;
 import software.amazon.awssdk.crt.mqtt.MqttClient;
@@ -169,7 +168,7 @@ class PubSub {
 
                 CompletableFuture<Integer> subscribed = connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, (message) -> {
                     try {
-                        String payload = new String(message.getPayload().array(), "UTF-8");
+                        String payload = new String(message.getPayload(), "UTF-8");
                         System.out.println("MESSAGE: " + payload);
                     } catch (UnsupportedEncodingException ex) {
                         System.out.println("Unable to decode payload: " + ex.getMessage());
@@ -180,9 +179,7 @@ class PubSub {
 
                 int count = 0;
                 while (count++ < messagesToPublish) {
-                    ByteBuffer payload = ByteBuffer.allocateDirect(message.length());
-                    payload.put(message.getBytes());
-                    CompletableFuture<Integer> published = connection.publish(new MqttMessage(topic, payload), QualityOfService.AT_LEAST_ONCE, false);
+                    CompletableFuture<Integer> published = connection.publish(new MqttMessage(topic, message.getBytes()), QualityOfService.AT_LEAST_ONCE, false);
                     published.get();
                     Thread.sleep(1000);
                 }
