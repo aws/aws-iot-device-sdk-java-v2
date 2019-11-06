@@ -91,7 +91,7 @@ public class IotJobsClient {
         topic = topic.replace("{thingName}", request.thingName);
         Consumer<MqttMessage> messageHandler = (message) -> {
             try {
-                String payload = new String(message.getPayload().array(), "UTF-8");
+                String payload = new String(message.getPayload(), "UTF-8");
                 JobExecutionsChangedEvent response = gson.fromJson(payload, JobExecutionsChangedEvent.class);
                 handler.accept(response);
             } catch (UnsupportedEncodingException ex) {
@@ -124,7 +124,7 @@ public class IotJobsClient {
         topic = topic.replace("{thingName}", request.thingName);
         Consumer<MqttMessage> messageHandler = (message) -> {
             try {
-                String payload = new String(message.getPayload().array(), "UTF-8");
+                String payload = new String(message.getPayload(), "UTF-8");
                 StartNextJobExecutionResponse response = gson.fromJson(payload, StartNextJobExecutionResponse.class);
                 handler.accept(response);
             } catch (UnsupportedEncodingException ex) {
@@ -163,7 +163,7 @@ public class IotJobsClient {
         topic = topic.replace("{jobId}", request.jobId);
         Consumer<MqttMessage> messageHandler = (message) -> {
             try {
-                String payload = new String(message.getPayload().array(), "UTF-8");
+                String payload = new String(message.getPayload(), "UTF-8");
                 RejectedError response = gson.fromJson(payload, RejectedError.class);
                 handler.accept(response);
             } catch (UnsupportedEncodingException ex) {
@@ -196,7 +196,7 @@ public class IotJobsClient {
         topic = topic.replace("{thingName}", request.thingName);
         Consumer<MqttMessage> messageHandler = (message) -> {
             try {
-                String payload = new String(message.getPayload().array(), "UTF-8");
+                String payload = new String(message.getPayload(), "UTF-8");
                 NextJobExecutionChangedEvent response = gson.fromJson(payload, NextJobExecutionChangedEvent.class);
                 handler.accept(response);
             } catch (UnsupportedEncodingException ex) {
@@ -235,7 +235,7 @@ public class IotJobsClient {
         topic = topic.replace("{jobId}", request.jobId);
         Consumer<MqttMessage> messageHandler = (message) -> {
             try {
-                String payload = new String(message.getPayload().array(), "UTF-8");
+                String payload = new String(message.getPayload(), "UTF-8");
                 RejectedError response = gson.fromJson(payload, RejectedError.class);
                 handler.accept(response);
             } catch (UnsupportedEncodingException ex) {
@@ -274,7 +274,7 @@ public class IotJobsClient {
         topic = topic.replace("{jobId}", request.jobId);
         Consumer<MqttMessage> messageHandler = (message) -> {
             try {
-                String payload = new String(message.getPayload().array(), "UTF-8");
+                String payload = new String(message.getPayload(), "UTF-8");
                 UpdateJobExecutionResponse response = gson.fromJson(payload, UpdateJobExecutionResponse.class);
                 handler.accept(response);
             } catch (UnsupportedEncodingException ex) {
@@ -310,9 +310,7 @@ public class IotJobsClient {
         }
         topic = topic.replace("{jobId}", request.jobId);
         String payloadJson = gson.toJson(request);
-        ByteBuffer payload = ByteBuffer.allocateDirect(payloadJson.length());
-        payload.put(payloadJson.getBytes());
-        MqttMessage message = new MqttMessage(topic, payload);
+        MqttMessage message = new MqttMessage(topic, payloadJson.getBytes());
         return connection.publish(message, qos, false);
     }
 
@@ -336,7 +334,7 @@ public class IotJobsClient {
         topic = topic.replace("{jobId}", request.jobId);
         Consumer<MqttMessage> messageHandler = (message) -> {
             try {
-                String payload = new String(message.getPayload().array(), "UTF-8");
+                String payload = new String(message.getPayload(), "UTF-8");
                 DescribeJobExecutionResponse response = gson.fromJson(payload, DescribeJobExecutionResponse.class);
                 handler.accept(response);
             } catch (UnsupportedEncodingException ex) {
@@ -367,8 +365,7 @@ public class IotJobsClient {
         topic = topic.replace("{thingName}", request.thingName);
         String payloadJson = gson.toJson(request);
         ByteBuffer payload = ByteBuffer.allocateDirect(payloadJson.length());
-        payload.put(payloadJson.getBytes());
-        MqttMessage message = new MqttMessage(topic, payload);
+        payload.put(payloadJson.getBytes());MqttMessage message = new MqttMessage(topic, payloadJson.getBytes());
         return connection.publish(message, qos, false);
     }
 
@@ -386,7 +383,7 @@ public class IotJobsClient {
         topic = topic.replace("{thingName}", request.thingName);
         Consumer<MqttMessage> messageHandler = (message) -> {
             try {
-                String payload = new String(message.getPayload().array(), "UTF-8");
+                String payload = new String(message.getPayload(), "UTF-8");
                 GetPendingJobExecutionsResponse response = gson.fromJson(payload, GetPendingJobExecutionsResponse.class);
                 handler.accept(response);
             } catch (UnsupportedEncodingException ex) {
@@ -419,7 +416,7 @@ public class IotJobsClient {
         topic = topic.replace("{thingName}", request.thingName);
         Consumer<MqttMessage> messageHandler = (message) -> {
             try {
-                String payload = new String(message.getPayload().array(), "UTF-8");
+                String payload = new String(message.getPayload(), "UTF-8");
                 RejectedError response = gson.fromJson(payload, RejectedError.class);
                 handler.accept(response);
             } catch (UnsupportedEncodingException ex) {
@@ -452,7 +449,7 @@ public class IotJobsClient {
         topic = topic.replace("{thingName}", request.thingName);
         Consumer<MqttMessage> messageHandler = (message) -> {
             try {
-                String payload = new String(message.getPayload().array(), "UTF-8");
+                String payload = new String(message.getPayload(), "UTF-8");
                 RejectedError response = gson.fromJson(payload, RejectedError.class);
                 handler.accept(response);
             } catch (UnsupportedEncodingException ex) {
@@ -483,8 +480,7 @@ public class IotJobsClient {
         topic = topic.replace("{thingName}", request.thingName);
         String payloadJson = gson.toJson(request);
         ByteBuffer payload = ByteBuffer.allocateDirect(payloadJson.length());
-        payload.put(payloadJson.getBytes());
-        MqttMessage message = new MqttMessage(topic, payload);
+        payload.put(payloadJson.getBytes());MqttMessage message = new MqttMessage(topic, payloadJson.getBytes());
         return connection.publish(message, qos, false);
     }
 
@@ -506,8 +502,7 @@ public class IotJobsClient {
         topic = topic.replace("{thingName}", request.thingName);
         String payloadJson = gson.toJson(request);
         ByteBuffer payload = ByteBuffer.allocateDirect(payloadJson.length());
-        payload.put(payloadJson.getBytes());
-        MqttMessage message = new MqttMessage(topic, payload);
+        payload.put(payloadJson.getBytes());MqttMessage message = new MqttMessage(topic, payloadJson.getBytes());
         return connection.publish(message, qos, false);
     }
 
