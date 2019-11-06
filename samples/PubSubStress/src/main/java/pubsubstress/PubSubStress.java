@@ -222,7 +222,7 @@ class PubSubStress {
                 String clientTopic = String.format("%s%d", topic, i);
                 connectionState.subscribeFuture = connectionState.connection.subscribe(clientTopic, QualityOfService.AT_LEAST_ONCE, (message) -> {
                     try {
-                        String payload = new String(message.getPayload().array(), "UTF-8");
+                        String payload = new String(message.getPayload(), "UTF-8");
                         System.out.println(String.format("(Topic %s): MESSAGE: %s", clientTopic, payload));
                     } catch (UnsupportedEncodingException ex) {
                         System.out.println(String.format("(Topic %s): Unable to decode payload: %s", clientTopic, ex.getMessage()));
@@ -307,8 +307,6 @@ class PubSubStress {
 
                 for(int count = 0; count < messagesToPublish; ++count) {
                     String messageContent = String.format("%s #%d", message, count + 1);
-                    ByteBuffer payload = ByteBuffer.allocateDirect(messageContent.length());
-                    payload.put(messageContent.getBytes());
 
                     // Pick a random connection to publish from
                     int connectionIndex = validIndices.get(Math.abs(rng.nextInt()) % validIndices.size());
@@ -319,7 +317,7 @@ class PubSubStress {
                     int topicIndex = validIndices.get(Math.abs(rng.nextInt()) % validIndices.size());
                     String publishTopic = String.format("%s%d", topic, topicIndex);
 
-                    publishFutures.add(connection.publish(new MqttMessage(publishTopic, payload), QualityOfService.AT_LEAST_ONCE, false));
+                    publishFutures.add(connection.publish(new MqttMessage(publishTopic, messageContent.getBytes()), QualityOfService.AT_LEAST_ONCE, false));
 
                     if (count % PROGRESS_OP_COUNT == 0) {
                         System.out.println(String.format("(Main Thread) Message publish count: %d", count));
