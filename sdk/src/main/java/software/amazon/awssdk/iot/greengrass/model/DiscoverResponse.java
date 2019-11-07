@@ -19,7 +19,7 @@ package software.amazon.awssdk.iot.greengrass.model;
 import com.google.gson.GsonBuilder;
 
 public class DiscoverResponse {
-    public GGGroup[] ggGroups;
+    public GGGroup[] GGGroups;
 
     public String toJson() {
         return new GsonBuilder().create().toJson(this);

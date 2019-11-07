@@ -32,6 +32,7 @@ import com.google.gson.GsonBuilder;
 
 import software.amazon.awssdk.crt.http.CrtHttpStreamHandler;
 import software.amazon.awssdk.crt.http.HttpClientConnectionManager;
+import software.amazon.awssdk.crt.http.HttpClientConnectionManagerOptions;
 import software.amazon.awssdk.crt.http.HttpHeader;
 import software.amazon.awssdk.crt.http.HttpRequest;
 import software.amazon.awssdk.crt.http.HttpStream;
@@ -45,8 +46,15 @@ public class DiscoveryClient {
             throws URISyntaxException {
         this.endpoint = String.format("greengrass-ats.iot.%s.amazonaws.com", region);
         int port = TlsContextOptions.isAlpnSupported() ? 443 : 8443;
-        this.connectionManager = new HttpClientConnectionManager(bootstrap, socketOptions, tlsContext,
-                new URI(String.format("https://%s:%d", this.endpoint, port)));
+        HttpClientConnectionManagerOptions options = new HttpClientConnectionManagerOptions()
+            .withClientBootstrap(bootstrap)
+            .withMaxConnections(1)
+            .withPort(port)
+            .withSocketOptions(socketOptions)
+            .withUri(new URI(String.format("https://%s", this.endpoint)))
+            .withTlsContext(tlsContext);
+    
+        this.connectionManager = HttpClientConnectionManager.create(options);
     }
 
     public CompletableFuture<DiscoverResponse> discover(String thingName) {

@@ -17,7 +17,7 @@
 package software.amazon.awssdk.iot.greengrass.model;
 
 public class GGGroup {
-    public String ggGroupId;
-    public GGCore[] cores;
-    public String[] certificate_authorities;
+    public String GGGroupId;
+    public GGCore[] Cores;
+    public String[] CAs;
 }

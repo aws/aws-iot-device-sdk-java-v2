@@ -16,11 +16,9 @@
 
 package software.amazon.awssdk.iot.greengrass.model;
 
-import java.util.HashMap;
-
 public class ConnectivityInfo {
-    public String id;
-    public String hostAddress;
-    public short port = 0;
-    public HashMap<String, Object> metadata = new HashMap<>();
+    public String Id;
+    public String HostAddress;
+    public short PortNumber = 0;
+    public String Metadata;
 }

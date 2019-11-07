@@ -18,5 +18,5 @@ package software.amazon.awssdk.iot.greengrass.model;
 
 public class GGCore {
     public String thingArn;
-    public ConnectivityInfo[] connectivity;
+    public ConnectivityInfo[] Connectivity;
 }

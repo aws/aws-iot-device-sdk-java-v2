@@ -10,12 +10,16 @@
 * on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
 * express or implied. See the License for the specific language governing
 * permissions and limitations under the License.
-
-* This file is generated
+*
 */
+
+// Run this sample with mvn exec:java -pl samples/BasicDiscovery -Dexec.mainClass=basicdiscovery.BasicDiscovery
 
 package basicdiscovery;
 
+import software.amazon.awssdk.crt.CRT;
+import software.amazon.awssdk.crt.Log;
+import software.amazon.awssdk.crt.Log.LogLevel;
 import software.amazon.awssdk.crt.io.ClientBootstrap;
 import software.amazon.awssdk.crt.io.SocketOptions;
 import software.amazon.awssdk.crt.io.TlsContext;
@@ -117,16 +121,42 @@ public class BasicDiscovery {
         }
     }
 
-    static CompletableFuture<MqttClientConnection> connectToEndpoint(MqttClient client, DiscoverResponse response) {
+    static CompletableFuture<MqttClientConnection> connectToEndpoint(ClientBootstrap bootstrap, DiscoverResponse response) {
         CompletableFuture<MqttClientConnection> result = new CompletableFuture<>();
         List<CompletableFuture<MqttClientConnection>> connectionAttempts = new ArrayList<>();
-        for (GGGroup group : response.ggGroups) {
-            for (GGCore core : group.cores) {
-                for (ConnectivityInfo endpoint : core.connectivity) {
-
+        for (GGGroup group : response.GGGroups) {
+            TlsContext tlsContext;
+            try (TlsContextOptions tlsOptions = TlsContextOptions.createWithMTLSFromPath(certPath, keyPath)) {
+                tlsOptions.overrideDefaultTrustStore(group.CAs[0]);
+                tlsContext = new TlsContext(tlsOptions);
+            }
+            for (GGCore core : group.Cores) {
+                for (ConnectivityInfo endpoint : core.Connectivity) {
+                    MqttClient client = new MqttClient(bootstrap, tlsContext);
+                    MqttClientConnection connection = new MqttClientConnection(client);
+                    CompletableFuture<MqttClientConnection> attempt = connection
+                            .connect(thingName, endpoint.HostAddress, endpoint.PortNumber).thenCompose((sessionPresent) -> {
+                                CompletableFuture<MqttClientConnection> future = new CompletableFuture<>();
+                                future.complete(connection);
+                                return future;
+                            }).exceptionally(ex -> {
+                                System.err.println(ex.toString());
+                                return null;
+                            });
+                    connectionAttempts.add(attempt);
                 }
             }
         }
+        try {
+            CompletableFuture.anyOf(
+                    connectionAttempts.toArray(new CompletableFuture[connectionAttempts.size()]))
+                .thenAccept((connection) -> {
+                    result.complete((MqttClientConnection) connection);
+                });
+        } catch (Exception ex) {
+            result.completeExceptionally(ex);
+        }
+        
         return result;
     }
 
@@ -141,7 +171,7 @@ public class BasicDiscovery {
                     result.complete(null);
                 }
             };
-            connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, handler).get();
+            connection.subscribe(topic, QualityOfService.AT_MOST_ONCE, handler).get();
             for (int idx = 0; idx < numPublishes; ++idx) {
                 JsonObject message = new JsonObject();
                 message.add("message", new JsonPrimitive("This is a test!"));
@@ -158,6 +188,7 @@ public class BasicDiscovery {
     }
 
     public static void main(String[] args) {
+        CRT.nativeMemory();
         parseCommandLine(args);
 
         if (showHelp || rootCaPath == null || certPath == null || keyPath == null || thingName == null
@@ -165,6 +196,8 @@ public class BasicDiscovery {
             printUsage();
             return;
         }
+
+        Log.initLoggingToStderr(LogLevel.Trace);
 
         try (ClientBootstrap bootstrap = new ClientBootstrap(1)) {
             try (SocketOptions socketOptions = new SocketOptions()) {
@@ -180,11 +213,9 @@ public class BasicDiscovery {
                         System.out.println("Discovery Response:");
                         System.out.println(response.toJson());
 
-                        try (MqttClient client = new MqttClient(bootstrap)) {
-                            try (MqttClientConnection connection = connectToEndpoint(client, response).get()) {
-                                executeSession(connection).get();
-                                System.out.println("Complete!");
-                            }
+                        try (MqttClientConnection connection = connectToEndpoint(bootstrap, response).get()) {
+                            executeSession(connection).get();
+                            System.out.println("Complete!");
                         }
                     }
                 }
