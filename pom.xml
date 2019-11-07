@@ -8,6 +8,7 @@
 
     <modules>
         <module>sdk</module>
+        <module>samples/BasicDiscovery</module>
         <module>samples/BasicPubSub</module>
         <module>samples/Jobs</module>
         <module>samples/PubSubStress</module>
