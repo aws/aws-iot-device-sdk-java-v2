@@ -123,7 +123,7 @@ public class BasicDiscovery {
 
     static CompletableFuture<MqttClientConnection> connectToEndpoint(ClientBootstrap bootstrap, DiscoverResponse response) {
         CompletableFuture<MqttClientConnection> result = new CompletableFuture<>();
-        List<CompletableFuture<MqttClientConnection>> connectionAttempts = new ArrayList<>();
+        List<Exception> failures = new ArrayList<Exception>();
         for (GGGroup group : response.GGGroups) {
             TlsContext tlsContext;
             try (TlsContextOptions tlsOptions = TlsContextOptions.createWithMTLSFromPath(certPath, keyPath)) {
@@ -132,30 +132,23 @@ public class BasicDiscovery {
             }
             for (GGCore core : group.Cores) {
                 for (ConnectivityInfo endpoint : core.Connectivity) {
+                    System.out.println(String.format("Connecting to %s:%d", endpoint.HostAddress, endpoint.PortNumber));
                     MqttClient client = new MqttClient(bootstrap, tlsContext);
                     MqttClientConnection connection = new MqttClientConnection(client);
-                    CompletableFuture<MqttClientConnection> attempt = connection
-                            .connect(thingName, endpoint.HostAddress, endpoint.PortNumber).thenCompose((sessionPresent) -> {
-                                CompletableFuture<MqttClientConnection> future = new CompletableFuture<>();
-                                future.complete(connection);
-                                return future;
-                            }).exceptionally(ex -> {
-                                System.err.println(ex.toString());
-                                return null;
-                            });
-                    connectionAttempts.add(attempt);
+                    try {
+                        connection.connect(thingName, endpoint.HostAddress, endpoint.PortNumber).get();
+                        result.complete(connection);
+                    } catch (Exception ex) {
+                        System.err.println(String.format("Connection to %s:%d FAILED:", endpoint.HostAddress,
+                                endpoint.PortNumber));
+                        System.err.println(ex.toString());
+                        failures.add(ex);
+                    }
                 }
             }
         }
-        try {
-            CompletableFuture.anyOf(
-                    connectionAttempts.toArray(new CompletableFuture[connectionAttempts.size()]))
-                .thenAccept((connection) -> {
-                    result.complete((MqttClientConnection) connection);
-                });
-        } catch (Exception ex) {
-            result.completeExceptionally(ex);
-        }
+        
+        result.completeExceptionally(failures.get(failures.size()-1));
         
         return result;
     }
@@ -222,6 +215,7 @@ public class BasicDiscovery {
             }
         } catch (Exception ex) {
             System.err.println("EXCEPTION: " + ex.toString());
+            ex.printStackTrace();
         }
     }
 }
