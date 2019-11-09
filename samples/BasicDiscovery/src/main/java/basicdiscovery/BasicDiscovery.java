@@ -137,6 +137,8 @@ public class BasicDiscovery {
                     MqttClientConnection connection = new MqttClientConnection(client);
                     try {
                         connection.connect(thingName, endpoint.HostAddress, endpoint.PortNumber).get();
+                        System.out.println(
+                                String.format("Connected to %s:%d", endpoint.HostAddress, endpoint.PortNumber));
                         result.complete(connection);
                     } catch (Exception ex) {
                         System.err.println(String.format("Connection to %s:%d FAILED:", endpoint.HostAddress,
