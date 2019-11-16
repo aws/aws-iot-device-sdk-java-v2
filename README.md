@@ -40,7 +40,7 @@ mvn install
 ## Build CRT from source
 ```
 # NOTE: use the latest version of the CRT here
-git clone --branch v0.3.22 https://github.com/awslabs/aws-crt-java.git
+git clone --branch v0.4.5 https://github.com/awslabs/aws-crt-java.git
 git clone https://github.com/awslabs/aws-iot-device-sdk-java-v2.git
 cd aws-crt-java
 mvn install -Dmaven.test.skip=true
