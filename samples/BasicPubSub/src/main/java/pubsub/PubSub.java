@@ -136,7 +136,7 @@ class PubSub {
         }
 
         try(ClientBootstrap clientBootstrap = new ClientBootstrap(1);
-            TlsContextOptions tlsContextOptions = TlsContextOptions.createWithMTLSFromPath(certPath, keyPath)) {
+            TlsContextOptions tlsContextOptions = TlsContextOptions.createWithMtlsFromPath(certPath, keyPath)) {
             tlsContextOptions.overrideDefaultTrustStoreFromPath(null, rootCaPath);
 
             try(TlsContext tlsContext = new TlsContext(tlsContextOptions);
