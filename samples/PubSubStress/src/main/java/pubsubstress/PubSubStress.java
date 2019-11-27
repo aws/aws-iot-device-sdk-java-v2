@@ -15,9 +15,8 @@
 package pubsubstress;
 
 import software.amazon.awssdk.crt.CRT;
-import software.amazon.awssdk.crt.CrtRuntimeException;
+import software.amazon.awssdk.crt.CrtResource;
 import software.amazon.awssdk.crt.io.ClientBootstrap;
-import software.amazon.awssdk.crt.io.EventLoopGroup;
 import software.amazon.awssdk.crt.io.TlsContext;
 import software.amazon.awssdk.crt.io.TlsContextOptions;
 import software.amazon.awssdk.crt.Log;
@@ -29,10 +28,10 @@ import software.amazon.awssdk.crt.mqtt.QualityOfService;
 import software.amazon.awssdk.iot.iotjobs.model.RejectedError;
 
 import java.io.UnsupportedEncodingException;
-import java.nio.ByteBuffer;
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 class PubSubStress {
     private static final int PROGRESS_OP_COUNT = 100;
@@ -49,6 +48,7 @@ class PubSubStress {
     static int port = 8883;
     static int connectionCount = 1000;
     static int eventLoopThreadCount = 1;
+    static int testDurationInSeconds = 1;
 
     private static Map<String, MqttClientConnection> connections = new HashMap<>();
     private static List<Integer> validIndices = new ArrayList<>();
@@ -67,7 +67,8 @@ class PubSubStress {
                 "  -m|--message  Message to publish (optional)\n"+
                 "  -n|--count    Number of messages to publish (optional)\n"+
                 "  --connections Number of connections to make (optional)\n"+
-                "  --threads     Number of IO threads to use (optional)"
+                "  --threads     Number of IO threads to use (optional)\n" +
+                "  -d|--duration Time in seconds to repeat the stress test (optional)\n"
         );
     }
 
@@ -140,6 +141,12 @@ class PubSubStress {
                         eventLoopThreadCount = Integer.parseInt(args[++idx]);
                     }
                     break;
+                case "-d":
+                case "--duration":
+                    if (idx + 1 < args.length) {
+                        testDurationInSeconds = Integer.parseInt(args[++idx]);
+                    }
+                    break;
                 default:
                     System.out.println("Unrecognized argument: " + args[idx]);
             }
@@ -163,35 +170,30 @@ class PubSubStress {
         List<ConnectionState> connectionsInProgress = new ArrayList<>();
 
         for (int i = 0; i < connectionCount; ++i) {
+            MqttClientConnection connection = new MqttClientConnection(client, new MqttClientConnectionEvents() {
+                @Override
+                public void onConnectionInterrupted(int errorCode) {
+                    if (errorCode != 0) {
+                        System.out.println("Connection interrupted: " + errorCode + ": " + CRT.awsErrorString(errorCode));
+                    }
+                }
+
+                @Override
+                public void onConnectionResumed(boolean sessionPresent) {
+                    System.out.println("Connection resumed: " + (sessionPresent ? "existing session" : "clean session"));
+                }
+            });
+
             try {
-                MqttClientConnection connection = new MqttClientConnection(client, new MqttClientConnectionEvents() {
-                    @Override
-                    public void onConnectionInterrupted(int errorCode) {
-                        if (errorCode != 0) {
-                            System.out.println("Connection interrupted: " + errorCode + ": " + CRT.awsErrorString(errorCode));
-                        }
-                    }
-
-                    @Override
-                    public void onConnectionResumed(boolean sessionPresent) {
-                        System.out.println("Connection resumed: " + (sessionPresent ? "existing session" : "clean session"));
-                    }
-                });
-
                 ConnectionState connectionState = new ConnectionState();
                 connectionState.clientId = String.format("%s%d", clientId, i);
                 connectionState.connection = connection;
-
-                connectionsInProgress.add(connectionState);
-
                 connectionState.connectFuture = connection.connect(
                         connectionState.clientId,
                         endpoint, port,
-                        null, true, 0, 0)
-                        .exceptionally((ex) -> {
-                            System.out.println("Exception occurred during connect: " + ex.toString());
-                            return null;
-                        });
+                        null, true, 0, 0);
+
+                connectionsInProgress.add(connectionState);
 
                 if ((i + 1) % PROGRESS_OP_COUNT == 0) {
                     System.out.println(String.format("(Main Thread) Connect start count: %d", i + 1));
@@ -200,7 +202,8 @@ class PubSubStress {
                 // Simple throttle to avoid Iot Connect/Second limit
                 Thread.sleep(5);
             } catch (Exception ignored) {
-                ;
+                connection.disconnect();
+                connection.close();
             }
         }
 
@@ -214,8 +217,10 @@ class PubSubStress {
             }
 
             try {
-                connectFuture.get();
+                connectFuture.get(5, TimeUnit.SECONDS);
                 if (connectFuture.isCancelled() || connectFuture.isCompletedExceptionally()) {
+                    connectionState.connection.disconnect();
+                    connectionState.connection.close();
                     continue;
                 }
 
@@ -223,7 +228,7 @@ class PubSubStress {
                 connectionState.subscribeFuture = connectionState.connection.subscribe(clientTopic, QualityOfService.AT_LEAST_ONCE, (message) -> {
                     try {
                         String payload = new String(message.getPayload(), "UTF-8");
-                        System.out.println(String.format("(Topic %s): MESSAGE: %s", clientTopic, payload));
+                        //System.out.println(String.format("(Topic %s): MESSAGE: %s", clientTopic, payload));
                     } catch (UnsupportedEncodingException ex) {
                         System.out.println(String.format("(Topic %s): Unable to decode payload: %s", clientTopic, ex.getMessage()));
                     }
@@ -236,7 +241,8 @@ class PubSubStress {
                 // Simple throttle to avoid Iot Subscribe/Second limit
                 Thread.sleep(5);
             } catch (Exception e) {
-                ;
+                connectionState.connection.disconnect();
+                connectionState.connection.close();
             }
         }
 
@@ -245,10 +251,15 @@ class PubSubStress {
         for (int i = 0; i < connectionsInProgress.size(); ++i) {
             ConnectionState connectionState = connectionsInProgress.get(i);
             CompletableFuture<Integer> subscribeFuture = connectionState.subscribeFuture;
+            if (subscribeFuture == null) {
+                continue;
+            }
 
             try {
-                subscribeFuture.get();
+                subscribeFuture.get(5, TimeUnit.SECONDS);
                 if (subscribeFuture.isCancelled() || subscribeFuture.isCompletedExceptionally()) {
+                    connectionState.connection.disconnect();
+                    connectionState.connection.close();
                     continue;
                 }
 
@@ -272,7 +283,7 @@ class PubSubStress {
 
         for (CompletableFuture<Void> future : disconnectFutures) {
             try {
-                future.get();
+                future.get(60, TimeUnit.SECONDS);
             } catch (Exception e) {
                 ;
             }
@@ -290,54 +301,67 @@ class PubSubStress {
             return;
         }
 
-        try(ClientBootstrap clientBootstrap = new ClientBootstrap(eventLoopThreadCount);
-            TlsContextOptions tlsContextOptions = TlsContextOptions.createWithMtlsFromPath(certPath, keyPath)) {
-            tlsContextOptions.overrideDefaultTrustStoreFromPath(null, rootCaPath);
+        Instant startTime = Instant.now();
+        int iteration = 0;
+        while(Instant.now().isBefore(startTime.plusSeconds(testDurationInSeconds))) {
+            System.out.println(String.format("Starting iteration %d", iteration));
 
-            try(TlsContext tlsContext = new TlsContext(tlsContextOptions);
-                MqttClient client = new MqttClient(clientBootstrap, tlsContext)) {
+            try (ClientBootstrap clientBootstrap = new ClientBootstrap(eventLoopThreadCount);
+                 TlsContextOptions tlsContextOptions = TlsContextOptions.createWithMtlsFromPath(certPath, keyPath)) {
+                tlsContextOptions.overrideDefaultTrustStoreFromPath(null, rootCaPath);
 
-                initConnections(client);
+                try (TlsContext tlsContext = new TlsContext(tlsContextOptions);
+                     MqttClient client = new MqttClient(clientBootstrap, tlsContext)) {
 
-                Log.log(Log.LogLevel.Info, Log.LogSubject.MqttGeneral, "START OF PUBLISH......");
+                    try {
+                        initConnections(client);
 
-                Random rng = new Random(0);
+                        Log.log(Log.LogLevel.Info, Log.LogSubject.MqttGeneral, "START OF PUBLISH......");
 
-                List<CompletableFuture<Integer>> publishFutures = new ArrayList<>();
+                        Random rng = new Random(0);
 
-                for(int count = 0; count < messagesToPublish; ++count) {
-                    String messageContent = String.format("%s #%d", message, count + 1);
+                        List<CompletableFuture<Integer>> publishFutures = new ArrayList<>();
 
-                    // Pick a random connection to publish from
-                    int connectionIndex = validIndices.get(Math.abs(rng.nextInt()) % validIndices.size());
-                    String connectionId = String.format("%s%d", clientId, connectionIndex);
-                    MqttClientConnection connection = connections.get(connectionId);
+                        for (int count = 0; count < messagesToPublish; ++count) {
+                            String messageContent = String.format("%s #%d", message, count + 1);
 
-                    // Pick a random subscribed topic to publish to
-                    int topicIndex = validIndices.get(Math.abs(rng.nextInt()) % validIndices.size());
-                    String publishTopic = String.format("%s%d", topic, topicIndex);
+                            // Pick a random connection to publish from
+                            int connectionIndex = validIndices.get(Math.abs(rng.nextInt()) % validIndices.size());
+                            String connectionId = String.format("%s%d", clientId, connectionIndex);
+                            MqttClientConnection connection = connections.get(connectionId);
 
-                    publishFutures.add(connection.publish(new MqttMessage(publishTopic, messageContent.getBytes()), QualityOfService.AT_LEAST_ONCE, false));
+                            // Pick a random subscribed topic to publish to
+                            int topicIndex = validIndices.get(Math.abs(rng.nextInt()) % validIndices.size());
+                            String publishTopic = String.format("%s%d", topic, topicIndex);
 
-                    if (count % PROGRESS_OP_COUNT == 0) {
-                        System.out.println(String.format("(Main Thread) Message publish count: %d", count));
+                            publishFutures.add(connection.publish(new MqttMessage(publishTopic, messageContent.getBytes()), QualityOfService.AT_LEAST_ONCE, false));
+
+                            if (count % PROGRESS_OP_COUNT == 0) {
+                                System.out.println(String.format("(Main Thread) Message publish count: %d", count));
+                            }
+                        }
+
+                        for (CompletableFuture<Integer> publishFuture : publishFutures) {
+                            publishFuture.get();
+                        }
+
+                        System.out.println("zzzzz");
+
+                        Thread.sleep(1000);
+                    } catch (Exception e) {
+                        System.out.println(String.format("Exception: %s", e.getMessage()));
+                    } finally {
+                        cleanupConnections();
                     }
                 }
-
-                for (CompletableFuture<Integer> publishFuture : publishFutures) {
-                    publishFuture.get();
-                }
-
-                System.out.println("zzzzz");
-
-                Thread.sleep(1000);
-
-                cleanupConnections();
+            } catch (Exception e) {
+                System.out.println("Exception encountered: " + e.toString());
             }
-        } catch (Exception e) {
-            System.out.println("Exception encountered: " + e.toString());
-        }
 
-        System.out.println("Complete!");
+            System.out.println("Complete! Waiting on managed cleanup");
+            CrtResource.waitForNoResources();
+            System.out.println("Managed cleanup complete");
+            iteration++;
+        }
     }
 }
