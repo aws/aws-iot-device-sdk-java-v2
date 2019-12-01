@@ -51,7 +51,8 @@ class PubSubStress {
     static int testDurationInSeconds = 1;
 
     private static Map<String, MqttClientConnection> connections = new HashMap<>();
-    private static List<Integer> validIndices = new ArrayList<>();
+    private static List<String> validClientIds = new ArrayList<>();
+    private static List<String> validTopics = new ArrayList<>();
 
     static void printUsage() {
         System.out.println(
@@ -161,6 +162,7 @@ class PubSubStress {
         public ConnectionState() {}
 
         public String clientId;
+        public String topic;
         public MqttClientConnection connection;
         public CompletableFuture<Boolean> connectFuture;
         public CompletableFuture<Integer> subscribeFuture;
@@ -187,11 +189,11 @@ class PubSubStress {
             try {
                 ConnectionState connectionState = new ConnectionState();
                 connectionState.clientId = String.format("%s%d", clientId, i);
-                connectionState.connection = connection;
                 connectionState.connectFuture = connection.connect(
                         connectionState.clientId,
                         endpoint, port,
                         null, true, 0, 0);
+                connectionState.connection = connection;
 
                 connectionsInProgress.add(connectionState);
 
@@ -218,13 +220,9 @@ class PubSubStress {
 
             try {
                 connectFuture.get(5, TimeUnit.SECONDS);
-                if (connectFuture.isCancelled() || connectFuture.isCompletedExceptionally()) {
-                    connectionState.connection.disconnect();
-                    connectionState.connection.close();
-                    continue;
-                }
 
                 String clientTopic = String.format("%s%d", topic, i);
+                connectionState.topic = clientTopic;
                 connectionState.subscribeFuture = connectionState.connection.subscribe(clientTopic, QualityOfService.AT_LEAST_ONCE, (message) -> {
                     try {
                         String payload = new String(message.getPayload(), "UTF-8");
@@ -243,6 +241,7 @@ class PubSubStress {
             } catch (Exception e) {
                 connectionState.connection.disconnect();
                 connectionState.connection.close();
+                connectionState.connection = null;
             }
         }
 
@@ -257,17 +256,14 @@ class PubSubStress {
 
             try {
                 subscribeFuture.get(5, TimeUnit.SECONDS);
-                if (subscribeFuture.isCancelled() || subscribeFuture.isCompletedExceptionally()) {
-                    connectionState.connection.disconnect();
-                    connectionState.connection.close();
-                    continue;
-                }
 
                 connections.put(connectionState.clientId, connectionState.connection);
-                validIndices.add(i);
+                validClientIds.add(connectionState.clientId);
+                validTopics.add(connectionState.topic);
             } catch (Exception e) {
                 connectionState.connection.disconnect();
                 connectionState.connection.close();
+                connectionState.connection = null;
             }
         }
 
@@ -278,19 +274,27 @@ class PubSubStress {
         List<CompletableFuture<Void>> disconnectFutures = new ArrayList<>();
 
         for (MqttClientConnection connection : connections.values()) {
-            disconnectFutures.add(connection.disconnect());
+            try {
+                disconnectFutures.add(connection.disconnect());
+            } catch (Exception e) {
+                System.out.println(String.format("Disconnect Exception: %s", e.getMessage()));
+            }
         }
 
         for (CompletableFuture<Void> future : disconnectFutures) {
             try {
                 future.get(60, TimeUnit.SECONDS);
             } catch (Exception e) {
-                ;
+                System.out.println(String.format("Disconnect Future Exception: %s", e.getMessage()));
             }
         }
 
         for (MqttClientConnection connection : connections.values()) {
-            connection.close();
+            try {
+                connection.close();
+            } catch (Exception e) {
+                System.out.println(String.format("Close Exception: %s", e.getMessage()));
+            }
         }
     }
 
@@ -301,9 +305,8 @@ class PubSubStress {
             return;
         }
 
-        Instant startTime = Instant.now();
         int iteration = 0;
-        while(Instant.now().isBefore(startTime.plusSeconds(testDurationInSeconds))) {
+        while(iteration < testDurationInSeconds) {
             System.out.println(String.format("Starting iteration %d", iteration));
 
             try (ClientBootstrap clientBootstrap = new ClientBootstrap(eventLoopThreadCount);
@@ -326,13 +329,11 @@ class PubSubStress {
                             String messageContent = String.format("%s #%d", message, count + 1);
 
                             // Pick a random connection to publish from
-                            int connectionIndex = validIndices.get(Math.abs(rng.nextInt()) % validIndices.size());
-                            String connectionId = String.format("%s%d", clientId, connectionIndex);
+                            String connectionId = validClientIds.get(Math.abs(rng.nextInt()) % validClientIds.size());
                             MqttClientConnection connection = connections.get(connectionId);
 
                             // Pick a random subscribed topic to publish to
-                            int topicIndex = validIndices.get(Math.abs(rng.nextInt()) % validIndices.size());
-                            String publishTopic = String.format("%s%d", topic, topicIndex);
+                            String publishTopic = validTopics.get(Math.abs(rng.nextInt()) % validTopics.size());
 
                             publishFutures.add(connection.publish(new MqttMessage(publishTopic, messageContent.getBytes()), QualityOfService.AT_LEAST_ONCE, false));
 
@@ -361,7 +362,19 @@ class PubSubStress {
             System.out.println("Complete! Waiting on managed cleanup");
             CrtResource.waitForNoResources();
             System.out.println("Managed cleanup complete");
+
+            for (int i = 0; i < 10; ++i) {
+                System.gc();
+            }
+            long nativeMemoryInUse = CRT.nativeMemory();
+            System.out.println(String.format("Native memory: %d", nativeMemoryInUse));
+            long javaMemoryInUse = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory());
+            System.out.println(String.format("Java memory: %d", javaMemoryInUse));
+
             iteration++;
+
+            validClientIds.clear();
+            validTopics.clear();
         }
     }
 }
