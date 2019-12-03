@@ -36,6 +36,8 @@ import software.amazon.awssdk.iot.iotshadow.model.UpdateShadowRequest;
 import software.amazon.awssdk.iot.iotshadow.model.UpdateShadowResponse;
 import software.amazon.awssdk.iot.iotshadow.model.UpdateShadowSubscriptionRequest;
 
+import java.nio.charset.StandardCharsets;
+
 import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
 import software.amazon.awssdk.crt.mqtt.QualityOfService;
 import software.amazon.awssdk.crt.mqtt.MqttException;
@@ -84,15 +86,9 @@ public class IotShadowClient {
         }
         topic = topic.replace("{thingName}", request.thingName);
         Consumer<MqttMessage> messageHandler = (message) -> {
-            try {
-                String payload = new String(message.getPayload(), "UTF-8");
-                ErrorResponse response = gson.fromJson(payload, ErrorResponse.class);
-                handler.accept(response);
-            } catch (UnsupportedEncodingException ex) {
-                if (exceptionHandler != null) {
-                    exceptionHandler.accept(ex);
-                }
-            };
+            String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
+            ErrorResponse response = gson.fromJson(payload, ErrorResponse.class);
+            handler.accept(response);
         };
         return connection.subscribe(topic, qos, messageHandler);
     }
@@ -115,7 +111,7 @@ public class IotShadowClient {
         }
         topic = topic.replace("{thingName}", request.thingName);
         String payloadJson = gson.toJson(request);
-        MqttMessage message = new MqttMessage(topic, payloadJson.getBytes());
+        MqttMessage message = new MqttMessage(topic, payloadJson.getBytes(StandardCharsets.UTF_8));
         return connection.publish(message, qos, false);
     }
 
@@ -130,7 +126,7 @@ public class IotShadowClient {
         }
         topic = topic.replace("{thingName}", request.thingName);
         String payloadJson = gson.toJson(request);
-        MqttMessage message = new MqttMessage(topic, payloadJson.getBytes());
+        MqttMessage message = new MqttMessage(topic, payloadJson.getBytes(StandardCharsets.UTF_8));
         return connection.publish(message, qos, false);
     }
 
@@ -147,15 +143,9 @@ public class IotShadowClient {
         }
         topic = topic.replace("{thingName}", request.thingName);
         Consumer<MqttMessage> messageHandler = (message) -> {
-            try {
-                String payload = new String(message.getPayload(), "UTF-8");
-                ShadowDeltaUpdatedEvent response = gson.fromJson(payload, ShadowDeltaUpdatedEvent.class);
-                handler.accept(response);
-            } catch (UnsupportedEncodingException ex) {
-                if (exceptionHandler != null) {
-                    exceptionHandler.accept(ex);
-                }
-            };
+            String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
+            ShadowDeltaUpdatedEvent response = gson.fromJson(payload, ShadowDeltaUpdatedEvent.class);
+            handler.accept(response);
         };
         return connection.subscribe(topic, qos, messageHandler);
     }
@@ -180,15 +170,9 @@ public class IotShadowClient {
         }
         topic = topic.replace("{thingName}", request.thingName);
         Consumer<MqttMessage> messageHandler = (message) -> {
-            try {
-                String payload = new String(message.getPayload(), "UTF-8");
-                UpdateShadowResponse response = gson.fromJson(payload, UpdateShadowResponse.class);
-                handler.accept(response);
-            } catch (UnsupportedEncodingException ex) {
-                if (exceptionHandler != null) {
-                    exceptionHandler.accept(ex);
-                }
-            };
+            String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
+            UpdateShadowResponse response = gson.fromJson(payload, UpdateShadowResponse.class);
+            handler.accept(response);
         };
         return connection.subscribe(topic, qos, messageHandler);
     }
@@ -210,8 +194,8 @@ public class IotShadowClient {
             return result;
         }
         topic = topic.replace("{thingName}", request.thingName);
-        String payloadJson = gson.toJson(request);        
-        MqttMessage message = new MqttMessage(topic, payloadJson.getBytes());
+        String payloadJson = gson.toJson(request);
+        MqttMessage message = new MqttMessage(topic, payloadJson.getBytes(StandardCharsets.UTF_8));
         return connection.publish(message, qos, false);
     }
 
@@ -228,15 +212,9 @@ public class IotShadowClient {
         }
         topic = topic.replace("{thingName}", request.thingName);
         Consumer<MqttMessage> messageHandler = (message) -> {
-            try {
-                String payload = new String(message.getPayload(), "UTF-8");
-                DeleteShadowResponse response = gson.fromJson(payload, DeleteShadowResponse.class);
-                handler.accept(response);
-            } catch (UnsupportedEncodingException ex) {
-                if (exceptionHandler != null) {
-                    exceptionHandler.accept(ex);
-                }
-            };
+            String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
+            DeleteShadowResponse response = gson.fromJson(payload, DeleteShadowResponse.class);
+            handler.accept(response);
         };
         return connection.subscribe(topic, qos, messageHandler);
     }
@@ -261,15 +239,9 @@ public class IotShadowClient {
         }
         topic = topic.replace("{thingName}", request.thingName);
         Consumer<MqttMessage> messageHandler = (message) -> {
-            try {
-                String payload = new String(message.getPayload(), "UTF-8");
-                GetShadowResponse response = gson.fromJson(payload, GetShadowResponse.class);
-                handler.accept(response);
-            } catch (UnsupportedEncodingException ex) {
-                if (exceptionHandler != null) {
-                    exceptionHandler.accept(ex);
-                }
-            };
+            String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
+            GetShadowResponse response = gson.fromJson(payload, GetShadowResponse.class);
+            handler.accept(response);
         };
         return connection.subscribe(topic, qos, messageHandler);
     }
@@ -294,15 +266,9 @@ public class IotShadowClient {
         }
         topic = topic.replace("{thingName}", request.thingName);
         Consumer<MqttMessage> messageHandler = (message) -> {
-            try {
-                String payload = new String(message.getPayload(), "UTF-8");
-                ShadowUpdatedEvent response = gson.fromJson(payload, ShadowUpdatedEvent.class);
-                handler.accept(response);
-            } catch (UnsupportedEncodingException ex) {
-                if (exceptionHandler != null) {
-                    exceptionHandler.accept(ex);
-                }
-            };
+            String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
+            ShadowUpdatedEvent response = gson.fromJson(payload, ShadowUpdatedEvent.class);
+            handler.accept(response);
         };
         return connection.subscribe(topic, qos, messageHandler);
     }
@@ -327,15 +293,9 @@ public class IotShadowClient {
         }
         topic = topic.replace("{thingName}", request.thingName);
         Consumer<MqttMessage> messageHandler = (message) -> {
-            try {
-                String payload = new String(message.getPayload(), "UTF-8");
-                ErrorResponse response = gson.fromJson(payload, ErrorResponse.class);
-                handler.accept(response);
-            } catch (UnsupportedEncodingException ex) {
-                if (exceptionHandler != null) {
-                    exceptionHandler.accept(ex);
-                }
-            };
+            String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
+            ErrorResponse response = gson.fromJson(payload, ErrorResponse.class);
+            handler.accept(response);
         };
         return connection.subscribe(topic, qos, messageHandler);
     }
@@ -360,15 +320,9 @@ public class IotShadowClient {
         }
         topic = topic.replace("{thingName}", request.thingName);
         Consumer<MqttMessage> messageHandler = (message) -> {
-            try {
-                String payload = new String(message.getPayload(), "UTF-8");
-                ErrorResponse response = gson.fromJson(payload, ErrorResponse.class);
-                handler.accept(response);
-            } catch (UnsupportedEncodingException ex) {
-                if (exceptionHandler != null) {
-                    exceptionHandler.accept(ex);
-                }
-            };
+            String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
+            ErrorResponse response = gson.fromJson(payload, ErrorResponse.class);
+            handler.accept(response);
         };
         return connection.subscribe(topic, qos, messageHandler);
     }
