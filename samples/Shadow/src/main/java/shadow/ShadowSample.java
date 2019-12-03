@@ -212,14 +212,17 @@ public class ShadowSample {
 
     public static void main(String[] args) {
         parseCommandLine(args);
-        if (thingName == null || endpoint == null || rootCaPath == null || certPath == null || keyPath == null) {
+        if (thingName == null || endpoint == null || certPath == null || keyPath == null) {
             printUsage();
             return;
         }
 
         try(ClientBootstrap clientBootstrap = new ClientBootstrap(1);
             TlsContextOptions tlsContextOptions = TlsContextOptions.createWithMtlsFromPath(certPath, keyPath)) {
-            tlsContextOptions.overrideDefaultTrustStoreFromPath(null, rootCaPath);
+
+            if (rootCaPath != null) {
+                tlsContextOptions.overrideDefaultTrustStoreFromPath(null, rootCaPath);
+            }
 
             try(TlsContext tlsContext = new TlsContext(tlsContextOptions);
                 MqttClient client = new MqttClient(clientBootstrap, tlsContext);
