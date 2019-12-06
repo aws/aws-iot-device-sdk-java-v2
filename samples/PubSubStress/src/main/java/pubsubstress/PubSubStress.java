@@ -48,7 +48,7 @@ class PubSubStress {
     static int port = 8883;
     static int connectionCount = 1000;
     static int eventLoopThreadCount = 1;
-    static int testDurationInSeconds = 1;
+    static int testIterations = 1;
 
     private static Map<String, MqttClientConnection> connections = new HashMap<>();
     private static List<String> validClientIds = new ArrayList<>();
@@ -69,7 +69,7 @@ class PubSubStress {
                 "  -n|--count    Number of messages to publish (optional)\n"+
                 "  --connections Number of connections to make (optional)\n"+
                 "  --threads     Number of IO threads to use (optional)\n" +
-                "  -d|--duration Time in seconds to repeat the stress test (optional)\n"
+                "  -i|--iterations Number of times to repeat the basic stress test logic (optional)\n"
         );
     }
 
@@ -142,10 +142,10 @@ class PubSubStress {
                         eventLoopThreadCount = Integer.parseInt(args[++idx]);
                     }
                     break;
-                case "-d":
-                case "--duration":
+                case "-i":
+                case "--iterations":
                     if (idx + 1 < args.length) {
-                        testDurationInSeconds = Integer.parseInt(args[++idx]);
+                        testIterations = Integer.parseInt(args[++idx]);
                     }
                     break;
                 default:
@@ -306,7 +306,7 @@ class PubSubStress {
         }
 
         int iteration = 0;
-        while(iteration < testDurationInSeconds) {
+        while(iteration < testIterations) {
             System.out.println(String.format("Starting iteration %d", iteration));
 
             try (ClientBootstrap clientBootstrap = new ClientBootstrap(eventLoopThreadCount);
@@ -335,7 +335,11 @@ class PubSubStress {
                             // Pick a random subscribed topic to publish to
                             String publishTopic = validTopics.get(Math.abs(rng.nextInt()) % validTopics.size());
 
-                            publishFutures.add(connection.publish(new MqttMessage(publishTopic, messageContent.getBytes()), QualityOfService.AT_LEAST_ONCE, false));
+                            try {
+                                publishFutures.add(connection.publish(new MqttMessage(publishTopic, messageContent.getBytes()), QualityOfService.AT_LEAST_ONCE, false));
+                            } catch (Exception e) {
+                                System.out.println(String.format("Publishing Exception: %s", e.getMessage()));
+                            }
 
                             if (count % PROGRESS_OP_COUNT == 0) {
                                 System.out.println(String.format("(Main Thread) Message publish count: %d", count));
