@@ -226,7 +226,6 @@ class PubSubStress {
                 connectionState.subscribeFuture = connectionState.connection.subscribe(clientTopic, QualityOfService.AT_LEAST_ONCE, (message) -> {
                     try {
                         String payload = new String(message.getPayload(), "UTF-8");
-                        //System.out.println(String.format("(Topic %s): MESSAGE: %s", clientTopic, payload));
                     } catch (UnsupportedEncodingException ex) {
                         System.out.println(String.format("(Topic %s): Unable to decode payload: %s", clientTopic, ex.getMessage()));
                     }
@@ -367,6 +366,7 @@ class PubSubStress {
             CrtResource.waitForNoResources();
             System.out.println("Managed cleanup complete");
 
+            /* Not particularly effective, but psychologically reassuring to do before checking memory */
             for (int i = 0; i < 10; ++i) {
                 System.gc();
             }
