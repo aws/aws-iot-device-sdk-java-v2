@@ -11,6 +11,7 @@
         <module>samples/BasicPubSub</module>
         <module>samples/Jobs</module>
         <module>samples/PubSubStress</module>
+        <module>samples/RawPubSub</module>
         <module>samples/Shadow</module>
     </modules>
 
