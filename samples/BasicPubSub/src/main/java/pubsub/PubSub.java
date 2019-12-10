@@ -24,6 +24,7 @@ import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnectionEvents;
 import software.amazon.awssdk.crt.mqtt.MqttMessage;
 import software.amazon.awssdk.crt.mqtt.QualityOfService;
+import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
 import software.amazon.awssdk.iot.iotjobs.model.RejectedError;
 
 import java.io.UnsupportedEncodingException;
@@ -135,30 +136,36 @@ class PubSub {
             return;
         }
 
+        MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
+            @Override
+            public void onConnectionInterrupted(int errorCode) {
+                if (errorCode != 0) {
+                    System.out.println("Connection interrupted: " + errorCode + ": " + CRT.awsErrorString(errorCode));
+                }
+            }
+
+            @Override
+            public void onConnectionResumed(boolean sessionPresent) {
+                System.out.println("Connection resumed: " + (sessionPresent ? "existing session" : "clean session"));
+            }
+        };
+
         try(ClientBootstrap clientBootstrap = new ClientBootstrap(1);
-            TlsContextOptions tlsContextOptions = TlsContextOptions.createWithMtlsFromPath(certPath, keyPath)) {
-            tlsContextOptions.overrideDefaultTrustStoreFromPath(null, rootCaPath);
+            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(certPath, keyPath)) {
 
-            try(TlsContext tlsContext = new TlsContext(tlsContextOptions);
-                MqttClient client = new MqttClient(clientBootstrap, tlsContext);
-                MqttClientConnection connection = new MqttClientConnection(client, new MqttClientConnectionEvents() {
-                    @Override
-                    public void onConnectionInterrupted(int errorCode) {
-                        if (errorCode != 0) {
-                            System.out.println("Connection interrupted: " + errorCode + ": " + CRT.awsErrorString(errorCode));
-                        }
-                    }
+            if (rootCaPath != null) {
+                builder.withCertificateAuthorityFromPath(null, rootCaPath);
+            }
 
-                    @Override
-                    public void onConnectionResumed(boolean sessionPresent) {
-                        System.out.println("Connection resumed: " + (sessionPresent ? "existing session" : "clean session"));
-                    }
-                })) {
+            builder.withBootstrap(clientBootstrap)
+                .withConnectionEventCallbacks(callbacks)
+                .withClientId(clientId)
+                .withEndpoint(endpoint)
+                .withCleanSession(true);
 
-                CompletableFuture<Boolean> connected = connection.connect(
-                        clientId,
-                        endpoint, port,
-                        null, true, 0, 0)
+            try(MqttClientConnection connection = builder.build()) {
+
+                CompletableFuture<Boolean> connected = connection.connect()
                         .exceptionally((ex) -> {
                             System.out.println("Exception occurred during connect: " + ex.toString());
                             return null;

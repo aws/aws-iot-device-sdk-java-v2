@@ -23,6 +23,7 @@ import software.amazon.awssdk.crt.mqtt.MqttClient;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnectionEvents;
 import software.amazon.awssdk.crt.mqtt.QualityOfService;
+import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
 import software.amazon.awssdk.iot.iotshadow.IotShadowClient;
 import software.amazon.awssdk.iot.iotshadow.model.ErrorResponse;
 import software.amazon.awssdk.iot.iotshadow.model.GetShadowRequest;
@@ -65,7 +66,6 @@ public class ShadowSample {
                 "  --thingName   The name of the IoT thing\n"+
                 "  --clientId    The Client ID to use when connecting\n"+
                 "  -e|--endpoint AWS IoT service endpoint hostname\n"+
-                "  -p|--port     Port to connect to on the endpoint\n"+
                 "  -r|--rootca   Path to the root certificate\n"+
                 "  -c|--cert     Path to the IoT thing certificate\n"+
                 "  -k|--key      Path to the IoT thing public key"
@@ -88,12 +88,6 @@ public class ShadowSample {
                 case "--endpoint":
                     if (idx + 1 < args.length) {
                         endpoint = args[++idx];
-                    }
-                    break;
-                case "-p":
-                case "--port":
-                    if (idx + 1 < args.length) {
-                        port = Integer.parseInt(args[++idx]);
                     }
                     break;
                 case "-r":
@@ -217,34 +211,37 @@ public class ShadowSample {
             return;
         }
 
-        try(ClientBootstrap clientBootstrap = new ClientBootstrap(1);
-            TlsContextOptions tlsContextOptions = TlsContextOptions.createWithMtlsFromPath(certPath, keyPath)) {
-
-            if (rootCaPath != null) {
-                tlsContextOptions.overrideDefaultTrustStoreFromPath(null, rootCaPath);
+        MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
+            @Override
+            public void onConnectionInterrupted(int errorCode) {
+                if (errorCode != 0) {
+                    System.out.println("Connection interrupted: " + errorCode + ": " + CRT.awsErrorString(errorCode));
+                }
             }
 
-            try(TlsContext tlsContext = new TlsContext(tlsContextOptions);
-                MqttClient client = new MqttClient(clientBootstrap, tlsContext);
-                MqttClientConnection connection = new MqttClientConnection(client, new MqttClientConnectionEvents() {
-                    @Override
-                    public void onConnectionInterrupted(int errorCode) {
-                        if (errorCode != 0) {
-                            System.out.println("Connection interrupted: " + errorCode + ": " + CRT.awsErrorString(errorCode));
-                        }
-                    }
+            @Override
+            public void onConnectionResumed(boolean sessionPresent) {
+                System.out.println("Connection resumed: " + (sessionPresent ? "existing session" : "clean session"));
+            }
+        };
 
-                    @Override
-                    public void onConnectionResumed(boolean sessionPresent) {
-                        System.out.println("Connection resumed: " + (sessionPresent ? "existing session" : "clean session"));
-                    }
-                })) {
+        try(ClientBootstrap clientBootstrap = new ClientBootstrap(1);
+            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(certPath, keyPath)) {
+
+            if (rootCaPath != null) {
+                builder.withCertificateAuthorityFromPath(null, rootCaPath);
+            }
+
+            builder.withClientId(clientId)
+                    .withEndpoint(endpoint)
+                    .withCleanSession(true)
+                    .withConnectionEventCallbacks(callbacks)
+                    .withBootstrap(clientBootstrap);
+
+            try(MqttClientConnection connection = builder.build()) {
                 shadow = new IotShadowClient(connection);
 
-                CompletableFuture<Boolean> connected = connection.connect(
-                        clientId,
-                        endpoint, port,
-                        null, true, 0, 0)
+                CompletableFuture<Boolean> connected = connection.connect()
                         .exceptionally((ex) -> {
                             System.out.println("Exception occurred during connect: " + ex.toString());
                             return null;
