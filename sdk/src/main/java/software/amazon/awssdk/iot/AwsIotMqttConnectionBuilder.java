@@ -18,6 +18,7 @@ package software.amazon.awssdk.iot;
 import software.amazon.awssdk.crt.utils.PackageInfo;
 
 import java.io.UnsupportedEncodingException;
+import java.util.function.Consumer;
 
 import software.amazon.awssdk.crt.CrtResource;
 import software.amazon.awssdk.crt.http.HttpProxyOptions;
@@ -32,6 +33,7 @@ import software.amazon.awssdk.crt.mqtt.MqttConnectionConfig;
 import software.amazon.awssdk.crt.mqtt.MqttException;
 import software.amazon.awssdk.crt.mqtt.MqttMessage;
 import software.amazon.awssdk.crt.mqtt.QualityOfService;
+import software.amazon.awssdk.crt.mqtt.WebsocketHandshakeTransformArgs;
 
 /*
  * A central class for building Mqtt connections without manually managing a large variety of native objects (some
@@ -60,8 +62,10 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     private boolean willRetain;
 
     /* mqtt websockets */
-    private boolean useWebsocket = false;
-    private HttpProxyOptions proxyOptions;
+    private boolean useWebsockets = false;
+    private HttpProxyOptions websocketProxyOptions;
+    private Consumer<WebsocketHandshakeTransformArgs> websocketHandshakeTransform;
+    private String websocketSigningRegion;
 
     /* Internal config and state */
     private ClientTlsContext tlsContext;  // Lazy create, cached
@@ -70,16 +74,20 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
 
     private boolean resetCachedResources = true;
 
-    private AwsIotMqttConnectionBuilder(TlsContextOptions tlsOptions) {
-        this.tlsOptions = tlsOptions;
-        addReferenceTo(tlsOptions);
-
+    private void resetDefaultPort() {
         if (TlsContextOptions.isAlpnSupported()) {
             this.tlsOptions.withAlpnList("x-amzn-mqtt-ca");
             this.port = 443;
         } else {
             this.port = 8883;
         }
+    }
+
+    private AwsIotMqttConnectionBuilder(TlsContextOptions tlsOptions) {
+        this.tlsOptions = tlsOptions;
+        addReferenceTo(tlsOptions);
+
+        resetDefaultPort();
     }
 
     /**
@@ -227,18 +235,6 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     }
 
     /**
-     * Configures the builder's connections to use MQTT over websockets. Forces the port to
-     * 443.
-     */
-    public AwsIotMqttConnectionBuilder withWebsocket() {
-        this.useWebsocket = true;
-        this.tlsOptions.alpnList.clear();
-        this.port = 443;
-        resetCachedResources = true;
-        return this;
-    }
-
-    /**
      * Configures MQTT keep-alive via PING messages. Note that this is not TCP
      * keepalive.
      * 
@@ -345,6 +341,65 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     }
 
     /**
+     * Configures whether or not to the connection uses websockets
+     *
+     * @param useWebsockets whether or not to use websockets
+     */
+    public AwsIotMqttConnectionBuilder withWebsockets(boolean useWebsockets) {
+        this.useWebsockets = useWebsockets;
+
+        if (useWebsockets) {
+            this.tlsOptions.alpnList.clear();
+            this.port = 443;
+        } else {
+            resetDefaultPort();
+        }
+
+        resetCachedResources = true;
+
+        return this;
+    }
+
+    /**
+     * Configures handshake transform used when establishing a connection via websockets.  If no transform has been
+     * set then a default transform is used that adds AWS IoT authentication parameters and signs the request via
+     * Sigv4.
+     *
+     * When done mutating the request, complete MUST be called on the future contained within the
+     * transform args parameter.
+     *
+     * @param handshakeTransform handshake request transformation function
+     */
+    public AwsIotMqttConnectionBuilder withWebsocketHandshakeTransform(Consumer<WebsocketHandshakeTransformArgs> handshakeTransform) {
+        this.websocketHandshakeTransform = handshakeTransform;
+
+        return this;
+    }
+
+    /**
+     * Configures any http proxy options to use if the connection uses websockets
+     *
+     * @param proxyOptions http proxy options to use when establishing a websockets-based connection
+     */
+    public AwsIotMqttConnectionBuilder withWebsocketProxyOptions(HttpProxyOptions proxyOptions) {
+        this.websocketProxyOptions = proxyOptions;
+
+        return this;
+    }
+
+    /**
+     * Configures the region to use when signing (via Sigv4) the websocket upgrade request.  Only applicable
+     * if the handshake transform is null (enabling the default sigv4 transform injection).
+     *
+     * @param region region to use when signing the websocket upgrade request
+     */
+    public AwsIotMqttConnectionBuilder withWebsocketSigningRegion(String region) {
+        this.websocketSigningRegion = region;
+
+        return this;
+    }
+
+    /**
      * Builds a new mqtt connection from the configuration stored in the builder.  Because some objects are created
      * lazily, certain properties should not be modified after this is first invoked (tls options, bootstrap).
      *
@@ -395,6 +450,16 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
 
             if (username != null && password != null) {
                 config.setLogin(username, password);
+            }
+
+            if (useWebsockets) {
+                if (websocketHandshakeTransform != null) {
+                    config.setWebsocketHandshakeTransform(websocketHandshakeTransform);
+                } else {
+                    config.setWebsocketHandshakeTransform(new AwsSigv4HandshakeTransformer());
+                }
+
+                config.setWebsocketProxyOptions(websocketProxyOptions);
             }
 
             return new MqttClientConnection(config);
