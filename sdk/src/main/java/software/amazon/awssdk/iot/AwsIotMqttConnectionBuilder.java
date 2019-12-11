@@ -18,18 +18,17 @@ package software.amazon.awssdk.iot;
 import software.amazon.awssdk.crt.utils.PackageInfo;
 
 import java.io.UnsupportedEncodingException;
-import java.util.concurrent.TimeUnit;
 
 import software.amazon.awssdk.crt.CrtResource;
 import software.amazon.awssdk.crt.http.HttpProxyOptions;
 import software.amazon.awssdk.crt.io.ClientBootstrap;
 import software.amazon.awssdk.crt.io.ClientTlsContext;
 import software.amazon.awssdk.crt.io.SocketOptions;
-import software.amazon.awssdk.crt.io.TlsContext;
 import software.amazon.awssdk.crt.io.TlsContextOptions;
 import software.amazon.awssdk.crt.mqtt.MqttClient;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnectionEvents;
+import software.amazon.awssdk.crt.mqtt.MqttConnectionConfig;
 import software.amazon.awssdk.crt.mqtt.MqttException;
 import software.amazon.awssdk.crt.mqtt.MqttMessage;
 import software.amazon.awssdk.crt.mqtt.QualityOfService;
@@ -38,31 +37,38 @@ import software.amazon.awssdk.crt.mqtt.QualityOfService;
  * A central class for building Mqtt connections without manually managing a large variety of native objects (some
  * still need to be created though).
  */
+
 public final class AwsIotMqttConnectionBuilder extends CrtResource {
-    private String clientId;
+    /* connection */
     private String endpoint;
     private int port;
-    private boolean useWebsocket = false;
-    private boolean cleanSession = true;
-    private int keepAliveSecs = 0;
-    private int pingTimeoutSecs = 0;
-    private SocketOptions socketOptions;  // CrtResource
+    private SocketOptions socketOptions;
 
+    /* mqtt general*/
+    private MqttClient client; // Lazy create, cached
+    private String clientId;
+    private String username;
+    private String password;
+    private MqttClientConnectionEvents callbacks;
+    private int keepAliveMs = 0;
+    private int pingTimeoutMs = 0;
+    private boolean cleanSession = true;
+
+    /* mqtt will */
     private MqttMessage willMessage = null;
     private QualityOfService willQos;
     private boolean willRetain;
 
-    private String username;
-    private String password;
-    private ClientTlsContext tlsContext = null;  // CrtResource
-    private MqttClientConnectionEvents callbacks = null;
+    /* mqtt websockets */
+    private boolean useWebsocket = false;
+    private HttpProxyOptions proxyOptions;
 
-    private HttpProxyOptions proxyOptions = null;
+    /* Internal config and state */
+    private ClientTlsContext tlsContext;  // Lazy create, cached
+    private TlsContextOptions tlsOptions;
+    private ClientBootstrap bootstrap;
 
-    private TlsContextOptions tlsOptions;  // CrtResource
-
-    private MqttClient client; // CrtResource
-    private ClientBootstrap bootstrap; // CrtResource
+    private boolean resetCachedResources = true;
 
     private AwsIotMqttConnectionBuilder(TlsContextOptions tlsOptions) {
         this.tlsOptions = tlsOptions;
@@ -161,6 +167,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      */
     public AwsIotMqttConnectionBuilder withCertificateAuthorityFromPath(String caDirPath, String caFilePath) {
         this.tlsOptions.overrideDefaultTrustStoreFromPath(caDirPath, caFilePath);
+        resetCachedResources = true;
         return this;
     }
 
@@ -171,6 +178,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      */
     public AwsIotMqttConnectionBuilder withCertificateAuthority(String caRoot) {
         this.tlsOptions.overrideDefaultTrustStore(caRoot);
+        resetCachedResources = true;
         return this;
     }
 
@@ -226,6 +234,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
         this.useWebsocket = true;
         this.tlsOptions.alpnList.clear();
         this.port = 443;
+        resetCachedResources = true;
         return this;
     }
 
@@ -233,11 +242,11 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      * Configures MQTT keep-alive via PING messages. Note that this is not TCP
      * keepalive.
      * 
-     * @param keepAliveSecs How often in seconds to send an MQTT PING message to the
+     * @param keepAliveMs How often in milliseconds to send an MQTT PING message to the
      *                   service to keep connections alive
      */
-    public AwsIotMqttConnectionBuilder withKeepAliveSeconds(int keepAliveSecs) {
-        this.keepAliveSecs = keepAliveSecs;
+    public AwsIotMqttConnectionBuilder withKeepAliveMs(int keepAliveMs) {
+        this.keepAliveMs = keepAliveMs;
         return this;
     }
 
@@ -245,11 +254,11 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      * Controls ping timeout value.  If a response is not received within this
      * interval, the connection will be reestablished.
      *
-     * @param pingTimeoutSecs How long to wait for a ping response before resetting a connection built from this
+     * @param pingTimeoutMs How long to wait for a ping response before resetting a connection built from this
      *                        builder.
      */
-    public AwsIotMqttConnectionBuilder withPingTimeoutSeconds(int pingTimeoutSecs) {
-        this.pingTimeoutSecs = pingTimeoutSecs;
+    public AwsIotMqttConnectionBuilder withPingTimeoutMs(int pingTimeoutMs) {
+        this.pingTimeoutMs = pingTimeoutMs;
         return this;
     }
 
@@ -330,6 +339,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     public AwsIotMqttConnectionBuilder withBootstrap(ClientBootstrap bootstrap) {
         swapReferenceTo(this.bootstrap, bootstrap);
         this.bootstrap = bootstrap;
+        resetCachedResources = true;
 
         return this;
     }
@@ -350,41 +360,44 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
         // This does mean that once you call build() once, modifying the tls context options or client bootstrap
         // has no affect on subsequently-created connections.
         synchronized(this) {
-            if (tlsOptions != null && tlsContext == null) {
+            if (tlsOptions != null && (tlsContext == null || resetCachedResources)) {
                 try (ClientTlsContext clientTlsContext = new ClientTlsContext(tlsOptions)) {
-                    addReferenceTo(clientTlsContext);
+                    swapReferenceTo(tlsContext, clientTlsContext);
                     tlsContext = clientTlsContext;
                 }
             }
 
-            if (client == null) {
+            if (client == null || resetCachedResources) {
                 try (MqttClient mqttClient = (tlsContext == null) ? new MqttClient(bootstrap) : new MqttClient(bootstrap, tlsContext)) {
-                    addReferenceTo(mqttClient);
+                    swapReferenceTo(client, mqttClient);
                     client = mqttClient;
                 }
             }
         }
 
+        resetCachedResources = false;
+
         // Connection create
-        try (MqttClientConnection connection = new MqttClientConnection(client, clientId, endpoint, port)) {
-            connection.setConnectionCallbacks(callbacks);
-            connection.setSocketOptions(socketOptions);
-            connection.setCleanSession(cleanSession);
-            connection.setKeepAliveMs((int) TimeUnit.MILLISECONDS.convert(keepAliveSecs, TimeUnit.SECONDS));
-            connection.setPingTimeoutMs((int) TimeUnit.MILLISECONDS.convert(pingTimeoutSecs, TimeUnit.SECONDS));
+        try (MqttConnectionConfig config = new MqttConnectionConfig()) {
+            config.setMqttClient(client);
+            config.setClientId(clientId);
+            config.setEndpoint(endpoint);
+            config.setPort(port);
+            config.setConnectionCallbacks(callbacks);
+            config.setSocketOptions(socketOptions);
+            config.setCleanSession(cleanSession);
+            config.setKeepAliveMs(keepAliveMs);
+            config.setPingTimeoutMs(pingTimeoutMs);
 
             if (willMessage != null) {
-                connection.setWill(willMessage, willQos, willRetain);
+                config.setWill(willMessage, willQos, willRetain);
             }
 
             if (username != null && password != null) {
-                connection.setLogin(username, password);
+                config.setLogin(username, password);
             }
 
-            // We successfully built the connection, so let's let it escape the try-with-resources block
-            connection.addRef();
-
-            return connection;
+            return new MqttClientConnection(config);
         }
     }
 }

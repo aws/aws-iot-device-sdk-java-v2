@@ -17,10 +17,9 @@ package pubsubstress;
 import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.crt.CrtResource;
 import software.amazon.awssdk.crt.io.ClientBootstrap;
-import software.amazon.awssdk.crt.io.TlsContext;
-import software.amazon.awssdk.crt.io.TlsContextOptions;
+import software.amazon.awssdk.crt.io.EventLoopGroup;
+import software.amazon.awssdk.crt.io.HostResolver;
 import software.amazon.awssdk.crt.Log;
-import software.amazon.awssdk.crt.mqtt.MqttClient;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnectionEvents;
 import software.amazon.awssdk.crt.mqtt.MqttMessage;
@@ -304,8 +303,10 @@ class PubSubStress {
         while(iteration < testIterations) {
             System.out.println(String.format("Starting iteration %d", iteration));
 
-            try (ClientBootstrap clientBootstrap = new ClientBootstrap(eventLoopThreadCount);
-                 AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(certPath, keyPath)) {
+            try (EventLoopGroup eventLoopGroup = new EventLoopGroup(eventLoopThreadCount);
+                HostResolver resolver = new HostResolver(eventLoopGroup);
+                ClientBootstrap clientBootstrap = new ClientBootstrap(eventLoopGroup, resolver);
+                AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(certPath, keyPath)) {
 
                 builder.withCertificateAuthorityFromPath(null, rootCaPath)
                     .withEndpoint(endpoint)

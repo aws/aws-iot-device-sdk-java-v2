@@ -15,11 +15,11 @@
 package shadow;
 
 import software.amazon.awssdk.crt.CRT;
+import software.amazon.awssdk.crt.CrtResource;
 import software.amazon.awssdk.crt.CrtRuntimeException;
 import software.amazon.awssdk.crt.io.ClientBootstrap;
-import software.amazon.awssdk.crt.io.TlsContext;
-import software.amazon.awssdk.crt.io.TlsContextOptions;
-import software.amazon.awssdk.crt.mqtt.MqttClient;
+import software.amazon.awssdk.crt.io.EventLoopGroup;
+import software.amazon.awssdk.crt.io.HostResolver;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnectionEvents;
 import software.amazon.awssdk.crt.mqtt.QualityOfService;
@@ -206,7 +206,7 @@ public class ShadowSample {
 
     public static void main(String[] args) {
         parseCommandLine(args);
-        if (thingName == null || endpoint == null || certPath == null || keyPath == null) {
+        if (thingName == null || endpoint == null || certPath == null || keyPath == null || clientId == null) {
             printUsage();
             return;
         }
@@ -225,7 +225,9 @@ public class ShadowSample {
             }
         };
 
-        try(ClientBootstrap clientBootstrap = new ClientBootstrap(1);
+        try(EventLoopGroup eventLoopGroup = new EventLoopGroup(1);
+            HostResolver resolver = new HostResolver(eventLoopGroup);
+            ClientBootstrap clientBootstrap = new ClientBootstrap(eventLoopGroup, resolver);
             AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(certPath, keyPath)) {
 
             if (rootCaPath != null) {
@@ -324,5 +326,6 @@ public class ShadowSample {
         }
 
         System.out.println("Complete!");
+        CrtResource.waitForNoResources();
     }
 }
