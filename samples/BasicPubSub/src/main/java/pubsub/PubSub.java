@@ -155,6 +155,13 @@ class PubSub {
             return;
         }
 
+        if (!useWebsockets) {
+            if (certPath == null || keyPath == null) {
+                printUsage();
+                return;
+            }
+        }
+
         MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
             @Override
             public void onConnectionInterrupted(int errorCode) {

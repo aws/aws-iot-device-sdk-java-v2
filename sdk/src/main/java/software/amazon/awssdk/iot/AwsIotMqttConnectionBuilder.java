@@ -134,13 +134,13 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     }
 
     /**
-     * Create a new builder from a Pkcs12 blob
+     * Create a new builder with no default Tls options
      *
-     * @param pkcs12Path - The path to a PKCS12 file
-     * @param pkcs12Password  - The password to the PKCS12 file
+     * @return a new builder with default Tls options
      */
-    public static AwsIotMqttConnectionBuilder newMtlsPkcs12Builder(String pkcs12Path, String pkcs12Password) {
-        try (TlsContextOptions tlsContextOptions = TlsContextOptions.createWithMtlsPkcs12(pkcs12Path, pkcs12Password)) {
+    public static AwsIotMqttConnectionBuilder newDefaultBuilder()
+            throws UnsupportedEncodingException {
+        try (TlsContextOptions tlsContextOptions = TlsContextOptions.createDefaultClient()) {
             return new AwsIotMqttConnectionBuilder(tlsContextOptions);
         }
     }
@@ -170,7 +170,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     }
 
     /**
-     * Configures the IoT endpoint for connections from this builder.  Can be varied between calls to build().
+     * Configures the IoT endpoint for connections from this builder.
      * 
      * @param endpoint The IoT endpoint to connect to
      */
@@ -180,7 +180,8 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     }
 
     /**
-     * Configures the port to connect to for connections from this builder.  Can be varied between calls to build().
+     * Configures the port to connect to for connections from this builder.  If not set, 443 will be used for
+     * a websocket connection or where ALPN support is available.  Otherwise the default is 8883.
      * 
      * @param port The port to connect to on the IoT endpoint. Usually 8883 for
      *             MQTT, or 443 for websockets
@@ -191,7 +192,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     }
 
     /**
-     * Configures the client id to use to connect to the IoT Core service.  Can be varied betweens calls to build().
+     * Configures the client id to use to connect to the IoT Core service.
      * 
      * @param clientId The client id for connections from this builder. Needs to be unique across
      *                  all devices/clients.
@@ -444,7 +445,16 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
                     signingConfig.setCredentialsProvider(websocketCredentialsProvider);
                     signingConfig.setShouldSignParameter( (String headerName) -> !headerName.equals(AMZ_DATE_HEADER) && !headerName.equals(AMZ_SECURITY_TOKEN_HEADER) );
 
-                    connectionConfig.setWebsocketHandshakeTransform(new AwsSigv4HandshakeTransformer(signingConfig));
+                    try (AwsSigv4HandshakeTransformer transformer = new AwsSigv4HandshakeTransformer(signingConfig)) {
+                        connectionConfig.setWebsocketHandshakeTransform(transformer);
+
+                        /*
+                         * transformer is actually a CrtResource since we track a SigningConfig (which tracks a Credentials Provider
+                         * But the MqttConnectionConfig only knows of the transformer as a Consumer function, so it's not
+                         * able to properly add a forward reference to the transformer.  So we do it manually here after setting.
+                         */
+                        connectionConfig.addReferenceTo(transformer);
+                    }
                 }
             }
 

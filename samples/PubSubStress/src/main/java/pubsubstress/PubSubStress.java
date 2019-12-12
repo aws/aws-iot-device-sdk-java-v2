@@ -16,6 +16,7 @@ package pubsubstress;
 
 import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.crt.CrtResource;
+import software.amazon.awssdk.crt.http.HttpProxyOptions;
 import software.amazon.awssdk.crt.io.ClientBootstrap;
 import software.amazon.awssdk.crt.io.EventLoopGroup;
 import software.amazon.awssdk.crt.io.HostResolver;
@@ -48,6 +49,10 @@ class PubSubStress {
     static int eventLoopThreadCount = 1;
     static int testIterations = 1;
 
+    static String proxyHost;
+    static int proxyPort;
+    static boolean useWebsockets;
+
     private static Map<String, MqttClientConnection> connections = new HashMap<>();
     private static List<String> validClientIds = new ArrayList<>();
     private static List<String> validTopics = new ArrayList<>();
@@ -66,7 +71,10 @@ class PubSubStress {
                 "  -n|--count    Number of messages to publish (optional)\n"+
                 "  --connections Number of connections to make (optional)\n"+
                 "  --threads     Number of IO threads to use (optional)\n" +
-                "  -i|--iterations Number of times to repeat the basic stress test logic (optional)\n"
+                "  -i|--iterations Number of times to repeat the basic stress test logic (optional)\n" +
+                "  -w|--websockets Use websockets\n" +
+                "  --proxyhost   Websocket proxy host to use\n" +
+                "  --proxyport   Websocket proxy port to use\n"
         );
     }
 
@@ -137,6 +145,19 @@ class PubSubStress {
                 case "--iterations":
                     if (idx + 1 < args.length) {
                         testIterations = Integer.parseInt(args[++idx]);
+                    }
+                    break;
+                case "-w":
+                    useWebsockets = true;
+                    break;
+                case "--proxyhost":
+                    if (idx + 1 < args.length) {
+                        proxyHost = args[++idx];
+                    }
+                    break;
+                case "--proxyport":
+                    if (idx + 1 < args.length) {
+                        proxyPort = Integer.parseInt(args[++idx]);
                     }
                     break;
                 default:
@@ -294,9 +315,16 @@ class PubSubStress {
 
     public static void main(String[] args) {
         parseCommandLine(args);
-        if (showHelp || endpoint == null || rootCaPath == null || certPath == null || keyPath == null) {
+        if (showHelp || endpoint == null) {
             printUsage();
             return;
+        }
+
+        if (!useWebsockets) {
+            if (certPath == null || keyPath == null) {
+                printUsage();
+                return;
+            }
         }
 
         int iteration = 0;
@@ -312,6 +340,19 @@ class PubSubStress {
                     .withEndpoint(endpoint)
                     .withCleanSession(true)
                     .withBootstrap(clientBootstrap);
+
+                if (useWebsockets) {
+                    builder.withWebsockets(true);
+                    builder.withWebsocketSigningRegion("us-east-1");
+
+                    if (proxyHost != null && proxyPort > 0) {
+                        HttpProxyOptions proxyOptions = new HttpProxyOptions();
+                        proxyOptions.setHost(proxyHost);
+                        proxyOptions.setPort(proxyPort);
+
+                        builder.withWebsocketProxyOptions(proxyOptions);
+                    }
+                }
 
                 try {
                     initConnections(builder);
