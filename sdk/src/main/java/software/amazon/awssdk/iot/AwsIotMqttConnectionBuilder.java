@@ -21,6 +21,9 @@ import java.io.UnsupportedEncodingException;
 import java.util.function.Consumer;
 
 import software.amazon.awssdk.crt.CrtResource;
+import software.amazon.awssdk.crt.auth.credentials.CredentialsProvider;
+import software.amazon.awssdk.crt.auth.credentials.DefaultChainCredentialsProvider;
+import software.amazon.awssdk.crt.auth.signing.AwsSigningConfig;
 import software.amazon.awssdk.crt.http.HttpProxyOptions;
 import software.amazon.awssdk.crt.io.ClientBootstrap;
 import software.amazon.awssdk.crt.io.ClientTlsContext;
@@ -41,49 +44,33 @@ import software.amazon.awssdk.crt.mqtt.WebsocketHandshakeTransformArgs;
  */
 
 public final class AwsIotMqttConnectionBuilder extends CrtResource {
-    /* connection */
-    private String endpoint;
-    private int port;
-    private SocketOptions socketOptions;
-
-    /* mqtt general*/
-    private MqttClient client; // Lazy create, cached
-    private String clientId;
-    private String username;
-    private String password;
-    private MqttClientConnectionEvents callbacks;
-    private int keepAliveMs = 0;
-    private int pingTimeoutMs = 0;
-    private boolean cleanSession = true;
-
-    /* mqtt will */
-    private MqttMessage willMessage = null;
-    private QualityOfService willQos;
-    private boolean willRetain;
-
-    /* mqtt websockets */
-    private boolean useWebsockets = false;
-    private HttpProxyOptions websocketProxyOptions;
-    private Consumer<WebsocketHandshakeTransformArgs> websocketHandshakeTransform;
-    private String websocketSigningRegion;
+    MqttConnectionConfig config;
 
     /* Internal config and state */
+    private MqttClient client; // Lazy create, cached
+    private CredentialsProvider websocketCredentialsProvider;
+    private String websocketSigningRegion;
     private ClientTlsContext tlsContext;  // Lazy create, cached
     private TlsContextOptions tlsOptions;
     private ClientBootstrap bootstrap;
 
-    private boolean resetCachedResources = true;
+    private boolean resetLazilyCreatedResources = true;
 
     private void resetDefaultPort() {
         if (TlsContextOptions.isAlpnSupported()) {
             this.tlsOptions.withAlpnList("x-amzn-mqtt-ca");
-            this.port = 443;
+            this.config.setPort(443);
         } else {
-            this.port = 8883;
+            this.config.setPort(8883);
         }
     }
 
     private AwsIotMqttConnectionBuilder(TlsContextOptions tlsOptions) {
+        try (MqttConnectionConfig connectionConfig = new MqttConnectionConfig()) {
+            addReferenceTo(connectionConfig);
+            config = connectionConfig;
+        }
+
         this.tlsOptions = tlsOptions;
         addReferenceTo(tlsOptions);
 
@@ -106,23 +93,15 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
 
 
     /**
-     * This class just tracks native resources: mqtt client, tls context, tls context options, client bootstrap
-     */
-    protected boolean isNativeResource() { return false; }
-
-    /**
      * Create a new builder with mTLS file paths
      * 
      * @param certPath       - Path to certificate, in PEM format
      * @param privateKeyPath - Path to private key, in PEM format
      */
     public static AwsIotMqttConnectionBuilder newMtlsBuilderFromPath(String certPath, String privateKeyPath) {
-        AwsIotMqttConnectionBuilder builder = null;
         try (TlsContextOptions tlsContextOptions = TlsContextOptions.createWithMtlsFromPath(certPath, privateKeyPath)) {
-            builder = new AwsIotMqttConnectionBuilder(tlsContextOptions);
+            return new AwsIotMqttConnectionBuilder(tlsContextOptions);
         }
-
-        return builder;
     }
 
     /**
@@ -132,12 +111,9 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      * @param privateKey  - Private key, in PEM format
      */
     public static AwsIotMqttConnectionBuilder newMtlsBuilder(String certificate, String privateKey) {
-        AwsIotMqttConnectionBuilder builder = null;
         try (TlsContextOptions tlsContextOptions = TlsContextOptions.createWithMtls(certificate, privateKey)) {
-            builder = new AwsIotMqttConnectionBuilder(tlsContextOptions);
+            return new AwsIotMqttConnectionBuilder(tlsContextOptions);
         }
-
-        return builder;
     }
 
     /**
@@ -158,12 +134,9 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      * @param pkcs12Password  - The password to the PKCS12 file
      */
     public static AwsIotMqttConnectionBuilder newMtlsPkcs12Builder(String pkcs12Path, String pkcs12Password) {
-        AwsIotMqttConnectionBuilder builder = null;
         try (TlsContextOptions tlsContextOptions = TlsContextOptions.createWithMtlsPkcs12(pkcs12Path, pkcs12Password)) {
-            builder = new AwsIotMqttConnectionBuilder(tlsContextOptions);
+            return new AwsIotMqttConnectionBuilder(tlsContextOptions);
         }
-
-        return builder;
     }
 
     /**
@@ -175,7 +148,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      */
     public AwsIotMqttConnectionBuilder withCertificateAuthorityFromPath(String caDirPath, String caFilePath) {
         this.tlsOptions.overrideDefaultTrustStoreFromPath(caDirPath, caFilePath);
-        resetCachedResources = true;
+        resetLazilyCreatedResources = true;
         return this;
     }
 
@@ -186,7 +159,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      */
     public AwsIotMqttConnectionBuilder withCertificateAuthority(String caRoot) {
         this.tlsOptions.overrideDefaultTrustStore(caRoot);
-        resetCachedResources = true;
+        resetLazilyCreatedResources = true;
         return this;
     }
 
@@ -196,7 +169,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      * @param endpoint The IoT endpoint to connect to
      */
     public AwsIotMqttConnectionBuilder withEndpoint(String endpoint) {
-        this.endpoint = endpoint;
+        this.config.setEndpoint(endpoint);
         return this;
     }
 
@@ -207,7 +180,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      *             MQTT, or 443 for websockets
      */
     public AwsIotMqttConnectionBuilder withPort(short port) {
-        this.port = port;
+        this.config.setPort(port);
         return this;
     }
 
@@ -218,7 +191,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      *                  all devices/clients.
      */
     public AwsIotMqttConnectionBuilder withClientId(String clientId) {
-        this.clientId = clientId;
+        this.config.setClientId(clientId);
         return this;
     }
 
@@ -230,7 +203,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      *                     a connection from this builder is established, false to resume the session
      */
     public AwsIotMqttConnectionBuilder withCleanSession(boolean cleanSession) {
-        this.cleanSession = cleanSession;
+        this.config.setCleanSession(cleanSession);
         return this;
     }
 
@@ -242,7 +215,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      *                   service to keep connections alive
      */
     public AwsIotMqttConnectionBuilder withKeepAliveMs(int keepAliveMs) {
-        this.keepAliveMs = keepAliveMs;
+        this.config.setKeepAliveMs(keepAliveMs);
         return this;
     }
 
@@ -254,7 +227,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      *                        builder.
      */
     public AwsIotMqttConnectionBuilder withPingTimeoutMs(int pingTimeoutMs) {
-        this.pingTimeoutMs = pingTimeoutMs;
+        this.config.setPingTimeoutMs(pingTimeoutMs);
         return this;
     }
 
@@ -264,7 +237,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      * @param timeoutMs TCP socket timeout
      */
     public AwsIotMqttConnectionBuilder withTimeoutMs(int timeoutMs) {
-        this.socketOptions.connectTimeoutMs = timeoutMs;
+        this.config.getSocketOptions().connectTimeoutMs = timeoutMs;
         return this;
     }
 
@@ -274,8 +247,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      * @param socketOptions The socket settings
      */
     public AwsIotMqttConnectionBuilder withSocketOptions(SocketOptions socketOptions) {
-        swapReferenceTo(this.socketOptions, socketOptions);
-        this.socketOptions = socketOptions;
+        this.config.setSocketOptions(socketOptions);
         return this;
     }
 
@@ -285,7 +257,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      * @param username username to use in CONNECT
      */
     public AwsIotMqttConnectionBuilder withUsername(String username) {
-        this.username = String.format("%s?SDK=JavaV2&Version=%s", username, new PackageInfo().toString());
+        this.config.setUsername(String.format("%s?SDK=JavaV2&Version=%s", username, new PackageInfo().toString()));
         return this;
     }
 
@@ -295,7 +267,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      * @param password password to use in CONNECT
      */
     public AwsIotMqttConnectionBuilder withPassword(String password) {
-        this.password = password;
+        this.config.setPassword(password);
         return this;
     }
 
@@ -305,7 +277,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      * @param callbacks connection event callbacks to use
      */
     public AwsIotMqttConnectionBuilder withConnectionEventCallbacks(MqttClientConnectionEvents callbacks) {
-        this.callbacks = callbacks;
+        this.config.setConnectionCallbacks(callbacks);
         return this;
     }
 
@@ -320,9 +292,9 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      *                be delivered to future subscribers
      */
     public AwsIotMqttConnectionBuilder withWill(MqttMessage message, QualityOfService qos, boolean retain) throws MqttException {
-        this.willMessage = message;
-        this.willQos = qos;
-        this.willRetain = retain;
+        this.config.setWillMessage(message);
+        this.config.setWillQos(qos);
+        this.config.setWillRetain(retain);
 
         return this;
     }
@@ -335,7 +307,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     public AwsIotMqttConnectionBuilder withBootstrap(ClientBootstrap bootstrap) {
         swapReferenceTo(this.bootstrap, bootstrap);
         this.bootstrap = bootstrap;
-        resetCachedResources = true;
+        resetLazilyCreatedResources = true;
 
         return this;
     }
@@ -346,16 +318,16 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      * @param useWebsockets whether or not to use websockets
      */
     public AwsIotMqttConnectionBuilder withWebsockets(boolean useWebsockets) {
-        this.useWebsockets = useWebsockets;
+        this.config.setUseWebsockets(useWebsockets);
 
         if (useWebsockets) {
             this.tlsOptions.alpnList.clear();
-            this.port = 443;
+            this.config.setPort(443);
         } else {
             resetDefaultPort();
         }
 
-        resetCachedResources = true;
+        resetLazilyCreatedResources = true;
 
         return this;
     }
@@ -371,7 +343,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      * @param handshakeTransform handshake request transformation function
      */
     public AwsIotMqttConnectionBuilder withWebsocketHandshakeTransform(Consumer<WebsocketHandshakeTransformArgs> handshakeTransform) {
-        this.websocketHandshakeTransform = handshakeTransform;
+        this.config.setWebsocketHandshakeTransform(handshakeTransform);
 
         return this;
     }
@@ -382,7 +354,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      * @param proxyOptions http proxy options to use when establishing a websockets-based connection
      */
     public AwsIotMqttConnectionBuilder withWebsocketProxyOptions(HttpProxyOptions proxyOptions) {
-        this.websocketProxyOptions = proxyOptions;
+        this.config.setWebsocketProxyOptions(proxyOptions);
 
         return this;
     }
@@ -395,6 +367,19 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      */
     public AwsIotMqttConnectionBuilder withWebsocketSigningRegion(String region) {
         this.websocketSigningRegion = region;
+
+        return this;
+    }
+
+    /**
+     * Configures the credentials provider to use for websocket handshake signing.  Only applicable to sigv4
+     * based authentication.  If provider is null, the default provider chain will be used.
+     *
+     * @param provider  credentials provider to pull Aws credentials from.
+     */
+    public AwsIotMqttConnectionBuilder withWebsocketCredentialsProvider(CredentialsProvider provider) {
+        swapReferenceTo(this.websocketCredentialsProvider, provider);
+        this.websocketCredentialsProvider = provider;
 
         return this;
     }
@@ -415,54 +400,49 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
         // This does mean that once you call build() once, modifying the tls context options or client bootstrap
         // has no affect on subsequently-created connections.
         synchronized(this) {
-            if (tlsOptions != null && (tlsContext == null || resetCachedResources)) {
+            if (tlsOptions != null && (tlsContext == null || resetLazilyCreatedResources)) {
                 try (ClientTlsContext clientTlsContext = new ClientTlsContext(tlsOptions)) {
                     swapReferenceTo(tlsContext, clientTlsContext);
                     tlsContext = clientTlsContext;
                 }
             }
 
-            if (client == null || resetCachedResources) {
+            if (client == null || resetLazilyCreatedResources) {
                 try (MqttClient mqttClient = (tlsContext == null) ? new MqttClient(bootstrap) : new MqttClient(bootstrap, tlsContext)) {
                     swapReferenceTo(client, mqttClient);
                     client = mqttClient;
+                    config.setMqttClient(client);
                 }
             }
         }
 
-        resetCachedResources = false;
+        resetLazilyCreatedResources = false;
 
         // Connection create
-        try (MqttConnectionConfig config = new MqttConnectionConfig()) {
-            config.setMqttClient(client);
-            config.setClientId(clientId);
-            config.setEndpoint(endpoint);
-            config.setPort(port);
-            config.setConnectionCallbacks(callbacks);
-            config.setSocketOptions(socketOptions);
-            config.setCleanSession(cleanSession);
-            config.setKeepAliveMs(keepAliveMs);
-            config.setPingTimeoutMs(pingTimeoutMs);
+        try (MqttConnectionConfig connectionConfig = config.clone()) {
 
-            if (willMessage != null) {
-                config.setWill(willMessage, willQos, willRetain);
-            }
+            if (connectionConfig.getUseWebsockets() && connectionConfig.getWebsocketHandshakeTransform() == null) {
+                if (websocketCredentialsProvider == null) {
+                    DefaultChainCredentialsProvider.DefaultChainCredentialsProviderBuilder providerBuilder = new DefaultChainCredentialsProvider.DefaultChainCredentialsProviderBuilder();
+                    providerBuilder.withClientBootstrap(bootstrap);
 
-            if (username != null && password != null) {
-                config.setLogin(username, password);
-            }
-
-            if (useWebsockets) {
-                if (websocketHandshakeTransform != null) {
-                    config.setWebsocketHandshakeTransform(websocketHandshakeTransform);
-                } else {
-                    config.setWebsocketHandshakeTransform(new AwsSigv4HandshakeTransformer());
+                    try (CredentialsProvider defaultProvider = providerBuilder.build()) {
+                        withWebsocketCredentialsProvider(defaultProvider);
+                    }
                 }
 
-                config.setWebsocketProxyOptions(websocketProxyOptions);
+                try (AwsSigningConfig signingConfig = new AwsSigningConfig()) {
+                    signingConfig.setSigningAlgorithm(AwsSigningConfig.AwsSigningAlgorithm.SIGV4_QUERY_PARAM);
+                    signingConfig.setRegion(websocketSigningRegion);
+                    signingConfig.setService(??);
+                    signingConfig.setCredentialsProvider(websocketCredentialsProvider);
+                    signingConfig.setShouldSignParameter(??);
+
+                    connectionConfig.setWebsocketHandshakeTransform(new AwsSigv4HandshakeTransformer(signingConfig));
+                }
             }
 
-            return new MqttClientConnection(config);
+            return new MqttClientConnection(connectionConfig);
         }
     }
 }
