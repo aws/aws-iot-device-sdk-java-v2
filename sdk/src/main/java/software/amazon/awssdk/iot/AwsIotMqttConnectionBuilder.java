@@ -19,6 +19,7 @@ import software.amazon.awssdk.crt.utils.PackageInfo;
 
 import java.io.UnsupportedEncodingException;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import software.amazon.awssdk.crt.CrtResource;
 import software.amazon.awssdk.crt.auth.credentials.CredentialsProvider;
@@ -44,6 +45,11 @@ import software.amazon.awssdk.crt.mqtt.WebsocketHandshakeTransformArgs;
  */
 
 public final class AwsIotMqttConnectionBuilder extends CrtResource {
+
+    private static String IOT_SIGNING_SERVICE = "iotdevicegateway";
+    private static String AMZ_DATE_HEADER = "x-amz-date";
+    private static String AMZ_SECURITY_TOKEN_HEADER = "x-amz-security-token";
+
     MqttConnectionConfig config;
 
     /* Internal config and state */
@@ -434,9 +440,9 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
                 try (AwsSigningConfig signingConfig = new AwsSigningConfig()) {
                     signingConfig.setSigningAlgorithm(AwsSigningConfig.AwsSigningAlgorithm.SIGV4_QUERY_PARAM);
                     signingConfig.setRegion(websocketSigningRegion);
-                    signingConfig.setService(??);
+                    signingConfig.setService(IOT_SIGNING_SERVICE);
                     signingConfig.setCredentialsProvider(websocketCredentialsProvider);
-                    signingConfig.setShouldSignParameter(??);
+                    signingConfig.setShouldSignParameter( (String headerName) -> !headerName.equals(AMZ_DATE_HEADER) && !headerName.equals(AMZ_SECURITY_TOKEN_HEADER) );
 
                     connectionConfig.setWebsocketHandshakeTransform(new AwsSigv4HandshakeTransformer(signingConfig));
                 }
@@ -446,5 +452,6 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
         }
     }
 }
+
 
 

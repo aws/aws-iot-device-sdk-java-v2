@@ -16,6 +16,7 @@ package pubsub;
 
 import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.crt.CrtRuntimeException;
+import software.amazon.awssdk.crt.http.HttpProxyOptions;
 import software.amazon.awssdk.crt.io.ClientBootstrap;
 import software.amazon.awssdk.crt.io.EventLoopGroup;
 import software.amazon.awssdk.crt.io.HostResolver;
@@ -42,6 +43,10 @@ class PubSub {
     static boolean showHelp = false;
     static int port = 8883;
 
+    static String proxyHost;
+    static int proxyPort;
+    static boolean useWebsockets = false;
+
     static void printUsage() {
         System.out.println(
                 "Usage:\n"+
@@ -54,7 +59,10 @@ class PubSub {
                 "  -k|--key      Path to the IoT thing public key\n"+
                 "  -t|--topic    Topic to subscribe/publish to (optional)\n"+
                 "  -m|--message  Message to publish (optional)\n"+
-                "  -n|--count    Number of messages to publish (optional)"
+                "  -n|--count    Number of messages to publish (optional)\n" +
+                "  -w|--websockets Use websockets\n" +
+                "  --proxyhost   Websocket proxy host to use\n" +
+                "  --proxyport   Websocket proxy port to use\n"
         );
     }
 
@@ -117,6 +125,19 @@ class PubSub {
                         messagesToPublish = Integer.parseInt(args[++idx]);
                     }
                     break;
+                case "-w":
+                    useWebsockets = true;
+                    break;
+                case "--proxyhost":
+                    if (idx + 1 < args.length) {
+                        proxyHost = args[++idx];
+                    }
+                    break;
+                case "--proxyport":
+                    if (idx + 1 < args.length) {
+                        proxyPort = Integer.parseInt(args[++idx]);
+                    }
+                    break;
                 default:
                     System.out.println("Unrecognized argument: " + args[idx]);
             }
@@ -129,7 +150,7 @@ class PubSub {
 
     public static void main(String[] args) {
         parseCommandLine(args);
-        if (showHelp || endpoint == null || rootCaPath == null || certPath == null || keyPath == null) {
+        if (showHelp || endpoint == null) {
             printUsage();
             return;
         }
@@ -162,6 +183,19 @@ class PubSub {
                 .withClientId(clientId)
                 .withEndpoint(endpoint)
                 .withCleanSession(true);
+
+            if (useWebsockets) {
+                builder.withWebsockets(true);
+                builder.withWebsocketSigningRegion("us-east-1");
+
+                if (proxyHost != null && proxyPort > 0) {
+                    HttpProxyOptions proxyOptions = new HttpProxyOptions();
+                    proxyOptions.setHost(proxyHost);
+                    proxyOptions.setPort(proxyPort);
+
+                    builder.withWebsocketProxyOptions(proxyOptions);
+                }
+            }
 
             try(MqttClientConnection connection = builder.build()) {
 

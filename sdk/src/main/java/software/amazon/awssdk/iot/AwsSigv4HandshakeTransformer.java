@@ -20,9 +20,11 @@ package software.amazon.awssdk.iot;
 import software.amazon.awssdk.crt.CrtResource;
 import software.amazon.awssdk.crt.auth.signing.AwsSigner;
 import software.amazon.awssdk.crt.auth.signing.AwsSigningConfig;
+import software.amazon.awssdk.crt.http.HttpRequest;
 import software.amazon.awssdk.crt.mqtt.WebsocketHandshakeTransformArgs;
 
 import java.time.Instant;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 public class AwsSigv4HandshakeTransformer extends CrtResource implements Consumer<WebsocketHandshakeTransformArgs> {
@@ -52,7 +54,13 @@ public class AwsSigv4HandshakeTransformer extends CrtResource implements Consume
         try (AwsSigningConfig config = signingConfig.clone()) {
             config.setTime(Instant.now());
 
-            AwsSigner.signRequest(??);
+            CompletableFuture<HttpRequest> signingFuture = AwsSigner.signRequest(handshakeArgs.getHttpRequest(), config);
+            signingFuture.whenComplete((HttpRequest request, Throwable error) -> {
+                if (error != null) {
+                    handshakeArgs.completeExceptionally(error);
+                } else {
+                    handshakeArgs.complete(request);
+                }});
         }
     }
 }
