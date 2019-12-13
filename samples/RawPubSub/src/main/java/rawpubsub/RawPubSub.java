@@ -17,18 +17,14 @@ package rawpubsub;
 import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.crt.CrtRuntimeException;
 import software.amazon.awssdk.crt.io.ClientBootstrap;
+import software.amazon.awssdk.crt.io.EventLoopGroup;
+import software.amazon.awssdk.crt.io.HostResolver;
 import software.amazon.awssdk.crt.io.TlsContext;
 import software.amazon.awssdk.crt.io.TlsContextOptions;
-import software.amazon.awssdk.crt.mqtt.MqttClient;
-import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
-import software.amazon.awssdk.crt.mqtt.MqttClientConnectionEvents;
-import software.amazon.awssdk.crt.mqtt.MqttMessage;
-import software.amazon.awssdk.crt.mqtt.QualityOfService;
+import software.amazon.awssdk.crt.mqtt.*;
 import software.amazon.awssdk.iot.iotjobs.model.RejectedError;
 
 import java.io.UnsupportedEncodingException;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -160,88 +156,95 @@ class RawPubSub {
             return;
         }
 
+        MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
+            @Override
+            public void onConnectionInterrupted(int errorCode) {
+                if (errorCode != 0) {
+                    System.out.println("Connection interrupted: " + errorCode + ": " + CRT.awsErrorString(errorCode));
+                }
+            }
 
-        try(ClientBootstrap clientBootstrap = new ClientBootstrap(1);
+            @Override
+            public void onConnectionResumed(boolean sessionPresent) {
+                System.out.println("Connection resumed: " + (sessionPresent ? "existing session" : "clean session"));
+            }
+        };
+
+        if (authParams != null && authParams.size() > 0) {
+            if (userName.length() > 0) {
+                StringBuilder usernameBuilder = new StringBuilder();
+
+                usernameBuilder.append(userName);
+                usernameBuilder.append("?");
+                for (int i = 0; i < authParams.size(); ++i) {
+                    usernameBuilder.append(authParams.get(i));
+                    if (i + 1 < authParams.size()) {
+                        usernameBuilder.append("&");
+                    }
+                }
+
+                userName = usernameBuilder.toString();
+            }
+        }
+
+        try(EventLoopGroup eventLoopGroup = new EventLoopGroup(1);
+            HostResolver resolver = new HostResolver(eventLoopGroup);
+            ClientBootstrap clientBootstrap = new ClientBootstrap(eventLoopGroup, resolver);
             TlsContextOptions tlsContextOptions = TlsContextOptions.createWithMtlsFromPath(certPath, keyPath)) {
             tlsContextOptions.overrideDefaultTrustStoreFromPath(null, rootCaPath);
 
             int port = 8883;
-            if (TlsContextOptions.isAlpnSupported())
-            {
+            if (TlsContextOptions.isAlpnSupported()) {
                 port = 443;
                 tlsContextOptions.withAlpnList(protocolName);
             }
 
             try(TlsContext tlsContext = new TlsContext(tlsContextOptions);
                 MqttClient client = new MqttClient(clientBootstrap, tlsContext);
-                MqttClientConnection connection = new MqttClientConnection(client, new MqttClientConnectionEvents() {
-                    @Override
-                    public void onConnectionInterrupted(int errorCode) {
-                        if (errorCode != 0) {
-                            System.out.println("Connection interrupted: " + errorCode + ": " + CRT.awsErrorString(errorCode));
-                        }
-                    }
+                MqttConnectionConfig config = new MqttConnectionConfig()) {
 
-                    @Override
-                    public void onConnectionResumed(boolean sessionPresent) {
-                        System.out.println("Connection resumed: " + (sessionPresent ? "existing session" : "clean session"));
-                    }
-                })) {
-
-
-                if (authParams != null && authParams.size() > 0) {
-                    if (userName.length() > 0) {
-                        StringBuilder usernameBuilder = new StringBuilder();
-
-                        usernameBuilder.append(userName);
-                        usernameBuilder.append("?");
-                        for (int i = 0; i < authParams.size(); ++i) {
-                            usernameBuilder.append(authParams.get(i));
-                            if (i + 1 < authParams.size())
-                            {
-                                usernameBuilder.append("&");
-                            }
-                        }
-
-                        userName = usernameBuilder.toString();
-                    }
-                }
+                config.setMqttClient(client);
+                config.setClientId(clientId);
+                config.setConnectionCallbacks(callbacks);
+                config.setCleanSession(true);
+                config.setEndpoint(endpoint);
+                config.setPort(port);
 
                 if (userName != null && userName.length() > 0) {
-                    connection.setLogin(userName, password);
+                    config.setLogin(userName, password);
                 }
 
-                CompletableFuture<Boolean> connected = connection.connect(
-                        clientId,
-                        endpoint, port,
-                        null, true, 0, 0)
+                try (MqttClientConnection connection = new MqttClientConnection(config)) {
+
+                    CompletableFuture<Boolean> connected = connection.connect()
                         .exceptionally((ex) -> {
                             System.out.println("Exception occurred during connect: " + ex.toString());
                             return null;
                         });
-                boolean sessionPresent = connected.get();
-                System.out.println("Connected to " + (!sessionPresent ? "new" : "existing") + " session!");
+                    boolean sessionPresent = connected.get();
+                    System.out.println("Connected to " + (!sessionPresent ? "new" : "existing") + " session!");
 
-                CompletableFuture<Integer> subscribed = connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, (message) -> {
-                    try {
-                        String payload = new String(message.getPayload(), "UTF-8");
-                        System.out.println("MESSAGE: " + payload);
-                    } catch (UnsupportedEncodingException ex) {
-                        System.out.println("Unable to decode payload: " + ex.getMessage());
+                    CompletableFuture<Integer> subscribed = connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, (message) -> {
+                        try {
+                            String payload = new String(message.getPayload(), "UTF-8");
+                            System.out.println("MESSAGE: " + payload);
+                        } catch (UnsupportedEncodingException ex) {
+                            System.out.println("Unable to decode payload: " + ex.getMessage());
+                        }
+                    });
+
+                    subscribed.get();
+
+                    int count = 0;
+                    while (count++ < messagesToPublish) {
+                        CompletableFuture<Integer> published = connection.publish(new MqttMessage(topic, message.getBytes()), QualityOfService.AT_LEAST_ONCE, false);
+                        published.get();
+                        Thread.sleep(1000);
                     }
-                });
 
-                subscribed.get();
-
-                int count = 0;
-                while (count++ < messagesToPublish) {
-                    CompletableFuture<Integer> published = connection.publish(new MqttMessage(topic, message.getBytes()), QualityOfService.AT_LEAST_ONCE, false);
-                    published.get();
-                    Thread.sleep(1000);
+                    CompletableFuture<Void> disconnected = connection.disconnect();
+                    disconnected.get();
                 }
-
-                CompletableFuture<Void> disconnected = connection.disconnect();
-                disconnected.get();
             }
         } catch (CrtRuntimeException | InterruptedException | ExecutionException ex) {
             System.out.println("Exception encountered: " + ex.toString());

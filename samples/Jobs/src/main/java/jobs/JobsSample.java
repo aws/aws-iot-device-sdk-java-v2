@@ -18,12 +18,11 @@ import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.crt.CrtRuntimeException;
 import software.amazon.awssdk.crt.io.ClientBootstrap;
 import software.amazon.awssdk.crt.io.EventLoopGroup;
-import software.amazon.awssdk.crt.io.TlsContext;
-import software.amazon.awssdk.crt.io.TlsContextOptions;
-import software.amazon.awssdk.crt.mqtt.MqttClient;
+import software.amazon.awssdk.crt.io.HostResolver;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnectionEvents;
 import software.amazon.awssdk.crt.mqtt.QualityOfService;
+import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
 import software.amazon.awssdk.iot.iotjobs.IotJobsClient;
 import software.amazon.awssdk.iot.iotjobs.model.DescribeJobExecutionRequest;
 import software.amazon.awssdk.iot.iotjobs.model.DescribeJobExecutionResponse;
@@ -40,7 +39,6 @@ import software.amazon.awssdk.iot.iotjobs.model.StartNextPendingJobExecutionSubs
 import software.amazon.awssdk.iot.iotjobs.model.UpdateJobExecutionRequest;
 import software.amazon.awssdk.iot.iotjobs.model.UpdateJobExecutionSubscriptionRequest;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -171,31 +169,36 @@ public class JobsSample {
             return;
         }
 
-        try(ClientBootstrap clientBootstrap = new ClientBootstrap(1);
-            TlsContextOptions tlsContextOptions = TlsContextOptions.createWithMtlsFromPath(certPath, keyPath)) {
-            tlsContextOptions.overrideDefaultTrustStoreFromPath(null, rootCaPath);
+        MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
+            @Override
+            public void onConnectionInterrupted(int errorCode) {
+                if (errorCode != 0) {
+                    System.out.println("Connection interrupted: " + errorCode + ": " + CRT.awsErrorString(errorCode));
+                }
+            }
 
-            try(TlsContext tlsContext = new TlsContext(tlsContextOptions);
-                MqttClient client = new MqttClient(clientBootstrap, tlsContext);
-                MqttClientConnection connection = new MqttClientConnection(client, new MqttClientConnectionEvents() {
-                    @Override
-                    public void onConnectionInterrupted(int errorCode) {
-                        if (errorCode != 0) {
-                            System.out.println("Connection interrupted: " + errorCode + ": " + CRT.awsErrorString(errorCode));
-                        }
-                    }
+            @Override
+            public void onConnectionResumed(boolean sessionPresent) {
+                System.out.println("Connection resumed: " + (sessionPresent ? "existing session" : "clean session"));
+            }
+        };
 
-                    @Override
-                    public void onConnectionResumed(boolean sessionPresent) {
-                        System.out.println("Connection resumed: " + (sessionPresent ? "existing session" : "clean session"));
-                    }
-                })) {
+        try(EventLoopGroup eventLoopGroup = new EventLoopGroup(1);
+            HostResolver resolver = new HostResolver(eventLoopGroup);
+            ClientBootstrap clientBootstrap = new ClientBootstrap(eventLoopGroup, resolver);
+            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(certPath, keyPath)) {
+
+            builder.withCertificateAuthorityFromPath(null, rootCaPath)
+                .withEndpoint(endpoint)
+                .withClientId(clientId)
+                .withCleanSession(true)
+                .withBootstrap(clientBootstrap)
+                .withConnectionEventCallbacks(callbacks);
+
+            try(MqttClientConnection connection = builder.build()) {
                 IotJobsClient jobs = new IotJobsClient(connection);
 
-                CompletableFuture<Boolean> connected = connection.connect(
-                        clientId,
-                        endpoint, port,
-                        null, true, 0, 0)
+                CompletableFuture<Boolean> connected = connection.connect()
                         .exceptionally((ex) -> {
                             System.out.println("Exception occurred during connect: " + ex.toString());
                             return null;

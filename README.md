@@ -2,17 +2,17 @@
 
 Next generation AWS IoT Client SDK for Java using the AWS Common Runtime
 
-This project is in **DEVELOPER PREVIEW** while we gather feedback on
-interfaces and use cases. Please file issues and feature requests.
-Expect breaking API changes as we incorporate feedback.
-Until this project is promoted to General Availability, we advise you use the
-[previous SDK](https://github.com/aws/aws-iot-device-sdk-java)
-for a stable development environment.
+This project is in **GENERAL AVAILABILITY**. If you have any issues or feature
+requests, please file an issue or pull request.
 
 This SDK is built on the AWS Common Runtime, a collection of libraries
 ([aws-c-common](https://github.com/awslabs/aws-c-common),
 [aws-c-io](https://github.com/awslabs/aws-c-io),
-[aws-c-mqtt](https://github.com/awslabs/aws-c-mqtt), ...) written in C to be
+[aws-c-mqtt](https://github.com/awslabs/aws-c-mqtt),
+[aws-c-http](https://github.com/awslabs/aws-c-http),
+[aws-c-cal](https://github.com/awslabs/aws-c-cal),
+[aws-c-auth](https://github.com/awslabs/aws-c-auth),
+[s2n](https://github.com/awslabs/s2n)...) written in C to be
 cross-platform, high-performance, secure, and reliable. The libraries are bound
 to Java by the [aws-crt-java](https://github.com/awslabs/aws-crt-java) package.
 
@@ -40,7 +40,7 @@ mvn install
 ## Build CRT from source
 ```
 # NOTE: use the latest version of the CRT here
-git clone --branch v0.4.7 https://github.com/awslabs/aws-crt-java.git
+git clone --branch v0.4.12 https://github.com/awslabs/aws-crt-java.git
 git clone https://github.com/awslabs/aws-iot-device-sdk-java-v2.git
 cd aws-crt-java
 mvn install -Dmaven.test.skip=true

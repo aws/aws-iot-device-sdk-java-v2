@@ -16,19 +16,19 @@ package pubsubstress;
 
 import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.crt.CrtResource;
+import software.amazon.awssdk.crt.http.HttpProxyOptions;
 import software.amazon.awssdk.crt.io.ClientBootstrap;
-import software.amazon.awssdk.crt.io.TlsContext;
-import software.amazon.awssdk.crt.io.TlsContextOptions;
+import software.amazon.awssdk.crt.io.EventLoopGroup;
+import software.amazon.awssdk.crt.io.HostResolver;
 import software.amazon.awssdk.crt.Log;
-import software.amazon.awssdk.crt.mqtt.MqttClient;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnectionEvents;
 import software.amazon.awssdk.crt.mqtt.MqttMessage;
 import software.amazon.awssdk.crt.mqtt.QualityOfService;
+import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
 import software.amazon.awssdk.iot.iotjobs.model.RejectedError;
 
 import java.io.UnsupportedEncodingException;
-import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -45,10 +45,14 @@ class PubSubStress {
     static String message = "Hello World!";
     static int    messagesToPublish = 5000;
     static boolean showHelp = false;
-    static int port = 8883;
     static int connectionCount = 1000;
     static int eventLoopThreadCount = 1;
     static int testIterations = 1;
+
+    static String region = "us-east-1";
+    static String proxyHost;
+    static int proxyPort;
+    static boolean useWebsockets;
 
     private static Map<String, MqttClientConnection> connections = new HashMap<>();
     private static List<String> validClientIds = new ArrayList<>();
@@ -60,7 +64,6 @@ class PubSubStress {
                 "  --help        This message\n"+
                 "  --clientId    Client ID to use when connecting (optional)\n"+
                 "  -e|--endpoint AWS IoT service endpoint hostname\n"+
-                "  -p|--port     Port to connect to on the endpoint\n"+
                 "  -r|--rootca   Path to the root certificate\n"+
                 "  -c|--cert     Path to the IoT thing certificate\n"+
                 "  -k|--key      Path to the IoT thing public key\n"+
@@ -69,7 +72,11 @@ class PubSubStress {
                 "  -n|--count    Number of messages to publish (optional)\n"+
                 "  --connections Number of connections to make (optional)\n"+
                 "  --threads     Number of IO threads to use (optional)\n" +
-                "  -i|--iterations Number of times to repeat the basic stress test logic (optional)\n"
+                "  -i|--iterations Number of times to repeat the basic stress test logic (optional)\n" +
+                "  -w|--websockets Use websockets\n" +
+                "  --proxyhost   Websocket proxy host to use\n" +
+                "  --proxyport   Websocket proxy port to use\n" +
+                "  --region      Websocket signing region to use\n"
         );
     }
 
@@ -88,12 +95,6 @@ class PubSubStress {
                 case "--endpoint":
                     if (idx + 1 < args.length) {
                         endpoint = args[++idx];
-                    }
-                    break;
-                case "-p":
-                case "--port":
-                    if (idx + 1 < args.length) {
-                        port = Integer.parseInt(args[++idx]);
                     }
                     break;
                 case "-r":
@@ -148,6 +149,24 @@ class PubSubStress {
                         testIterations = Integer.parseInt(args[++idx]);
                     }
                     break;
+                case "-w":
+                    useWebsockets = true;
+                    break;
+                case "--proxyhost":
+                    if (idx + 1 < args.length) {
+                        proxyHost = args[++idx];
+                    }
+                    break;
+                case "--proxyport":
+                    if (idx + 1 < args.length) {
+                        proxyPort = Integer.parseInt(args[++idx]);
+                    }
+                    break;
+                case "--region":
+                    if (idx + 1 < args.length) {
+                        region = args[++idx];
+                    }
+                    break;
                 default:
                     System.out.println("Unrecognized argument: " + args[idx]);
             }
@@ -168,11 +187,11 @@ class PubSubStress {
         public CompletableFuture<Integer> subscribeFuture;
     }
 
-    static void initConnections(MqttClient client) {
+    static void initConnections(AwsIotMqttConnectionBuilder builder) {
         List<ConnectionState> connectionsInProgress = new ArrayList<>();
 
         for (int i = 0; i < connectionCount; ++i) {
-            MqttClientConnection connection = new MqttClientConnection(client, new MqttClientConnectionEvents() {
+            MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
                 @Override
                 public void onConnectionInterrupted(int errorCode) {
                     if (errorCode != 0) {
@@ -184,15 +203,19 @@ class PubSubStress {
                 public void onConnectionResumed(boolean sessionPresent) {
                     System.out.println("Connection resumed: " + (sessionPresent ? "existing session" : "clean session"));
                 }
-            });
+            };
+
+            String newClientId = String.format("%s%d", clientId, i);
+
+            builder.withClientId(newClientId)
+                    .withConnectionEventCallbacks(callbacks);
+
+            MqttClientConnection connection = builder.build();
 
             try {
                 ConnectionState connectionState = new ConnectionState();
-                connectionState.clientId = String.format("%s%d", clientId, i);
-                connectionState.connectFuture = connection.connect(
-                        connectionState.clientId,
-                        endpoint, port,
-                        null, true, 0, 0);
+                connectionState.clientId = newClientId;
+                connectionState.connectFuture = connection.connect();
                 connectionState.connection = connection;
 
                 connectionsInProgress.add(connectionState);
@@ -299,64 +322,86 @@ class PubSubStress {
 
     public static void main(String[] args) {
         parseCommandLine(args);
-        if (showHelp || endpoint == null || rootCaPath == null || certPath == null || keyPath == null) {
+        if (showHelp || endpoint == null) {
             printUsage();
             return;
+        }
+
+        if (!useWebsockets) {
+            if (certPath == null || keyPath == null) {
+                printUsage();
+                return;
+            }
         }
 
         int iteration = 0;
         while(iteration < testIterations) {
             System.out.println(String.format("Starting iteration %d", iteration));
 
-            try (ClientBootstrap clientBootstrap = new ClientBootstrap(eventLoopThreadCount);
-                 TlsContextOptions tlsContextOptions = TlsContextOptions.createWithMtlsFromPath(certPath, keyPath)) {
-                tlsContextOptions.overrideDefaultTrustStoreFromPath(null, rootCaPath);
+            try (EventLoopGroup eventLoopGroup = new EventLoopGroup(eventLoopThreadCount);
+                HostResolver resolver = new HostResolver(eventLoopGroup);
+                ClientBootstrap clientBootstrap = new ClientBootstrap(eventLoopGroup, resolver);
+                AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(certPath, keyPath)) {
 
-                try (TlsContext tlsContext = new TlsContext(tlsContextOptions);
-                     MqttClient client = new MqttClient(clientBootstrap, tlsContext)) {
+                builder.withCertificateAuthorityFromPath(null, rootCaPath)
+                    .withEndpoint(endpoint)
+                    .withCleanSession(true)
+                    .withBootstrap(clientBootstrap);
 
-                    try {
-                        initConnections(client);
+                if (useWebsockets) {
+                    builder.withWebsockets(true);
+                    builder.withWebsocketSigningRegion(region);
 
-                        Log.log(Log.LogLevel.Info, Log.LogSubject.MqttGeneral, "START OF PUBLISH......");
+                    if (proxyHost != null && proxyPort > 0) {
+                        HttpProxyOptions proxyOptions = new HttpProxyOptions();
+                        proxyOptions.setHost(proxyHost);
+                        proxyOptions.setPort(proxyPort);
 
-                        Random rng = new Random(0);
-
-                        List<CompletableFuture<Integer>> publishFutures = new ArrayList<>();
-
-                        for (int count = 0; count < messagesToPublish; ++count) {
-                            String messageContent = String.format("%s #%d", message, count + 1);
-
-                            // Pick a random connection to publish from
-                            String connectionId = validClientIds.get(Math.abs(rng.nextInt()) % validClientIds.size());
-                            MqttClientConnection connection = connections.get(connectionId);
-
-                            // Pick a random subscribed topic to publish to
-                            String publishTopic = validTopics.get(Math.abs(rng.nextInt()) % validTopics.size());
-
-                            try {
-                                publishFutures.add(connection.publish(new MqttMessage(publishTopic, messageContent.getBytes()), QualityOfService.AT_LEAST_ONCE, false));
-                            } catch (Exception e) {
-                                System.out.println(String.format("Publishing Exception: %s", e.getMessage()));
-                            }
-
-                            if (count % PROGRESS_OP_COUNT == 0) {
-                                System.out.println(String.format("(Main Thread) Message publish count: %d", count));
-                            }
-                        }
-
-                        for (CompletableFuture<Integer> publishFuture : publishFutures) {
-                            publishFuture.get();
-                        }
-
-                        System.out.println("zzzzz");
-
-                        Thread.sleep(1000);
-                    } catch (Exception e) {
-                        System.out.println(String.format("Exception: %s", e.getMessage()));
-                    } finally {
-                        cleanupConnections();
+                        builder.withWebsocketProxyOptions(proxyOptions);
                     }
+                }
+
+                try {
+                    initConnections(builder);
+
+                    Log.log(Log.LogLevel.Info, Log.LogSubject.MqttGeneral, "START OF PUBLISH......");
+
+                    Random rng = new Random(0);
+
+                    List<CompletableFuture<Integer>> publishFutures = new ArrayList<>();
+
+                    for (int count = 0; count < messagesToPublish; ++count) {
+                        String messageContent = String.format("%s #%d", message, count + 1);
+
+                        // Pick a random connection to publish from
+                        String connectionId = validClientIds.get(Math.abs(rng.nextInt()) % validClientIds.size());
+                        MqttClientConnection connection = connections.get(connectionId);
+
+                        // Pick a random subscribed topic to publish to
+                        String publishTopic = validTopics.get(Math.abs(rng.nextInt()) % validTopics.size());
+
+                        try {
+                            publishFutures.add(connection.publish(new MqttMessage(publishTopic, messageContent.getBytes()), QualityOfService.AT_LEAST_ONCE, false));
+                        } catch (Exception e) {
+                            System.out.println(String.format("Publishing Exception: %s", e.getMessage()));
+                        }
+
+                        if (count % PROGRESS_OP_COUNT == 0) {
+                            System.out.println(String.format("(Main Thread) Message publish count: %d", count));
+                        }
+                    }
+
+                    for (CompletableFuture<Integer> publishFuture : publishFutures) {
+                        publishFuture.get();
+                    }
+
+                    System.out.println("zzzzz");
+
+                    Thread.sleep(1000);
+                } catch (Exception e) {
+                    System.out.println(String.format("Exception: %s", e.getMessage()));
+                } finally {
+                    cleanupConnections();
                 }
             } catch (Exception e) {
                 System.out.println("Exception encountered: " + e.toString());

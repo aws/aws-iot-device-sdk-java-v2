@@ -16,18 +16,18 @@ package pubsub;
 
 import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.crt.CrtRuntimeException;
+import software.amazon.awssdk.crt.http.HttpProxyOptions;
 import software.amazon.awssdk.crt.io.ClientBootstrap;
-import software.amazon.awssdk.crt.io.TlsContext;
-import software.amazon.awssdk.crt.io.TlsContextOptions;
-import software.amazon.awssdk.crt.mqtt.MqttClient;
+import software.amazon.awssdk.crt.io.EventLoopGroup;
+import software.amazon.awssdk.crt.io.HostResolver;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnectionEvents;
 import software.amazon.awssdk.crt.mqtt.MqttMessage;
 import software.amazon.awssdk.crt.mqtt.QualityOfService;
+import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
 import software.amazon.awssdk.iot.iotjobs.model.RejectedError;
 
 import java.io.UnsupportedEncodingException;
-import java.nio.ByteBuffer;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -43,6 +43,11 @@ class PubSub {
     static boolean showHelp = false;
     static int port = 8883;
 
+    static String proxyHost;
+    static int proxyPort;
+    static String region = "us-east-1";
+    static boolean useWebsockets = false;
+
     static void printUsage() {
         System.out.println(
                 "Usage:\n"+
@@ -55,7 +60,11 @@ class PubSub {
                 "  -k|--key      Path to the IoT thing public key\n"+
                 "  -t|--topic    Topic to subscribe/publish to (optional)\n"+
                 "  -m|--message  Message to publish (optional)\n"+
-                "  -n|--count    Number of messages to publish (optional)"
+                "  -n|--count    Number of messages to publish (optional)\n" +
+                "  -w|--websockets Use websockets\n" +
+                "  --proxyhost   Websocket proxy host to use\n" +
+                "  --proxyport   Websocket proxy port to use\n" +
+                "  --region      Websocket signing region to use\n"
         );
     }
 
@@ -118,6 +127,24 @@ class PubSub {
                         messagesToPublish = Integer.parseInt(args[++idx]);
                     }
                     break;
+                case "-w":
+                    useWebsockets = true;
+                    break;
+                case "--proxyhost":
+                    if (idx + 1 < args.length) {
+                        proxyHost = args[++idx];
+                    }
+                    break;
+                case "--proxyport":
+                    if (idx + 1 < args.length) {
+                        proxyPort = Integer.parseInt(args[++idx]);
+                    }
+                    break;
+                case "--region":
+                    if (idx + 1 < args.length) {
+                        region = args[++idx];
+                    }
+                    break;
                 default:
                     System.out.println("Unrecognized argument: " + args[idx]);
             }
@@ -130,35 +157,63 @@ class PubSub {
 
     public static void main(String[] args) {
         parseCommandLine(args);
-        if (showHelp || endpoint == null || rootCaPath == null || certPath == null || keyPath == null) {
+        if (showHelp || endpoint == null) {
             printUsage();
             return;
         }
 
-        try(ClientBootstrap clientBootstrap = new ClientBootstrap(1);
-            TlsContextOptions tlsContextOptions = TlsContextOptions.createWithMtlsFromPath(certPath, keyPath)) {
-            tlsContextOptions.overrideDefaultTrustStoreFromPath(null, rootCaPath);
+        if (!useWebsockets) {
+            if (certPath == null || keyPath == null) {
+                printUsage();
+                return;
+            }
+        }
 
-            try(TlsContext tlsContext = new TlsContext(tlsContextOptions);
-                MqttClient client = new MqttClient(clientBootstrap, tlsContext);
-                MqttClientConnection connection = new MqttClientConnection(client, new MqttClientConnectionEvents() {
-                    @Override
-                    public void onConnectionInterrupted(int errorCode) {
-                        if (errorCode != 0) {
-                            System.out.println("Connection interrupted: " + errorCode + ": " + CRT.awsErrorString(errorCode));
-                        }
-                    }
+        MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
+            @Override
+            public void onConnectionInterrupted(int errorCode) {
+                if (errorCode != 0) {
+                    System.out.println("Connection interrupted: " + errorCode + ": " + CRT.awsErrorString(errorCode));
+                }
+            }
 
-                    @Override
-                    public void onConnectionResumed(boolean sessionPresent) {
-                        System.out.println("Connection resumed: " + (sessionPresent ? "existing session" : "clean session"));
-                    }
-                })) {
+            @Override
+            public void onConnectionResumed(boolean sessionPresent) {
+                System.out.println("Connection resumed: " + (sessionPresent ? "existing session" : "clean session"));
+            }
+        };
 
-                CompletableFuture<Boolean> connected = connection.connect(
-                        clientId,
-                        endpoint, port,
-                        null, true, 0, 0)
+        try(EventLoopGroup eventLoopGroup = new EventLoopGroup(1);
+            HostResolver resolver = new HostResolver(eventLoopGroup);
+            ClientBootstrap clientBootstrap = new ClientBootstrap(eventLoopGroup, resolver);
+            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(certPath, keyPath)) {
+
+            if (rootCaPath != null) {
+                builder.withCertificateAuthorityFromPath(null, rootCaPath);
+            }
+
+            builder.withBootstrap(clientBootstrap)
+                .withConnectionEventCallbacks(callbacks)
+                .withClientId(clientId)
+                .withEndpoint(endpoint)
+                .withCleanSession(true);
+
+            if (useWebsockets) {
+                builder.withWebsockets(true);
+                builder.withWebsocketSigningRegion(region);
+
+                if (proxyHost != null && proxyPort > 0) {
+                    HttpProxyOptions proxyOptions = new HttpProxyOptions();
+                    proxyOptions.setHost(proxyHost);
+                    proxyOptions.setPort(proxyPort);
+
+                    builder.withWebsocketProxyOptions(proxyOptions);
+                }
+            }
+
+            try(MqttClientConnection connection = builder.build()) {
+
+                CompletableFuture<Boolean> connected = connection.connect()
                         .exceptionally((ex) -> {
                             System.out.println("Exception occurred during connect: " + ex.toString());
                             return null;
