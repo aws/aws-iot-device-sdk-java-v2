@@ -264,7 +264,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      * @param username username to use in CONNECT
      */
     public AwsIotMqttConnectionBuilder withUsername(String username) {
-        this.config.setUsername(String.format("%s?SDK=JavaV2&Version=%s", username, new PackageInfo().toString()));
+        this.config.setUsername(username);
         return this;
     }
 
@@ -427,6 +427,13 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
 
         // Connection create
         try (MqttConnectionConfig connectionConfig = config.clone()) {
+
+            // Whether or not a username has been added, append our metrics tokens
+            String usernameOrEmpty = "";
+            if (connectionConfig.getUsername() != null) {
+                usernameOrEmpty = connectionConfig.getUsername();
+            }
+            connectionConfig.setUsername(String.format("%s?SDK=JavaV2&Version=%s", usernameOrEmpty, new PackageInfo().toString()));
 
             if (connectionConfig.getUseWebsockets() && connectionConfig.getWebsocketHandshakeTransform() == null) {
                 if (websocketCredentialsProvider == null) {
