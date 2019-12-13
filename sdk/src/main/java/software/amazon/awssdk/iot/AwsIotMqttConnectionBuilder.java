@@ -433,7 +433,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
             if (connectionConfig.getUsername() != null) {
                 usernameOrEmpty = connectionConfig.getUsername();
             }
-            connectionConfig.setUsername(String.format("%s?SDK=JavaV2&Version=%s", usernameOrEmpty, new PackageInfo().toString()));
+            connectionConfig.setUsername(String.format("%s?SDK=JavaV2&Version=%s", usernameOrEmpty, new PackageInfo().version.toString()));
 
             if (connectionConfig.getUseWebsockets() && connectionConfig.getWebsocketHandshakeTransform() == null) {
                 if (websocketCredentialsProvider == null) {

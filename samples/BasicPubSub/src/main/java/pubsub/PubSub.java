@@ -45,6 +45,7 @@ class PubSub {
 
     static String proxyHost;
     static int proxyPort;
+    static String region = "us-east-1";
     static boolean useWebsockets = false;
 
     static void printUsage() {
@@ -62,7 +63,8 @@ class PubSub {
                 "  -n|--count    Number of messages to publish (optional)\n" +
                 "  -w|--websockets Use websockets\n" +
                 "  --proxyhost   Websocket proxy host to use\n" +
-                "  --proxyport   Websocket proxy port to use\n"
+                "  --proxyport   Websocket proxy port to use\n" +
+                "  --region      Websocket signing region to use\n"
         );
     }
 
@@ -138,6 +140,11 @@ class PubSub {
                         proxyPort = Integer.parseInt(args[++idx]);
                     }
                     break;
+                case "--region":
+                    if (idx + 1 < args.length) {
+                        region = args[++idx];
+                    }
+                    break;
                 default:
                     System.out.println("Unrecognized argument: " + args[idx]);
             }
@@ -193,7 +200,7 @@ class PubSub {
 
             if (useWebsockets) {
                 builder.withWebsockets(true);
-                builder.withWebsocketSigningRegion("us-east-1");
+                builder.withWebsocketSigningRegion(region);
 
                 if (proxyHost != null && proxyPort > 0) {
                     HttpProxyOptions proxyOptions = new HttpProxyOptions();

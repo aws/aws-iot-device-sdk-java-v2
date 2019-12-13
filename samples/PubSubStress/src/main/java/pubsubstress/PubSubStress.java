@@ -49,6 +49,7 @@ class PubSubStress {
     static int eventLoopThreadCount = 1;
     static int testIterations = 1;
 
+    static String region = "us-east-1";
     static String proxyHost;
     static int proxyPort;
     static boolean useWebsockets;
@@ -74,7 +75,8 @@ class PubSubStress {
                 "  -i|--iterations Number of times to repeat the basic stress test logic (optional)\n" +
                 "  -w|--websockets Use websockets\n" +
                 "  --proxyhost   Websocket proxy host to use\n" +
-                "  --proxyport   Websocket proxy port to use\n"
+                "  --proxyport   Websocket proxy port to use\n" +
+                "  --region      Websocket signing region to use\n"
         );
     }
 
@@ -158,6 +160,11 @@ class PubSubStress {
                 case "--proxyport":
                     if (idx + 1 < args.length) {
                         proxyPort = Integer.parseInt(args[++idx]);
+                    }
+                    break;
+                case "--region":
+                    if (idx + 1 < args.length) {
+                        region = args[++idx];
                     }
                     break;
                 default:
@@ -343,7 +350,7 @@ class PubSubStress {
 
                 if (useWebsockets) {
                     builder.withWebsockets(true);
-                    builder.withWebsocketSigningRegion("us-east-1");
+                    builder.withWebsocketSigningRegion(region);
 
                     if (proxyHost != null && proxyPort > 0) {
                         HttpProxyOptions proxyOptions = new HttpProxyOptions();
