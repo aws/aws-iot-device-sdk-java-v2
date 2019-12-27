@@ -57,7 +57,7 @@ class PubSub {
                 "  -p|--port     Port to connect to on the endpoint\n"+
                 "  -r|--rootca   Path to the root certificate\n"+
                 "  -c|--cert     Path to the IoT thing certificate\n"+
-                "  -k|--key      Path to the IoT thing public key\n"+
+                "  -k|--key      Path to the IoT thing private key\n"+
                 "  -t|--topic    Topic to subscribe/publish to (optional)\n"+
                 "  -m|--message  Message to publish (optional)\n"+
                 "  -n|--count    Number of messages to publish (optional)\n" +
@@ -213,13 +213,13 @@ class PubSub {
 
             try(MqttClientConnection connection = builder.build()) {
 
-                CompletableFuture<Boolean> connected = connection.connect()
-                        .exceptionally((ex) -> {
-                            System.out.println("Exception occurred during connect: " + ex.toString());
-                            return null;
-                        });
-                boolean sessionPresent = connected.get();
-                System.out.println("Connected to " + (!sessionPresent ? "new" : "existing") + " session!");
+                CompletableFuture<Boolean> connected = connection.connect();
+                try {
+                    boolean sessionPresent = connected.get();
+                    System.out.println("Connected to " + (!sessionPresent ? "new" : "existing") + " session!");
+                } catch (Exception ex) {
+                    throw new RuntimeException("Exception occurred during connect", ex);
+                }
 
                 CompletableFuture<Integer> subscribed = connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, (message) -> {
                     try {

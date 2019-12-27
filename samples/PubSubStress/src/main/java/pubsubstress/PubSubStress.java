@@ -66,7 +66,7 @@ class PubSubStress {
                 "  -e|--endpoint AWS IoT service endpoint hostname\n"+
                 "  -r|--rootca   Path to the root certificate\n"+
                 "  -c|--cert     Path to the IoT thing certificate\n"+
-                "  -k|--key      Path to the IoT thing public key\n"+
+                "  -k|--key      Path to the IoT thing private key\n"+
                 "  -t|--topic    Topic to subscribe/publish to (optional)\n"+
                 "  -m|--message  Message to publish (optional)\n"+
                 "  -n|--count    Number of messages to publish (optional)\n"+

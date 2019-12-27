@@ -70,7 +70,7 @@ public class JobsSample {
                 "  -p|--port     Port to connect to on the endpoint\n"+
                 "  -r|--rootca   Path to the root certificate\n"+
                 "  -c|--cert     Path to the IoT thing certificate\n"+
-                "  -k|--key      Path to the IoT thing public key"
+                "  -k|--key      Path to the IoT thing private key"
         );
     }
 
@@ -198,13 +198,13 @@ public class JobsSample {
             try(MqttClientConnection connection = builder.build()) {
                 IotJobsClient jobs = new IotJobsClient(connection);
 
-                CompletableFuture<Boolean> connected = connection.connect()
-                        .exceptionally((ex) -> {
-                            System.out.println("Exception occurred during connect: " + ex.toString());
-                            return null;
-                        });
-                boolean sessionPresent = connected.get();
-                System.out.println("Connected to " + (!sessionPresent ? "new" : "existing") + " session!");
+                CompletableFuture<Boolean> connected = connection.connect();
+                try {
+                    boolean sessionPresent = connected.get();
+                    System.out.println("Connected to " + (!sessionPresent ? "new" : "existing") + " session!");
+                } catch (Exception ex) {
+                    throw new RuntimeException("Exception occurred during connect", ex);
+                }
 
                 {
                     GetPendingJobExecutionsSubscriptionRequest subscriptionRequest = new GetPendingJobExecutionsSubscriptionRequest();
@@ -212,13 +212,13 @@ public class JobsSample {
                     CompletableFuture<Integer> subscribed = jobs.SubscribeToGetPendingJobExecutionsAccepted(
                             subscriptionRequest,
                             QualityOfService.AT_LEAST_ONCE,
-                            JobsSample::onGetPendingJobExecutionsAccepted)
-                            .exceptionally((ex) -> {
-                                System.out.println("Failed to subscribe to GetPendingJobExecutions: " + ex.toString());
-                                return null;
-                            });
-                    subscribed.get();
-                    System.out.println("Subscribed to GetPendingJobExecutionsAccepted");
+                            JobsSample::onGetPendingJobExecutionsAccepted);
+                    try {
+                        subscribed.get();
+                        System.out.println("Subscribed to GetPendingJobExecutionsAccepted");
+                    } catch (Exception ex) {
+                        throw new RuntimeException("Failed to subscribe to GetPendingJobExecutions", ex);
+                    }
 
                     subscribed = jobs.SubscribeToGetPendingJobExecutionsRejected(
                             subscriptionRequest,
@@ -231,13 +231,12 @@ public class JobsSample {
                     publishRequest.thingName = thingName;
                     CompletableFuture<Integer> published = jobs.PublishGetPendingJobExecutions(
                             publishRequest,
-                            QualityOfService.AT_LEAST_ONCE)
-                            .exceptionally((ex) -> {
-                                System.out.println("Exception occurred during publish: " + ex.toString());
-                                gotResponse.complete(null);
-                                return null;
-                            });
-                    published.get();
+                            QualityOfService.AT_LEAST_ONCE);
+                    try {
+                        published.get();
+                    } catch (Exception ex) {
+                        throw new RuntimeException("Exception occurred during publish", ex);
+                    }
                 }
 
                 if (availableJobs.isEmpty()) {
