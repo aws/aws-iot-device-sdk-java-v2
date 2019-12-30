@@ -68,7 +68,7 @@ public class ShadowSample {
                 "  -e|--endpoint AWS IoT service endpoint hostname\n"+
                 "  -r|--rootca   Path to the root certificate\n"+
                 "  -c|--cert     Path to the IoT thing certificate\n"+
-                "  -k|--key      Path to the IoT thing public key"
+                "  -k|--key      Path to the IoT thing private key"
         );
     }
 
@@ -243,13 +243,13 @@ public class ShadowSample {
             try(MqttClientConnection connection = builder.build()) {
                 shadow = new IotShadowClient(connection);
 
-                CompletableFuture<Boolean> connected = connection.connect()
-                        .exceptionally((ex) -> {
-                            System.out.println("Exception occurred during connect: " + ex.toString());
-                            return null;
-                        });
-                boolean sessionPresent = connected.get();
-                System.out.println("Connected to " + (!sessionPresent ? "clean" : "existing") + " session!");
+                CompletableFuture<Boolean> connected = connection.connect();
+                try {
+                    boolean sessionPresent = connected.get();
+                    System.out.println("Connected to " + (!sessionPresent ? "clean" : "existing") + " session!");
+                } catch (Exception ex) {
+                    throw new RuntimeException("Exception occurred during connect", ex);
+                }
 
                 System.out.println("Subscribing to shadow delta events...");
                 ShadowDeltaUpdatedSubscriptionRequest requestShadowDeltaUpdated = new ShadowDeltaUpdatedSubscriptionRequest();
