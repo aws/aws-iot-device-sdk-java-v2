@@ -15,6 +15,9 @@ A clear and concise description of what the bug is.
 
 **SDK version number**
 
+**Platform/OS/Hardware/Device**
+What are you running the sdk on?
+
 **To Reproduce (observed behavior)**
 Steps to reproduce the behavior (please share code)
 
@@ -24,7 +27,10 @@ A clear and concise description of what you expected to happen.
 **Logs/output**
 If applicable, add logs or error output.
 
+To enable logging, set the following system properties:
+
 *REMEMBER TO SANITIZE YOUR PERSONAL INFO*
+
 ```
 -Daws.crt.debugnative=true
 -Daws.crt.log.destination=File
