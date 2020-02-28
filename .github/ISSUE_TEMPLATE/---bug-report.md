@@ -21,8 +21,16 @@ Steps to reproduce the behavior (please share code)
 **Expected behavior**
 A clear and concise description of what you expected to happen.
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+**Logs/output**
+If applicable, add logs or error output.
+
+*REMEMBER TO SANITIZE YOUR PERSONAL INFO*
+```
+-Daws.crt.debugnative=true
+-Daws.crt.log.destination=File
+-Daws.crt.log.level=Trace
+-Daws.crt.log.filename=<path and filename>
+```
 
 **Additional context**
 Add any other context about the problem here.
