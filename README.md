@@ -1,5 +1,6 @@
 ## AWS IoT SDK for Java v2
 
+
 Next generation AWS IoT Client SDK for Java using the AWS Common Runtime
 
 This project is in **GENERAL AVAILABILITY**. If you have any issues or feature
@@ -18,13 +19,20 @@ to Java by the [aws-crt-java](https://github.com/awslabs/aws-crt-java) package.
 
 Integration with AWS IoT Services such as
 [Device Shadow](https://docs.aws.amazon.com/iot/latest/developerguide/iot-device-shadows.html)
-and [Jobs](https://docs.aws.amazon.com/iot/latest/developerguide/iot-jobs.html)
+[Jobs](https://docs.aws.amazon.com/iot/latest/developerguide/iot-jobs.html)
+[Fleet Provisioning](https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html)
 is provided by code that been generated from a model of the service.
 
 # Installation
 ## Minimum Requirements
 *   Java 8 or above
-*   Maven
+
+** Set JAVA_HOME first
+
+*   Install Maven
+
+brew install maven
+
 ## Requirements to build the AWS CRT locally
 *   CMake 3.1+
 *   Clang 3.9+ or GCC 4.4+ or MSVC 2015+
@@ -34,18 +42,18 @@ is provided by code that been generated from a model of the service.
 git clone https://github.com/awslabs/aws-iot-device-sdk-java-v2.git
 # update the version of the CRT being used
 mvn versions:use-latest-versions -Dincludes="software.amazon.awssdk.crt*"
-mvn install
+mvn clean install
 ```
 
 ## Build CRT from source
 ```
 # NOTE: use the latest version of the CRT here
-git clone --branch v0.4.13 https://github.com/awslabs/aws-crt-java.git
+git clone --branch v0.4.20 https://github.com/awslabs/aws-crt-java.git
 git clone https://github.com/awslabs/aws-iot-device-sdk-java-v2.git
 cd aws-crt-java
 mvn install -Dmaven.test.skip=true
 cd ../aws-iot-device-sdk-java-v2
-mvn install
+mvn clean install
 ```
 
 # Samples
@@ -187,6 +195,73 @@ and receive.
         "arn:aws:iot:<b>region</b>:<b>account</b>:topicfilter/$aws/things/<b>thingname</b>/jobs/start-next/rejected",
         "arn:aws:iot:<b>region</b>:<b>account</b>:topicfilter/$aws/things/<b>thingname</b>/jobs/*/update/accepted",
         "arn:aws:iot:<b>region</b>:<b>account</b>:topicfilter/$aws/things/<b>thingname</b>/jobs/*/update/rejected"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": "iot:Connect",
+      "Resource": "arn:aws:iot:<b>region</b>:<b>account</b>:client/samples-client-id"
+    }
+  ]
+}
+</pre>
+</details>
+
+## fleet provisioning
+
+This sample uses the AWS IoT
+[Fleet provisioning](https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html)
+to provision devices using either a CSR or KeysAndcertificate and subsequently calls RegisterThing.
+
+On startup, the script subscribes to topics based on the request type of either CSR or Keys topics,
+publishes the request to corresponding topic and calls RegisterThing.
+
+Source: `samples/Identity`
+
+cd ~/samples/Identity
+
+Run the sample like this:
+ 
+```
+mvn exec:java -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint <endpoint> --rootca <root ca path> 
+--cert <cert path> --key <private key path> --templateName <templatename> --templateParameters <templateParams>"
+```
+
+Your Thing's
+[Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-policies.html)
+must provide privileges for this sample to connect, subscribe, publish,
+and receive.
+
+<details>
+<summary>(see sample policy)</summary>
+<pre>
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iot:Publish"
+      ],
+      "Resource": [
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/certificates/create/json",
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/certificates/create-from-csr/json",
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/provisioning-templates/<b>templatename<b>/provision/json"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iot:Receive",
+        "iot:Subscribe"
+      ],
+      "Resource": [
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/certificates/create/json/accepted",
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/certificates/create/json/rejected",
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/certificates/create-from-csr/json/accepted",
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/certificates/create-from-csr/json/rejected",
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/provisioning-templates/<b>templatename<b>/provision/json/accepted",
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/provisioning-templates/<b>templatename<b>/provision/json/rejected"
       ]
     },
     {
