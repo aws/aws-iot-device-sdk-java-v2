@@ -64,6 +64,7 @@ public class IotShadowClient {
 
     private Gson getGson() {
         GsonBuilder gson = new GsonBuilder();
+        gson.disableHtmlEscaping();
         gson.registerTypeAdapter(Timestamp.class, new Timestamp.Serializer());
         gson.registerTypeAdapter(Timestamp.class, new Timestamp.Deserializer());
         addTypeAdapters(gson);
