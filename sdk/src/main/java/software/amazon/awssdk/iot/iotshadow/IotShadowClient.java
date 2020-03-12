@@ -87,9 +87,13 @@ public class IotShadowClient {
         }
         topic = topic.replace("{thingName}", request.thingName);
         Consumer<MqttMessage> messageHandler = (message) -> {
-            String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
-            ErrorResponse response = gson.fromJson(payload, ErrorResponse.class);
-            handler.accept(response);
+            try {
+                String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
+                ErrorResponse response = gson.fromJson(payload, ErrorResponse.class);
+                handler.accept(response);
+            } catch (Exception e) {
+                exceptionHandler.accept(e);
+            }
         };
         return connection.subscribe(topic, qos, messageHandler);
     }
@@ -144,9 +148,13 @@ public class IotShadowClient {
         }
         topic = topic.replace("{thingName}", request.thingName);
         Consumer<MqttMessage> messageHandler = (message) -> {
-            String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
-            ShadowDeltaUpdatedEvent response = gson.fromJson(payload, ShadowDeltaUpdatedEvent.class);
-            handler.accept(response);
+            try {
+                String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
+                ShadowDeltaUpdatedEvent response = gson.fromJson(payload, ShadowDeltaUpdatedEvent.class);
+                handler.accept(response);
+            } catch (Exception e) {
+                exceptionHandler.accept(e);
+            }
         };
         return connection.subscribe(topic, qos, messageHandler);
     }
@@ -171,9 +179,13 @@ public class IotShadowClient {
         }
         topic = topic.replace("{thingName}", request.thingName);
         Consumer<MqttMessage> messageHandler = (message) -> {
-            String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
-            UpdateShadowResponse response = gson.fromJson(payload, UpdateShadowResponse.class);
-            handler.accept(response);
+            try {
+                String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
+                UpdateShadowResponse response = gson.fromJson(payload, UpdateShadowResponse.class);
+                handler.accept(response);
+            } catch (Exception e) {
+                exceptionHandler.accept(e);
+            }
         };
         return connection.subscribe(topic, qos, messageHandler);
     }
@@ -213,9 +225,13 @@ public class IotShadowClient {
         }
         topic = topic.replace("{thingName}", request.thingName);
         Consumer<MqttMessage> messageHandler = (message) -> {
-            String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
-            DeleteShadowResponse response = gson.fromJson(payload, DeleteShadowResponse.class);
-            handler.accept(response);
+            try {
+                String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
+                DeleteShadowResponse response = gson.fromJson(payload, DeleteShadowResponse.class);
+                handler.accept(response);
+            } catch (Exception e) {
+                exceptionHandler.accept(e);
+            }
         };
         return connection.subscribe(topic, qos, messageHandler);
     }
@@ -240,9 +256,13 @@ public class IotShadowClient {
         }
         topic = topic.replace("{thingName}", request.thingName);
         Consumer<MqttMessage> messageHandler = (message) -> {
-            String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
-            GetShadowResponse response = gson.fromJson(payload, GetShadowResponse.class);
-            handler.accept(response);
+            try {
+                String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
+                GetShadowResponse response = gson.fromJson(payload, GetShadowResponse.class);
+                handler.accept(response);
+            } catch (Exception e) {
+                exceptionHandler.accept(e);
+            }
         };
         return connection.subscribe(topic, qos, messageHandler);
     }
@@ -267,9 +287,13 @@ public class IotShadowClient {
         }
         topic = topic.replace("{thingName}", request.thingName);
         Consumer<MqttMessage> messageHandler = (message) -> {
-            String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
-            ShadowUpdatedEvent response = gson.fromJson(payload, ShadowUpdatedEvent.class);
-            handler.accept(response);
+            try {
+                String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
+                ShadowUpdatedEvent response = gson.fromJson(payload, ShadowUpdatedEvent.class);
+                handler.accept(response);
+            } catch (Exception e) {
+                exceptionHandler.accept(e);
+            }
         };
         return connection.subscribe(topic, qos, messageHandler);
     }
@@ -294,9 +318,13 @@ public class IotShadowClient {
         }
         topic = topic.replace("{thingName}", request.thingName);
         Consumer<MqttMessage> messageHandler = (message) -> {
-            String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
-            ErrorResponse response = gson.fromJson(payload, ErrorResponse.class);
-            handler.accept(response);
+            try {
+                String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
+                ErrorResponse response = gson.fromJson(payload, ErrorResponse.class);
+                handler.accept(response);
+            } catch (Exception e) {
+                exceptionHandler.accept(e);
+            }
         };
         return connection.subscribe(topic, qos, messageHandler);
     }
@@ -321,9 +349,13 @@ public class IotShadowClient {
         }
         topic = topic.replace("{thingName}", request.thingName);
         Consumer<MqttMessage> messageHandler = (message) -> {
-            String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
-            ErrorResponse response = gson.fromJson(payload, ErrorResponse.class);
-            handler.accept(response);
+            try {
+                String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
+                ErrorResponse response = gson.fromJson(payload, ErrorResponse.class);
+                handler.accept(response);
+            } catch (Exception e) {
+                exceptionHandler.accept(e);
+            }
         };
         return connection.subscribe(topic, qos, messageHandler);
     }

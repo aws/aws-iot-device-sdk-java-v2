@@ -76,8 +76,8 @@ public class IotJobsClient {
     }
 
     private void addTypeAdapters(GsonBuilder gson) {
-        gson.registerTypeAdapter(JobStatus.class, new EnumSerializer<JobStatus>());
         gson.registerTypeAdapter(RejectedErrorCode.class, new EnumSerializer<RejectedErrorCode>());
+        gson.registerTypeAdapter(JobStatus.class, new EnumSerializer<JobStatus>());
     }
 
     public CompletableFuture<Integer> SubscribeToJobExecutionsChangedEvents(
@@ -93,9 +93,13 @@ public class IotJobsClient {
         }
         topic = topic.replace("{thingName}", request.thingName);
         Consumer<MqttMessage> messageHandler = (message) -> {
-            String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
-            JobExecutionsChangedEvent response = gson.fromJson(payload, JobExecutionsChangedEvent.class);
-            handler.accept(response);
+            try {
+                String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
+                JobExecutionsChangedEvent response = gson.fromJson(payload, JobExecutionsChangedEvent.class);
+                handler.accept(response);
+            } catch (Exception e) {
+                exceptionHandler.accept(e);
+            }
         };
         return connection.subscribe(topic, qos, messageHandler);
     }
@@ -120,9 +124,13 @@ public class IotJobsClient {
         }
         topic = topic.replace("{thingName}", request.thingName);
         Consumer<MqttMessage> messageHandler = (message) -> {
-            String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
-            StartNextJobExecutionResponse response = gson.fromJson(payload, StartNextJobExecutionResponse.class);
-            handler.accept(response);
+            try {
+                String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
+                StartNextJobExecutionResponse response = gson.fromJson(payload, StartNextJobExecutionResponse.class);
+                handler.accept(response);
+            } catch (Exception e) {
+                exceptionHandler.accept(e);
+            }
         };
         return connection.subscribe(topic, qos, messageHandler);
     }
@@ -153,9 +161,13 @@ public class IotJobsClient {
         }
         topic = topic.replace("{jobId}", request.jobId);
         Consumer<MqttMessage> messageHandler = (message) -> {
-            String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
-            RejectedError response = gson.fromJson(payload, RejectedError.class);
-            handler.accept(response);
+            try {
+                String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
+                RejectedError response = gson.fromJson(payload, RejectedError.class);
+                handler.accept(response);
+            } catch (Exception e) {
+                exceptionHandler.accept(e);
+            }
         };
         return connection.subscribe(topic, qos, messageHandler);
     }
@@ -180,9 +192,13 @@ public class IotJobsClient {
         }
         topic = topic.replace("{thingName}", request.thingName);
         Consumer<MqttMessage> messageHandler = (message) -> {
-            String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
-            NextJobExecutionChangedEvent response = gson.fromJson(payload, NextJobExecutionChangedEvent.class);
-            handler.accept(response);
+            try {
+                String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
+                NextJobExecutionChangedEvent response = gson.fromJson(payload, NextJobExecutionChangedEvent.class);
+                handler.accept(response);
+            } catch (Exception e) {
+                exceptionHandler.accept(e);
+            }
         };
         return connection.subscribe(topic, qos, messageHandler);
     }
@@ -213,9 +229,13 @@ public class IotJobsClient {
         }
         topic = topic.replace("{jobId}", request.jobId);
         Consumer<MqttMessage> messageHandler = (message) -> {
-            String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
-            RejectedError response = gson.fromJson(payload, RejectedError.class);
-            handler.accept(response);
+            try {
+                String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
+                RejectedError response = gson.fromJson(payload, RejectedError.class);
+                handler.accept(response);
+            } catch (Exception e) {
+                exceptionHandler.accept(e);
+            }
         };
         return connection.subscribe(topic, qos, messageHandler);
     }
@@ -246,9 +266,13 @@ public class IotJobsClient {
         }
         topic = topic.replace("{jobId}", request.jobId);
         Consumer<MqttMessage> messageHandler = (message) -> {
-            String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
-            UpdateJobExecutionResponse response = gson.fromJson(payload, UpdateJobExecutionResponse.class);
-            handler.accept(response);
+            try {
+                String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
+                UpdateJobExecutionResponse response = gson.fromJson(payload, UpdateJobExecutionResponse.class);
+                handler.accept(response);
+            } catch (Exception e) {
+                exceptionHandler.accept(e);
+            }
         };
         return connection.subscribe(topic, qos, messageHandler);
     }
@@ -300,9 +324,13 @@ public class IotJobsClient {
         }
         topic = topic.replace("{jobId}", request.jobId);
         Consumer<MqttMessage> messageHandler = (message) -> {
-            String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
-            DescribeJobExecutionResponse response = gson.fromJson(payload, DescribeJobExecutionResponse.class);
-            handler.accept(response);
+            try {
+                String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
+                DescribeJobExecutionResponse response = gson.fromJson(payload, DescribeJobExecutionResponse.class);
+                handler.accept(response);
+            } catch (Exception e) {
+                exceptionHandler.accept(e);
+            }
         };
         return connection.subscribe(topic, qos, messageHandler);
     }
@@ -342,9 +370,13 @@ public class IotJobsClient {
         }
         topic = topic.replace("{thingName}", request.thingName);
         Consumer<MqttMessage> messageHandler = (message) -> {
-            String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
-            GetPendingJobExecutionsResponse response = gson.fromJson(payload, GetPendingJobExecutionsResponse.class);
-            handler.accept(response);
+            try {
+                String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
+                GetPendingJobExecutionsResponse response = gson.fromJson(payload, GetPendingJobExecutionsResponse.class);
+                handler.accept(response);
+            } catch (Exception e) {
+                exceptionHandler.accept(e);
+            }
         };
         return connection.subscribe(topic, qos, messageHandler);
     }
@@ -369,9 +401,13 @@ public class IotJobsClient {
         }
         topic = topic.replace("{thingName}", request.thingName);
         Consumer<MqttMessage> messageHandler = (message) -> {
-            String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
-            RejectedError response = gson.fromJson(payload, RejectedError.class);
-            handler.accept(response);
+            try {
+                String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
+                RejectedError response = gson.fromJson(payload, RejectedError.class);
+                handler.accept(response);
+            } catch (Exception e) {
+                exceptionHandler.accept(e);
+            }
         };
         return connection.subscribe(topic, qos, messageHandler);
     }
@@ -396,9 +432,13 @@ public class IotJobsClient {
         }
         topic = topic.replace("{thingName}", request.thingName);
         Consumer<MqttMessage> messageHandler = (message) -> {
-            String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
-            RejectedError response = gson.fromJson(payload, RejectedError.class);
-            handler.accept(response);
+            try {
+                String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
+                RejectedError response = gson.fromJson(payload, RejectedError.class);
+                handler.accept(response);
+            } catch (Exception e) {
+                exceptionHandler.accept(e);
+            }
         };
         return connection.subscribe(topic, qos, messageHandler);
     }
