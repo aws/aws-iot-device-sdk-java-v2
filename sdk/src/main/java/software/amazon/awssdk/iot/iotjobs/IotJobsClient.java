@@ -98,7 +98,9 @@ public class IotJobsClient {
                 JobExecutionsChangedEvent response = gson.fromJson(payload, JobExecutionsChangedEvent.class);
                 handler.accept(response);
             } catch (Exception e) {
-                exceptionHandler.accept(e);
+                if (exceptionHandler != null) {
+                    exceptionHandler.accept(e);
+                }
             }
         };
         return connection.subscribe(topic, qos, messageHandler);
@@ -129,7 +131,9 @@ public class IotJobsClient {
                 StartNextJobExecutionResponse response = gson.fromJson(payload, StartNextJobExecutionResponse.class);
                 handler.accept(response);
             } catch (Exception e) {
-                exceptionHandler.accept(e);
+                if (exceptionHandler != null) {
+                    exceptionHandler.accept(e);
+                }
             }
         };
         return connection.subscribe(topic, qos, messageHandler);
@@ -166,7 +170,9 @@ public class IotJobsClient {
                 RejectedError response = gson.fromJson(payload, RejectedError.class);
                 handler.accept(response);
             } catch (Exception e) {
-                exceptionHandler.accept(e);
+                if (exceptionHandler != null) {
+                    exceptionHandler.accept(e);
+                }
             }
         };
         return connection.subscribe(topic, qos, messageHandler);
@@ -197,7 +203,9 @@ public class IotJobsClient {
                 NextJobExecutionChangedEvent response = gson.fromJson(payload, NextJobExecutionChangedEvent.class);
                 handler.accept(response);
             } catch (Exception e) {
-                exceptionHandler.accept(e);
+                if (exceptionHandler != null) {
+                    exceptionHandler.accept(e);
+                }
             }
         };
         return connection.subscribe(topic, qos, messageHandler);
@@ -234,7 +242,9 @@ public class IotJobsClient {
                 RejectedError response = gson.fromJson(payload, RejectedError.class);
                 handler.accept(response);
             } catch (Exception e) {
-                exceptionHandler.accept(e);
+                if (exceptionHandler != null) {
+                    exceptionHandler.accept(e);
+                }
             }
         };
         return connection.subscribe(topic, qos, messageHandler);
@@ -271,7 +281,9 @@ public class IotJobsClient {
                 UpdateJobExecutionResponse response = gson.fromJson(payload, UpdateJobExecutionResponse.class);
                 handler.accept(response);
             } catch (Exception e) {
-                exceptionHandler.accept(e);
+                if (exceptionHandler != null) {
+                    exceptionHandler.accept(e);
+                }
             }
         };
         return connection.subscribe(topic, qos, messageHandler);
@@ -329,7 +341,9 @@ public class IotJobsClient {
                 DescribeJobExecutionResponse response = gson.fromJson(payload, DescribeJobExecutionResponse.class);
                 handler.accept(response);
             } catch (Exception e) {
-                exceptionHandler.accept(e);
+                if (exceptionHandler != null) {
+                    exceptionHandler.accept(e);
+                }
             }
         };
         return connection.subscribe(topic, qos, messageHandler);
@@ -375,7 +389,9 @@ public class IotJobsClient {
                 GetPendingJobExecutionsResponse response = gson.fromJson(payload, GetPendingJobExecutionsResponse.class);
                 handler.accept(response);
             } catch (Exception e) {
-                exceptionHandler.accept(e);
+                if (exceptionHandler != null) {
+                    exceptionHandler.accept(e);
+                }
             }
         };
         return connection.subscribe(topic, qos, messageHandler);
@@ -406,7 +422,9 @@ public class IotJobsClient {
                 RejectedError response = gson.fromJson(payload, RejectedError.class);
                 handler.accept(response);
             } catch (Exception e) {
-                exceptionHandler.accept(e);
+                if (exceptionHandler != null) {
+                    exceptionHandler.accept(e);
+                }
             }
         };
         return connection.subscribe(topic, qos, messageHandler);
@@ -437,7 +455,9 @@ public class IotJobsClient {
                 RejectedError response = gson.fromJson(payload, RejectedError.class);
                 handler.accept(response);
             } catch (Exception e) {
-                exceptionHandler.accept(e);
+                if (exceptionHandler != null) {
+                    exceptionHandler.accept(e);
+                }
             }
         };
         return connection.subscribe(topic, qos, messageHandler);

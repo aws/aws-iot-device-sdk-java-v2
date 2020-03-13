@@ -92,7 +92,9 @@ public class IotShadowClient {
                 ErrorResponse response = gson.fromJson(payload, ErrorResponse.class);
                 handler.accept(response);
             } catch (Exception e) {
-                exceptionHandler.accept(e);
+                if (exceptionHandler != null) {
+                    exceptionHandler.accept(e);
+                }
             }
         };
         return connection.subscribe(topic, qos, messageHandler);
@@ -153,7 +155,9 @@ public class IotShadowClient {
                 ShadowDeltaUpdatedEvent response = gson.fromJson(payload, ShadowDeltaUpdatedEvent.class);
                 handler.accept(response);
             } catch (Exception e) {
-                exceptionHandler.accept(e);
+                if (exceptionHandler != null) {
+                    exceptionHandler.accept(e);
+                }
             }
         };
         return connection.subscribe(topic, qos, messageHandler);
@@ -184,7 +188,9 @@ public class IotShadowClient {
                 UpdateShadowResponse response = gson.fromJson(payload, UpdateShadowResponse.class);
                 handler.accept(response);
             } catch (Exception e) {
-                exceptionHandler.accept(e);
+                if (exceptionHandler != null) {
+                    exceptionHandler.accept(e);
+                }
             }
         };
         return connection.subscribe(topic, qos, messageHandler);
@@ -230,7 +236,9 @@ public class IotShadowClient {
                 DeleteShadowResponse response = gson.fromJson(payload, DeleteShadowResponse.class);
                 handler.accept(response);
             } catch (Exception e) {
-                exceptionHandler.accept(e);
+                if (exceptionHandler != null) {
+                    exceptionHandler.accept(e);
+                }
             }
         };
         return connection.subscribe(topic, qos, messageHandler);
@@ -261,7 +269,9 @@ public class IotShadowClient {
                 GetShadowResponse response = gson.fromJson(payload, GetShadowResponse.class);
                 handler.accept(response);
             } catch (Exception e) {
-                exceptionHandler.accept(e);
+                if (exceptionHandler != null) {
+                    exceptionHandler.accept(e);
+                }
             }
         };
         return connection.subscribe(topic, qos, messageHandler);
@@ -292,7 +302,9 @@ public class IotShadowClient {
                 ShadowUpdatedEvent response = gson.fromJson(payload, ShadowUpdatedEvent.class);
                 handler.accept(response);
             } catch (Exception e) {
-                exceptionHandler.accept(e);
+                if (exceptionHandler != null) {
+                    exceptionHandler.accept(e);
+                }
             }
         };
         return connection.subscribe(topic, qos, messageHandler);
@@ -323,7 +335,9 @@ public class IotShadowClient {
                 ErrorResponse response = gson.fromJson(payload, ErrorResponse.class);
                 handler.accept(response);
             } catch (Exception e) {
-                exceptionHandler.accept(e);
+                if (exceptionHandler != null) {
+                    exceptionHandler.accept(e);
+                }
             }
         };
         return connection.subscribe(topic, qos, messageHandler);
@@ -354,7 +368,9 @@ public class IotShadowClient {
                 ErrorResponse response = gson.fromJson(payload, ErrorResponse.class);
                 handler.accept(response);
             } catch (Exception e) {
-                exceptionHandler.accept(e);
+                if (exceptionHandler != null) {
+                    exceptionHandler.accept(e);
+                }
             }
         };
         return connection.subscribe(topic, qos, messageHandler);
