@@ -72,6 +72,11 @@ value.
 
 Source: `samples/Shadow`
 
+To Run:
+```
+> mvn exec:java -pl samples/Shadow -Dexec.mainClass=jobs.JobsSample -Dexec.args='--endpoint <endpoint> --rootca /path/to/AmazonRootCA1.pem --cert <cert path> --key <key path> --thingName <thing name>'
+```
+
 Your Thing's
 [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-policies.html)
 must provide privileges for this sample to connect, subscribe, publish,
@@ -141,6 +146,11 @@ This sample requires you to create jobs for your device to execute. See
 On startup, the sample describes a job that is pending execution.
 
 Source: `samples/Jobs`
+
+To Run:
+```
+> mvn exec:java -pl samples/Jobs -Dexec.mainClass=jobs.JobsSample -Dexec.args='--endpoint <endpoint> --rootca /path/to/AmazonRootCA1.pem --cert <cert path> --key <key path> --thingName <thing name>'
+```
 
 Your Thing's
 [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-policies.html)
