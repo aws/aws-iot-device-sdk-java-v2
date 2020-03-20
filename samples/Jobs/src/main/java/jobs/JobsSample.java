@@ -54,7 +54,7 @@ public class JobsSample {
     static boolean showHelp = false;
     static int port = 8883;
 
-    static CompletableFuture<Void> gotResponse = new CompletableFuture<>();
+    static CompletableFuture<Void> gotResponse;
     static List<String> availableJobs = new LinkedList<>();
     static String currentJobId;
     static long currentExecutionNumber = 0;
@@ -207,8 +207,9 @@ public class JobsSample {
                 }
 
                 {
+                    gotResponse = new CompletableFuture<>();
                     GetPendingJobExecutionsSubscriptionRequest subscriptionRequest = new GetPendingJobExecutionsSubscriptionRequest();
-                    subscriptionRequest.thingName = "crt-test";
+                    subscriptionRequest.thingName = thingName;
                     CompletableFuture<Integer> subscribed = jobs.SubscribeToGetPendingJobExecutionsAccepted(
                             subscriptionRequest,
                             QualityOfService.AT_LEAST_ONCE,
@@ -234,6 +235,7 @@ public class JobsSample {
                             QualityOfService.AT_LEAST_ONCE);
                     try {
                         published.get();
+                        gotResponse.get();
                     } catch (Exception ex) {
                         throw new RuntimeException("Exception occurred during publish", ex);
                     }
@@ -244,6 +246,7 @@ public class JobsSample {
                 }
 
                 for (String jobId : availableJobs) {
+                    gotResponse = new CompletableFuture<>();
                     DescribeJobExecutionSubscriptionRequest subscriptionRequest = new DescribeJobExecutionSubscriptionRequest();
                     subscriptionRequest.thingName = thingName;
                     subscriptionRequest.jobId = jobId;
