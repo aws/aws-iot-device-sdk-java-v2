@@ -54,7 +54,7 @@ public class JobsSample {
     static boolean showHelp = false;
     static int port = 8883;
 
-    static CompletableFuture<Void> gotResponse;
+    static CompletableFuture<Void> gotResponse = new CompletableFuture<>();
     static List<String> availableJobs = new LinkedList<>();
     static String currentJobId;
     static long currentExecutionNumber = 0;
@@ -244,7 +244,6 @@ public class JobsSample {
                 }
 
                 for (String jobId : availableJobs) {
-                    gotResponse = new CompletableFuture<>();
                     DescribeJobExecutionSubscriptionRequest subscriptionRequest = new DescribeJobExecutionSubscriptionRequest();
                     subscriptionRequest.thingName = thingName;
                     subscriptionRequest.jobId = jobId;
