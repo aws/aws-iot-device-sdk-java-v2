@@ -207,8 +207,9 @@ public class JobsSample {
                 }
 
                 {
+                    gotResponse = new CompletableFuture<>();
                     GetPendingJobExecutionsSubscriptionRequest subscriptionRequest = new GetPendingJobExecutionsSubscriptionRequest();
-                    subscriptionRequest.thingName = "crt-test";
+                    subscriptionRequest.thingName = thingName;
                     CompletableFuture<Integer> subscribed = jobs.SubscribeToGetPendingJobExecutionsAccepted(
                             subscriptionRequest,
                             QualityOfService.AT_LEAST_ONCE,
@@ -234,6 +235,7 @@ public class JobsSample {
                             QualityOfService.AT_LEAST_ONCE);
                     try {
                         published.get();
+                        gotResponse.get();
                     } catch (Exception ex) {
                         throw new RuntimeException("Exception occurred during publish", ex);
                     }
