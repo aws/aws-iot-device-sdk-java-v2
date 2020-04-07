@@ -15,28 +15,30 @@
 package greengrass;
 
 import software.amazon.awssdk.crt.CRT;
+import software.amazon.awssdk.crt.CrtResource;
 import software.amazon.awssdk.crt.CrtRuntimeException;
+import software.amazon.awssdk.crt.Log;
 import software.amazon.awssdk.crt.http.HttpProxyOptions;
 import software.amazon.awssdk.crt.io.*;
 import software.amazon.awssdk.crt.mqtt.*;
 import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
 import software.amazon.awssdk.iot.discovery.DiscoveryClient;
 import software.amazon.awssdk.iot.discovery.DiscoveryClientConfig;
+import software.amazon.awssdk.iot.discovery.model.ConnectivityInfo;
 import software.amazon.awssdk.iot.discovery.model.DiscoverResponse;
 import software.amazon.awssdk.iot.discovery.model.GGCore;
 import software.amazon.awssdk.iot.discovery.model.GGGroup;
-import software.amazon.awssdk.iot.iotjobs.model.RejectedError;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
-import java.util.Optional;
-import java.util.Scanner;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.regex.Pattern;
 
 import static software.amazon.awssdk.iot.discovery.DiscoveryClient.TLS_EXT_ALPN;
 
-class Discovery {
+class BasicDiscovery {
     static String thingName;
     static String rootCaPath;
     static String certPath;
@@ -143,13 +145,11 @@ class Discovery {
     }
 
     public static void main(String[] args) {
-        parseCommandLine(args);
-        if (showHelp || thingName == null) {
-            printUsage();
-            return;
-        }
+        Log.initLoggingToFile(Log.LogLevel.Trace, "./crt.log");
 
-        if (certPath == null || keyPath == null) {
+        parseCommandLine(args);
+        if (showHelp || thingName == null ||
+            certPath == null || keyPath == null) {
             printUsage();
             return;
         }
@@ -168,12 +168,10 @@ class Discovery {
             }
         };
 
-        MqttClientConnection connection = null;
-        try(EventLoopGroup eventLoopGroup = new EventLoopGroup(1)) {
-            final HostResolver resolver = new HostResolver(eventLoopGroup);
-            final ClientBootstrap clientBootstrap = new ClientBootstrap(eventLoopGroup, resolver);
-
-            final TlsContextOptions tlsCtxOptions = TlsContextOptions.createWithMtlsFromPath(certPath, keyPath);
+        try(final EventLoopGroup eventLoopGroup = new EventLoopGroup(1);
+                final HostResolver resolver = new HostResolver(eventLoopGroup);
+                final ClientBootstrap clientBootstrap = new ClientBootstrap(eventLoopGroup, resolver);
+                final TlsContextOptions tlsCtxOptions = TlsContextOptions.createWithMtlsFromPath(certPath, keyPath)) {
             if(TlsContextOptions.isAlpnSupported()) {
                 tlsCtxOptions.withAlpnList(TLS_EXT_ALPN);
             }
@@ -186,63 +184,59 @@ class Discovery {
                 proxyOptions.setHost(proxyHost);
                 proxyOptions.setPort(proxyPort);
             }
-            final TlsContext tlsCtx = new TlsContext(tlsCtxOptions);
-            final DiscoveryClientConfig discoveryClientConfig =
-                    new DiscoveryClientConfig(clientBootstrap, tlsCtx,
-                            new SocketOptions(), region, 1, proxyOptions);
-            final DiscoveryClient discoveryClient = new DiscoveryClient(discoveryClientConfig);
-            connection = getClientFromDiscovery(discoveryClient, clientBootstrap);
 
-            if(!connection.connect().get()) {
-                throw new RuntimeException("Failed to connect to GG Core using MQTT");
-            }
-
-            if ("subscribe".equals(mode) || "both".equals(mode)) {
-                final CompletableFuture<Integer> subFuture = connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, message -> {
-                    System.out.println(String.format("Message received on topic %s: %s",
-                            message.getTopic(), new String(message.getPayload(), StandardCharsets.UTF_8)));
-                });
-                System.out.println("Subscribe future returned: " + subFuture.get());
-            }
-
-            final Scanner scanner = new Scanner(System.in);
-            while(true) {
-                String input = null;
-                if("publish".equals(mode) || "both".equals(mode)) {
-                    System.out.println("Enter the message you want to publish to topic %s and press Enter. " +
-                            "Type 'exit' or 'quit' to exit this program.");
-                    input = scanner.nextLine();
+            try(final DiscoveryClientConfig discoveryClientConfig =
+                        new DiscoveryClientConfig(clientBootstrap, tlsCtxOptions,
+                        new SocketOptions(), region, 1, proxyOptions);
+                    final DiscoveryClient discoveryClient = new DiscoveryClient(discoveryClientConfig);
+                    final MqttClientConnection connection = getClientFromDiscovery(discoveryClient, clientBootstrap)) {
+                connection.connect().get();
+                if (connection.connect().get()) {
+                    System.out.println("Session resumed");
+                } else {
+                    System.out.println("Started a clean session");
                 }
 
-                if("exit".equals(input) || "quit".equals(input)) {
-                    System.out.println("Terminating...");
-                    break;
+                if ("subscribe".equals(mode) || "both".equals(mode)) {
+                    final CompletableFuture<Integer> subFuture = connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, message -> {
+                        System.out.println(String.format("Message received on topic %s: %s",
+                                message.getTopic(), new String(message.getPayload(), StandardCharsets.UTF_8)));
+                    });
+                    System.out.println("Subscribe future returned: " + subFuture.get());
                 }
 
-                if("publish".equals(mode) || "both".equals(mode)) {
-                    System.out.println("Publishing message!");
-                    final CompletableFuture<Integer> publishResult = connection.publish(new MqttMessage(topic,
-                            input.getBytes(StandardCharsets.UTF_8)), QualityOfService.AT_LEAST_ONCE, false);
-                    Integer result = publishResult.get();
-                    System.out.println("Publish result code: " + result);
+                final Scanner scanner = new Scanner(System.in);
+                while (true) {
+                    String input = null;
+                    if ("publish".equals(mode) || "both".equals(mode)) {
+                        System.out.println("Enter the message you want to publish to topic %s and press Enter. " +
+                                "Type 'exit' or 'quit' to exit this program.");
+                        input = scanner.nextLine();
+                    }
+
+                    if ("exit".equals(input) || "quit".equals(input)) {
+                        System.out.println("Terminating...");
+                        break;
+                    }
+
+                    if ("publish".equals(mode) || "both".equals(mode)) {
+                        System.out.println("Publishing message!");
+                        final CompletableFuture<Integer> publishResult = connection.publish(new MqttMessage(topic,
+                                input.getBytes(StandardCharsets.UTF_8)), QualityOfService.AT_LEAST_ONCE, false);
+                        Integer result = publishResult.get();
+                        System.out.println("Publish result code: " + result);
+                    }
                 }
             }
         } catch (CrtRuntimeException | InterruptedException | ExecutionException ex) {
-            System.out.println("Exception encountered: " + ex.toString());
+            System.out.println("Exception thrown: " + ex.toString());
             ex.printStackTrace();
         }
-        finally {
-            if(connection != null && !connection.isNull()) {
-                CompletableFuture<Void> disconnected = connection.disconnect();
-                try {
-                    disconnected.get();
-                } catch (ExecutionException | InterruptedException e) {
-                    throw new RuntimeException("Problem disconnecting the MQTT connection cleanly: " + e.getMessage());
-                }
-            }
-        }
+        CrtResource.waitForNoResources();
         System.out.println("Complete!");
     }
+
+    private static Pattern PATTERN_IS_PRIVATE_IP = Pattern.compile("/(^127\\.)|(^192\\.168\\.)|(^10\\.)|(^172\\.1[6-9]\\.)|(^172\\.2[0-9]\\.)|(^172\\.3[0-1]\\.)|(^::1$)|(^[fF][cCdD])/");
 
     private static MqttClientConnection getClientFromDiscovery(final DiscoveryClient discoveryClient,
                                                                final ClientBootstrap bootstrap) throws ExecutionException, InterruptedException {
@@ -253,13 +247,35 @@ class Discovery {
             if(groupOpt.isPresent()) {
                 final GGGroup group = groupOpt.get();
                 final GGCore core = group.getCores().stream().findFirst().get();
-                final String dnsOrIp = core.getConnectivity().get(0).getHostAddress();
-                final Integer port = core.getConnectivity().get(0).getPortNumber();
+                final SortedSet<ConnectivityInfo> prioritizedConnectivity = new TreeSet(new Comparator<ConnectivityInfo>() {
+                    @Override
+                    public int compare(ConnectivityInfo lhs, ConnectivityInfo rhs) {
+                        return ordinalValue(lhs) - ordinalValue(rhs);
+                    }
+                    private int ordinalValue(ConnectivityInfo info) {
+                        if(info.getHostAddress().equals("127.0.0.1") || info.getHostAddress().equals("::1")) {
+                            return 0;
+                        }
+                        if(PATTERN_IS_PRIVATE_IP.matcher(info.getHostAddress()).matches()) {
+                            return 1;
+                        }
+                        if(info.getHostAddress().startsWith("AUTOIP_")) {
+                            return 10;
+                        }
+                        return 2;
+                    }
+                });
+                prioritizedConnectivity.addAll(core.getConnectivity());
+                final ConnectivityInfo selectedConnectivity = prioritizedConnectivity.first();
+                final String dnsOrIp = selectedConnectivity.getHostAddress();
+                final Integer port = selectedConnectivity.getPortNumber();
+
                 System.out.println(String.format("Connecting to group ID %s, with thing arn %s, using endpoint %s:%d",
                         group.getGGGroupId(), core.getThingArn(), dnsOrIp, port));
 
                 final AwsIotMqttConnectionBuilder connectionBuilder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(certPath, keyPath)
-                        .withClientId("sample-client-id")
+                        .withClientId("sdk-sample-client-id")
+                        .withCleanSession(true)
                         .withBootstrap(bootstrap)
                         .withPort(port.shortValue())
                         .withEndpoint(dnsOrIp)

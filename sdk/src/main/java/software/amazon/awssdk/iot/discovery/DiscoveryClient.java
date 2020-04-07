@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-public class DiscoveryClient {
+public class DiscoveryClient implements AutoCloseable {
     public static final String TLS_EXT_ALPN = "x-amzn-http-ca";
 
     private static final String HTTP_HEADER_REQUEST_ID = "x-amzn-RequestId";
@@ -60,7 +60,7 @@ public class DiscoveryClient {
                     final Map<String, String> responseInfo = new HashMap<>();
                     try(final HttpStream stream = connection.makeRequest(request, new HttpStreamResponseHandler() {
                             @Override
-                            public void onResponseHeaders(HttpStream httpStream, int i, int i1, HttpHeader[] httpHeaders) {
+                            public void onResponseHeaders(HttpStream stream, int responseStatusCode, int blockType, HttpHeader[] httpHeaders) {
                                 Arrays.stream(httpHeaders).forEach(header -> {
                                     responseInfo.put(header.getName(), header.getValue());
                                 });
@@ -71,8 +71,8 @@ public class DiscoveryClient {
                                 return bodyBytes.length;
                             }
                             @Override
-                            public void onResponseComplete(HttpStream httpStream, int i) {
-                                responseComplete.complete(i);
+                            public void onResponseComplete(HttpStream httpStream, int errorCode) {
+                                responseComplete.complete(errorCode);
                             }})) {
                         stream.activate();
                         responseComplete.get();
@@ -91,5 +91,12 @@ public class DiscoveryClient {
     private static String getHostname(final DiscoveryClientConfig config) {
         return String.format("greengrass-ats.iot.%s.%s",
             config.getRegion(), AWS_DOMAIN_SUFFIX_MAP.getOrDefault(config.getRegion(), AWS_DOMAIN_DEFAULT));
+    }
+
+    @Override
+    public void close() {
+        if(httpClientConnectionManager != null) {
+            httpClientConnectionManager.close();
+        }
     }
 }
