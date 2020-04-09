@@ -47,45 +47,49 @@ public class DiscoveryClient implements AutoCloseable {
         if(thingName == null) {
             throw new IllegalArgumentException("ThingName cannot be null!");
         }
-        return httpClientConnectionManager.acquireConnection()
-                .thenApplyAsync(connection -> {
-                    final String requestHttpPath =  "/greengrass/discover/thing/" + thingName;
-                    final HttpHeader[] headers = new HttpHeader[] {
-                            new HttpHeader("host", httpClientConnectionManager.getUri().getHost())
-                    };
-                    final HttpRequest request = new HttpRequest("GET", requestHttpPath, headers, null);
-                    //we are storing everything until we get the entire response
-                    final CompletableFuture<Integer> responseComplete = new CompletableFuture<>();
-                    final StringBuilder jsonBodyResponseBuilder = new StringBuilder();
-                    final Map<String, String> responseInfo = new HashMap<>();
-                    try(final HttpStream stream = connection.makeRequest(request, new HttpStreamResponseHandler() {
-                            @Override
-                            public void onResponseHeaders(HttpStream stream, int responseStatusCode, int blockType, HttpHeader[] httpHeaders) {
-                                Arrays.stream(httpHeaders).forEach(header -> {
-                                    responseInfo.put(header.getName(), header.getValue());
-                                });
-                            }
-                            @Override
-                            public int onResponseBody(HttpStream stream, byte bodyBytes[]) {
-                                jsonBodyResponseBuilder.append(new String(bodyBytes, StandardCharsets.UTF_8));
-                                return bodyBytes.length;
-                            }
-                            @Override
-                            public void onResponseComplete(HttpStream httpStream, int errorCode) {
-                                responseComplete.complete(errorCode);
-                            }})) {
-                        stream.activate();
-                        responseComplete.get();
-                        if (stream.getResponseStatusCode() != 200) {
-                            throw new RuntimeException(String.format("Error %s(%d); RequestId: %s",
-                                    HTTP_HEADER_ERROR_TYPE, stream.getResponseStatusCode(), HTTP_HEADER_REQUEST_ID));
+        return CompletableFuture.supplyAsync(() -> {
+            try(final HttpClientConnection connection = httpClientConnectionManager.acquireConnection().get()) {
+                final String requestHttpPath =  "/greengrass/discover/thing/" + thingName;
+                final HttpHeader[] headers = new HttpHeader[] {
+                        new HttpHeader("host", httpClientConnectionManager.getUri().getHost())
+                };
+                final HttpRequest request = new HttpRequest("GET", requestHttpPath, headers, null);
+                //we are storing everything until we get the entire response
+                final CompletableFuture<Integer> responseComplete = new CompletableFuture<>();
+                final StringBuilder jsonBodyResponseBuilder = new StringBuilder();
+                final Map<String, String> responseInfo = new HashMap<>();
+                try(final HttpStream stream = connection.makeRequest(request, new HttpStreamResponseHandler() {
+                        @Override
+                        public void onResponseHeaders(HttpStream stream, int responseStatusCode, int blockType, HttpHeader[] httpHeaders) {
+                            Arrays.stream(httpHeaders).forEach(header -> {
+                                responseInfo.put(header.getName(), header.getValue());
+                            });
                         }
-                        final String responseString = jsonBodyResponseBuilder.toString();
-                        return GSON.fromJson(new StringReader(responseString), DiscoverResponse.class);
-                    } catch (InterruptedException | ExecutionException e) {
-                        throw new RuntimeException(e);
+                        @Override
+                        public int onResponseBody(HttpStream stream, byte bodyBytes[]) {
+                            jsonBodyResponseBuilder.append(new String(bodyBytes, StandardCharsets.UTF_8));
+                            return bodyBytes.length;
+                        }
+                        @Override
+                        public void onResponseComplete(HttpStream httpStream, int errorCode) {
+                            responseComplete.complete(errorCode);
+                        }})) {
+                    stream.activate();
+                    responseComplete.get();
+                    if (stream.getResponseStatusCode() != 200) {
+                        throw new RuntimeException(String.format("Error %s(%d); RequestId: %s",
+                                HTTP_HEADER_ERROR_TYPE, stream.getResponseStatusCode(), HTTP_HEADER_REQUEST_ID));
                     }
-                });
+                    final String responseString = jsonBodyResponseBuilder.toString();
+                    return GSON.fromJson(new StringReader(responseString), DiscoverResponse.class);
+                } catch (InterruptedException | ExecutionException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            catch(InterruptedException | ExecutionException e) {
+                throw new RuntimeException(e.getMessage(), e);
+            }
+        });
     }
 
     private static String getHostname(final DiscoveryClientConfig config) {

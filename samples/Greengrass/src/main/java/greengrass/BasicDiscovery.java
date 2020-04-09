@@ -145,7 +145,7 @@ class BasicDiscovery {
     }
 
     public static void main(String[] args) {
-        Log.initLoggingToFile(Log.LogLevel.Trace, "./crt.log");
+        Log.initLoggingFromSystemProperties();
 
         parseCommandLine(args);
         if (showHelp || thingName == null ||
@@ -153,20 +153,6 @@ class BasicDiscovery {
             printUsage();
             return;
         }
-
-        MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
-            @Override
-            public void onConnectionInterrupted(int errorCode) {
-                if (errorCode != 0) {
-                    System.out.println("Connection interrupted: " + errorCode + ": " + CRT.awsErrorString(errorCode));
-                }
-            }
-
-            @Override
-            public void onConnectionResumed(boolean sessionPresent) {
-                System.out.println("Connection resumed: " + (sessionPresent ? "existing session" : "clean session"));
-            }
-        };
 
         try(final EventLoopGroup eventLoopGroup = new EventLoopGroup(1);
                 final HostResolver resolver = new HostResolver(eventLoopGroup);
@@ -190,7 +176,6 @@ class BasicDiscovery {
                         new SocketOptions(), region, 1, proxyOptions);
                     final DiscoveryClient discoveryClient = new DiscoveryClient(discoveryClientConfig);
                     final MqttClientConnection connection = getClientFromDiscovery(discoveryClient, clientBootstrap)) {
-                connection.connect().get();
                 if (connection.connect().get()) {
                     System.out.println("Session resumed");
                 } else {
@@ -198,19 +183,17 @@ class BasicDiscovery {
                 }
 
                 if ("subscribe".equals(mode) || "both".equals(mode)) {
-                    final CompletableFuture<Integer> subFuture = connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, message -> {
+                    final CompletableFuture<Integer> subFuture = connection.subscribe(topic, QualityOfService.AT_MOST_ONCE, message -> {
                         System.out.println(String.format("Message received on topic %s: %s",
                                 message.getTopic(), new String(message.getPayload(), StandardCharsets.UTF_8)));
                     });
-                    System.out.println("Subscribe future returned: " + subFuture.get());
                 }
-
                 final Scanner scanner = new Scanner(System.in);
                 while (true) {
                     String input = null;
                     if ("publish".equals(mode) || "both".equals(mode)) {
-                        System.out.println("Enter the message you want to publish to topic %s and press Enter. " +
-                                "Type 'exit' or 'quit' to exit this program.");
+                        System.out.println("Enter the message you want to publish to topic " + topic + " and press Enter. " +
+                                "Type 'exit' or 'quit' to exit this program: ");
                         input = scanner.nextLine();
                     }
 
@@ -220,11 +203,9 @@ class BasicDiscovery {
                     }
 
                     if ("publish".equals(mode) || "both".equals(mode)) {
-                        System.out.println("Publishing message!");
                         final CompletableFuture<Integer> publishResult = connection.publish(new MqttMessage(topic,
-                                input.getBytes(StandardCharsets.UTF_8)), QualityOfService.AT_LEAST_ONCE, false);
+                                input.getBytes(StandardCharsets.UTF_8)), QualityOfService.AT_MOST_ONCE, false);
                         Integer result = publishResult.get();
-                        System.out.println("Publish result code: " + result);
                     }
                 }
             }
@@ -274,18 +255,15 @@ class BasicDiscovery {
                         group.getGGGroupId(), core.getThingArn(), dnsOrIp, port));
 
                 final AwsIotMqttConnectionBuilder connectionBuilder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(certPath, keyPath)
-                        .withClientId("sdk-sample-client-id")
-                        .withCleanSession(true)
-                        .withBootstrap(bootstrap)
+                        .withClientId("RaspberryPi")
                         .withPort(port.shortValue())
                         .withEndpoint(dnsOrIp)
+                        .withBootstrap(bootstrap)
                         .withConnectionEventCallbacks(new MqttClientConnectionEvents() {
                             @Override
-                            public void onConnectionInterrupted(int i) {
-                                System.out.println("Connection interrupted!");
-                            }
+                            public void onConnectionInterrupted(int errorCode) { System.out.println("Connection interrupted: " + errorCode); }
                             @Override
-                            public void onConnectionResumed(boolean b) {
+                            public void onConnectionResumed(boolean sessionPresent) {
                                 System.out.println("Connection resumed!");
                             }
                         });
