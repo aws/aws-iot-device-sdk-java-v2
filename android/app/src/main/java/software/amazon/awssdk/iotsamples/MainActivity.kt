@@ -15,10 +15,10 @@ import java.lang.Exception
 import kotlin.concurrent.thread
 
 val SAMPLES = mapOf(
-    "pubsub.PubSub" to "Publish/Subscribe Sample",
-    "jobs.Jobs" to "Jobs Client Sample",
-    "shadow.Shadow" to "Shadow Client Sample",
-    "pubsubstress.PubSubStress" to "Publish/Subscribe Load Test"
+    "Publish/Subscribe Sample" to "pubsub.PubSub",
+    "Jobs Client Sample" to "jobs.JobsSample",
+    "Shadow Client Sample" to "shadow.ShadowSample",
+    "Publish/Subscribe Load Test" to "pubsubstress.PubSubStress"
 )
 
 class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
@@ -64,7 +64,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
         sampleSelect = findViewById<Spinner>(R.id.sampleSelect);
 
-        val samples = SAMPLES.values.toMutableList()
+        val samples = SAMPLES.keys.toMutableList()
         samples.add(0, "Please select a sample")
         val samplesAdapter = ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, samples)
         sampleSelect?.adapter = samplesAdapter
@@ -116,7 +116,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
         thread(name="sample_runner", contextClassLoader = classLoader) {
             // find resources, copy them into the cache so samples can get paths to them
-            val resourceNames = listOf("AmazonRootCA1.pem", "ca-certificates.crt", "certificate.pem", "privatekey.pem")
+            val resourceNames = listOf("AmazonRootCA1.pem", "certificate.pem", "privatekey.pem")
             val resourceMap = HashMap<String, String>()
             for (resourceName in resourceNames) {
                 resources.assets.open(resourceName).use { res ->
@@ -129,26 +129,26 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                 }
             }
 
-            var endpoint: String = ""
-            resources.assets.open("endpoint.txt").use {res ->
-                val bytes = ByteArray(res.available())
-                res.read(bytes)
-                endpoint = String(bytes).trim()
-            }
-
-            val args = arrayOf(
+            val args = mutableListOf(
                 "--endpoint", assetContents("endpoint.txt"),
                 "--rootca", resourceMap["AmazonRootCA1.pem"],
                 "--cert", resourceMap["certificate.pem"],
                 "--key", resourceMap["privatekey.pem"],
                 "--port", assetContentsOr("port.txt", "8883"),
-                "--clientId", assetContentsOr("clientId.txt", "android-java-crt-test"),
-                "--topic", assetContentsOr("topic.txt", "/samples/test"),
-                "--message", assetContentsOr("message.txt", "Hello World From Android")
+                "--clientId", assetContentsOr("clientId.txt", "android-java-crt-test")
             )
+            if (name == "pubsub.PubSub") {
+                args.addAll(arrayOf(
+                    "--topic", assetContentsOr("topic.txt", "/samples/test"),
+                    "--message", assetContentsOr("message.txt", "Hello World From Android")))
+            } else if (name in arrayOf("jobs.JobsSample", "shadow.ShadowSample")) {
+                args.addAll(arrayOf(
+                    "--thingName", assetContentsOr("thingName.txt", "aws-iot-unit-test")
+                ))
+            }
             val main = sampleClass.getMethod("main", Array<String>::class.java)
             try {
-                main.invoke(null, args);
+                main.invoke(null, args.toTypedArray())
             } catch (e: Exception) {
                 writeToConsole(e.toString())
             }
@@ -162,11 +162,11 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
+        clearConsole()
         val sampleName = parent?.getItemAtPosition(pos).toString()
-        for (sample in SAMPLES) {
-            if (sample.value == sampleName) {
-                return runSample(sample.key)
-            }
+        val sampleClassName = SAMPLES[sampleName]
+        if (sampleClassName != null) {
+            return runSample(sampleClassName)
         }
     }
 }

@@ -68,7 +68,8 @@ public class ShadowSample {
                 "  -e|--endpoint AWS IoT service endpoint hostname\n"+
                 "  -r|--rootca   Path to the root certificate\n"+
                 "  -c|--cert     Path to the IoT thing certificate\n"+
-                "  -k|--key      Path to the IoT thing private key"
+                "  -k|--key      Path to the IoT thing private key\n"+
+                "  -p|--port     Port to use (optional)"
         );
     }
 
@@ -106,6 +107,12 @@ public class ShadowSample {
                 case "--key":
                     if (idx + 1 < args.length) {
                         keyPath = args[++idx];
+                    }
+                    break;
+                case "-p":
+                case "--port":
+                    if (idx +1 < args.length) {
+                        port = Integer.parseInt(args[++idx]);
                     }
                     break;
                 default:

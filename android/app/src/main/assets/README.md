@@ -10,3 +10,4 @@ clientId.txt - specifies --clientId CLI argument
 topic.txt - specifies --topic CLI argument
 message.txt - specifies --message CLI argument
 port.txt - specifies --port CLI argument
+thingName.txt - specifies --thingName CLI argument
