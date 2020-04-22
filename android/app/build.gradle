@@ -1,0 +1,63 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+
+android {
+    compileSdkVersion 29
+    buildToolsVersion "29.0.3"
+
+    defaultConfig {
+        applicationId "software.amazon.awssdk.iotsamples"
+        minSdkVersion 26
+        targetSdkVersion 29
+        ndkVersion "21.0.6113669"
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    sourceSets {
+        main {
+            java.srcDir '../../sdk/src/main/java'
+            java.srcDir '../../samples/BasicPubSub/src/main/java'
+            java.srcDir '../../samples/Jobs/src/main/java'
+            java.srcDir '../../samples/PubSubStress/src/main/java'
+            java.srcDir '../../samples/Shadow/src/main/java'
+            java.srcDir 'src/main/java'
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
+    }
+
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url System.getenv('HOME') + "/.m2/repository"
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'software.amazon.awssdk.crt:android:0.5.4'
+    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.core:core:1.2.0'
+    implementation 'androidx.core:core-ktx:1.2.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    testImplementation 'junit:junit:4.13'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+}

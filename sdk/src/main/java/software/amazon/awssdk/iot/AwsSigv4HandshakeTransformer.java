@@ -23,7 +23,6 @@ import software.amazon.awssdk.crt.auth.signing.AwsSigningConfig;
 import software.amazon.awssdk.crt.http.HttpRequest;
 import software.amazon.awssdk.crt.mqtt.WebsocketHandshakeTransformArgs;
 
-import java.time.Instant;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
@@ -52,7 +51,7 @@ public class AwsSigv4HandshakeTransformer extends CrtResource implements Consume
 
     public void accept(WebsocketHandshakeTransformArgs handshakeArgs) {
         try (AwsSigningConfig config = signingConfig.clone()) {
-            config.setTime(Instant.now());
+            config.setTime(System.currentTimeMillis());
 
             CompletableFuture<HttpRequest> signingFuture = AwsSigner.signRequest(handshakeArgs.getHttpRequest(), config);
             signingFuture.whenComplete((HttpRequest request, Throwable error) -> {
