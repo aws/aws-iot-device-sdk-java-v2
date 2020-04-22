@@ -27,6 +27,7 @@ public class UpdateJobExecutionRequest {
     public HashMap<String, String> statusDetails;
     public Boolean includeJobExecutionState;
     public JobStatus status;
+    public Long stepTimeoutInMinutes;
     public String jobId;
     public String clientToken;
 }
