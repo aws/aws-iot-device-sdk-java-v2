@@ -10,16 +10,15 @@ android {
         applicationId "software.amazon.awssdk.iotsamples"
         minSdkVersion 26
         targetSdkVersion 29
-        ndkVersion "21.0.6113669"
         versionCode 1
         versionName "1.0"
+        ndkVersion "21.0.6113669"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     sourceSets {
         main {
-            java.srcDir '../../sdk/src/main/java'
             java.srcDir '../../samples/BasicPubSub/src/main/java'
             java.srcDir '../../samples/Jobs/src/main/java'
             java.srcDir '../../samples/PubSubStress/src/main/java'
@@ -50,8 +49,8 @@ repositories {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(":iotdevicesdk")
     implementation 'software.amazon.awssdk.crt:android:0.5.4'
-    implementation 'com.google.code.gson:gson:2.8.5'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.core:core:1.2.0'
