@@ -1,0 +1,3 @@
+rootProject.name='IoTSamples'
+include ':app'
+include ':iotdevicesdk'
