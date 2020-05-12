@@ -46,14 +46,44 @@ mvn clean install
 ```
 
 ## Build CRT from source
-```
+```sh
 # NOTE: use the latest version of the CRT here
+
 git clone --branch v0.4.20 https://github.com/awslabs/aws-crt-java.git
+
 git clone https://github.com/awslabs/aws-iot-device-sdk-java-v2.git
 cd aws-crt-java
 mvn install -Dmaven.test.skip=true
 cd ../aws-iot-device-sdk-java-v2
 mvn clean install
+```
+
+### Android
+Supports API 26 or newer.
+NOTE: The shadow sample does not currently complete on android due to its dependence on stdin keyboard input.
+```sh
+git clone --branch v0.5.4 https://github.com/awslabs/aws-crt-java.git
+git clone https://github.com/awslabs/aws-iot-device-sdk-java-v2.git
+cd aws-crt-java/android
+./gradlew connectedCheck # optional, will run the unit tests on any connected devices/emulators
+./gradlew publishToMavenLocal
+cd ../aws-iot-device-sdk-java-v2/android
+./gradlew publishToMavenLocal
+./gradlew installDebug # optional, will install the IoTSamples app to any connected devices/emulators
+```
+
+Add the following to your project's build.gradle:
+```groovy
+repositories {
+    mavenCentral()
+    maven {
+        url System.getenv('HOME') + "/.m2/repository"
+    }
+}
+
+dependencies { 
+    implementation 'software.amazon.awssdk.crt:android:0.5.4'
+}
 ```
 
 # Samples
@@ -79,6 +109,11 @@ on the device and an update is sent to the server with the new "reported"
 value.
 
 Source: `samples/Shadow`
+
+To Run:
+```
+> mvn exec:java -pl samples/Shadow -Dexec.mainClass=jobs.JobsSample -Dexec.args='--endpoint <endpoint> --rootca /path/to/AmazonRootCA1.pem --cert <cert path> --key <key path> --thingName <thing name>'
+```
 
 Your Thing's
 [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-policies.html)
@@ -149,6 +184,11 @@ This sample requires you to create jobs for your device to execute. See
 On startup, the sample describes a job that is pending execution.
 
 Source: `samples/Jobs`
+
+To Run:
+```
+> mvn exec:java -pl samples/Jobs -Dexec.mainClass=jobs.JobsSample -Dexec.args='--endpoint <endpoint> --rootca /path/to/AmazonRootCA1.pem --cert <cert path> --key <key path> --thingName <thing name>'
+```
 
 Your Thing's
 [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-policies.html)
