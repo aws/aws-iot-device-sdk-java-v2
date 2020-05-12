@@ -13,7 +13,7 @@
         <module>samples/PubSubStress</module>
         <module>samples/RawPubSub</module>
         <module>samples/Shadow</module>
-        <module>samples/Greengrass</module>
+        <module>samples/Identity</module>
     </modules>
 
     <build>
