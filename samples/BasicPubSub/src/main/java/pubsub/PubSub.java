@@ -258,8 +258,9 @@ class PubSub {
                 builder.withWebsockets(true);
                 builder.withWebsocketSigningRegion(region);
 
+                HttpProxyOptions proxyOptions = null;
                 if (proxyHost != null && proxyPort > 0) {
-                    HttpProxyOptions proxyOptions = new HttpProxyOptions();
+                    proxyOptions = new HttpProxyOptions();
                     proxyOptions.setHost(proxyHost);
                     proxyOptions.setPort(proxyPort);
 
@@ -278,7 +279,8 @@ class PubSub {
                                     .withTlsContext(x509TlsContext)
                                     .withEndpoint(x509Endpoint)
                                     .withRoleAlias(x509RoleAlias)
-                                    .withThingName(x509Thing);
+                                    .withThingName(x509Thing)
+                                    .withProxyOptions(proxyOptions);
                             try (X509CredentialsProvider provider = x509builder.build()) {
                                 builder.withWebsocketCredentialsProvider(provider);
                             }
