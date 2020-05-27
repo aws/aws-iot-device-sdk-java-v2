@@ -447,7 +447,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
 
                 try (AwsSigningConfig signingConfig = new AwsSigningConfig()) {
                     signingConfig.setAlgorithm(AwsSigningConfig.AwsSigningAlgorithm.SIGV4);
-                    signingConfig.setTransform(AwsSigningConfig.AwsRequestSigningTransform.QUERY_PARAM);
+                    signingConfig.setSignatureType(AwsSigningConfig.AwsSignatureType.HTTP_REQUEST_VIA_QUERY_PARAMS);
                     signingConfig.setRegion(websocketSigningRegion);
                     signingConfig.setService(IOT_SIGNING_SERVICE);
                     signingConfig.setCredentialsProvider(websocketCredentialsProvider);
