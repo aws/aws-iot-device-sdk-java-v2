@@ -451,11 +451,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
                     signingConfig.setRegion(websocketSigningRegion);
                     signingConfig.setService(IOT_SIGNING_SERVICE);
                     signingConfig.setCredentialsProvider(websocketCredentialsProvider);
-                    signingConfig.setOmitSessionTokenQueryParam(true);
-                    signingConfig.setShouldSignHeader( (String headerName) ->  {
-                         String headerLowerCase = headerName.toLowerCase();
-                         return !headerLowerCase.equals(AMZ_DATE_HEADER);
-                    });
+                    signingConfig.setOmitSessionToken(true);
 
                     try (AwsSigv4HandshakeTransformer transformer = new AwsSigv4HandshakeTransformer(signingConfig)) {
                         connectionConfig.setWebsocketHandshakeTransform(transformer);
