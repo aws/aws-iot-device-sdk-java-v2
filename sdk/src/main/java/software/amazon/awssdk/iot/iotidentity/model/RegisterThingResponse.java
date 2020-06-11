@@ -19,6 +19,6 @@ package software.amazon.awssdk.iot.iotidentity.model;
 import java.util.HashMap;
 
 public class RegisterThingResponse {
-    public HashMap<String, String> deviceConfiguration;
     public String thingName;
+    public HashMap<String, String> deviceConfiguration;
 }
