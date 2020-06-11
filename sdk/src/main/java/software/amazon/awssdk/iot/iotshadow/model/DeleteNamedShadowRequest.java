@@ -17,7 +17,8 @@
 package software.amazon.awssdk.iot.iotshadow.model;
 
 
-public class GetShadowRequest {
-    public String thingName;
+public class DeleteNamedShadowRequest {
     public String clientToken;
+    public String shadowName;
+    public String thingName;
 }

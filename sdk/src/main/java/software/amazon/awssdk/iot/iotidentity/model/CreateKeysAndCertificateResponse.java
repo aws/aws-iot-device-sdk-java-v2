@@ -19,7 +19,7 @@ package software.amazon.awssdk.iot.iotidentity.model;
 
 public class CreateKeysAndCertificateResponse {
     public String certificateId;
-    public String privateKey;
     public String certificateOwnershipToken;
     public String certificatePem;
+    public String privateKey;
 }

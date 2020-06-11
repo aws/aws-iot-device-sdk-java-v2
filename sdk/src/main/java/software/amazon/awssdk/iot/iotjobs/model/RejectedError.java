@@ -22,8 +22,8 @@ import software.amazon.awssdk.iot.iotjobs.model.RejectedErrorCode;
 
 public class RejectedError {
     public Timestamp timestamp;
-    public String clientToken;
     public RejectedErrorCode code;
-    public JobExecutionState executionState;
     public String message;
+    public String clientToken;
+    public JobExecutionState executionState;
 }

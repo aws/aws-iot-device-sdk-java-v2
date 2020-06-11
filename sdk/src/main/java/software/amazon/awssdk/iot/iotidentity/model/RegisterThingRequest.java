@@ -19,7 +19,7 @@ package software.amazon.awssdk.iot.iotidentity.model;
 import java.util.HashMap;
 
 public class RegisterThingRequest {
-    public HashMap<String, String> parameters;
     public String templateName;
+    public HashMap<String, String> parameters;
     public String certificateOwnershipToken;
 }

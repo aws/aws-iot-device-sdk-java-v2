@@ -18,7 +18,7 @@ package software.amazon.awssdk.iot.iotidentity.model;
 
 
 public class ErrorResponse {
-    public String errorCode;
     public Integer statusCode;
     public String errorMessage;
+    public String errorCode;
 }
