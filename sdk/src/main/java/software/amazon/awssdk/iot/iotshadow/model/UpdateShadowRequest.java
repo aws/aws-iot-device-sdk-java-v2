@@ -21,6 +21,6 @@ import software.amazon.awssdk.iot.iotshadow.model.ShadowState;
 public class UpdateShadowRequest {
     public ShadowState state;
     public String thingName;
-    public String clientToken;
     public Integer version;
+    public String clientToken;
 }

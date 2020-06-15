@@ -14,10 +14,12 @@
 * This file is generated
 */
 
-package software.amazon.awssdk.iot.iotshadow.model;
+package software.amazon.awssdk.iot.iotidentity.model;
 
+import java.util.HashMap;
 
-public class GetShadowRequest {
-    public String thingName;
-    public String clientToken;
+public class RegisterThingRequest {
+    public String templateName;
+    public HashMap<String, String> parameters;
+    public String certificateOwnershipToken;
 }

@@ -19,6 +19,7 @@ package software.amazon.awssdk.iot.iotshadow.model;
 import software.amazon.awssdk.iot.Timestamp;
 
 public class DeleteShadowResponse {
-    public Timestamp timestamp;
     public Integer version;
+    public String clientToken;
+    public Timestamp timestamp;
 }

@@ -21,8 +21,9 @@ import software.amazon.awssdk.iot.iotshadow.model.ShadowMetadata;
 import software.amazon.awssdk.iot.iotshadow.model.ShadowStateWithDelta;
 
 public class GetShadowResponse {
-    public ShadowStateWithDelta state;
     public Integer version;
+    public String clientToken;
+    public ShadowStateWithDelta state;
     public ShadowMetadata metadata;
     public Timestamp timestamp;
 }

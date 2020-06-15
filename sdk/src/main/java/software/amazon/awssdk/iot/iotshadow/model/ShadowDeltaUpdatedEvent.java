@@ -20,8 +20,8 @@ import java.util.HashMap;
 import software.amazon.awssdk.iot.Timestamp;
 
 public class ShadowDeltaUpdatedEvent {
-    public HashMap<String, Object> metadata;
     public Integer version;
     public Timestamp timestamp;
+    public HashMap<String, Object> metadata;
     public HashMap<String, Object> state;
 }

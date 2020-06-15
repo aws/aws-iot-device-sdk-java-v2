@@ -21,8 +21,8 @@ import software.amazon.awssdk.iot.Timestamp;
 import software.amazon.awssdk.iot.iotjobs.model.JobExecutionSummary;
 
 public class GetPendingJobExecutionsResponse {
-    public String clientToken;
     public List<software.amazon.awssdk.iot.iotjobs.model.JobExecutionSummary> queuedJobs;
     public Timestamp timestamp;
+    public String clientToken;
     public List<software.amazon.awssdk.iot.iotjobs.model.JobExecutionSummary> inProgressJobs;
 }

@@ -18,9 +18,9 @@ package software.amazon.awssdk.iot.iotjobs.model;
 
 
 public class DescribeJobExecutionRequest {
+    public Long executionNumber;
+    public String thingName;
     public Boolean includeJobDocument;
     public String jobId;
     public String clientToken;
-    public Long executionNumber;
-    public String thingName;
 }

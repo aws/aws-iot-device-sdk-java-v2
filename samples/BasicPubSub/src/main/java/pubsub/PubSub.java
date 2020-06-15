@@ -16,10 +16,13 @@ package pubsub;
 
 import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.crt.CrtRuntimeException;
+import software.amazon.awssdk.crt.auth.credentials.X509CredentialsProvider;
 import software.amazon.awssdk.crt.http.HttpProxyOptions;
 import software.amazon.awssdk.crt.io.ClientBootstrap;
+import software.amazon.awssdk.crt.io.ClientTlsContext;
 import software.amazon.awssdk.crt.io.EventLoopGroup;
 import software.amazon.awssdk.crt.io.HostResolver;
+import software.amazon.awssdk.crt.io.TlsContextOptions;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnectionEvents;
 import software.amazon.awssdk.crt.mqtt.MqttMessage;
@@ -47,24 +50,38 @@ class PubSub {
     static int proxyPort;
     static String region = "us-east-1";
     static boolean useWebsockets = false;
+    static boolean useX509Credentials = false;
+    static String x509RoleAlias;
+    static String x509Endpoint;
+    static String x509Thing;
+    static String x509CertPath;
+    static String x509KeyPath;
+    static String x509RootCaPath;
 
     static void printUsage() {
         System.out.println(
                 "Usage:\n"+
-                "  --help        This message\n"+
-                "  --clientId    Client ID to use when connecting (optional)\n"+
-                "  -e|--endpoint AWS IoT service endpoint hostname\n"+
-                "  -p|--port     Port to connect to on the endpoint\n"+
-                "  -r|--rootca   Path to the root certificate\n"+
-                "  -c|--cert     Path to the IoT thing certificate\n"+
-                "  -k|--key      Path to the IoT thing private key\n"+
-                "  -t|--topic    Topic to subscribe/publish to (optional)\n"+
-                "  -m|--message  Message to publish (optional)\n"+
-                "  -n|--count    Number of messages to publish (optional)\n" +
-                "  -w|--websockets Use websockets\n" +
-                "  --proxyhost   Websocket proxy host to use\n" +
-                "  --proxyport   Websocket proxy port to use\n" +
-                "  --region      Websocket signing region to use\n"
+                "  --help            This message\n"+
+                "  --clientId        Client ID to use when connecting (optional)\n"+
+                "  -e|--endpoint     AWS IoT service endpoint hostname\n"+
+                "  -p|--port         Port to connect to on the endpoint\n"+
+                "  -r|--rootca       Path to the root certificate\n"+
+                "  -c|--cert         Path to the IoT thing certificate\n"+
+                "  -k|--key          Path to the IoT thing private key\n"+
+                "  -t|--topic        Topic to subscribe/publish to (optional)\n"+
+                "  -m|--message      Message to publish (optional)\n"+
+                "  -n|--count        Number of messages to publish (optional)\n" +
+                "  -w|--websockets   Use websockets\n" +
+                "  --proxyhost       Websocket proxy host to use\n" +
+                "  --proxyport       Websocket proxy port to use\n" +
+                "  --region          Websocket signing region to use\n" +
+                "  --x509            Use the x509 credentials provider while using websockets\n" +
+                "  --x509rolealias   Role alias to use with the x509 credentials provider\n" +
+                "  --x509endpoint    Endpoint to fetch x509 credentials from\n" +
+                "  --x509thing       Thing name to fetch x509 credentials on behalf of\n" +
+                "  --x509cert        Path to the IoT thing certificate used in fetching x509 credentials\n" +
+                "  --x509key         Path to the IoT thing private key used in fetching x509 credentials\n" +
+                "  --x509rootca      Path to the root certificate used in fetching x509 credentials\n"
         );
     }
 
@@ -130,6 +147,40 @@ class PubSub {
                 case "-w":
                     useWebsockets = true;
                     break;
+                case "--x509":
+                    useX509Credentials = true;
+                    useWebsockets = true;
+                    break;
+                case "--x509rolealias":
+                    if (idx + 1 < args.length) {
+                        x509RoleAlias = args[++idx];
+                    }
+                    break;
+                case "--x509endpoint":
+                    if (idx + 1 < args.length) {
+                        x509Endpoint = args[++idx];
+                    }
+                    break;
+                case "--x509thing":
+                    if (idx + 1 < args.length) {
+                        x509Thing = args[++idx];
+                    }
+                    break;
+                case "--x509cert":
+                    if (idx + 1 < args.length) {
+                        x509CertPath = args[++idx];
+                    }
+                    break;
+                case "--x509key":
+                    if (idx + 1 < args.length) {
+                        x509KeyPath = args[++idx];
+                    }
+                    break;
+                case "--x509rootca":
+                    if (idx + 1 < args.length) {
+                        x509RootCaPath = args[++idx];
+                    }
+                    break;
                 case "--proxyhost":
                     if (idx + 1 < args.length) {
                         proxyHost = args[++idx];
@@ -164,6 +215,11 @@ class PubSub {
 
         if (!useWebsockets) {
             if (certPath == null || keyPath == null) {
+                printUsage();
+                return;
+            }
+        } else if (useX509Credentials) {
+            if (x509RoleAlias == null || x509Endpoint == null || x509Thing == null || x509CertPath == null || x509KeyPath == null) {
                 printUsage();
                 return;
             }
@@ -202,12 +258,34 @@ class PubSub {
                 builder.withWebsockets(true);
                 builder.withWebsocketSigningRegion(region);
 
+                HttpProxyOptions proxyOptions = null;
                 if (proxyHost != null && proxyPort > 0) {
-                    HttpProxyOptions proxyOptions = new HttpProxyOptions();
+                    proxyOptions = new HttpProxyOptions();
                     proxyOptions.setHost(proxyHost);
                     proxyOptions.setPort(proxyPort);
 
                     builder.withWebsocketProxyOptions(proxyOptions);
+                }
+
+                if (useX509Credentials) {
+                    try (TlsContextOptions x509TlsOptions = TlsContextOptions.createWithMtlsFromPath(x509CertPath, x509KeyPath)) {
+                        if (x509RootCaPath != null) {
+                            x509TlsOptions.withCertificateAuthorityFromPath(null, x509RootCaPath);
+                        }
+
+                        try (ClientTlsContext x509TlsContext = new ClientTlsContext(x509TlsOptions)) {
+                            X509CredentialsProvider.X509CredentialsProviderBuilder x509builder = new X509CredentialsProvider.X509CredentialsProviderBuilder()
+                                    .withClientBootstrap(clientBootstrap)
+                                    .withTlsContext(x509TlsContext)
+                                    .withEndpoint(x509Endpoint)
+                                    .withRoleAlias(x509RoleAlias)
+                                    .withThingName(x509Thing)
+                                    .withProxyOptions(proxyOptions);
+                            try (X509CredentialsProvider provider = x509builder.build()) {
+                                builder.withWebsocketCredentialsProvider(provider);
+                            }
+                        }
+                    }
                 }
             }
 

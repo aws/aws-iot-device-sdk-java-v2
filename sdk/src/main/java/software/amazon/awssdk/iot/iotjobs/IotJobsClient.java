@@ -224,18 +224,18 @@ public class IotJobsClient {
         Consumer<RejectedError> handler,
         Consumer<Exception> exceptionHandler) {
         String topic = "$aws/things/{thingName}/jobs/{jobId}/update/rejected";
-        if (request.thingName == null) {
-            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
-            result.completeExceptionally(new MqttException("UpdateJobExecutionSubscriptionRequest must have a non-null thingName"));
-            return result;
-        }
-        topic = topic.replace("{thingName}", request.thingName);
         if (request.jobId == null) {
             CompletableFuture<Integer> result = new CompletableFuture<Integer>();
             result.completeExceptionally(new MqttException("UpdateJobExecutionSubscriptionRequest must have a non-null jobId"));
             return result;
         }
         topic = topic.replace("{jobId}", request.jobId);
+        if (request.thingName == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("UpdateJobExecutionSubscriptionRequest must have a non-null thingName"));
+            return result;
+        }
+        topic = topic.replace("{thingName}", request.thingName);
         Consumer<MqttMessage> messageHandler = (message) -> {
             try {
                 String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
@@ -263,18 +263,18 @@ public class IotJobsClient {
         Consumer<UpdateJobExecutionResponse> handler,
         Consumer<Exception> exceptionHandler) {
         String topic = "$aws/things/{thingName}/jobs/{jobId}/update/accepted";
-        if (request.thingName == null) {
-            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
-            result.completeExceptionally(new MqttException("UpdateJobExecutionSubscriptionRequest must have a non-null thingName"));
-            return result;
-        }
-        topic = topic.replace("{thingName}", request.thingName);
         if (request.jobId == null) {
             CompletableFuture<Integer> result = new CompletableFuture<Integer>();
             result.completeExceptionally(new MqttException("UpdateJobExecutionSubscriptionRequest must have a non-null jobId"));
             return result;
         }
         topic = topic.replace("{jobId}", request.jobId);
+        if (request.thingName == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("UpdateJobExecutionSubscriptionRequest must have a non-null thingName"));
+            return result;
+        }
+        topic = topic.replace("{thingName}", request.thingName);
         Consumer<MqttMessage> messageHandler = (message) -> {
             try {
                 String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
@@ -489,18 +489,18 @@ public class IotJobsClient {
         DescribeJobExecutionRequest request,
         QualityOfService qos) {
         String topic = "$aws/things/{thingName}/jobs/{jobId}/get";
-        if (request.jobId == null) {
-            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
-            result.completeExceptionally(new MqttException("DescribeJobExecutionRequest must have a non-null jobId"));
-            return result;
-        }
-        topic = topic.replace("{jobId}", request.jobId);
         if (request.thingName == null) {
             CompletableFuture<Integer> result = new CompletableFuture<Integer>();
             result.completeExceptionally(new MqttException("DescribeJobExecutionRequest must have a non-null thingName"));
             return result;
         }
         topic = topic.replace("{thingName}", request.thingName);
+        if (request.jobId == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("DescribeJobExecutionRequest must have a non-null jobId"));
+            return result;
+        }
+        topic = topic.replace("{jobId}", request.jobId);
         String payloadJson = gson.toJson(request);
         MqttMessage message = new MqttMessage(topic, payloadJson.getBytes(StandardCharsets.UTF_8));
         return connection.publish(message, qos, false);

@@ -21,8 +21,8 @@ import software.amazon.awssdk.iot.Timestamp;
 import software.amazon.awssdk.iot.iotjobs.model.JobExecutionState;
 
 public class UpdateJobExecutionResponse {
-    public Timestamp timestamp;
     public String clientToken;
+    public Timestamp timestamp;
     public HashMap<String, Object> jobDocument;
     public JobExecutionState executionState;
 }

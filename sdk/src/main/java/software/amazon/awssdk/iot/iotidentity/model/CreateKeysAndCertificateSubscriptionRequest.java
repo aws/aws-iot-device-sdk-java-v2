@@ -14,10 +14,8 @@
 * This file is generated
 */
 
-package software.amazon.awssdk.iot.iotshadow.model;
+package software.amazon.awssdk.iot.iotidentity.model;
 
 
-public class GetShadowRequest {
-    public String thingName;
-    public String clientToken;
+public class CreateKeysAndCertificateSubscriptionRequest {
 }

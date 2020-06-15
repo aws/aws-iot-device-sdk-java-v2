@@ -21,13 +21,13 @@ import software.amazon.awssdk.iot.iotjobs.model.JobStatus;
 
 public class UpdateJobExecutionRequest {
     public String thingName;
-    public Integer expectedVersion;
     public Long executionNumber;
-    public Boolean includeJobDocument;
     public HashMap<String, String> statusDetails;
     public Boolean includeJobExecutionState;
+    public String jobId;
+    public Integer expectedVersion;
+    public Boolean includeJobDocument;
     public JobStatus status;
     public Long stepTimeoutInMinutes;
-    public String jobId;
     public String clientToken;
 }

@@ -18,6 +18,6 @@ package software.amazon.awssdk.iot.iotjobs.model;
 
 
 public class UpdateJobExecutionSubscriptionRequest {
-    public String thingName;
     public String jobId;
+    public String thingName;
 }

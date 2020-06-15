@@ -20,7 +20,7 @@ import software.amazon.awssdk.iot.iotshadow.model.ShadowMetadata;
 import software.amazon.awssdk.iot.iotshadow.model.ShadowState;
 
 public class ShadowUpdatedSnapshot {
-    public Integer version;
     public ShadowState state;
     public ShadowMetadata metadata;
+    public Integer version;
 }
