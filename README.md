@@ -37,8 +37,6 @@ brew install maven
 *   CMake 3.1+
 *   Clang 3.9+ or GCC 4.4+ or MSVC 2015+
 
-
-
 ## Build IoT Device SDK from source
 ```
 git clone https://github.com/awslabs/aws-iot-device-sdk-java-v2.git
