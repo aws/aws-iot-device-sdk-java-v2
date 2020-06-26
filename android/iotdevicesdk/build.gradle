@@ -32,7 +32,7 @@ ext {
             def patch = version['patch'] as int
             return (major * 1000) + (minor * 100) + patch
         } catch (Exception ex) {
-            return 0
+            return 1000
         }
     }
     gitVersionTag = {
@@ -48,8 +48,8 @@ android {
     defaultConfig {
         minSdkVersion 26
         targetSdkVersion 29
-        versionCode 1
-        versionName "1.0"
+        versionCode = gitVersionCode()
+        versionName = gitVersionName()
         ndkVersion "21.0.6113669"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'consumer-rules.pro'
@@ -87,7 +87,7 @@ repositories {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'software.amazon.awssdk.crt:aws-crt:0.6.2'
+    implementation 'software.amazon.awssdk.crt:android:0.6.2'
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'androidx.appcompat:appcompat:1.1.0'
     testImplementation 'junit:junit:4.12'
