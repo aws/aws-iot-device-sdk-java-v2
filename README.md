@@ -82,7 +82,7 @@ repositories {
 }
 
 dependencies { 
-    implementation 'software.amazon.awssdk.crt:android:0.5.4'
+    implementation 'software.amazon.awssdk.crt:android:0.6.2'
 }
 ```
 
