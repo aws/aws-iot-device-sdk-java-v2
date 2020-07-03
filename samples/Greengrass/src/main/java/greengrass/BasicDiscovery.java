@@ -35,7 +35,7 @@ class BasicDiscovery {
     static String certPath;
     static String keyPath;
     static String region = "us-east-1";
-    static String topic = "/samples/test";
+    static String topic = "test/topic";
     static String mode = "both";
     static boolean showHelp = false;
 
@@ -246,7 +246,7 @@ class BasicDiscovery {
                         group.getGGGroupId(), core.getThingArn(), dnsOrIp, port));
 
                 final AwsIotMqttConnectionBuilder connectionBuilder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(certPath, keyPath)
-                        .withClientId("RaspberryPi")
+                        .withClientId("test-" + UUID.randomUUID().toString())
                         .withPort(port.shortValue())
                         .withEndpoint(dnsOrIp)
                         .withBootstrap(bootstrap)

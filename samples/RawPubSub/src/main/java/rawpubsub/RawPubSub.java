@@ -18,16 +18,17 @@ import software.amazon.awssdk.iot.iotjobs.model.RejectedError;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 class RawPubSub {
-    static String clientId = "samples-client-id";
+    static String clientId = "test-" + UUID.randomUUID().toString();
     static String rootCaPath;
     static String certPath;
     static String keyPath;
     static String endpoint;
-    static String topic = "/samples/test";
+    static String topic = "test/topic";
     static String message = "Hello World!";
     static int    messagesToPublish = 10;
     static boolean showHelp = false;

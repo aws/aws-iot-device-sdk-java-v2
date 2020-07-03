@@ -36,11 +36,12 @@ import java.util.Map;
 import com.google.gson.Gson;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 public class FleetProvisioningSample {
-    static String clientId = "samples-client-id";
+    static String clientId = "test-" + UUID.randomUUID().toString();
     static String rootCaPath;
     static String certPath;
     static String keyPath;

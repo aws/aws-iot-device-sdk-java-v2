@@ -81,7 +81,7 @@ repositories {
     }
 }
 
-dependencies { 
+dependencies {
     implementation 'software.amazon.awssdk.crt:android:0.6.2'
 }
 ```
@@ -165,7 +165,7 @@ and receive.
     {
       "Effect": "Allow",
       "Action": "iot:Connect",
-      "Resource": "arn:aws:iot:<b>region</b>:<b>account</b>:client/samples-client-id"
+      "Resource": "arn:aws:iot:<b>region</b>:<b>account</b>:client/test-*"
     }
   ]
 }
@@ -240,7 +240,7 @@ and receive.
     {
       "Effect": "Allow",
       "Action": "iot:Connect",
-      "Resource": "arn:aws:iot:<b>region</b>:<b>account</b>:client/samples-client-id"
+      "Resource": "arn:aws:iot:<b>region</b>:<b>account</b>:client/test-*"
     }
   ]
 }
@@ -261,16 +261,16 @@ Source: `samples/Identity`
 cd ~/samples/Identity
 
 Run the sample using CreateKeysAndCertificate:
- 
+
 ```
-mvn exec:java -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint <endpoint> --rootca <root ca path> 
+mvn exec:java -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint <endpoint> --rootca <root ca path>
 --cert <cert path> --key <private key path> --templateName <templatename> --templateParameters <templateParams>"
 ```
 
 Run the sample using CreateCertificateFromCsr:
- 
+
 ```
-mvn exec:java -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint <endpoint> --rootca <root ca path> 
+mvn exec:java -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint <endpoint> --rootca <root ca path>
 --cert <cert path> --key <private key path> --templateName <templatename> --templateParameters <templateParams> --csr <csr path>"
 ```
 
@@ -293,7 +293,7 @@ and receive.
       "Resource": [
         "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/certificates/create/json",
         "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/certificates/create-from-csr/json",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/provisioning-templates/<b>templatename<b>/provision/json"
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/provisioning-templates/<b>templatename</b>/provision/json"
       ]
     },
     {
@@ -307,14 +307,14 @@ and receive.
         "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/certificates/create/json/rejected",
         "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/certificates/create-from-csr/json/accepted",
         "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/certificates/create-from-csr/json/rejected",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/provisioning-templates/<b>templatename<b>/provision/json/accepted",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/provisioning-templates/<b>templatename<b>/provision/json/rejected"
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/provisioning-templates/<b>templatename</b>/provision/json/accepted",
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/provisioning-templates/<b>templatename</b>/provision/json/rejected"
       ]
     },
     {
       "Effect": "Allow",
       "Action": "iot:Connect",
-      "Resource": "arn:aws:iot:<b>region</b>:<b>account</b>:client/samples-client-id"
+      "Resource": "arn:aws:iot:<b>region</b>:<b>account</b>:client/test-*"
     }
   ]
 }

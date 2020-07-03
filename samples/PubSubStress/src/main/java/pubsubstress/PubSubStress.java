@@ -27,12 +27,12 @@ import java.util.concurrent.TimeUnit;
 class PubSubStress {
     private static final int PROGRESS_OP_COUNT = 100;
 
-    static String clientId = "samples-client-id";
+    static String clientId = "test-" + UUID.randomUUID().toString();
     static String rootCaPath;
     static String certPath;
     static String keyPath;
     static String endpoint;
-    static String topic = "/samples/test";
+    static String topic = "test/topic";
     static String message = "Hello World!";
     static int    messagesToPublish = 5000;
     static boolean showHelp = false;

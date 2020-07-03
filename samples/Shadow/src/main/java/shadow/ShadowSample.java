@@ -31,9 +31,10 @@ import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.Scanner;
+import java.util.UUID;
 
 public class ShadowSample {
-    static String clientId = "samples-client-id";
+    static String clientId = "test-" + UUID.randomUUID().toString();
     static String thingName;
     static String rootCaPath;
     static String certPath;
