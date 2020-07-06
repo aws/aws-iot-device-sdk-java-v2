@@ -1,10 +1,7 @@
-## AWS IoT SDK for Java v2
+# AWS IoT SDK for Java v2
+This document provides information about the AWS IoT device SDK for Java V2.
 
-
-Next generation AWS IoT Client SDK for Java using the AWS Common Runtime
-
-This project is in **GENERAL AVAILABILITY**. If you have any issues or feature
-requests, please file an issue or pull request.
+If you have any issues or feature requests, please file an issue or pull request.
 
 This SDK is built on the AWS Common Runtime, a collection of libraries
 ([aws-c-common](https://github.com/awslabs/aws-c-common),
@@ -17,27 +14,33 @@ This SDK is built on the AWS Common Runtime, a collection of libraries
 cross-platform, high-performance, secure, and reliable. The libraries are bound
 to Java by the [aws-crt-java](https://github.com/awslabs/aws-crt-java) package.
 
-Integration with AWS IoT Services such as
-[Device Shadow](https://docs.aws.amazon.com/iot/latest/developerguide/iot-device-shadows.html)
-[Jobs](https://docs.aws.amazon.com/iot/latest/developerguide/iot-jobs.html)
-[Fleet Provisioning](https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html)
-is provided by code that been generated from a model of the service.
 
-# Installation
-## Minimum Requirements
+*__Jump To:__*
+* [Installation](#Installation)
+* [Samples](samples)
+* [Getting Help](#Getting-Help)
+* [Giving Feedback and Contributions](#Giving-Feedback-and-Contributions)
+* [More Resources](#More-Resources)
+
+
+
+## Installation
+
+### Minimum Requirements
 *   Java 8 or above
 
 ** Set JAVA_HOME first
 
 *   Install Maven
-
+```
 brew install maven
+```
 
-## Requirements to build the AWS CRT locally
+### Requirements to build the AWS CRT locally
 *   CMake 3.1+
 *   Clang 3.9+ or GCC 4.4+ or MSVC 2015+
 
-## Build IoT Device SDK from source
+### Build IoT Device SDK from source
 ```
 git clone https://github.com/awslabs/aws-iot-device-sdk-java-v2.git
 # update the version of the CRT being used
@@ -45,7 +48,7 @@ mvn versions:use-latest-versions -Dincludes="software.amazon.awssdk.crt*"
 mvn clean install
 ```
 
-## Build CRT from source
+### Build CRT from source
 ```sh
 # NOTE: use the latest version of the CRT here
 
@@ -58,7 +61,7 @@ cd ../aws-iot-device-sdk-java-v2
 mvn clean install
 ```
 
-### Android
+#### Android
 Supports API 26 or newer.
 NOTE: The shadow sample does not currently complete on android due to its dependence on stdin keyboard input.
 ```sh
@@ -86,240 +89,49 @@ dependencies {
 }
 ```
 
-# Samples
 
-## Shadow
 
-This sample uses the AWS IoT
+## Samples
+
+[Samples README](samples)
+
+
+
+## Getting Help
+
+Use the following sources for information :
+
+*   Check api and developer guides.
+*   Check for similar issues already opened.
+
+If you still can’t find a solution to your problem open an [issue](issues)
+
+
+
+## Giving Feedback and Contributions
+
+We need your help in making this SDK great. Please participate in the community and contribute to this effort by submitting issues, participating in discussion forums and submitting pull requests through the following channels.
+
+*   [Contributions Guidelines](master/CONTRIBUTING.md)
+*   Articulate your feature request or upvote existing ones on our [Issues](issues?q=is%3Aissue+is%3Aopen+label%3Afeature-request) page.
+*   Submit [Issues](issues/)
+
+
+
+## More Resources
+
+*   [AWS IoT Core Documentation](https://docs.aws.amazon.com/iot/)
+*   [Developer Guide](https://docs.aws.amazon.com/iot/latest/developerguide/what-is-aws-iot.html) ([source](https://github.com/awsdocs/aws-iot-docs))
+*   [Issues](issues/)
+*   [Dev Blog](https://aws.amazon.com/blogs/?awsf.blog-master-iot=category-internet-of-things%23amazon-freertos%7Ccategory-internet-of-things%23aws-greengrass%7Ccategory-internet-of-things%23aws-iot-analytics%7Ccategory-internet-of-things%23aws-iot-button%7Ccategory-internet-of-things%23aws-iot-device-defender%7Ccategory-internet-of-things%23aws-iot-device-management%7Ccategory-internet-of-things%23aws-iot-platform)
+
+Integration with AWS IoT Services such as
 [Device Shadow](https://docs.aws.amazon.com/iot/latest/developerguide/iot-device-shadows.html)
-Service to keep a property in
-sync between device and server. Imagine a light whose color may be changed
-through an app, or set by a local user.
-
-Once connected, type a value in the terminal and press Enter to update
-the property's "reported" value. The sample also responds when the "desired"
-value changes on the server. To observe this, edit the Shadow document in
-the AWS Console and set a new "desired" value.
-
-On startup, the sample requests the shadow document to learn the property's
-initial state. The sample also subscribes to "delta" events from the server,
-which are sent when a property's "desired" value differs from its "reported"
-value. When the sample learns of a new desired value, that value is changed
-on the device and an update is sent to the server with the new "reported"
-value.
-
-Source: `samples/Shadow`
-
-To Run:
-```
-> mvn exec:java -pl samples/Shadow -Dexec.mainClass=jobs.JobsSample -Dexec.args='--endpoint <endpoint> --rootca /path/to/AmazonRootCA1.pem --cert <cert path> --key <key path> --thingName <thing name>'
-```
-
-Your Thing's
-[Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-policies.html)
-must provide privileges for this sample to connect, subscribe, publish,
-and receive.
-
-<details>
-<summary>Sample Policy</summary>
-<pre>
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "iot:Publish"
-      ],
-      "Resource": [
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/<b>thingname</b>/shadow/get",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/<b>thingname</b>/shadow/update"
-      ]
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
-        "iot:Receive"
-      ],
-      "Resource": [
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/<b>thingname</b>/shadow/get/accepted",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/<b>thingname</b>/shadow/get/rejected",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/<b>thingname</b>/shadow/update/accepted",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/<b>thingname</b>/shadow/update/rejected",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/<b>thingname</b>/shadow/update/delta"
-      ]
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
-        "iot:Subscribe"
-      ],
-      "Resource": [
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topicfilter/$aws/things/<b>thingname</b>/shadow/get/accepted",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topicfilter/$aws/things/<b>thingname</b>/shadow/get/rejected",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topicfilter/$aws/things/<b>thingname</b>/shadow/update/accepted",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topicfilter/$aws/things/<b>thingname</b>/shadow/update/rejected",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topicfilter/$aws/things/<b>thingname</b>/shadow/update/delta"
-      ]
-    },
-    {
-      "Effect": "Allow",
-      "Action": "iot:Connect",
-      "Resource": "arn:aws:iot:<b>region</b>:<b>account</b>:client/samples-client-id"
-    }
-  ]
-}
-</pre>
-</details>
-
-## Jobs
-
-This sample uses the AWS IoT
 [Jobs](https://docs.aws.amazon.com/iot/latest/developerguide/iot-jobs.html)
-Service to describe jobs to execute.
+[Fleet Provisioning](https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html)
+is provided by code that been generated from a model of the service.
 
-This sample requires you to create jobs for your device to execute. See
-[instructions here](https://docs.aws.amazon.com/iot/latest/developerguide/create-manage-jobs.html).
 
-On startup, the sample describes a job that is pending execution.
-
-Source: `samples/Jobs`
-
-To Run:
-```
-> mvn exec:java -pl samples/Jobs -Dexec.mainClass=jobs.JobsSample -Dexec.args='--endpoint <endpoint> --rootca /path/to/AmazonRootCA1.pem --cert <cert path> --key <key path> --thingName <thing name>'
-```
-
-Your Thing's
-[Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-policies.html)
-must provide privileges for this sample to connect, subscribe, publish,
-and receive.
-
-<details>
-<summary>Sample Policy</summary>
-<pre>
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "iot:Publish"
-      ],
-      "Resource": [
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/<b>thingname</b>/jobs/start-next",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/<b>thingname</b>/jobs/*/update"
-      ]
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
-        "iot:Receive"
-      ],
-      "Resource": [
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/<b>thingname</b>/jobs/notify-next",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/<b>thingname</b>/jobs/start-next/accepted",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/<b>thingname</b>/jobs/start-next/rejected",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/<b>thingname</b>/jobs/*/update/accepted",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/<b>thingname</b>/jobs/*/update/rejected"
-      ]
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
-        "iot:Subscribe"
-      ],
-      "Resource": [
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topicfilter/$aws/things/<b>thingname</b>/jobs/notify-next",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topicfilter/$aws/things/<b>thingname</b>/jobs/start-next/accepted",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topicfilter/$aws/things/<b>thingname</b>/jobs/start-next/rejected",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topicfilter/$aws/things/<b>thingname</b>/jobs/*/update/accepted",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topicfilter/$aws/things/<b>thingname</b>/jobs/*/update/rejected"
-      ]
-    },
-    {
-      "Effect": "Allow",
-      "Action": "iot:Connect",
-      "Resource": "arn:aws:iot:<b>region</b>:<b>account</b>:client/samples-client-id"
-    }
-  ]
-}
-</pre>
-</details>
-
-## fleet provisioning
-
-This sample uses the AWS IoT
-[Fleet provisioning](https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html)
-to provision devices using either a CSR or KeysAndcertificate and subsequently calls RegisterThing.
-
-On startup, the script subscribes to topics based on the request type of either CSR or Keys topics,
-publishes the request to corresponding topic and calls RegisterThing.
-
-Source: `samples/Identity`
-
-cd ~/samples/Identity
-
-Run the sample using CreateKeysAndCertificate:
- 
-```
-mvn exec:java -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint <endpoint> --rootca <root ca path> 
---cert <cert path> --key <private key path> --templateName <templatename> --templateParameters <templateParams>"
-```
-
-Run the sample using CreateCertificateFromCsr:
- 
-```
-mvn exec:java -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint <endpoint> --rootca <root ca path> 
---cert <cert path> --key <private key path> --templateName <templatename> --templateParameters <templateParams> --csr <csr path>"
-```
-
-Your Thing's
-[Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-policies.html)
-must provide privileges for this sample to connect, subscribe, publish,
-and receive.
-
-<details>
-<summary>(see sample policy)</summary>
-<pre>
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "iot:Publish"
-      ],
-      "Resource": [
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/certificates/create/json",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/certificates/create-from-csr/json",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/provisioning-templates/<b>templatename<b>/provision/json"
-      ]
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
-        "iot:Receive",
-        "iot:Subscribe"
-      ],
-      "Resource": [
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/certificates/create/json/accepted",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/certificates/create/json/rejected",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/certificates/create-from-csr/json/accepted",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/certificates/create-from-csr/json/rejected",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/provisioning-templates/<b>templatename<b>/provision/json/accepted",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/provisioning-templates/<b>templatename<b>/provision/json/rejected"
-      ]
-    },
-    {
-      "Effect": "Allow",
-      "Action": "iot:Connect",
-      "Resource": "arn:aws:iot:<b>region</b>:<b>account</b>:client/samples-client-id"
-    }
-  ]
-}
-</pre>
-</details>
 
 # License
 
