@@ -31,11 +31,6 @@ to Java by the [aws-crt-java](https://github.com/awslabs/aws-crt-java) package.
 
 ** Set JAVA_HOME first
 
-*   Install Maven
-```
-brew install maven
-```
-
 ### Requirements to build the AWS CRT locally
 *   CMake 3.1+
 *   Clang 3.9+ or GCC 4.4+ or MSVC 2015+
