@@ -139,7 +139,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
             )
             if (name == "pubsub.PubSub") {
                 args.addAll(arrayOf(
-                    "--topic", assetContentsOr("topic.txt", "/samples/test"),
+                    "--topic", assetContentsOr("topic.txt", "test/topic"),
                     "--message", assetContentsOr("message.txt", "Hello World From Android")))
             } else if (name in arrayOf("jobs.JobsSample", "shadow.ShadowSample")) {
                 args.addAll(arrayOf(

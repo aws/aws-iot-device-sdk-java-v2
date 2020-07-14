@@ -32,11 +32,12 @@ import software.amazon.awssdk.iot.iotjobs.model.UpdateJobExecutionSubscriptionRe
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 public class JobsSample {
-    static String clientId = "samples-client-id";
+    static String clientId = "test-" + UUID.randomUUID().toString();
     static String thingName;
     static String rootCaPath;
     static String certPath;

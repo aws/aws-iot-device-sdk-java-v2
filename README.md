@@ -79,7 +79,7 @@ repositories {
     }
 }
 
-dependencies { 
+dependencies {
     implementation 'software.amazon.awssdk.crt:android:0.6.2'
 }
 ```
@@ -91,11 +91,9 @@ dependencies {
 [Samples README](samples)
 
 
-
 ## Getting Help
 
 Use the following sources for information :
-
 *   Check api and developer guides.
 *   Check for similar issues already opened.
 
@@ -106,11 +104,9 @@ If you still can’t find a solution to your problem open an [issue](https://git
 ## Giving Feedback and Contributions
 
 We need your help in making this SDK great. Please participate in the community and contribute to this effort by submitting issues, participating in discussion forums and submitting pull requests through the following channels.
-
 *   [Contributions Guidelines](master/CONTRIBUTING.md)
 *   Articulate your feature request or upvote existing ones on our [Issues](https://github.com/aws/aws-iot-device-sdk-java-v2/issues?q=is%3Aissue+is%3Aopen+label%3Afeature-request) page.
 *   Submit [Issues](https://github.com/aws/aws-iot-device-sdk-java-v2/issues)
-
 
 
 ## More Resources
@@ -125,7 +121,6 @@ Integration with AWS IoT Services such as
 [Jobs](https://docs.aws.amazon.com/iot/latest/developerguide/iot-jobs.html)
 [Fleet Provisioning](https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html)
 is provided by code that been generated from a model of the service.
-
 
 
 # License
