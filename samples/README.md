@@ -1,4 +1,4 @@
-#Samples
+# Samples
 
 ## Shadow
 
@@ -23,7 +23,8 @@ value.
 Source: `samples/Shadow`
 
 To Run:
-```
+
+``` sh
 > mvn exec:java -pl samples/Shadow -Dexec.mainClass=shadow.ShadowSample -Dexec.args='--endpoint <endpoint> --rootca /path/to/AmazonRootCA1.pem --cert <cert path> --key <key path> --thingName <thing name>'
 ```
 
@@ -98,7 +99,8 @@ On startup, the sample describes a job that is pending execution.
 Source: `samples/Jobs`
 
 To Run:
-```
+
+``` sh
 > mvn exec:java -pl samples/Jobs -Dexec.mainClass=jobs.JobsSample -Dexec.args='--endpoint <endpoint> --rootca /path/to/AmazonRootCA1.pem --cert <cert path> --key <key path> --thingName <thing name>'
 ```
 
@@ -173,15 +175,15 @@ Source: `samples/Identity`
 cd ~/samples/Identity
 
 Run the sample using CreateKeysAndCertificate:
- 
-```
+
+``` sh
 mvn exec:java -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint <endpoint> --rootca <root ca path>
 --cert <cert path> --key <private key path> --templateName <templatename> --templateParameters <templateParams>"
 ```
 
 Run the sample using CreateCertificateFromCsr:
- 
-```
+
+``` sh
 mvn exec:java -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint <endpoint> --rootca <root ca path>
 --cert <cert path> --key <private key path> --templateName <templatename> --templateParameters <templateParams> --csr <csr path>"
 ```
