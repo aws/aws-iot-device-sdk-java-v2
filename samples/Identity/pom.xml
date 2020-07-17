@@ -31,28 +31,4 @@
             <version>2.10.3</version>
         </dependency>
     </dependencies>
-
-    <!-- include below build tag to your existing pom.xml  -->
-    <build>
-        <plugins>
-            <plugin>
-
-                <!-- Building an executable jar -->
-
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.1.0</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-
-                            <!-- give full qualified name of your main class-->
-                            <mainClass>identity.FleetProvisioningSample</mainClass>
-
-                        </manifest>
-                    </archive>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>
