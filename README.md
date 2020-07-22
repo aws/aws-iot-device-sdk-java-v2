@@ -16,7 +16,7 @@ to Java by the [aws-crt-java](https://github.com/awslabs/aws-crt-java) package.
 
 
 *__Jump To:__*
-* [OSX Only TLS Behavior](#OSX-Only-TLS-Behavior)
+* [OSX-Only TLS Behavior](#OSX-Only-TLS-Behavior)
 * [Installation](#Installation)
 * [Samples](samples)
 * [Getting Help](#Getting-Help)
