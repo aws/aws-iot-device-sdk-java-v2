@@ -16,21 +16,14 @@ to Java by the [aws-crt-java](https://github.com/awslabs/aws-crt-java) package.
 
 
 *__Jump To:__*
-* [Mac-Only TLS Behavior](#Mac-Only-TLS-Behavior)
 * [Installation](#Installation)
+* [Mac-Only TLS Behavior](#Mac-Only-TLS-Behavior)
 * [Samples](samples)
 * [Getting Help](#Getting-Help)
 * [Giving Feedback and Contributions](#Giving-Feedback-and-Contributions)
 * [More Resources](#More-Resources)
 
 
-## Mac-Only TLS Behavior
-
-Please note that on Mac, once a private key is used with a certificate, that certificate-key pair is imported into the Mac Keychain.  All subsequent uses of that certificate will use the stored private key and ignore anything passed in programmatically.  When a stored private key from the Keychain is used, the following will be logged at the "info" log level:
-
-```
-static: certificate has an existing certificate-key pair that was previously imported into the Keychain.  Using key from Keychain instead of the one provided.
-```
 
 ## Installation
 
@@ -90,6 +83,16 @@ repositories {
 dependencies {
     implementation 'software.amazon.awssdk.crt:android:0.6.2'
 }
+```
+
+
+
+## Mac-Only TLS Behavior
+
+Please note that on Mac, once a private key is used with a certificate, that certificate-key pair is imported into the Mac Keychain.  All subsequent uses of that certificate will use the stored private key and ignore anything passed in programmatically.  Beginning in v1.2.6, when a stored private key from the Keychain is used, the following will be logged at the "info" log level:
+
+```
+static: certificate has an existing certificate-key pair that was previously imported into the Keychain.  Using key from Keychain instead of the one provided.
 ```
 
 
