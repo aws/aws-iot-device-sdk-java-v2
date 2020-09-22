@@ -167,18 +167,16 @@ class BasicDiscovery {
                         new SocketOptions(), region, 1, proxyOptions);
                     final DiscoveryClient discoveryClient = new DiscoveryClient(discoveryClientConfig);
                     final MqttClientConnection connection = getClientFromDiscovery(discoveryClient, clientBootstrap)) {
-                if (connection.connect().get()) {
-                    System.out.println("Session resumed");
-                } else {
-                    System.out.println("Started a clean session");
-                }
 
                 if ("subscribe".equals(mode) || "both".equals(mode)) {
                     final CompletableFuture<Integer> subFuture = connection.subscribe(topic, QualityOfService.AT_MOST_ONCE, message -> {
                         System.out.println(String.format("Message received on topic %s: %s",
                                 message.getTopic(), new String(message.getPayload(), StandardCharsets.UTF_8)));
                     });
+
+                    subFuture.get();
                 }
+
                 final Scanner scanner = new Scanner(System.in);
                 while (true) {
                     String input = null;
@@ -208,8 +206,6 @@ class BasicDiscovery {
         System.out.println("Complete!");
     }
 
-    private static Pattern PATTERN_IS_PRIVATE_IP = Pattern.compile("/(^127\\.)|(^192\\.168\\.)|(^10\\.)|(^172\\.1[6-9]\\.)|(^172\\.2[0-9]\\.)|(^172\\.3[0-1]\\.)|(^::1$)|(^[fF][cCdD])/");
-
     private static MqttClientConnection getClientFromDiscovery(final DiscoveryClient discoveryClient,
                                                                final ClientBootstrap bootstrap) throws ExecutionException, InterruptedException {
         final CompletableFuture<DiscoverResponse> futureResponse = discoveryClient.discover(thingName);
@@ -219,49 +215,51 @@ class BasicDiscovery {
             if(groupOpt.isPresent()) {
                 final GGGroup group = groupOpt.get();
                 final GGCore core = group.getCores().stream().findFirst().get();
-                final SortedSet<ConnectivityInfo> prioritizedConnectivity = new TreeSet(new Comparator<ConnectivityInfo>() {
-                    @Override
-                    public int compare(ConnectivityInfo lhs, ConnectivityInfo rhs) {
-                        return ordinalValue(lhs) - ordinalValue(rhs);
-                    }
-                    private int ordinalValue(ConnectivityInfo info) {
-                        if(info.getHostAddress().equals("127.0.0.1") || info.getHostAddress().equals("::1")) {
-                            return 0;
-                        }
-                        if(PATTERN_IS_PRIVATE_IP.matcher(info.getHostAddress()).matches()) {
-                            return 1;
-                        }
-                        if(info.getHostAddress().startsWith("AUTOIP_")) {
-                            return 10;
-                        }
-                        return 2;
-                    }
-                });
-                prioritizedConnectivity.addAll(core.getConnectivity());
-                final ConnectivityInfo selectedConnectivity = prioritizedConnectivity.first();
-                final String dnsOrIp = selectedConnectivity.getHostAddress();
-                final Integer port = selectedConnectivity.getPortNumber();
 
-                System.out.println(String.format("Connecting to group ID %s, with thing arn %s, using endpoint %s:%d",
-                        group.getGGGroupId(), core.getThingArn(), dnsOrIp, port));
+                for (ConnectivityInfo connInfo : core.getConnectivity()) {
+                    final String dnsOrIp = connInfo.getHostAddress();
+                    final Integer port = connInfo.getPortNumber();
 
-                final AwsIotMqttConnectionBuilder connectionBuilder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(certPath, keyPath)
-                        .withClientId("test-" + UUID.randomUUID().toString())
-                        .withPort(port.shortValue())
-                        .withEndpoint(dnsOrIp)
-                        .withBootstrap(bootstrap)
-                        .withConnectionEventCallbacks(new MqttClientConnectionEvents() {
-                            @Override
-                            public void onConnectionInterrupted(int errorCode) { System.out.println("Connection interrupted: " + errorCode); }
-                            @Override
-                            public void onConnectionResumed(boolean sessionPresent) {
-                                System.out.println("Connection resumed!");
-                            }
-                        });
-                if(group.getCAs() != null) {
-                    connectionBuilder.withCertificateAuthority(group.getCAs().get(0));
+                    System.out.println(String.format("Connecting to group ID %s, with thing arn %s, using endpoint %s:%d",
+                            group.getGGGroupId(), core.getThingArn(), dnsOrIp, port));
+
+                    final AwsIotMqttConnectionBuilder connectionBuilder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(certPath, keyPath)
+                            .withClientId(thingName)
+                            .withPort(port.shortValue())
+                            .withEndpoint(dnsOrIp)
+                            .withBootstrap(bootstrap)
+                            .withConnectionEventCallbacks(new MqttClientConnectionEvents() {
+                                @Override
+                                public void onConnectionInterrupted(int errorCode) {
+                                    System.out.println("Connection interrupted: " + errorCode);
+                                }
+
+                                @Override
+                                public void onConnectionResumed(boolean sessionPresent) {
+                                    System.out.println("Connection resumed!");
+                                }
+                            });
+                    if (group.getCAs() != null) {
+                        connectionBuilder.withCertificateAuthority(group.getCAs().get(0));
+                    }
+
+                    try (MqttClientConnection connection = connectionBuilder.build()) {
+                        if (connection.connect().get()) {
+                            System.out.println("Session resumed");
+                        } else {
+                            System.out.println("Started a clean session");
+                        }
+
+                        /* This lets the connection escape the try block without getting cleaned up */
+                        connection.addRef();
+
+                        return connection;
+                    } catch (Exception e) {
+                        System.out.println(String.format("Connection failed with exception %s", e.toString()));
+                    }
                 }
-                return connectionBuilder.build();
+
+                throw new RuntimeException("ThingName " + thingName + " could not connect to the green grass core using any of the endpoint connectivity options");
             }
         }
         throw new RuntimeException("ThingName " + thingName + " does not have a Greengrass group/core configuration");
