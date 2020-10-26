@@ -1,4 +1,4 @@
-# AWS IoT SDK for Java v2
+# AWS IoT Device SDK for Java v2
 
 This document provides information about the AWS IoT device SDK for Java V2.
 
