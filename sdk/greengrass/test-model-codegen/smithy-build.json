@@ -1,0 +1,17 @@
+{
+  "version": "1.0",
+  "plugins": {
+    "event-stream-rpc-java": {
+      "serviceShapeId": "awstest#EchoTestRPC",
+      "javaBasePackage": "software.amazon.awssdk",
+      "modelRelativePackage": "model",
+      "generateClientStubs": true,
+      "generateServerStubs": true
+    },
+    "event-stream-rpc-python": {
+      "serviceShapeId": "awstest#EchoTestRPC",
+      "modelRelativePackage": "model",
+      "generateClientStubs": true
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "version": "1.0",
+  "plugins": {
+    "event-stream-rpc-java": {
+      "serviceShapeId": "aws.greengrass#GreengrassCoreIPC",
+      "javaBasePackage": "software.amazon.awssdk",
+      "modelRelativePackage": "model",
+      "generateClientStubs": true,
+      "generateServerStubs": false 
+    }
+  }
+}
