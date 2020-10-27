@@ -1,0 +1,13 @@
+{
+  "version": "1.0",
+  "plugins": {
+    "java-iot-codegen": {
+      "service": "com.amazon.sdk.crt#CrtReleaseManager",
+      "module": "CrtRelease",
+      "moduleVersion": "0.1.0",
+      "javaBasePackage": "software.amazon.awssdk.iot.",
+      "noInputDefaultSuffix": "Request",
+      "noOutputDefaultSuffix": "Response"
+    }
+  }
+}
