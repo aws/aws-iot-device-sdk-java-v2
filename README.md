@@ -66,7 +66,7 @@ Supports API 26 or newer.
 NOTE: The shadow sample does not currently complete on android due to its dependence on stdin keyboard input.
 
 ``` sh
-git clone --recursive --branch v0.6.2 https://github.com/awslabs/aws-crt-java.git
+git clone --recursive --branch v0.8.4 https://github.com/awslabs/aws-crt-java.git
 git clone https://github.com/awslabs/aws-iot-device-sdk-java-v2.git
 cd aws-crt-java/android
 ./gradlew connectedCheck # optional, will run the unit tests on any connected devices/emulators
