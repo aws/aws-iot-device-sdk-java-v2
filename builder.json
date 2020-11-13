@@ -1,5 +1,5 @@
 {
-    "name": "aws-iot-device-sdk-v2",
+    "name": "aws-iot-device-sdk-java-v2",
     "packages": [
         "maven"
     ],
