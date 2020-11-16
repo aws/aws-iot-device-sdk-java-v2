@@ -302,7 +302,6 @@ class PubSub {
                 });
 
                 subscribed.get();
-                countDownLatch.await();
 
                 int count = 0;
                 while (count++ < messagesToPublish) {
@@ -310,6 +309,8 @@ class PubSub {
                     published.get();
                     Thread.sleep(1000);
                 }
+                
+                countDownLatch.await();
 
                 CompletableFuture<Void> disconnected = connection.disconnect();
                 disconnected.get();
