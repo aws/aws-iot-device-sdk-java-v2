@@ -6,32 +6,11 @@ import org.junit.jupiter.api.Test;
 
 import software.amazon.awssdk.awstest.EchoTestRPCServiceModel;
 import software.amazon.awssdk.awstest.model.*;
-import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class ObjectModelTests {
-    private static final EventStreamRPCServiceModel SERVICE_MODEL = new EventStreamRPCServiceModel() {
-        @Override
-        public String getServiceName() { return null; }
-
-        @Override
-        public Collection<String> getAllOperations() {
-            return new LinkedList<>();
-        }
-
-        @Override
-        protected Optional<Class<? extends EventStreamJsonMessage>> getServiceClassType(String applicationModelType) {
-            return Optional.empty();
-        }
-
-        @Override
-        public OperationModelContext getOperationModelContext(String operationName) {
-            return null;
-        }
-    };
-
     @Test
     void testBasicModelSerialize() {
         final String testString  = "fooStringMessage";
@@ -104,8 +83,11 @@ public class ObjectModelTests {
 
     @Test
     void testSetRequiredFieldToNull() {
+        //"key" setKey() is a required field in the presence of a Pair
+        //however, it should never be verified client side via object model
         final Pair pair = new Pair();
-        Assertions.assertThrows(NullPointerException.class, () -> pair.setKey(null));
+        pair.setKey(null);
+        pair.setValue(null);
     }
 
     @Test
