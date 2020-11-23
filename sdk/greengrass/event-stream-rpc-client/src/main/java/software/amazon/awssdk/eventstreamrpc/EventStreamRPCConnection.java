@@ -138,6 +138,8 @@ public class EventStreamRPCConnection implements AutoCloseable {
                 });
         return initialConnectFuture;
     }
+    
+    
 
     public void disconnect() {
         ClientConnection connectionToClose = connection.getAndSet(null);
