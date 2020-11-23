@@ -1,0 +1,1869 @@
+{
+    "smithy": "1.0",
+    "shapes": {
+        "aws.greengrass#BinaryMessage": {
+            "type": "structure",
+            "members": {
+                "message": {
+                    "target": "smithy.api#Blob"
+                }
+            }
+        },
+        "aws.greengrass#ComponentDetails": {
+            "type": "structure",
+            "members": {
+                "componentName": {
+                    "target": "smithy.api#String",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                },
+                "version": {
+                    "target": "smithy.api#String",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                },
+                "state": {
+                    "target": "aws.greengrass#LifecycleState",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                },
+                "configuration": {
+                    "target": "smithy.api#Document"
+                }
+            }
+        },
+        "aws.greengrass#ComponentList": {
+            "type": "list",
+            "member": {
+                "target": "smithy.api#String"
+            }
+        },
+        "aws.greengrass#ComponentNotFoundError": {
+            "type": "structure",
+            "members": {
+                "message": {
+                    "target": "smithy.api#String"
+                }
+            },
+            "traits": {
+                "smithy.api#error": "client"
+            }
+        },
+        "aws.greengrass#ComponentToConfiguration": {
+            "type": "map",
+            "key": {
+                "target": "smithy.api#String"
+            },
+            "value": {
+                "target": "smithy.api#Document"
+            }
+        },
+        "aws.greengrass#ComponentToRunWithInfo": {
+            "type": "map",
+            "key": {
+                "target": "smithy.api#String"
+            },
+            "value": {
+                "target": "aws.greengrass#RunWithInfo"
+            }
+        },
+        "aws.greengrass#ComponentToVersionMap": {
+            "type": "map",
+            "key": {
+                "target": "smithy.api#String"
+            },
+            "value": {
+                "target": "smithy.api#String"
+            }
+        },
+        "aws.greengrass#ComponentUpdatePolicyEvents": {
+            "type": "union",
+            "members": {
+                "preUpdateEvent": {
+                    "target": "aws.greengrass#PreComponentUpdateEvent"
+                },
+                "postUpdateEvent": {
+                    "target": "aws.greengrass#PostComponentUpdateEvent"
+                }
+            },
+            "traits": {
+                "smithy.api#streaming": {}
+            }
+        },
+        "aws.greengrass#ConfigurationUpdateEvent": {
+            "type": "structure",
+            "members": {
+                "componentName": {
+                    "target": "smithy.api#String",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                },
+                "keyPath": {
+                    "target": "aws.greengrass#KeyPath",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                }
+            }
+        },
+        "aws.greengrass#ConfigurationUpdateEvents": {
+            "type": "union",
+            "members": {
+                "configurationUpdateEvent": {
+                    "target": "aws.greengrass#ConfigurationUpdateEvent"
+                }
+            },
+            "traits": {
+                "smithy.api#streaming": {}
+            }
+        },
+        "aws.greengrass#ConfigurationValidityReport": {
+            "type": "structure",
+            "members": {
+                "status": {
+                    "target": "aws.greengrass#ConfigurationValidityStatus",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                },
+                "deploymentId": {
+                    "target": "smithy.api#String",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                },
+                "message": {
+                    "target": "smithy.api#String"
+                }
+            }
+        },
+        "aws.greengrass#ConfigurationValidityStatus": {
+            "type": "string",
+            "traits": {
+                "smithy.api#enum": [
+                    {
+                        "value": "ACCEPTED",
+                        "name": "ACCEPTED"
+                    },
+                    {
+                        "value": "REJECTED",
+                        "name": "REJECTED"
+                    }
+                ]
+            }
+        },
+        "aws.greengrass#ConflictError": {
+            "type": "structure",
+            "members": {
+                "message": {
+                    "target": "smithy.api#String"
+                }
+            },
+            "traits": {
+                "smithy.api#error": "client"
+            }
+        },
+        "aws.greengrass#CreateDebugPassword": {
+            "type": "operation",
+            "input": {
+                "target": "aws.greengrass#CreateDebugPasswordRequest"
+            },
+            "output": {
+                "target": "aws.greengrass#CreateDebugPasswordResponse"
+            },
+            "errors": [
+                {
+                    "target": "aws.greengrass#ServiceError"
+                },
+                {
+                    "target": "aws.greengrass#UnauthorizedError"
+                }
+            ]
+        },
+        "aws.greengrass#CreateDebugPasswordRequest": {
+            "type": "structure",
+            "members": {}
+        },
+        "aws.greengrass#CreateDebugPasswordResponse": {
+            "type": "structure",
+            "members": {
+                "password": {
+                    "target": "smithy.api#String",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                },
+                "username": {
+                    "target": "smithy.api#String",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                },
+                "passwordExpiration": {
+                    "target": "smithy.api#Timestamp",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                }
+            }
+        },
+        "aws.greengrass#CreateLocalDeployment": {
+            "type": "operation",
+            "input": {
+                "target": "aws.greengrass#CreateLocalDeploymentRequest"
+            },
+            "output": {
+                "target": "aws.greengrass#CreateLocalDeploymentResponse"
+            },
+            "errors": [
+                {
+                    "target": "aws.greengrass#ServiceError"
+                }
+            ],
+            "traits": {
+                "smithy.api#documentation": "Creates a local deployment on the device.  Also allows to remove existing components."
+            }
+        },
+        "aws.greengrass#CreateLocalDeploymentRequest": {
+            "type": "structure",
+            "members": {
+                "groupName": {
+                    "target": "smithy.api#String"
+                },
+                "rootComponentVersionsToAdd": {
+                    "target": "aws.greengrass#ComponentToVersionMap"
+                },
+                "rootComponentsToRemove": {
+                    "target": "aws.greengrass#ComponentList"
+                },
+                "componentToConfiguration": {
+                    "target": "aws.greengrass#ComponentToConfiguration"
+                },
+                "componentToRunWithInfo": {
+                    "target": "aws.greengrass#ComponentToRunWithInfo"
+                }
+            },
+            "traits": {
+                "smithy.api#documentation": "*groupName*: The thing group name the deployment is targeting. If the group name is\nnot specified, \"DEFAULT\" will be used\n*rootComponentVersionsToAdd*: Map of component name to version. Components will be added\nto the group's existing root components.\n*rootComponentsToRemove*: List of components that need to be removed from the group\nFor instance if new artifacts were loaded in this request but recipe version did not change\n*componentToConfiguration*: Map of component names to configuration.\n*componentToRunWithInfo*: Map of component names to component run as info."
+            }
+        },
+        "aws.greengrass#CreateLocalDeploymentResponse": {
+            "type": "structure",
+            "members": {
+                "deploymentId": {
+                    "target": "smithy.api#String"
+                }
+            }
+        },
+        "aws.greengrass#DeferComponentUpdate": {
+            "type": "operation",
+            "input": {
+                "target": "aws.greengrass#DeferComponentUpdateRequest"
+            },
+            "output": {
+                "target": "aws.greengrass#DeferComponentUpdateResponse"
+            },
+            "errors": [
+                {
+                    "target": "aws.greengrass#InvalidArgumentsError"
+                },
+                {
+                    "target": "aws.greengrass#ResourceNotFoundError"
+                },
+                {
+                    "target": "aws.greengrass#ServiceError"
+                }
+            ],
+            "traits": {
+                "smithy.api#documentation": "Defer the update of components by a given amount of time and check again after that."
+            }
+        },
+        "aws.greengrass#DeferComponentUpdateRequest": {
+            "type": "structure",
+            "members": {
+                "deploymentId": {
+                    "target": "smithy.api#String",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                },
+                "message": {
+                    "target": "smithy.api#String"
+                },
+                "recheckAfterMs": {
+                    "target": "smithy.api#Long"
+                }
+            }
+        },
+        "aws.greengrass#DeferComponentUpdateResponse": {
+            "type": "structure",
+            "members": {}
+        },
+        "aws.greengrass#DeploymentStatus": {
+            "type": "string",
+            "traits": {
+                "smithy.api#enum": [
+                    {
+                        "value": "QUEUED",
+                        "name": "QUEUED"
+                    },
+                    {
+                        "value": "IN_PROGRESS",
+                        "name": "IN_PROGRESS"
+                    },
+                    {
+                        "value": "SUCCEEDED",
+                        "name": "SUCCEEDED"
+                    },
+                    {
+                        "value": "FAILED",
+                        "name": "FAILED"
+                    }
+                ]
+            }
+        },
+        "aws.greengrass#FailedUpdateConditionCheckError": {
+            "type": "structure",
+            "members": {
+                "message": {
+                    "target": "smithy.api#String"
+                }
+            },
+            "traits": {
+                "smithy.api#error": "client"
+            }
+        },
+        "aws.greengrass#GetComponentDetails": {
+            "type": "operation",
+            "input": {
+                "target": "aws.greengrass#GetComponentDetailsRequest"
+            },
+            "output": {
+                "target": "aws.greengrass#GetComponentDetailsResponse"
+            },
+            "errors": [
+                {
+                    "target": "aws.greengrass#InvalidArgumentsError"
+                },
+                {
+                    "target": "aws.greengrass#ResourceNotFoundError"
+                },
+                {
+                    "target": "aws.greengrass#ServiceError"
+                }
+            ],
+            "traits": {
+                "smithy.api#documentation": "Gets the status and version of the component with the given component name"
+            }
+        },
+        "aws.greengrass#GetComponentDetailsRequest": {
+            "type": "structure",
+            "members": {
+                "componentName": {
+                    "target": "smithy.api#String",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                }
+            }
+        },
+        "aws.greengrass#GetComponentDetailsResponse": {
+            "type": "structure",
+            "members": {
+                "componentDetails": {
+                    "target": "aws.greengrass#ComponentDetails",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                }
+            }
+        },
+        "aws.greengrass#GetConfiguration": {
+            "type": "operation",
+            "input": {
+                "target": "aws.greengrass#GetConfigurationRequest"
+            },
+            "output": {
+                "target": "aws.greengrass#GetConfigurationResponse"
+            },
+            "errors": [
+                {
+                    "target": "aws.greengrass#ResourceNotFoundError"
+                },
+                {
+                    "target": "aws.greengrass#ServiceError"
+                }
+            ],
+            "traits": {
+                "smithy.api#documentation": "Get value of a given key from the configuration"
+            }
+        },
+        "aws.greengrass#GetConfigurationRequest": {
+            "type": "structure",
+            "members": {
+                "componentName": {
+                    "target": "smithy.api#String"
+                },
+                "keyPath": {
+                    "target": "aws.greengrass#KeyPath",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                }
+            }
+        },
+        "aws.greengrass#GetConfigurationResponse": {
+            "type": "structure",
+            "members": {
+                "componentName": {
+                    "target": "smithy.api#String"
+                },
+                "value": {
+                    "target": "smithy.api#Document"
+                }
+            }
+        },
+        "aws.greengrass#GetLocalDeploymentStatus": {
+            "type": "operation",
+            "input": {
+                "target": "aws.greengrass#GetLocalDeploymentStatusRequest"
+            },
+            "output": {
+                "target": "aws.greengrass#GetLocalDeploymentStatusResponse"
+            },
+            "errors": [
+                {
+                    "target": "aws.greengrass#ResourceNotFoundError"
+                },
+                {
+                    "target": "aws.greengrass#ServiceError"
+                }
+            ],
+            "traits": {
+                "smithy.api#documentation": "Get status of a local deployment with the given deploymentId"
+            }
+        },
+        "aws.greengrass#GetLocalDeploymentStatusRequest": {
+            "type": "structure",
+            "members": {
+                "deploymentId": {
+                    "target": "smithy.api#String",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                }
+            }
+        },
+        "aws.greengrass#GetLocalDeploymentStatusResponse": {
+            "type": "structure",
+            "members": {
+                "deployment": {
+                    "target": "aws.greengrass#LocalDeployment",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                }
+            }
+        },
+        "aws.greengrass#GetSecretValue": {
+            "type": "operation",
+            "input": {
+                "target": "aws.greengrass#GetSecretValueRequest"
+            },
+            "output": {
+                "target": "aws.greengrass#GetSecretValueResponse"
+            },
+            "errors": [
+                {
+                    "target": "aws.greengrass#ResourceNotFoundError"
+                },
+                {
+                    "target": "aws.greengrass#ServiceError"
+                },
+                {
+                    "target": "aws.greengrass#UnauthorizedError"
+                }
+            ]
+        },
+        "aws.greengrass#GetSecretValueRequest": {
+            "type": "structure",
+            "members": {
+                "secretId": {
+                    "target": "smithy.api#String",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                },
+                "versionId": {
+                    "target": "smithy.api#String"
+                },
+                "versionStage": {
+                    "target": "smithy.api#String"
+                }
+            }
+        },
+        "aws.greengrass#GetSecretValueResponse": {
+            "type": "structure",
+            "members": {
+                "secretId": {
+                    "target": "smithy.api#String",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                },
+                "versionId": {
+                    "target": "smithy.api#String",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                },
+                "versionStage": {
+                    "target": "aws.greengrass#SecretVersionList",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                },
+                "secretValue": {
+                    "target": "aws.greengrass#SecretValue",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                }
+            }
+        },
+        "aws.greengrass#GreengrassCoreIPC": {
+            "type": "service",
+            "version": "2020-06-08",
+            "operations": [
+                {
+                    "target": "aws.greengrass#CreateDebugPassword"
+                },
+                {
+                    "target": "aws.greengrass#CreateLocalDeployment"
+                },
+                {
+                    "target": "aws.greengrass#DeferComponentUpdate"
+                },
+                {
+                    "target": "aws.greengrass#GetComponentDetails"
+                },
+                {
+                    "target": "aws.greengrass#GetConfiguration"
+                },
+                {
+                    "target": "aws.greengrass#GetLocalDeploymentStatus"
+                },
+                {
+                    "target": "aws.greengrass#GetSecretValue"
+                },
+                {
+                    "target": "aws.greengrass#ListComponents"
+                },
+                {
+                    "target": "aws.greengrass#ListLocalDeployments"
+                },
+                {
+                    "target": "aws.greengrass#PublishToIoTCore"
+                },
+                {
+                    "target": "aws.greengrass#PublishToTopic"
+                },
+                {
+                    "target": "aws.greengrass#RestartComponent"
+                },
+                {
+                    "target": "aws.greengrass#SendConfigurationValidityReport"
+                },
+                {
+                    "target": "aws.greengrass#StopComponent"
+                },
+                {
+                    "target": "aws.greengrass#SubscribeToComponentUpdates"
+                },
+                {
+                    "target": "aws.greengrass#SubscribeToConfigurationUpdate"
+                },
+                {
+                    "target": "aws.greengrass#SubscribeToIoTCore"
+                },
+                {
+                    "target": "aws.greengrass#SubscribeToTopic"
+                },
+                {
+                    "target": "aws.greengrass#SubscribeToValidateConfigurationUpdates"
+                },
+                {
+                    "target": "aws.greengrass#UpdateConfiguration"
+                },
+                {
+                    "target": "aws.greengrass#UpdateRecipesAndArtifacts"
+                },
+                {
+                    "target": "aws.greengrass#UpdateState"
+                },
+                {
+                    "target": "aws.greengrass#ValidateAuthorizationToken"
+                }
+            ],
+            "traits": {
+                "smithy.api#documentation": "Provides communication between Greengrass core and customer component"
+            }
+        },
+        "smithy.test#HttpRequestTestCase": {
+            "type": "structure",
+            "members": {
+                "id": {
+                    "target": "smithy.api#String",
+                    "traits": {
+                        "smithy.api#documentation": "The identifier of the test case. This identifier can be used by\nprotocol test implementations to filter out unsupported test\ncases by ID, to generate test case names, etc. The provided `id`\nMUST match Smithy's `identifier` ABNF. No two `httpRequestTests`\ntest cases can share the same ID.",
+                        "smithy.api#pattern": "[A-Za-z_][A-Za-z0-9_]+",
+                        "smithy.api#required": {}
+                    }
+                },
+                "protocol": {
+                    "target": "smithy.api#String",
+                    "traits": {
+                        "smithy.api#documentation": "The name of the protocol to test.",
+                        "smithy.api#idRef": {
+                            "selector": "[trait|protocolDefinition]",
+                            "failWhenMissing": true
+                        },
+                        "smithy.api#required": {}
+                    }
+                },
+                "method": {
+                    "target": "smithy.api#String",
+                    "traits": {
+                        "smithy.api#documentation": "The expected serialized HTTP request method.",
+                        "smithy.api#length": {
+                            "min": 1
+                        },
+                        "smithy.api#required": {}
+                    }
+                },
+                "uri": {
+                    "target": "smithy.api#String",
+                    "traits": {
+                        "smithy.api#documentation": "The request-target of the HTTP request, not including\nthe query string (for example, \"/foo/bar\").",
+                        "smithy.api#length": {
+                            "min": 1
+                        },
+                        "smithy.api#required": {}
+                    }
+                },
+                "authScheme": {
+                    "target": "smithy.api#String",
+                    "traits": {
+                        "smithy.api#documentation": "The optional authentication scheme shape ID to assume. It's\npossible that specific authentication schemes might influence\nthe serialization logic of an HTTP request.",
+                        "smithy.api#idRef": {
+                            "selector": "[trait|authDefinition]",
+                            "failWhenMissing": true
+                        }
+                    }
+                },
+                "queryParams": {
+                    "target": "smithy.test#StringList",
+                    "traits": {
+                        "smithy.api#documentation": "A list of the expected serialized query string parameters.\n\nEach element in the list is a query string key value pair\nthat starts with the query string parameter name optionally\nfollowed by \"=\", optionally followed by the query string\nparameter value. For example, \"foo=bar\", \"foo=\", and \"foo\"\nare all valid values. The query string parameter name and\nthe value MUST appear in the format in which it is expected\nto be sent over the wire; if a key or value needs to be\npercent-encoded, then it MUST appear percent-encoded in this list.\n\nA serialized HTTP request is not in compliance with the protocol\nif any query string parameter defined in `queryParams` is not\ndefined in the request or if the value of a query string parameter\nin the request differs from the expected value.\n\n`queryParams` applies no constraints on additional query parameters."
+                    }
+                },
+                "forbidQueryParams": {
+                    "target": "smithy.test#StringList",
+                    "traits": {
+                        "smithy.api#documentation": "A list of query string parameter names that must not appear in the\nserialized HTTP request.\n\nEach value MUST appear in the format in which it is sent over the\nwire; if a key needs to be percent-encoded, then it MUST appear\npercent-encoded in this list."
+                    }
+                },
+                "requireQueryParams": {
+                    "target": "smithy.test#StringList",
+                    "traits": {
+                        "smithy.api#documentation": "A list of query string parameter names that MUST appear in the\nserialized request URI, but no assertion is made on the value.\n\nEach value MUST appear in the format in which it is sent over the\nwire; if a key needs to be percent-encoded, then it MUST appear\npercent-encoded in this list."
+                    }
+                },
+                "headers": {
+                    "target": "smithy.test#StringMap",
+                    "traits": {
+                        "smithy.api#documentation": "Defines a map of expected HTTP headers.\n\nHeaders that are not listed in this map are ignored unless they are\nexplicitly forbidden through `forbidHeaders`."
+                    }
+                },
+                "forbidHeaders": {
+                    "target": "smithy.test#StringList",
+                    "traits": {
+                        "smithy.api#documentation": "A list of header field names that must not appear in the serialized\nHTTP request."
+                    }
+                },
+                "requireHeaders": {
+                    "target": "smithy.test#StringList",
+                    "traits": {
+                        "smithy.api#documentation": "A list of header field names that must appear in the serialized\nHTTP message, but no assertion is made on the value.\n\nHeaders listed in `headers` do not need to appear in this list."
+                    }
+                },
+                "body": {
+                    "target": "smithy.api#String",
+                    "traits": {
+                        "smithy.api#documentation": "The expected HTTP message body.\n\nIf no request body is defined, then no assertions are made about\nthe body of the message."
+                    }
+                },
+                "bodyMediaType": {
+                    "target": "smithy.api#String",
+                    "traits": {
+                        "smithy.api#documentation": "The media type of the `body`.\n\nThis is used to help test runners to parse and validate the expected\ndata against generated data."
+                    }
+                },
+                "params": {
+                    "target": "smithy.api#Document",
+                    "traits": {
+                        "smithy.api#documentation": "Defines the input parameters used to generated the HTTP request.\n\nThese parameters MUST be compatible with the input of the operation."
+                    }
+                },
+                "vendorParams": {
+                    "target": "smithy.api#Document",
+                    "traits": {
+                        "smithy.api#documentation": "Defines vendor-specific parameters that are used to influence the\nrequest. For example, some vendors might utilize environment\nvariables, configuration files on disk, or other means to influence\nthe serialization formats used by clients or servers."
+                    }
+                },
+                "documentation": {
+                    "target": "smithy.api#String",
+                    "traits": {
+                        "smithy.api#documentation": "A description of the test and what is being asserted."
+                    }
+                }
+            },
+            "traits": {
+                "smithy.api#private": {}
+            }
+        },
+        "smithy.test#HttpResponseTestCase": {
+            "type": "structure",
+            "members": {
+                "id": {
+                    "target": "smithy.api#String",
+                    "traits": {
+                        "smithy.api#documentation": "The identifier of the test case. This identifier can be used by\nprotocol test implementations to filter out unsupported test\ncases by ID, to generate test case names, etc. The provided `id`\nMUST match Smithy's `identifier` ABNF. No two `httpResponseTests`\ntest cases can share the same ID.",
+                        "smithy.api#pattern": "[A-Za-z_][A-Za-z0-9_]+",
+                        "smithy.api#required": {}
+                    }
+                },
+                "protocol": {
+                    "target": "smithy.api#String",
+                    "traits": {
+                        "smithy.api#documentation": "The shape ID of the protocol to test.",
+                        "smithy.api#idRef": {
+                            "selector": "[trait|protocolDefinition]",
+                            "failWhenMissing": true
+                        },
+                        "smithy.api#required": {}
+                    }
+                },
+                "code": {
+                    "target": "smithy.api#Integer",
+                    "traits": {
+                        "smithy.api#documentation": "Defines the HTTP response code.",
+                        "smithy.api#range": {
+                            "min": 100,
+                            "max": 599
+                        },
+                        "smithy.api#required": {}
+                    }
+                },
+                "authScheme": {
+                    "target": "smithy.api#String",
+                    "traits": {
+                        "smithy.api#documentation": "The optional authentication scheme shape ID to assume. It's possible\nthat specific authentication schemes might influence the serialization\nlogic of an HTTP response.",
+                        "smithy.api#idRef": {
+                            "selector": "[trait|authDefinition]",
+                            "failWhenMissing": true
+                        }
+                    }
+                },
+                "headers": {
+                    "target": "smithy.test#StringMap",
+                    "traits": {
+                        "smithy.api#documentation": "A map of expected HTTP headers. Each key represents a header field\nname and each value represents the expected header value. An HTTP\nresponse is not in compliance with the protocol if any listed header\nis missing from the serialized response or if the expected header\nvalue differs from the serialized response value.\n\n`headers` applies no constraints on additional headers."
+                    }
+                },
+                "forbidHeaders": {
+                    "target": "smithy.test#StringList",
+                    "traits": {
+                        "smithy.api#documentation": "A list of header field names that must not appear."
+                    }
+                },
+                "requireHeaders": {
+                    "target": "smithy.test#StringList",
+                    "traits": {
+                        "smithy.api#documentation": "A list of header field names that must appear in the serialized\nHTTP message, but no assertion is made on the value.\n\nHeaders listed in `headers` map do not need to appear in this list."
+                    }
+                },
+                "body": {
+                    "target": "smithy.api#String",
+                    "traits": {
+                        "smithy.api#documentation": "Defines the HTTP message body.\n\nIf no response body is defined, then no assertions are made about\nthe body of the message."
+                    }
+                },
+                "bodyMediaType": {
+                    "target": "smithy.api#String",
+                    "traits": {
+                        "smithy.api#documentation": "The media type of the `body`.\n\nThis is used to help test runners to parse and validate the expected\ndata against generated data. Binary media type formats require that\nthe contents of `body` are base64 encoded."
+                    }
+                },
+                "params": {
+                    "target": "smithy.api#Document",
+                    "traits": {
+                        "smithy.api#documentation": "Defines the output parameters deserialized from the HTTP response.\n\nThese parameters MUST be compatible with the output of the operation."
+                    }
+                },
+                "vendorParams": {
+                    "target": "smithy.api#Document",
+                    "traits": {
+                        "smithy.api#documentation": "Defines vendor-specific parameters that are used to influence the\nresponse. For example, some vendors might utilize environment\nvariables, configuration files on disk, or other means to influence\nthe serialization formats used by clients or servers."
+                    }
+                },
+                "documentation": {
+                    "target": "smithy.api#String",
+                    "traits": {
+                        "smithy.api#documentation": "A description of the test and what is being asserted."
+                    }
+                }
+            },
+            "traits": {
+                "smithy.api#private": {}
+            }
+        },
+        "aws.greengrass#InvalidArgumentsError": {
+            "type": "structure",
+            "members": {
+                "message": {
+                    "target": "smithy.api#String"
+                }
+            },
+            "traits": {
+                "smithy.api#error": "client"
+            }
+        },
+        "aws.greengrass#InvalidArtifactsDirectoryPathError": {
+            "type": "structure",
+            "members": {
+                "message": {
+                    "target": "smithy.api#String"
+                }
+            },
+            "traits": {
+                "smithy.api#error": "client"
+            }
+        },
+        "aws.greengrass#InvalidRecipeDirectoryPathError": {
+            "type": "structure",
+            "members": {
+                "message": {
+                    "target": "smithy.api#String"
+                }
+            },
+            "traits": {
+                "smithy.api#error": "client"
+            }
+        },
+        "aws.greengrass#InvalidTokenError": {
+            "type": "structure",
+            "members": {
+                "message": {
+                    "target": "smithy.api#String"
+                }
+            },
+            "traits": {
+                "smithy.api#error": "server"
+            }
+        },
+        "aws.greengrass#IoTCoreMessage": {
+            "type": "union",
+            "members": {
+                "message": {
+                    "target": "aws.greengrass#MQTTMessage"
+                }
+            },
+            "traits": {
+                "smithy.api#streaming": {}
+            }
+        },
+        "aws.greengrass#JsonMessage": {
+            "type": "structure",
+            "members": {
+                "message": {
+                    "target": "smithy.api#Document"
+                }
+            }
+        },
+        "aws.greengrass#KeyPath": {
+            "type": "list",
+            "member": {
+                "target": "smithy.api#String"
+            }
+        },
+        "aws.greengrass#LifecycleState": {
+            "type": "string",
+            "traits": {
+                "smithy.api#enum": [
+                    {
+                        "value": "RUNNING",
+                        "name": "RUNNING"
+                    },
+                    {
+                        "value": "ERRORED",
+                        "name": "ERRORED"
+                    },
+                    {
+                        "value": "NEW",
+                        "name": "NEW"
+                    },
+                    {
+                        "value": "FINISHED",
+                        "name": "FINISHED"
+                    },
+                    {
+                        "value": "INSTALLED",
+                        "name": "INSTALLED"
+                    },
+                    {
+                        "value": "BROKEN",
+                        "name": "BROKEN"
+                    },
+                    {
+                        "value": "STARTING",
+                        "name": "STARTING"
+                    },
+                    {
+                        "value": "STOPPING",
+                        "name": "STOPPING"
+                    }
+                ]
+            }
+        },
+        "aws.greengrass#ListComponents": {
+            "type": "operation",
+            "input": {
+                "target": "aws.greengrass#ListComponentsRequest"
+            },
+            "output": {
+                "target": "aws.greengrass#ListComponentsResponse"
+            },
+            "errors": [
+                {
+                    "target": "aws.greengrass#ServiceError"
+                }
+            ]
+        },
+        "aws.greengrass#ListComponentsRequest": {
+            "type": "structure",
+            "members": {}
+        },
+        "aws.greengrass#ListComponentsResponse": {
+            "type": "structure",
+            "members": {
+                "components": {
+                    "target": "aws.greengrass#ListOfComponents"
+                }
+            }
+        },
+        "aws.greengrass#ListLocalDeployments": {
+            "type": "operation",
+            "input": {
+                "target": "aws.greengrass#ListLocalDeploymentsRequest"
+            },
+            "output": {
+                "target": "aws.greengrass#ListLocalDeploymentsResponse"
+            },
+            "errors": [
+                {
+                    "target": "aws.greengrass#ServiceError"
+                }
+            ],
+            "traits": {
+                "smithy.api#documentation": "Lists the last 5 local deployments along with their statuses"
+            }
+        },
+        "aws.greengrass#ListLocalDeploymentsRequest": {
+            "type": "structure",
+            "members": {}
+        },
+        "aws.greengrass#ListLocalDeploymentsResponse": {
+            "type": "structure",
+            "members": {
+                "localDeployments": {
+                    "target": "aws.greengrass#ListOfLocalDeployments"
+                }
+            }
+        },
+        "aws.greengrass#ListOfComponents": {
+            "type": "list",
+            "member": {
+                "target": "aws.greengrass#ComponentDetails"
+            }
+        },
+        "aws.greengrass#ListOfLocalDeployments": {
+            "type": "list",
+            "member": {
+                "target": "aws.greengrass#LocalDeployment"
+            }
+        },
+        "aws.greengrass#LocalDeployment": {
+            "type": "structure",
+            "members": {
+                "deploymentId": {
+                    "target": "smithy.api#String",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                },
+                "status": {
+                    "target": "aws.greengrass#DeploymentStatus",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                }
+            }
+        },
+        "aws.greengrass#MQTTMessage": {
+            "type": "structure",
+            "members": {
+                "topicName": {
+                    "target": "smithy.api#String",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                },
+                "payload": {
+                    "target": "smithy.api#Blob"
+                }
+            }
+        },
+        "aws.greengrass#PostComponentUpdateEvent": {
+            "type": "structure",
+            "members": {
+                "deploymentId": {
+                    "target": "smithy.api#String",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                }
+            }
+        },
+        "aws.greengrass#PreComponentUpdateEvent": {
+            "type": "structure",
+            "members": {
+                "deploymentId": {
+                    "target": "smithy.api#String",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                },
+                "isGgcRestarting": {
+                    "target": "smithy.api#Boolean",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                }
+            }
+        },
+        "aws.greengrass#PublishMessage": {
+            "type": "union",
+            "members": {
+                "jsonMessage": {
+                    "target": "aws.greengrass#JsonMessage"
+                },
+                "binaryMessage": {
+                    "target": "aws.greengrass#BinaryMessage"
+                }
+            }
+        },
+        "aws.greengrass#PublishToIoTCore": {
+            "type": "operation",
+            "input": {
+                "target": "aws.greengrass#PublishToIoTCoreRequest"
+            },
+            "output": {
+                "target": "aws.greengrass#PublishToIoTCoreResponse"
+            },
+            "errors": [
+                {
+                    "target": "aws.greengrass#ServiceError"
+                },
+                {
+                    "target": "aws.greengrass#UnauthorizedError"
+                }
+            ],
+            "traits": {
+                "smithy.api#documentation": "Publish an MQTT message to AWS IoT message broker"
+            }
+        },
+        "aws.greengrass#PublishToIoTCoreRequest": {
+            "type": "structure",
+            "members": {
+                "topicName": {
+                    "target": "smithy.api#String",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                },
+                "qos": {
+                    "target": "aws.greengrass#QOS",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                },
+                "payload": {
+                    "target": "smithy.api#Blob"
+                }
+            }
+        },
+        "aws.greengrass#PublishToIoTCoreResponse": {
+            "type": "structure",
+            "members": {}
+        },
+        "aws.greengrass#PublishToTopic": {
+            "type": "operation",
+            "input": {
+                "target": "aws.greengrass#PublishToTopicRequest"
+            },
+            "output": {
+                "target": "aws.greengrass#PublishToTopicResponse"
+            },
+            "errors": [
+                {
+                    "target": "aws.greengrass#ServiceError"
+                },
+                {
+                    "target": "aws.greengrass#UnauthorizedError"
+                }
+            ],
+            "traits": {
+                "smithy.api#documentation": "Publish to a custom topic."
+            }
+        },
+        "aws.greengrass#PublishToTopicRequest": {
+            "type": "structure",
+            "members": {
+                "topic": {
+                    "target": "smithy.api#String",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                },
+                "publishMessage": {
+                    "target": "aws.greengrass#PublishMessage",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                }
+            }
+        },
+        "aws.greengrass#PublishToTopicResponse": {
+            "type": "structure",
+            "members": {}
+        },
+        "aws.greengrass#QOS": {
+            "type": "string",
+            "traits": {
+                "smithy.api#enum": [
+                    {
+                        "value": "0",
+                        "name": "AT_MOST_ONCE"
+                    },
+                    {
+                        "value": "1",
+                        "name": "AT_LEAST_ONCE"
+                    }
+                ]
+            }
+        },
+        "aws.greengrass#ReportedLifecycleState": {
+            "type": "string",
+            "traits": {
+                "smithy.api#enum": [
+                    {
+                        "value": "RUNNING",
+                        "name": "RUNNING"
+                    },
+                    {
+                        "value": "ERRORED",
+                        "name": "ERRORED"
+                    }
+                ]
+            }
+        },
+        "aws.greengrass#RequestStatus": {
+            "type": "string",
+            "traits": {
+                "smithy.api#enum": [
+                    {
+                        "value": "SUCCEEDED",
+                        "name": "SUCCEEDED"
+                    },
+                    {
+                        "value": "FAILED",
+                        "name": "FAILED"
+                    }
+                ]
+            }
+        },
+        "aws.greengrass#ResourceNotFoundError": {
+            "type": "structure",
+            "members": {
+                "message": {
+                    "target": "smithy.api#String"
+                },
+                "resourceType": {
+                    "target": "smithy.api#String"
+                },
+                "resourceName": {
+                    "target": "smithy.api#String"
+                }
+            },
+            "traits": {
+                "smithy.api#error": "client"
+            }
+        },
+        "aws.greengrass#RestartComponent": {
+            "type": "operation",
+            "input": {
+                "target": "aws.greengrass#RestartComponentRequest"
+            },
+            "output": {
+                "target": "aws.greengrass#RestartComponentResponse"
+            },
+            "errors": [
+                {
+                    "target": "aws.greengrass#ComponentNotFoundError"
+                },
+                {
+                    "target": "aws.greengrass#InvalidArgumentsError"
+                },
+                {
+                    "target": "aws.greengrass#ServiceError"
+                }
+            ],
+            "traits": {
+                "smithy.api#documentation": "Restarts a component with the given name"
+            }
+        },
+        "aws.greengrass#RestartComponentRequest": {
+            "type": "structure",
+            "members": {
+                "componentName": {
+                    "target": "smithy.api#String",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                }
+            }
+        },
+        "aws.greengrass#RestartComponentResponse": {
+            "type": "structure",
+            "members": {
+                "restartStatus": {
+                    "target": "aws.greengrass#RequestStatus",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                },
+                "message": {
+                    "target": "smithy.api#String"
+                }
+            }
+        },
+        "aws.greengrass#RunWithInfo": {
+            "type": "structure",
+            "members": {
+                "posixUser": {
+                    "target": "smithy.api#String"
+                }
+            }
+        },
+        "aws.greengrass#SecretValue": {
+            "type": "union",
+            "members": {
+                "secretString": {
+                    "target": "smithy.api#String"
+                },
+                "secretBinary": {
+                    "target": "smithy.api#Blob"
+                }
+            },
+            "traits": {
+                "smithy.api#sensitive": {}
+            }
+        },
+        "aws.greengrass#SecretVersionList": {
+            "type": "list",
+            "member": {
+                "target": "smithy.api#String"
+            }
+        },
+        "aws.greengrass#SendConfigurationValidityReport": {
+            "type": "operation",
+            "input": {
+                "target": "aws.greengrass#SendConfigurationValidityReportRequest"
+            },
+            "output": {
+                "target": "aws.greengrass#SendConfigurationValidityReportResponse"
+            },
+            "errors": [
+                {
+                    "target": "aws.greengrass#InvalidArgumentsError"
+                },
+                {
+                    "target": "aws.greengrass#ServiceError"
+                }
+            ],
+            "traits": {
+                "smithy.api#documentation": "This operation should be used in response to event received as part of SubscribeToValidateConfigurationUpdates\nsubscription. It is not necessary to send the report if the configuration is valid (GGC will wait for timeout\nperiod and proceed). Sending the report with invalid config status will prevent GGC from applying the updates"
+            }
+        },
+        "aws.greengrass#SendConfigurationValidityReportRequest": {
+            "type": "structure",
+            "members": {
+                "configurationValidityReport": {
+                    "target": "aws.greengrass#ConfigurationValidityReport",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                }
+            }
+        },
+        "aws.greengrass#SendConfigurationValidityReportResponse": {
+            "type": "structure",
+            "members": {}
+        },
+        "aws.greengrass#ServiceError": {
+            "type": "structure",
+            "members": {
+                "message": {
+                    "target": "smithy.api#String"
+                }
+            },
+            "traits": {
+                "smithy.api#error": "server"
+            }
+        },
+        "aws.greengrass#StopComponent": {
+            "type": "operation",
+            "input": {
+                "target": "aws.greengrass#StopComponentRequest"
+            },
+            "output": {
+                "target": "aws.greengrass#StopComponentResponse"
+            },
+            "errors": [
+                {
+                    "target": "aws.greengrass#ComponentNotFoundError"
+                },
+                {
+                    "target": "aws.greengrass#InvalidArgumentsError"
+                },
+                {
+                    "target": "aws.greengrass#ServiceError"
+                }
+            ],
+            "traits": {
+                "smithy.api#documentation": "Stops a component with the given name"
+            }
+        },
+        "aws.greengrass#StopComponentRequest": {
+            "type": "structure",
+            "members": {
+                "componentName": {
+                    "target": "smithy.api#String",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                }
+            }
+        },
+        "aws.greengrass#StopComponentResponse": {
+            "type": "structure",
+            "members": {
+                "stopStatus": {
+                    "target": "aws.greengrass#RequestStatus",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                },
+                "message": {
+                    "target": "smithy.api#String"
+                }
+            }
+        },
+        "smithy.test#StringList": {
+            "type": "list",
+            "member": {
+                "target": "smithy.api#String"
+            },
+            "traits": {
+                "smithy.api#private": {}
+            }
+        },
+        "smithy.test#StringMap": {
+            "type": "map",
+            "key": {
+                "target": "smithy.api#String"
+            },
+            "value": {
+                "target": "smithy.api#String"
+            },
+            "traits": {
+                "smithy.api#private": {}
+            }
+        },
+        "aws.greengrass#SubscribeToComponentUpdates": {
+            "type": "operation",
+            "input": {
+                "target": "aws.greengrass#SubscribeToComponentUpdatesRequest"
+            },
+            "output": {
+                "target": "aws.greengrass#SubscribeToComponentUpdatesResponse"
+            },
+            "errors": [
+                {
+                    "target": "aws.greengrass#ResourceNotFoundError"
+                },
+                {
+                    "target": "aws.greengrass#ServiceError"
+                }
+            ],
+            "traits": {
+                "smithy.api#documentation": "Subscribe to receive notification if GGC is about to update any components"
+            }
+        },
+        "aws.greengrass#SubscribeToComponentUpdatesRequest": {
+            "type": "structure",
+            "members": {}
+        },
+        "aws.greengrass#SubscribeToComponentUpdatesResponse": {
+            "type": "structure",
+            "members": {
+                "messages": {
+                    "target": "aws.greengrass#ComponentUpdatePolicyEvents"
+                }
+            }
+        },
+        "aws.greengrass#SubscribeToConfigurationUpdate": {
+            "type": "operation",
+            "input": {
+                "target": "aws.greengrass#SubscribeToConfigurationUpdateRequest"
+            },
+            "output": {
+                "target": "aws.greengrass#SubscribeToConfigurationUpdateResponse"
+            },
+            "errors": [
+                {
+                    "target": "aws.greengrass#ResourceNotFoundError"
+                },
+                {
+                    "target": "aws.greengrass#ServiceError"
+                }
+            ],
+            "traits": {
+                "smithy.api#documentation": "Subscribes to be notified when GGC updates the configuration for a given componentName and keyName."
+            }
+        },
+        "aws.greengrass#SubscribeToConfigurationUpdateRequest": {
+            "type": "structure",
+            "members": {
+                "componentName": {
+                    "target": "smithy.api#String"
+                },
+                "keyPath": {
+                    "target": "aws.greengrass#KeyPath",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                }
+            }
+        },
+        "aws.greengrass#SubscribeToConfigurationUpdateResponse": {
+            "type": "structure",
+            "members": {
+                "messages": {
+                    "target": "aws.greengrass#ConfigurationUpdateEvents"
+                }
+            }
+        },
+        "aws.greengrass#SubscribeToIoTCore": {
+            "type": "operation",
+            "input": {
+                "target": "aws.greengrass#SubscribeToIoTCoreRequest"
+            },
+            "output": {
+                "target": "aws.greengrass#SubscribeToIoTCoreResponse"
+            },
+            "errors": [
+                {
+                    "target": "aws.greengrass#ServiceError"
+                },
+                {
+                    "target": "aws.greengrass#UnauthorizedError"
+                }
+            ],
+            "traits": {
+                "smithy.api#documentation": "Subscribe to a topic in AWS IoT message broker."
+            }
+        },
+        "aws.greengrass#SubscribeToIoTCoreRequest": {
+            "type": "structure",
+            "members": {
+                "topicName": {
+                    "target": "smithy.api#String",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                },
+                "qos": {
+                    "target": "aws.greengrass#QOS",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                }
+            }
+        },
+        "aws.greengrass#SubscribeToIoTCoreResponse": {
+            "type": "structure",
+            "members": {
+                "messages": {
+                    "target": "aws.greengrass#IoTCoreMessage"
+                }
+            }
+        },
+        "aws.greengrass#SubscribeToTopic": {
+            "type": "operation",
+            "input": {
+                "target": "aws.greengrass#SubscribeToTopicRequest"
+            },
+            "output": {
+                "target": "aws.greengrass#SubscribeToTopicResponse"
+            },
+            "errors": [
+                {
+                    "target": "aws.greengrass#InvalidArgumentsError"
+                },
+                {
+                    "target": "aws.greengrass#ServiceError"
+                },
+                {
+                    "target": "aws.greengrass#UnauthorizedError"
+                }
+            ],
+            "traits": {
+                "smithy.api#documentation": "Creates a subscription for a custom topic"
+            }
+        },
+        "aws.greengrass#SubscribeToTopicRequest": {
+            "type": "structure",
+            "members": {
+                "topic": {
+                    "target": "smithy.api#String",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                }
+            }
+        },
+        "aws.greengrass#SubscribeToTopicResponse": {
+            "type": "structure",
+            "members": {
+                "topicName": {
+                    "target": "smithy.api#String"
+                },
+                "messages": {
+                    "target": "aws.greengrass#SubscriptionResponseMessage"
+                }
+            }
+        },
+        "aws.greengrass#SubscribeToValidateConfigurationUpdates": {
+            "type": "operation",
+            "input": {
+                "target": "aws.greengrass#SubscribeToValidateConfigurationUpdatesRequest"
+            },
+            "output": {
+                "target": "aws.greengrass#SubscribeToValidateConfigurationUpdatesResponse"
+            },
+            "errors": [
+                {
+                    "target": "aws.greengrass#ServiceError"
+                }
+            ],
+            "traits": {
+                "smithy.api#documentation": "Subscribes to be notified when GGC is about to update configuration for this component\nGGC will wait for a timeout period before it proceeds with the update.\nIf the new configuration is not valid this component can use the SendConfigurationValidityReport\noperation to indicate that"
+            }
+        },
+        "aws.greengrass#SubscribeToValidateConfigurationUpdatesRequest": {
+            "type": "structure",
+            "members": {},
+            "traits": {
+                "smithy.api#documentation": "Empty structures follow"
+            }
+        },
+        "aws.greengrass#SubscribeToValidateConfigurationUpdatesResponse": {
+            "type": "structure",
+            "members": {
+                "messages": {
+                    "target": "aws.greengrass#ValidateConfigurationUpdateEvents"
+                }
+            }
+        },
+        "aws.greengrass#SubscriptionResponseMessage": {
+            "type": "union",
+            "members": {
+                "jsonMessage": {
+                    "target": "aws.greengrass#JsonMessage"
+                },
+                "binaryMessage": {
+                    "target": "aws.greengrass#BinaryMessage"
+                }
+            },
+            "traits": {
+                "smithy.api#streaming": {}
+            }
+        },
+        "aws.greengrass#UnauthorizedError": {
+            "type": "structure",
+            "members": {
+                "message": {
+                    "target": "smithy.api#String"
+                }
+            },
+            "traits": {
+                "smithy.api#error": "client"
+            }
+        },
+        "aws.greengrass#UpdateConfiguration": {
+            "type": "operation",
+            "input": {
+                "target": "aws.greengrass#UpdateConfigurationRequest"
+            },
+            "output": {
+                "target": "aws.greengrass#UpdateConfigurationResponse"
+            },
+            "errors": [
+                {
+                    "target": "aws.greengrass#ConflictError"
+                },
+                {
+                    "target": "aws.greengrass#FailedUpdateConditionCheckError"
+                },
+                {
+                    "target": "aws.greengrass#InvalidArgumentsError"
+                },
+                {
+                    "target": "aws.greengrass#ServiceError"
+                },
+                {
+                    "target": "aws.greengrass#UnauthorizedError"
+                }
+            ],
+            "traits": {
+                "smithy.api#documentation": "Update this component's configuration by replacing the value of given keyName with the newValue.\nIf an oldValue is specified then update will only take effect id the current value matches the given oldValue"
+            }
+        },
+        "aws.greengrass#UpdateConfigurationRequest": {
+            "type": "structure",
+            "members": {
+                "keyPath": {
+                    "target": "aws.greengrass#KeyPath"
+                },
+                "timestamp": {
+                    "target": "smithy.api#Timestamp",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                },
+                "valueToMerge": {
+                    "target": "smithy.api#Document",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                }
+            }
+        },
+        "aws.greengrass#UpdateConfigurationResponse": {
+            "type": "structure",
+            "members": {}
+        },
+        "aws.greengrass#UpdateRecipesAndArtifacts": {
+            "type": "operation",
+            "input": {
+                "target": "aws.greengrass#UpdateRecipesAndArtifactsRequest"
+            },
+            "output": {
+                "target": "aws.greengrass#UpdateRecipesAndArtifactsResponse"
+            },
+            "errors": [
+                {
+                    "target": "aws.greengrass#InvalidArgumentsError"
+                },
+                {
+                    "target": "aws.greengrass#InvalidArtifactsDirectoryPathError"
+                },
+                {
+                    "target": "aws.greengrass#InvalidRecipeDirectoryPathError"
+                },
+                {
+                    "target": "aws.greengrass#ServiceError"
+                }
+            ],
+            "traits": {
+                "smithy.api#documentation": "Add/Update new recipes, artifacts for new/existing components."
+            }
+        },
+        "aws.greengrass#UpdateRecipesAndArtifactsRequest": {
+            "type": "structure",
+            "members": {
+                "recipeDirectoryPath": {
+                    "target": "smithy.api#String"
+                },
+                "artifactsDirectoryPath": {
+                    "target": "smithy.api#String"
+                }
+            },
+            "traits": {
+                "smithy.api#documentation": "*recipeDirectoryPath*: All recipes files in this directory will be copied over to the kernel package store.\n*artifactDirectoryPath*: All artifact files in this directory will be copied over to the kernel package store."
+            }
+        },
+        "aws.greengrass#UpdateRecipesAndArtifactsResponse": {
+            "type": "structure",
+            "members": {}
+        },
+        "aws.greengrass#UpdateState": {
+            "type": "operation",
+            "input": {
+                "target": "aws.greengrass#UpdateStateRequest"
+            },
+            "output": {
+                "target": "aws.greengrass#UpdateStateResponse"
+            },
+            "errors": [
+                {
+                    "target": "aws.greengrass#ResourceNotFoundError"
+                },
+                {
+                    "target": "aws.greengrass#ServiceError"
+                }
+            ],
+            "traits": {
+                "smithy.api#documentation": "Update status of this component"
+            }
+        },
+        "aws.greengrass#UpdateStateRequest": {
+            "type": "structure",
+            "members": {
+                "state": {
+                    "target": "aws.greengrass#ReportedLifecycleState",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                }
+            }
+        },
+        "aws.greengrass#UpdateStateResponse": {
+            "type": "structure",
+            "members": {}
+        },
+        "aws.greengrass#ValidateAuthorizationToken": {
+            "type": "operation",
+            "input": {
+                "target": "aws.greengrass#ValidateAuthorizationTokenRequest"
+            },
+            "output": {
+                "target": "aws.greengrass#ValidateAuthorizationTokenResponse"
+            },
+            "errors": [
+                {
+                    "target": "aws.greengrass#InvalidTokenError"
+                },
+                {
+                    "target": "aws.greengrass#ServiceError"
+                },
+                {
+                    "target": "aws.greengrass#UnauthorizedError"
+                }
+            ]
+        },
+        "aws.greengrass#ValidateAuthorizationTokenRequest": {
+            "type": "structure",
+            "members": {
+                "token": {
+                    "target": "smithy.api#String",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                }
+            }
+        },
+        "aws.greengrass#ValidateAuthorizationTokenResponse": {
+            "type": "structure",
+            "members": {
+                "isValid": {
+                    "target": "smithy.api#Boolean",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                }
+            }
+        },
+        "aws.greengrass#ValidateConfigurationUpdateEvent": {
+            "type": "structure",
+            "members": {
+                "configuration": {
+                    "target": "smithy.api#Document"
+                },
+                "deploymentId": {
+                    "target": "smithy.api#String",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                }
+            }
+        },
+        "aws.greengrass#ValidateConfigurationUpdateEvents": {
+            "type": "union",
+            "members": {
+                "validateConfigurationUpdateEvent": {
+                    "target": "aws.greengrass#ValidateConfigurationUpdateEvent"
+                }
+            },
+            "traits": {
+                "smithy.api#streaming": {}
+            }
+        },
+        "smithy.test#httpRequestTests": {
+            "type": "list",
+            "member": {
+                "target": "smithy.test#HttpRequestTestCase"
+            },
+            "traits": {
+                "smithy.api#documentation": "Define how an HTTP request is serialized given a specific protocol,\nauthentication scheme, and set of input parameters.",
+                "smithy.api#length": {
+                    "min": 1
+                },
+                "smithy.api#trait": {
+                    "selector": "operation"
+                }
+            }
+        },
+        "smithy.test#httpResponseTests": {
+            "type": "list",
+            "member": {
+                "target": "smithy.test#HttpResponseTestCase"
+            },
+            "traits": {
+                "smithy.api#documentation": "Define how an HTTP response is serialized given a specific protocol,\nauthentication scheme, and set of output or error parameters.",
+                "smithy.api#length": {
+                    "min": 1
+                },
+                "smithy.api#trait": {
+                    "selector": ":test(operation, structure[trait|error])"
+                }
+            }
+        }
+    }
+}
