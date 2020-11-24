@@ -80,10 +80,8 @@
               <sources>
                 <source>greengrass/event-stream-rpc-model/src/main</source>
                 <source>greengrass/event-stream-rpc-client/src/main</source>
-                <source>greengrass/event-stream-rpc-server/src/main</source>
-                <source>greengrass/greengrass-ipc/src/generated/client</source>
-                <source>greengrass/greengrass-ipc/src/generated/server</source>
-                <source>greengrass/greengrass-ipc/src/generated/model</source>
+                <source>greengrass/greengrass-client/src/event-stream-rpc-java/client</source>
+                <source>greengrass/greengrass-client/src/event-stream-rpc-java/model</source>
               </sources>
             </configuration>
           </execution>
