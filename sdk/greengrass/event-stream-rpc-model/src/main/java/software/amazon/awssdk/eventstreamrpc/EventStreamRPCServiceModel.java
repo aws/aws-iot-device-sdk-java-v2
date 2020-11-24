@@ -149,27 +149,18 @@ public abstract class EventStreamRPCServiceModel {
         }
     }
 
-    /**
-     * Serializes and deserializes into Java Instant caring explicitly about millisecond resolution and
-     * no further.
-     * 
-     * The precision enforcement happens despite the possibility that the object model (should) create Instants
-     * that drop the nano value differences even if set
-     */
     private static class InstantSerializerDeserializer implements JsonSerializer<Instant>, JsonDeserializer<Instant> {
         @Override
         public Instant deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-            //We can use basic coercion to double from serialized JSON string
-            //Since this is going through ofEpochMillis() and a cast to long, any precision past 3 digits is dropped
-            return Instant.ofEpochMilli((long)(json.getAsDouble() * 1000.));
+            double fSecondsEpoch = json.getAsDouble();
+            long secondsEpoch = (long)fSecondsEpoch;
+            long nanoEpoch = (long)((fSecondsEpoch - secondsEpoch) * 1_000_000_000.);
+            return Instant.ofEpochSecond(secondsEpoch, nanoEpoch);
         }
 
         @Override
         public JsonElement serialize(Instant src, Type typeOfSrc, JsonSerializationContext context) {
-            //we serialize using a string because it gives us control over the precision and enables us to drop any
-            //precision that may come out after the division, and look like sub-millis fractional values
-            //example serialized output: {"timeMessage":"1605940666.682"}
-            return new JsonPrimitive(String.format("%.3f", (double)src.toEpochMilli() / 1000.));
+            return new JsonPrimitive((double)src.getEpochSecond() + (double)src.getNano() / 1000000000.);
         }
     }
 
