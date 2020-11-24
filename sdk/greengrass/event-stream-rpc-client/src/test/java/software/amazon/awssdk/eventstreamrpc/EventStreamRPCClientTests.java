@@ -17,6 +17,7 @@ import software.amazon.awssdk.eventstreamrpc.test.TestIpcServiceHandler;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.*;
 import java.util.function.Consumer;
@@ -54,7 +55,7 @@ public class EventStreamRPCClientTests {
 
         try(final EventLoopGroup elGroup = new EventLoopGroup(1);
             final ClientBootstrap clientBootstrap = new ClientBootstrap(elGroup, null)) {
-            final IpcServer ipcServer = new IpcServer(elGroup, socketOptions, null, "127.0.0.1", port, service);
+            final RpcServer ipcServer = new RpcServer(elGroup, socketOptions, null, "127.0.0.1", port, service);
             ipcServer.runServer();
 
             final EventStreamRPCConnectionConfig config = new EventStreamRPCConnectionConfig(
@@ -127,7 +128,7 @@ public class EventStreamRPCClientTests {
 
         try(final EventLoopGroup elGroup = new EventLoopGroup(1);
             final ClientBootstrap clientBootstrap = new ClientBootstrap(elGroup, null)) {
-            final IpcServer ipcServer = new IpcServer(elGroup, socketOptions, null, "127.0.0.1", port, service);
+            final RpcServer ipcServer = new RpcServer(elGroup, socketOptions, null, "127.0.0.1", port, service);
             ipcServer.runServer();
 
             final EventStreamRPCConnectionConfig config = new EventStreamRPCConnectionConfig(
@@ -188,7 +189,7 @@ public class EventStreamRPCClientTests {
 
         try(final EventLoopGroup elGroup = new EventLoopGroup(1);
             final ClientBootstrap clientBootstrap = new ClientBootstrap(elGroup, null)) {
-            final IpcServer ipcServer = new IpcServer(elGroup, socketOptions, null, "127.0.0.1", port, service);
+            final RpcServer ipcServer = new RpcServer(elGroup, socketOptions, null, "127.0.0.1", port, service);
             ipcServer.runServer();
 
             semaphore.acquire();
@@ -233,36 +234,6 @@ public class EventStreamRPCClientTests {
         }
     }
 
-    @Test
-    public void testConnectionProtocolViolation() {
-        final CompletableFuture<Integer> disconnectFuture = new CompletableFuture<>();
-        final EventStreamRPCConnection.LifecycleHandler lifecycleHandler = new EventStreamRPCConnection.LifecycleHandler() {
-            @Override
-            public void onConnect() { }
-
-            @Override
-            public void onDisconnect(int errorCode) {
-                disconnectFuture.complete(errorCode);
-            }
-
-            @Override
-            public boolean onError(Throwable t) {
-                disconnectFuture.completeExceptionally(t);
-                return true;
-            }
-        };
-        runDummyService(lifecycleHandler, (connection) -> {
-            Integer errorCode;
-            try {
-                connection.getConnection().sendProtocolMessage(null, null, MessageType.Connect, 0).get();
-                errorCode = disconnectFuture.get(5, TimeUnit.SECONDS);
-            } catch (ExecutionException | TimeoutException | InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            Assertions.assertNotEquals(CRT.AWS_CRT_SUCCESS, errorCode, "Expected non-successful disconnect code");
-        });
-    }
-
     /**
      * Runs a dummy service on a random port and creates a connection for it so a test can do whatever on the connection.
      * Assumes the particular operation invocations don't matter.
@@ -285,7 +256,7 @@ public class EventStreamRPCClientTests {
 
         try(final EventLoopGroup elGroup = new EventLoopGroup(1);
             final ClientBootstrap clientBootstrap = new ClientBootstrap(elGroup, null)) {
-            final IpcServer ipcServer = new IpcServer(elGroup, socketOptions, null, "127.0.0.1", port, service);
+            final RpcServer ipcServer = new RpcServer(elGroup, socketOptions, null, "127.0.0.1", port, service);
             ipcServer.runServer();
 
             final EventStreamRPCConnectionConfig config = new EventStreamRPCConnectionConfig(

@@ -8,6 +8,7 @@ import software.amazon.awssdk.awstest.EchoTestRPCServiceModel;
 import software.amazon.awssdk.awstest.model.*;
 
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.*;
 
 public class ObjectModelTests {
@@ -88,6 +89,20 @@ public class ObjectModelTests {
         final Pair pair = new Pair();
         pair.setKey(null);
         pair.setValue(null);
+    }
+    
+    @Test
+    void testInstantSerialization() {
+        final MessageData data = new MessageData();
+        final Instant someInstant = Instant.ofEpochSecond(1606173648);
+        data.setTimeMessage(someInstant);
+        
+        final JSONObject jsonObject = new JSONObject(EchoTestRPCServiceModel.getInstance().toJsonString(data));
+        final MessageData dataDeserialized = EchoTestRPCServiceModel.getInstance().fromJson(MessageData.class,
+                jsonObject.toString().getBytes(StandardCharsets.UTF_8));
+
+        //Timestamp comparison is susceptible to precision issues due to double and serialization to JSON
+        Assertions.assertEquals(Math.abs(data.getTimeMessage().toEpochMilli()), Math.abs(dataDeserialized.getTimeMessage().toEpochMilli()));
     }
 
     @Test
