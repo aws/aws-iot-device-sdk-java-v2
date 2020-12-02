@@ -176,7 +176,10 @@ public class EventStreamRPCConnection implements AutoCloseable {
                         Throwable closeReason;
                         boolean callOnDisconnect;
                         synchronized (connectionState) {
-                            connectionState.connection = null;
+                            if (connectionState.connection != null) {
+                                connectionState.connection.close();
+                                connectionState.connection = null;
+                            }
                             connectionState.connectionPhase = ConnectionState.Phase.DISCONNECTED;
                             closeReason = connectionState.closeReason;
                             connectionState.closeReason = null;
@@ -216,7 +219,6 @@ public class EventStreamRPCConnection implements AutoCloseable {
             }
             if (connectionState.connection != null) {
                 connectionState.connection.closeConnection(0);
-                connectionState.connection = null;
             }
             if (connectionState.closeReason == null) {
                 connectionState.closeReason = new software.amazon.awssdk.eventstreamrpc.EventStreamClosedException("Event stream closed by client");
