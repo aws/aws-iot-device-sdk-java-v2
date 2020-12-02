@@ -3,6 +3,8 @@ package software.amazon.awssdk.aws.greengrass.model;
 import com.google.gson.annotations.SerializedName;
 import java.lang.Override;
 import java.lang.String;
+import java.util.HashMap;
+import java.util.Map;
 import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
 
 public enum LifecycleState implements EventStreamJsonMessage {
@@ -32,6 +34,14 @@ public enum LifecycleState implements EventStreamJsonMessage {
 
   public static final String APPLICATION_MODEL_TYPE = "aws.greengrass#LifecycleState";
 
+  private static final Map<String, LifecycleState> lookup = new HashMap<String, LifecycleState>();
+
+  static {
+    for (LifecycleState value:LifecycleState.values()) {
+      lookup.put(value.getValue(), value);
+    }
+  }
+
   String value;
 
   LifecycleState(String value) {
@@ -45,5 +55,9 @@ public enum LifecycleState implements EventStreamJsonMessage {
   @Override
   public String getApplicationModelType() {
     return APPLICATION_MODEL_TYPE;
+  }
+
+  public static LifecycleState get(String value) {
+    return lookup.get(value);
   }
 }

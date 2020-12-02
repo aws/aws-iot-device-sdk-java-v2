@@ -26,7 +26,7 @@ public class RestartComponentResponse implements EventStreamJsonMessage {
       serialize = true,
       deserialize = true
   )
-  private Optional<RequestStatus> restartStatus;
+  private Optional<String> restartStatus;
 
   @Expose(
       serialize = true,
@@ -41,12 +41,23 @@ public class RestartComponentResponse implements EventStreamJsonMessage {
 
   public RequestStatus getRestartStatus() {
     if (restartStatus.isPresent()) {
+      return RequestStatus.get(restartStatus.get());
+    }
+    return null;
+  }
+
+  public String getRestartStatusAsString() {
+    if (restartStatus.isPresent()) {
       return restartStatus.get();
     }
     return null;
   }
 
   public void setRestartStatus(final RequestStatus restartStatus) {
+    this.restartStatus = Optional.ofNullable(restartStatus.getValue());
+  }
+
+  public void setRestartStatus(final String restartStatus) {
     this.restartStatus = Optional.ofNullable(restartStatus);
   }
 

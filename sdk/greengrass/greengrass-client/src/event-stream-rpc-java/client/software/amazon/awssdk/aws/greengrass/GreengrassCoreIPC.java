@@ -25,7 +25,6 @@ import software.amazon.awssdk.aws.greengrass.model.SubscribeToTopicRequest;
 import software.amazon.awssdk.aws.greengrass.model.SubscribeToValidateConfigurationUpdatesRequest;
 import software.amazon.awssdk.aws.greengrass.model.SubscriptionResponseMessage;
 import software.amazon.awssdk.aws.greengrass.model.UpdateConfigurationRequest;
-import software.amazon.awssdk.aws.greengrass.model.UpdateRecipesAndArtifactsRequest;
 import software.amazon.awssdk.aws.greengrass.model.UpdateStateRequest;
 import software.amazon.awssdk.aws.greengrass.model.ValidateAuthorizationTokenRequest;
 import software.amazon.awssdk.aws.greengrass.model.ValidateConfigurationUpdateEvents;
@@ -69,10 +68,6 @@ public interface GreengrassCoreIPC {
 
   ValidateAuthorizationTokenResponseHandler validateAuthorizationToken(
       final ValidateAuthorizationTokenRequest request,
-      final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler);
-
-  UpdateRecipesAndArtifactsResponseHandler updateRecipesAndArtifacts(
-      final UpdateRecipesAndArtifactsRequest request,
       final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler);
 
   RestartComponentResponseHandler restartComponent(final RestartComponentRequest request,

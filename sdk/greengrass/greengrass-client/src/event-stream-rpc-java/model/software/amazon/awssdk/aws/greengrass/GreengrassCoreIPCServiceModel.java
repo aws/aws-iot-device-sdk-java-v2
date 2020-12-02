@@ -81,8 +81,6 @@ import software.amazon.awssdk.aws.greengrass.model.SubscriptionResponseMessage;
 import software.amazon.awssdk.aws.greengrass.model.UnauthorizedError;
 import software.amazon.awssdk.aws.greengrass.model.UpdateConfigurationRequest;
 import software.amazon.awssdk.aws.greengrass.model.UpdateConfigurationResponse;
-import software.amazon.awssdk.aws.greengrass.model.UpdateRecipesAndArtifactsRequest;
-import software.amazon.awssdk.aws.greengrass.model.UpdateRecipesAndArtifactsResponse;
 import software.amazon.awssdk.aws.greengrass.model.UpdateStateRequest;
 import software.amazon.awssdk.aws.greengrass.model.UpdateStateResponse;
 import software.amazon.awssdk.aws.greengrass.model.ValidateAuthorizationTokenRequest;
@@ -149,10 +147,6 @@ public class GreengrassCoreIPCServiceModel extends EventStreamRPCServiceModel {
   public static final String VALIDATE_AUTHORIZATION_TOKEN = SERVICE_NAMESPACE + "#" + "ValidateAuthorizationToken";
 
   private static final ValidateAuthorizationTokenOperationContext _VALIDATE_AUTHORIZATION_TOKEN_OPERATION_CONTEXT = new ValidateAuthorizationTokenOperationContext();
-
-  public static final String UPDATE_RECIPES_AND_ARTIFACTS = SERVICE_NAMESPACE + "#" + "UpdateRecipesAndArtifacts";
-
-  private static final UpdateRecipesAndArtifactsOperationContext _UPDATE_RECIPES_AND_ARTIFACTS_OPERATION_CONTEXT = new UpdateRecipesAndArtifactsOperationContext();
 
   public static final String RESTART_COMPONENT = SERVICE_NAMESPACE + "#" + "RestartComponent";
 
@@ -221,8 +215,6 @@ public class GreengrassCoreIPCServiceModel extends EventStreamRPCServiceModel {
     SERVICE_OPERATION_SET.add(SUBSCRIBE_TO_VALIDATE_CONFIGURATION_UPDATES);
     SERVICE_OPERATION_MODEL_MAP.put(VALIDATE_AUTHORIZATION_TOKEN, _VALIDATE_AUTHORIZATION_TOKEN_OPERATION_CONTEXT);
     SERVICE_OPERATION_SET.add(VALIDATE_AUTHORIZATION_TOKEN);
-    SERVICE_OPERATION_MODEL_MAP.put(UPDATE_RECIPES_AND_ARTIFACTS, _UPDATE_RECIPES_AND_ARTIFACTS_OPERATION_CONTEXT);
-    SERVICE_OPERATION_SET.add(UPDATE_RECIPES_AND_ARTIFACTS);
     SERVICE_OPERATION_MODEL_MAP.put(RESTART_COMPONENT, _RESTART_COMPONENT_OPERATION_CONTEXT);
     SERVICE_OPERATION_SET.add(RESTART_COMPONENT);
     SERVICE_OPERATION_MODEL_MAP.put(GET_LOCAL_DEPLOYMENT_STATUS, _GET_LOCAL_DEPLOYMENT_STATUS_OPERATION_CONTEXT);
@@ -274,10 +266,6 @@ public class GreengrassCoreIPCServiceModel extends EventStreamRPCServiceModel {
     SERVICE_OBJECT_MODEL_MAP.put(ValidateAuthorizationTokenRequest.APPLICATION_MODEL_TYPE, ValidateAuthorizationTokenRequest.class);
     SERVICE_OBJECT_MODEL_MAP.put(ValidateAuthorizationTokenResponse.APPLICATION_MODEL_TYPE, ValidateAuthorizationTokenResponse.class);
     SERVICE_OBJECT_MODEL_MAP.put(InvalidTokenError.APPLICATION_MODEL_TYPE, InvalidTokenError.class);
-    SERVICE_OBJECT_MODEL_MAP.put(UpdateRecipesAndArtifactsRequest.APPLICATION_MODEL_TYPE, UpdateRecipesAndArtifactsRequest.class);
-    SERVICE_OBJECT_MODEL_MAP.put(UpdateRecipesAndArtifactsResponse.APPLICATION_MODEL_TYPE, UpdateRecipesAndArtifactsResponse.class);
-    SERVICE_OBJECT_MODEL_MAP.put(InvalidRecipeDirectoryPathError.APPLICATION_MODEL_TYPE, InvalidRecipeDirectoryPathError.class);
-    SERVICE_OBJECT_MODEL_MAP.put(InvalidArtifactsDirectoryPathError.APPLICATION_MODEL_TYPE, InvalidArtifactsDirectoryPathError.class);
     SERVICE_OBJECT_MODEL_MAP.put(RestartComponentRequest.APPLICATION_MODEL_TYPE, RestartComponentRequest.class);
     SERVICE_OBJECT_MODEL_MAP.put(RestartComponentResponse.APPLICATION_MODEL_TYPE, RestartComponentResponse.class);
     SERVICE_OBJECT_MODEL_MAP.put(ComponentNotFoundError.APPLICATION_MODEL_TYPE, ComponentNotFoundError.class);
@@ -301,6 +289,8 @@ public class GreengrassCoreIPCServiceModel extends EventStreamRPCServiceModel {
     SERVICE_OBJECT_MODEL_MAP.put(StopComponentResponse.APPLICATION_MODEL_TYPE, StopComponentResponse.class);
     SERVICE_OBJECT_MODEL_MAP.put(CreateLocalDeploymentRequest.APPLICATION_MODEL_TYPE, CreateLocalDeploymentRequest.class);
     SERVICE_OBJECT_MODEL_MAP.put(CreateLocalDeploymentResponse.APPLICATION_MODEL_TYPE, CreateLocalDeploymentResponse.class);
+    SERVICE_OBJECT_MODEL_MAP.put(InvalidRecipeDirectoryPathError.APPLICATION_MODEL_TYPE, InvalidRecipeDirectoryPathError.class);
+    SERVICE_OBJECT_MODEL_MAP.put(InvalidArtifactsDirectoryPathError.APPLICATION_MODEL_TYPE, InvalidArtifactsDirectoryPathError.class);
     SERVICE_OBJECT_MODEL_MAP.put(QOS.APPLICATION_MODEL_TYPE, QOS.class);
     SERVICE_OBJECT_MODEL_MAP.put(IoTCoreMessage.APPLICATION_MODEL_TYPE, IoTCoreMessage.class);
     SERVICE_OBJECT_MODEL_MAP.put(PublishMessage.APPLICATION_MODEL_TYPE, PublishMessage.class);
@@ -385,11 +375,6 @@ public class GreengrassCoreIPCServiceModel extends EventStreamRPCServiceModel {
   public static ValidateAuthorizationTokenOperationContext getValidateAuthorizationTokenModelContext(
       ) {
     return _VALIDATE_AUTHORIZATION_TOKEN_OPERATION_CONTEXT;
-  }
-
-  public static UpdateRecipesAndArtifactsOperationContext getUpdateRecipesAndArtifactsModelContext(
-      ) {
-    return _UPDATE_RECIPES_AND_ARTIFACTS_OPERATION_CONTEXT;
   }
 
   public static RestartComponentOperationContext getRestartComponentModelContext() {

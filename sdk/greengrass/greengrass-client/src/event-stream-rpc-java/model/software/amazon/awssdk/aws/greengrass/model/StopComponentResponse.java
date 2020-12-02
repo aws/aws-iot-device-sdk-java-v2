@@ -26,7 +26,7 @@ public class StopComponentResponse implements EventStreamJsonMessage {
       serialize = true,
       deserialize = true
   )
-  private Optional<RequestStatus> stopStatus;
+  private Optional<String> stopStatus;
 
   @Expose(
       serialize = true,
@@ -41,12 +41,23 @@ public class StopComponentResponse implements EventStreamJsonMessage {
 
   public RequestStatus getStopStatus() {
     if (stopStatus.isPresent()) {
+      return RequestStatus.get(stopStatus.get());
+    }
+    return null;
+  }
+
+  public String getStopStatusAsString() {
+    if (stopStatus.isPresent()) {
       return stopStatus.get();
     }
     return null;
   }
 
   public void setStopStatus(final RequestStatus stopStatus) {
+    this.stopStatus = Optional.ofNullable(stopStatus.getValue());
+  }
+
+  public void setStopStatus(final String stopStatus) {
     this.stopStatus = Optional.ofNullable(stopStatus);
   }
 

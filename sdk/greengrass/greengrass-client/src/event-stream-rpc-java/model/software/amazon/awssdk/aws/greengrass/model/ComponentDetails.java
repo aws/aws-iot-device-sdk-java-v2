@@ -39,7 +39,7 @@ public class ComponentDetails implements EventStreamJsonMessage {
       serialize = true,
       deserialize = true
   )
-  private Optional<LifecycleState> state;
+  private Optional<String> state;
 
   @Expose(
       serialize = true,
@@ -78,12 +78,23 @@ public class ComponentDetails implements EventStreamJsonMessage {
 
   public LifecycleState getState() {
     if (state.isPresent()) {
+      return LifecycleState.get(state.get());
+    }
+    return null;
+  }
+
+  public String getStateAsString() {
+    if (state.isPresent()) {
       return state.get();
     }
     return null;
   }
 
   public void setState(final LifecycleState state) {
+    this.state = Optional.ofNullable(state.getValue());
+  }
+
+  public void setState(final String state) {
     this.state = Optional.ofNullable(state);
   }
 

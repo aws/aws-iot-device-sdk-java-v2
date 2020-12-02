@@ -54,12 +54,26 @@ public class CreateLocalDeploymentRequest implements EventStreamJsonMessage {
   )
   private Optional<Map<String, RunWithInfo>> componentToRunWithInfo;
 
+  @Expose(
+      serialize = true,
+      deserialize = true
+  )
+  private Optional<String> recipeDirectoryPath;
+
+  @Expose(
+      serialize = true,
+      deserialize = true
+  )
+  private Optional<String> artifactsDirectoryPath;
+
   public CreateLocalDeploymentRequest() {
     this.groupName = Optional.empty();
     this.rootComponentVersionsToAdd = Optional.empty();
     this.rootComponentsToRemove = Optional.empty();
     this.componentToConfiguration = Optional.empty();
     this.componentToRunWithInfo = Optional.empty();
+    this.recipeDirectoryPath = Optional.empty();
+    this.artifactsDirectoryPath = Optional.empty();
   }
 
   public String getGroupName() {
@@ -118,6 +132,28 @@ public class CreateLocalDeploymentRequest implements EventStreamJsonMessage {
     this.componentToRunWithInfo = Optional.ofNullable(componentToRunWithInfo);
   }
 
+  public String getRecipeDirectoryPath() {
+    if (recipeDirectoryPath.isPresent()) {
+      return recipeDirectoryPath.get();
+    }
+    return null;
+  }
+
+  public void setRecipeDirectoryPath(final String recipeDirectoryPath) {
+    this.recipeDirectoryPath = Optional.ofNullable(recipeDirectoryPath);
+  }
+
+  public String getArtifactsDirectoryPath() {
+    if (artifactsDirectoryPath.isPresent()) {
+      return artifactsDirectoryPath.get();
+    }
+    return null;
+  }
+
+  public void setArtifactsDirectoryPath(final String artifactsDirectoryPath) {
+    this.artifactsDirectoryPath = Optional.ofNullable(artifactsDirectoryPath);
+  }
+
   @Override
   public String getApplicationModelType() {
     return APPLICATION_MODEL_TYPE;
@@ -135,11 +171,13 @@ public class CreateLocalDeploymentRequest implements EventStreamJsonMessage {
     isEquals = isEquals && this.rootComponentsToRemove.equals(other.rootComponentsToRemove);
     isEquals = isEquals && this.componentToConfiguration.equals(other.componentToConfiguration);
     isEquals = isEquals && this.componentToRunWithInfo.equals(other.componentToRunWithInfo);
+    isEquals = isEquals && this.recipeDirectoryPath.equals(other.recipeDirectoryPath);
+    isEquals = isEquals && this.artifactsDirectoryPath.equals(other.artifactsDirectoryPath);
     return isEquals;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(groupName, rootComponentVersionsToAdd, rootComponentsToRemove, componentToConfiguration, componentToRunWithInfo);
+    return Objects.hash(groupName, rootComponentVersionsToAdd, rootComponentsToRemove, componentToConfiguration, componentToRunWithInfo, recipeDirectoryPath, artifactsDirectoryPath);
   }
 }

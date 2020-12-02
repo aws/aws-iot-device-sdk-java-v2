@@ -26,7 +26,6 @@ import software.amazon.awssdk.aws.greengrass.model.SubscribeToTopicRequest;
 import software.amazon.awssdk.aws.greengrass.model.SubscribeToValidateConfigurationUpdatesRequest;
 import software.amazon.awssdk.aws.greengrass.model.SubscriptionResponseMessage;
 import software.amazon.awssdk.aws.greengrass.model.UpdateConfigurationRequest;
-import software.amazon.awssdk.aws.greengrass.model.UpdateRecipesAndArtifactsRequest;
 import software.amazon.awssdk.aws.greengrass.model.UpdateStateRequest;
 import software.amazon.awssdk.aws.greengrass.model.ValidateAuthorizationTokenRequest;
 import software.amazon.awssdk.aws.greengrass.model.ValidateConfigurationUpdateEvents;
@@ -123,14 +122,6 @@ public class GreengrassCoreIPCClient extends EventStreamRPCClient implements Gre
       final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler) {
     final ValidateAuthorizationTokenOperationContext operationContext = GreengrassCoreIPCServiceModel.getValidateAuthorizationTokenModelContext();
     return new ValidateAuthorizationTokenResponseHandler(doOperationInvoke(operationContext, request, streamResponseHandler));
-  }
-
-  @Override
-  public UpdateRecipesAndArtifactsResponseHandler updateRecipesAndArtifacts(
-      final UpdateRecipesAndArtifactsRequest request,
-      final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler) {
-    final UpdateRecipesAndArtifactsOperationContext operationContext = GreengrassCoreIPCServiceModel.getUpdateRecipesAndArtifactsModelContext();
-    return new UpdateRecipesAndArtifactsResponseHandler(doOperationInvoke(operationContext, request, streamResponseHandler));
   }
 
   @Override

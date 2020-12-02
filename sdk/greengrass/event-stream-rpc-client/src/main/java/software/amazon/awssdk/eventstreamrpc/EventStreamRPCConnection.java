@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import software.amazon.awssdk.crt.CRT;
+import software.amazon.awssdk.crt.CrtRuntimeException;
 import software.amazon.awssdk.crt.eventstream.*;
 import software.amazon.awssdk.eventstreamrpc.model.AccessDeniedException;
 import software.amazon.awssdk.eventstreamrpc.model.EventStreamError;
@@ -25,11 +26,13 @@ public class EventStreamRPCConnection implements AutoCloseable {
         Phase connectionPhase;
         ClientConnection connection;
         Throwable closeReason;
+        boolean onConnectCalled;
         
-        protected ConnectionState(Phase phase, ClientConnection connection, Throwable closeReason) {
+        protected ConnectionState(Phase phase, ClientConnection connection) {
             this.connectionPhase = phase;
             this.connection = connection;
-            this.closeReason = closeReason;
+            this.closeReason = null;
+            this.onConnectCalled = false;
         }
     };
 
@@ -40,7 +43,7 @@ public class EventStreamRPCConnection implements AutoCloseable {
 
     public EventStreamRPCConnection(final EventStreamRPCConnectionConfig config) {
         this.config = config;
-        this.connectionState = new ConnectionState(ConnectionState.Phase.DISCONNECTED, null, null);
+        this.connectionState = new ConnectionState(ConnectionState.Phase.DISCONNECTED, null);
     }
 
     /**
@@ -53,13 +56,14 @@ public class EventStreamRPCConnection implements AutoCloseable {
 
     /**
      * Connects to the event stream RPC server asynchronously
-     *
+     * 
      * @return
      */
     public CompletableFuture<Void> connect(final LifecycleHandler lifecycleHandler) {
         synchronized (connectionState) {
             if (connectionState.connectionPhase == ConnectionState.Phase.DISCONNECTED) {
                 connectionState.connectionPhase = ConnectionState.Phase.CONNECTING_SOCKET;
+                connectionState.onConnectCalled = false;
             } else {
                 throw new IllegalStateException("Connection is already established");
             }
@@ -69,28 +73,48 @@ public class EventStreamRPCConnection implements AutoCloseable {
         ClientConnection.connect(config.getHost(), (short) config.getPort(), config.getSocketOptions(),
                 config.getTlsContext(), config.getClientBootstrap(), new ClientConnectionHandler() {
                     @Override
-                    protected void onConnectionSetup(ClientConnection clientConnection, int errorCode) {
+                    protected void onConnectionSetup(final ClientConnection clientConnection, int errorCode) {
                         LOGGER.info(String.format("Socket connection %s:%d to server result [%s]",
                                 config.getHost(), config.getPort(), CRT.awsErrorName(errorCode)));
                         synchronized (connectionState) {
-                            if (connectionState.connectionPhase == ConnectionState.Phase.CLOSING ||
-                                    CRT.AWS_CRT_SUCCESS != errorCode) {
-                                doOnDisconnect(lifecycleHandler, errorCode);
-                                clientConnection.closeConnection(errorCode);
+                            connectionState.connection = clientConnection;
+                            if (CRT.AWS_CRT_SUCCESS != errorCode) {
+                                connectionState.connectionPhase = ConnectionState.Phase.DISCONNECTED;
+                                initialConnectFuture.completeExceptionally(new CrtRuntimeException(errorCode, CRT.awsErrorName(errorCode)));
+                            } else if (connectionState.connectionPhase == ConnectionState.Phase.CLOSING) {
+                                connectionState.closeReason = new software.amazon.awssdk.eventstreamrpc.EventStreamClosedException("Event stream closed by client");
+                                disconnect();
                             } else {
-                                connectionState.connection = clientConnection;
                                 connectionState.connectionPhase = ConnectionState.Phase.WAITING_CONNACK;
-                                LOGGER.fine("Waiting for connect ack message back from event stream RPC server");
+                                    config.getConnectMessageAmender().get()
+                                        .whenComplete((messageAmendInfo, ex) -> {
+                                            synchronized (connectionState) {
+                                                if (clientConnection != connectionState.connection) {
+                                                    LOGGER.warning("MessageAmender completed with different connection than initial");
+                                                    return;
+                                                }
+                                                if (connectionState.connectionPhase == ConnectionState.Phase.CLOSING) {
+                                                    connectionState.closeReason = new software.amazon.awssdk.eventstreamrpc.EventStreamClosedException("Event stream closed by client");
+                                                } else {
+                                                    try {
+                                                        final List<Header> headers = new ArrayList<>(messageAmendInfo.getHeaders().size() + 1);
+                                                        headers.add(Header.createHeader(EventStreamRPCServiceModel.VERSION_HEADER,
+                                                                getVersionString()));
+                                                        headers.addAll(messageAmendInfo.getHeaders().stream()
+                                                                .filter(header -> !header.getName().equals(EventStreamRPCServiceModel.VERSION_HEADER))
+                                                                .collect(Collectors.toList()));
 
-                                final MessageAmendInfo messageAmendInfo = config.getConnectMessageAmender().get();
-                                final List<Header> headers = new ArrayList<>(messageAmendInfo.getHeaders().size() + 1);
-                                headers.add(Header.createHeader(EventStreamRPCServiceModel.VERSION_HEADER,
-                                        getVersionString()));
-                                headers.addAll(messageAmendInfo.getHeaders().stream()
-                                        .filter(header -> !header.getName().equals(EventStreamRPCServiceModel.VERSION_HEADER))
-                                        .collect(Collectors.toList()));
-                                clientConnection.sendProtocolMessage(headers,
-                                        messageAmendInfo.getPayload(), MessageType.Connect, 0);
+                                                        LOGGER.fine("Waiting for connect ack message back from event stream RPC server");
+                                                        clientConnection.sendProtocolMessage(headers,
+                                                                messageAmendInfo.getPayload(), MessageType.Connect, 0);
+                                                    } catch (Exception e) {
+                                                        connectionState.connectionPhase = ConnectionState.Phase.CLOSING;
+                                                        connectionState.closeReason = e;
+                                                        disconnect();
+                                                    }
+                                                }
+                                            }
+                                        });
                             }
                         }
                     }
@@ -106,6 +130,7 @@ public class EventStreamRPCConnection implements AutoCloseable {
                                     if (!initialConnectFuture.isDone()) {
                                         initialConnectFuture.complete(null);
                                     }
+                                    connectionState.onConnectCalled = true;
                                     doOnConnect(lifecycleHandler);
                                 } else {
                                     //This is access denied, implied due to not having ConnectionAccepted msg flag
@@ -136,11 +161,8 @@ public class EventStreamRPCConnection implements AutoCloseable {
                             disconnect();
                         } else if (MessageType.ProtocolError.equals(messageType) || MessageType.ServerError.equals(messageType)) {
                             LOGGER.severe("Received " + messageType.name() + ": " + CRT.awsErrorName(CRT.awsLastError()));
-                            final EventStreamError ese = EventStreamError.create(headers, payload, messageType);
-                            if (!initialConnectFuture.isDone()) {
-                                initialConnectFuture.completeExceptionally(ese);
-                            }
-                            doOnError(lifecycleHandler, ese);
+                            connectionState.closeReason = EventStreamError.create(headers, payload, messageType);                            
+                            doOnError(lifecycleHandler, connectionState.closeReason);
                             disconnect();
                         } else {
                             LOGGER.severe("Unprocessed message type: " + messageType.name());
@@ -150,12 +172,27 @@ public class EventStreamRPCConnection implements AutoCloseable {
 
                     @Override
                     protected void onConnectionClosed(int errorCode) {
+                        LOGGER.finer("Socket connection closed: " + CRT.awsErrorName(errorCode));
+                        Throwable closeReason;
+                        boolean callOnDisconnect;
                         synchronized (connectionState) {
                             connectionState.connection = null;
                             connectionState.connectionPhase = ConnectionState.Phase.DISCONNECTED;
+                            closeReason = connectionState.closeReason;
+                            connectionState.closeReason = null;
+                            callOnDisconnect = connectionState.onConnectCalled;
+                            connectionState.onConnectCalled = false;
                         }
-                        LOGGER.finer("Socket connection closed: " + CRT.awsErrorName(errorCode));
-                        doOnDisconnect(lifecycleHandler, errorCode);
+                        if (!initialConnectFuture.isDone()) {
+                            if (closeReason != null) {
+                                initialConnectFuture.completeExceptionally(closeReason);
+                            } else {
+                                initialConnectFuture.complete(null);
+                            }
+                        }
+                        if (callOnDisconnect) {
+                            doOnDisconnect(lifecycleHandler, errorCode);
+                        }
                     }
                 });
         return initialConnectFuture;
@@ -176,9 +213,13 @@ public class EventStreamRPCConnection implements AutoCloseable {
             if (connectionState.connectionPhase != ConnectionState.Phase.CLOSING &&
                     connectionState.connectionPhase != ConnectionState.Phase.DISCONNECTED) {
                 connectionState.connectionPhase = ConnectionState.Phase.CLOSING;
-                if (connectionState.connection != null) {
-                    connectionState.connection.closeConnection(0);
-                }
+            }
+            if (connectionState.connection != null) {
+                connectionState.connection.closeConnection(0);
+                connectionState.connection = null;
+            }
+            if (connectionState.closeReason == null) {
+                connectionState.closeReason = new software.amazon.awssdk.eventstreamrpc.EventStreamClosedException("Event stream closed by client");
             }
         }
     }
@@ -231,8 +272,6 @@ public class EventStreamRPCConnection implements AutoCloseable {
                 throw new software.amazon.awssdk.eventstreamrpc.EventStreamClosedException("EventStream connection not established");
             }
             connection = connectionState.connection;
-        }
-        if (connection != null && !connection.isOpen()) {
             if (pingData.isPresent()) {
                 return connection.sendProtocolMessage(pingData.get().getHeaders(), pingData.get().getPayload(),
                         MessageType.Ping, 0);
@@ -240,7 +279,6 @@ public class EventStreamRPCConnection implements AutoCloseable {
                 return connection.sendProtocolMessage(null, null, MessageType.Ping, 0);
             }
         }
-        return CompletableFuture.completedFuture(null);
     }
 
     /**
@@ -256,8 +294,6 @@ public class EventStreamRPCConnection implements AutoCloseable {
                 throw new software.amazon.awssdk.eventstreamrpc.EventStreamClosedException("EventStream connection not established");
             }
             connection = connectionState.connection;
-        }
-        if (connection != null && !connection.isOpen()) {
             if (pingResponseData.isPresent()) {
                 return connection.sendProtocolMessage(pingResponseData.get().getHeaders(), pingResponseData.get().getPayload(),
                         MessageType.Ping, 0);
@@ -265,7 +301,6 @@ public class EventStreamRPCConnection implements AutoCloseable {
                 return connection.sendProtocolMessage(null, null, MessageType.PingResponse, 0);
             }
         }
-        return CompletableFuture.completedFuture(null);
     }
 
     @Override

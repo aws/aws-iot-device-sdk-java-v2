@@ -3,6 +3,8 @@ package software.amazon.awssdk.aws.greengrass.model;
 import com.google.gson.annotations.SerializedName;
 import java.lang.Override;
 import java.lang.String;
+import java.util.HashMap;
+import java.util.Map;
 import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
 
 public enum ConfigurationValidityStatus implements EventStreamJsonMessage {
@@ -13,6 +15,14 @@ public enum ConfigurationValidityStatus implements EventStreamJsonMessage {
   REJECTED("REJECTED");
 
   public static final String APPLICATION_MODEL_TYPE = "aws.greengrass#ConfigurationValidityStatus";
+
+  private static final Map<String, ConfigurationValidityStatus> lookup = new HashMap<String, ConfigurationValidityStatus>();
+
+  static {
+    for (ConfigurationValidityStatus value:ConfigurationValidityStatus.values()) {
+      lookup.put(value.getValue(), value);
+    }
+  }
 
   String value;
 
@@ -27,5 +37,9 @@ public enum ConfigurationValidityStatus implements EventStreamJsonMessage {
   @Override
   public String getApplicationModelType() {
     return APPLICATION_MODEL_TYPE;
+  }
+
+  public static ConfigurationValidityStatus get(String value) {
+    return lookup.get(value);
   }
 }

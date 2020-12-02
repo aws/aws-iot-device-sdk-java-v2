@@ -33,7 +33,7 @@ public class PublishToIoTCoreRequest implements EventStreamJsonMessage {
       serialize = true,
       deserialize = true
   )
-  private Optional<QOS> qos;
+  private Optional<String> qos;
 
   @Expose(
       serialize = true,
@@ -60,12 +60,23 @@ public class PublishToIoTCoreRequest implements EventStreamJsonMessage {
 
   public QOS getQos() {
     if (qos.isPresent()) {
+      return QOS.get(qos.get());
+    }
+    return null;
+  }
+
+  public String getQosAsString() {
+    if (qos.isPresent()) {
       return qos.get();
     }
     return null;
   }
 
   public void setQos(final QOS qos) {
+    this.qos = Optional.ofNullable(qos.getValue());
+  }
+
+  public void setQos(final String qos) {
     this.qos = Optional.ofNullable(qos);
   }
 
