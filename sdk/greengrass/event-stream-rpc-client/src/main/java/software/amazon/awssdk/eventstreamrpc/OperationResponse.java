@@ -106,6 +106,7 @@ public class OperationResponse<ResponseType extends EventStreamJsonMessage,
             return continuation.sendMessage(null, null,
                     MessageType.ApplicationMessage, MessageFlags.TerminateStream.getByteValue())
                     .whenComplete((res, ex) -> {
+                        LOGGER.info(operationModelContext.getOperationName() + " operation stream closed");
                         continuation.close();
                         if (ex != null) {
                             LOGGER.warning(String.format("%s threw %s while closing the event stream: %s",

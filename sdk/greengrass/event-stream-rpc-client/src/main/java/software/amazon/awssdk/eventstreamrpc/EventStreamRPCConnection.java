@@ -135,9 +135,8 @@ public class EventStreamRPCConnection implements AutoCloseable {
                                 } else {
                                     //This is access denied, implied due to not having ConnectionAccepted msg flag
                                     LOGGER.warning("AccessDenied to event stream RPC server");
-                                    connectionState.connectionPhase = ConnectionState.Phase.DISCONNECTED;
+                                    connectionState.connectionPhase = ConnectionState.Phase.CLOSING;
                                     connectionState.connection.closeConnection(0);
-                                    connectionState.connection = null;
                                     
                                     final AccessDeniedException ade = new AccessDeniedException("Connection access denied to event stream RPC server");
                                     if (!initialConnectFuture.isDone()) {
@@ -306,7 +305,7 @@ public class EventStreamRPCConnection implements AutoCloseable {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         disconnect();
     }
 
