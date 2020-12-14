@@ -5,10 +5,10 @@
 * [fleet provisioning](#fleet-provisioning)
 
 **Additional sample apps not described below:**
-* [BasicPubSub](https://github.com/aws/aws-iot-device-sdk-java-v2/tree/master/samples/BasicPubSub)
-* [Greengrass](https://github.com/aws/aws-iot-device-sdk-java-v2/tree/master/samples/Greengrass)
-* [PubSubStress](https://github.com/aws/aws-iot-device-sdk-java-v2/tree/master/samples/PubSubStress)
-* [RawPubSub](https://github.com/aws/aws-iot-device-sdk-java-v2/tree/master/samples/RawPubSub)
+* [BasicPubSub](https://github.com/aws/aws-iot-device-sdk-java-v2/tree/main/samples/BasicPubSub)
+* [Greengrass](https://github.com/aws/aws-iot-device-sdk-java-v2/tree/main/samples/Greengrass)
+* [PubSubStress](https://github.com/aws/aws-iot-device-sdk-java-v2/tree/main/samples/PubSubStress)
+* [RawPubSub](https://github.com/aws/aws-iot-device-sdk-java-v2/tree/main/samples/RawPubSub)
 
 ## Shadow
 

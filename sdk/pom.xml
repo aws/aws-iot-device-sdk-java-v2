@@ -28,7 +28,7 @@
   <scm>
     <connection>scm:git:git://github.com/awslabs/aws-iot-device-sdk-java-v2.git</connection>
     <developerConnection>scm:git:ssh://github.com:awslabs/aws-iot-device-sdk-java-v2.git</developerConnection>
-    <url>http://github.com/awslabs/aws-iot-device-sdk-java-v2/tree/master</url>
+    <url>http://github.com/awslabs/aws-iot-device-sdk-java-v2/tree/main</url>
   </scm>
 
   <properties>
