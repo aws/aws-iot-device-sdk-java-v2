@@ -35,14 +35,14 @@
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <gradle.command>./gradlew</gradle.command>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>software.amazon.awssdk.crt</groupId>
       <artifactId>aws-crt</artifactId>
-      <version>0.8.6</version>
-      <scope>compile</scope>
+      <version>0.9.2</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -62,6 +62,49 @@
       <version>2.10.3</version>
     </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>3.2.0</version>
+        <executions>
+          <execution>
+            <id>add-sources</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>greengrass/event-stream-rpc-model/src/main</source>
+                <source>greengrass/event-stream-rpc-client/src/main</source>
+                <source>greengrass/greengrass-client/src/event-stream-rpc-java/client</source>
+                <source>greengrass/greengrass-client/src/event-stream-rpc-java/model</source>
+              </sources>
+            </configuration>
+          </execution>
+          <!-- Would require importing deps from gradle project, do not need for packaging
+          <execution>
+            <id>add-test-sources</id>
+            <phase>generate-test-sources</phase>
+            <goals>
+              <goal>add-test-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>greengrass/event-stream-rpc-model/src/test</source>
+                <source>greengrass/event-stream-rpc-client/src/test</source>
+                <source>greengrass/greengrass-client/src/test</source>
+              </sources>
+            </configuration>
+          </execution>
+          -->
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 
   <profiles>
     <profile>
