@@ -193,7 +193,7 @@ class BasicDiscovery {
 
                     if ("publish".equals(mode) || "both".equals(mode)) {
                         final CompletableFuture<Integer> publishResult = connection.publish(new MqttMessage(topic,
-                                input.getBytes(StandardCharsets.UTF_8)), QualityOfService.AT_MOST_ONCE, false);
+                                input.getBytes(StandardCharsets.UTF_8), QualityOfService.AT_MOST_ONCE, false));
                         Integer result = publishResult.get();
                     }
                 }

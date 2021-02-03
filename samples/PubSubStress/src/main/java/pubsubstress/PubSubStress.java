@@ -372,7 +372,7 @@ class PubSubStress {
                         String publishTopic = validTopics.get(Math.abs(rng.nextInt()) % validTopics.size());
 
                         try {
-                            publishFutures.add(connection.publish(new MqttMessage(publishTopic, messageContent.getBytes()), QualityOfService.AT_LEAST_ONCE, false));
+                            publishFutures.add(connection.publish(new MqttMessage(publishTopic, messageContent.getBytes(), QualityOfService.AT_LEAST_ONCE, false)));
                         } catch (Exception e) {
                             System.out.println(String.format("Publishing Exception: %s", e.getMessage()));
                         }

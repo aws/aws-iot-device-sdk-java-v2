@@ -90,7 +90,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
 
     /**
      * Create a new builder with mTLS file paths
-     * 
+     *
      * @param certPath       - Path to certificate, in PEM format
      * @param privateKeyPath - Path to private key, in PEM format
      */
@@ -102,7 +102,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
 
     /**
      * Create a new builder with mTLS cert pair in memory
-     * 
+     *
      * @param certificate - Certificate, in PEM format
      * @param privateKey  - Private key, in PEM format
      */
@@ -114,7 +114,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
 
     /**
      * Create a new builder with mTLS cert pair in memory
-     * 
+     *
      * @param certificate - Certificate, in PEM format
      * @param privateKey  - Private key, in PEM format
      */
@@ -137,7 +137,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
 
     /**
      * Overrides the default system trust store.
-     * 
+     *
      * @param caDirPath  - Only used on Unix-style systems where all trust anchors
      *                    are stored in a directory (e.g. /etc/ssl/certs).
      * @param caFilePath - Single file containing all trust CAs, in PEM format
@@ -150,7 +150,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
 
     /**
      * Overrides the default system trust store.
-     * 
+     *
      * @param caRoot - Buffer containing all trust CAs, in PEM format
      */
     public AwsIotMqttConnectionBuilder withCertificateAuthority(String caRoot) {
@@ -161,7 +161,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
 
     /**
      * Configures the IoT endpoint for connections from this builder.
-     * 
+     *
      * @param endpoint The IoT endpoint to connect to
      */
     public AwsIotMqttConnectionBuilder withEndpoint(String endpoint) {
@@ -172,7 +172,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     /**
      * Configures the port to connect to for connections from this builder.  If not set, 443 will be used for
      * a websocket connection or where ALPN support is available.  Otherwise the default is 8883.
-     * 
+     *
      * @param port The port to connect to on the IoT endpoint. Usually 8883 for
      *             MQTT, or 443 for websockets
      */
@@ -183,7 +183,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
 
     /**
      * Configures the client id to use to connect to the IoT Core service.
-     * 
+     *
      * @param clientId The client id for connections from this builder. Needs to be unique across
      *                  all devices/clients.
      */
@@ -195,7 +195,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     /**
      * Configures whether or not the service should try to resume prior
      * subscriptions, if it has any
-     * 
+     *
      * @param cleanSession true if the session should drop prior subscriptions when
      *                     a connection from this builder is established, false to resume the session
      */
@@ -207,7 +207,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     /**
      * Configures MQTT keep-alive via PING messages. Note that this is not TCP
      * keepalive.
-     * 
+     *
      * @param keepAliveMs How often in milliseconds to send an MQTT PING message to the
      *                   service to keep connections alive
      */
@@ -230,7 +230,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
 
     /**
      * Configures the TCP socket connect timeout (in milliseconds)
-     * 
+     *
      * @param timeoutMs TCP socket timeout
      */
     public AwsIotMqttConnectionBuilder withTimeoutMs(int timeoutMs) {
@@ -240,7 +240,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
 
     /**
      * Configures the common settings for the socket to use for connections created by this builder
-     * 
+     *
      * @param socketOptions The socket settings
      */
     public AwsIotMqttConnectionBuilder withSocketOptions(SocketOptions socketOptions) {
@@ -283,17 +283,22 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      * disconnects
      *
      * @param message The message to publish as the will. The message contains the
-     *                topic that the message will be published to on disconnect.
-     * @param qos     The {@link QualityOfService} of the will message
-     * @param retain  Whether or not the message should be retained by the mqtt broker to
-     *                be delivered to future subscribers
+     *                topic that the message will be published to on disconnect,
+     *                along with the {@link QualityOfService} that it will be
+     *                published with and whether it will be retained when it is published.
      */
-    public AwsIotMqttConnectionBuilder withWill(MqttMessage message, QualityOfService qos, boolean retain) throws MqttException {
+    public AwsIotMqttConnectionBuilder withWill(MqttMessage message) throws MqttException {
         this.config.setWillMessage(message);
-        this.config.setWillQos(qos);
-        this.config.setWillRetain(retain);
 
         return this;
+    }
+
+    /**
+     * @deprecated Use alternate withWill(). QoS and retain are now set directly on the {@link MqttMessage}
+     */
+    @Deprecated
+    public AwsIotMqttConnectionBuilder withWill(MqttMessage message, QualityOfService qos, boolean retain) throws MqttException {
+        return withWill(new MqttMessage(message.getTopic(), message.getPayload(), qos, retain));
     }
 
     /**
