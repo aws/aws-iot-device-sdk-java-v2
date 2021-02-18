@@ -22,8 +22,10 @@ import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
 import software.amazon.awssdk.iot.iotjobs.model.RejectedError;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 
 class PubSub {
@@ -291,13 +293,12 @@ class PubSub {
                     throw new RuntimeException("Exception occurred during connect", ex);
                 }
 
+                CountDownLatch countDownLatch = new CountDownLatch(messagesToPublish);
+
                 CompletableFuture<Integer> subscribed = connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, (message) -> {
-                    try {
-                        String payload = new String(message.getPayload(), "UTF-8");
-                        System.out.println("MESSAGE: " + payload);
-                    } catch (UnsupportedEncodingException ex) {
-                        System.out.println("Unable to decode payload: " + ex.getMessage());
-                    }
+                    String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
+                    System.out.println("MESSAGE: " + payload);
+                    countDownLatch.countDown();
                 });
 
                 subscribed.get();
@@ -308,6 +309,8 @@ class PubSub {
                     published.get();
                     Thread.sleep(1000);
                 }
+                
+                countDownLatch.await();
 
                 CompletableFuture<Void> disconnected = connection.disconnect();
                 disconnected.get();
