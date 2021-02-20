@@ -305,7 +305,7 @@ class PubSub {
 
                 int count = 0;
                 while (count++ < messagesToPublish) {
-                    CompletableFuture<Integer> published = connection.publish(new MqttMessage(topic, message.getBytes()), QualityOfService.AT_LEAST_ONCE, false);
+                    CompletableFuture<Integer> published = connection.publish(new MqttMessage(topic, message.getBytes(), QualityOfService.AT_LEAST_ONCE, false));
                     published.get();
                     Thread.sleep(1000);
                 }
