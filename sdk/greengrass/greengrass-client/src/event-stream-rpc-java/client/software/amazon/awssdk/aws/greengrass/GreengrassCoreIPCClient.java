@@ -7,10 +7,12 @@ import software.amazon.awssdk.aws.greengrass.model.ConfigurationUpdateEvents;
 import software.amazon.awssdk.aws.greengrass.model.CreateDebugPasswordRequest;
 import software.amazon.awssdk.aws.greengrass.model.CreateLocalDeploymentRequest;
 import software.amazon.awssdk.aws.greengrass.model.DeferComponentUpdateRequest;
+import software.amazon.awssdk.aws.greengrass.model.DeleteThingShadowRequest;
 import software.amazon.awssdk.aws.greengrass.model.GetComponentDetailsRequest;
 import software.amazon.awssdk.aws.greengrass.model.GetConfigurationRequest;
 import software.amazon.awssdk.aws.greengrass.model.GetLocalDeploymentStatusRequest;
 import software.amazon.awssdk.aws.greengrass.model.GetSecretValueRequest;
+import software.amazon.awssdk.aws.greengrass.model.GetThingShadowRequest;
 import software.amazon.awssdk.aws.greengrass.model.IoTCoreMessage;
 import software.amazon.awssdk.aws.greengrass.model.ListComponentsRequest;
 import software.amazon.awssdk.aws.greengrass.model.ListLocalDeploymentsRequest;
@@ -27,6 +29,7 @@ import software.amazon.awssdk.aws.greengrass.model.SubscribeToValidateConfigurat
 import software.amazon.awssdk.aws.greengrass.model.SubscriptionResponseMessage;
 import software.amazon.awssdk.aws.greengrass.model.UpdateConfigurationRequest;
 import software.amazon.awssdk.aws.greengrass.model.UpdateStateRequest;
+import software.amazon.awssdk.aws.greengrass.model.UpdateThingShadowRequest;
 import software.amazon.awssdk.aws.greengrass.model.ValidateAuthorizationTokenRequest;
 import software.amazon.awssdk.aws.greengrass.model.ValidateConfigurationUpdateEvents;
 import software.amazon.awssdk.eventstreamrpc.EventStreamRPCClient;
@@ -48,13 +51,6 @@ public class GreengrassCoreIPCClient extends EventStreamRPCClient implements Gre
   }
 
   @Override
-  public PublishToTopicResponseHandler publishToTopic(final PublishToTopicRequest request,
-      final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler) {
-    final PublishToTopicOperationContext operationContext = GreengrassCoreIPCServiceModel.getPublishToTopicModelContext();
-    return new PublishToTopicResponseHandler(doOperationInvoke(operationContext, request, streamResponseHandler));
-  }
-
-  @Override
   public PublishToIoTCoreResponseHandler publishToIoTCore(final PublishToIoTCoreRequest request,
       final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler) {
     final PublishToIoTCoreOperationContext operationContext = GreengrassCoreIPCServiceModel.getPublishToIoTCoreModelContext();
@@ -67,6 +63,58 @@ public class GreengrassCoreIPCClient extends EventStreamRPCClient implements Gre
       final Optional<StreamResponseHandler<ConfigurationUpdateEvents>> streamResponseHandler) {
     final SubscribeToConfigurationUpdateOperationContext operationContext = GreengrassCoreIPCServiceModel.getSubscribeToConfigurationUpdateModelContext();
     return new SubscribeToConfigurationUpdateResponseHandler(doOperationInvoke(operationContext, request, streamResponseHandler));
+  }
+
+  @Override
+  public DeleteThingShadowResponseHandler deleteThingShadow(final DeleteThingShadowRequest request,
+      final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler) {
+    final DeleteThingShadowOperationContext operationContext = GreengrassCoreIPCServiceModel.getDeleteThingShadowModelContext();
+    return new DeleteThingShadowResponseHandler(doOperationInvoke(operationContext, request, streamResponseHandler));
+  }
+
+  @Override
+  public DeferComponentUpdateResponseHandler deferComponentUpdate(
+      final DeferComponentUpdateRequest request,
+      final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler) {
+    final DeferComponentUpdateOperationContext operationContext = GreengrassCoreIPCServiceModel.getDeferComponentUpdateModelContext();
+    return new DeferComponentUpdateResponseHandler(doOperationInvoke(operationContext, request, streamResponseHandler));
+  }
+
+  @Override
+  public SubscribeToValidateConfigurationUpdatesResponseHandler subscribeToValidateConfigurationUpdates(
+      final SubscribeToValidateConfigurationUpdatesRequest request,
+      final Optional<StreamResponseHandler<ValidateConfigurationUpdateEvents>> streamResponseHandler) {
+    final SubscribeToValidateConfigurationUpdatesOperationContext operationContext = GreengrassCoreIPCServiceModel.getSubscribeToValidateConfigurationUpdatesModelContext();
+    return new SubscribeToValidateConfigurationUpdatesResponseHandler(doOperationInvoke(operationContext, request, streamResponseHandler));
+  }
+
+  @Override
+  public GetConfigurationResponseHandler getConfiguration(final GetConfigurationRequest request,
+      final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler) {
+    final GetConfigurationOperationContext operationContext = GreengrassCoreIPCServiceModel.getGetConfigurationModelContext();
+    return new GetConfigurationResponseHandler(doOperationInvoke(operationContext, request, streamResponseHandler));
+  }
+
+  @Override
+  public SubscribeToTopicResponseHandler subscribeToTopic(final SubscribeToTopicRequest request,
+      final Optional<StreamResponseHandler<SubscriptionResponseMessage>> streamResponseHandler) {
+    final SubscribeToTopicOperationContext operationContext = GreengrassCoreIPCServiceModel.getSubscribeToTopicModelContext();
+    return new SubscribeToTopicResponseHandler(doOperationInvoke(operationContext, request, streamResponseHandler));
+  }
+
+  @Override
+  public GetComponentDetailsResponseHandler getComponentDetails(
+      final GetComponentDetailsRequest request,
+      final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler) {
+    final GetComponentDetailsOperationContext operationContext = GreengrassCoreIPCServiceModel.getGetComponentDetailsModelContext();
+    return new GetComponentDetailsResponseHandler(doOperationInvoke(operationContext, request, streamResponseHandler));
+  }
+
+  @Override
+  public PublishToTopicResponseHandler publishToTopic(final PublishToTopicRequest request,
+      final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler) {
+    final PublishToTopicOperationContext operationContext = GreengrassCoreIPCServiceModel.getPublishToTopicModelContext();
+    return new PublishToTopicResponseHandler(doOperationInvoke(operationContext, request, streamResponseHandler));
   }
 
   @Override
@@ -85,11 +133,10 @@ public class GreengrassCoreIPCClient extends EventStreamRPCClient implements Gre
   }
 
   @Override
-  public DeferComponentUpdateResponseHandler deferComponentUpdate(
-      final DeferComponentUpdateRequest request,
+  public GetThingShadowResponseHandler getThingShadow(final GetThingShadowRequest request,
       final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler) {
-    final DeferComponentUpdateOperationContext operationContext = GreengrassCoreIPCServiceModel.getDeferComponentUpdateModelContext();
-    return new DeferComponentUpdateResponseHandler(doOperationInvoke(operationContext, request, streamResponseHandler));
+    final GetThingShadowOperationContext operationContext = GreengrassCoreIPCServiceModel.getGetThingShadowModelContext();
+    return new GetThingShadowResponseHandler(doOperationInvoke(operationContext, request, streamResponseHandler));
   }
 
   @Override
@@ -101,19 +148,18 @@ public class GreengrassCoreIPCClient extends EventStreamRPCClient implements Gre
   }
 
   @Override
+  public UpdateThingShadowResponseHandler updateThingShadow(final UpdateThingShadowRequest request,
+      final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler) {
+    final UpdateThingShadowOperationContext operationContext = GreengrassCoreIPCServiceModel.getUpdateThingShadowModelContext();
+    return new UpdateThingShadowResponseHandler(doOperationInvoke(operationContext, request, streamResponseHandler));
+  }
+
+  @Override
   public UpdateConfigurationResponseHandler updateConfiguration(
       final UpdateConfigurationRequest request,
       final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler) {
     final UpdateConfigurationOperationContext operationContext = GreengrassCoreIPCServiceModel.getUpdateConfigurationModelContext();
     return new UpdateConfigurationResponseHandler(doOperationInvoke(operationContext, request, streamResponseHandler));
-  }
-
-  @Override
-  public SubscribeToValidateConfigurationUpdatesResponseHandler subscribeToValidateConfigurationUpdates(
-      final SubscribeToValidateConfigurationUpdatesRequest request,
-      final Optional<StreamResponseHandler<ValidateConfigurationUpdateEvents>> streamResponseHandler) {
-    final SubscribeToValidateConfigurationUpdatesOperationContext operationContext = GreengrassCoreIPCServiceModel.getSubscribeToValidateConfigurationUpdatesModelContext();
-    return new SubscribeToValidateConfigurationUpdatesResponseHandler(doOperationInvoke(operationContext, request, streamResponseHandler));
   }
 
   @Override
@@ -151,28 +197,6 @@ public class GreengrassCoreIPCClient extends EventStreamRPCClient implements Gre
       final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler) {
     final UpdateStateOperationContext operationContext = GreengrassCoreIPCServiceModel.getUpdateStateModelContext();
     return new UpdateStateResponseHandler(doOperationInvoke(operationContext, request, streamResponseHandler));
-  }
-
-  @Override
-  public GetConfigurationResponseHandler getConfiguration(final GetConfigurationRequest request,
-      final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler) {
-    final GetConfigurationOperationContext operationContext = GreengrassCoreIPCServiceModel.getGetConfigurationModelContext();
-    return new GetConfigurationResponseHandler(doOperationInvoke(operationContext, request, streamResponseHandler));
-  }
-
-  @Override
-  public SubscribeToTopicResponseHandler subscribeToTopic(final SubscribeToTopicRequest request,
-      final Optional<StreamResponseHandler<SubscriptionResponseMessage>> streamResponseHandler) {
-    final SubscribeToTopicOperationContext operationContext = GreengrassCoreIPCServiceModel.getSubscribeToTopicModelContext();
-    return new SubscribeToTopicResponseHandler(doOperationInvoke(operationContext, request, streamResponseHandler));
-  }
-
-  @Override
-  public GetComponentDetailsResponseHandler getComponentDetails(
-      final GetComponentDetailsRequest request,
-      final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler) {
-    final GetComponentDetailsOperationContext operationContext = GreengrassCoreIPCServiceModel.getGetComponentDetailsModelContext();
-    return new GetComponentDetailsResponseHandler(doOperationInvoke(operationContext, request, streamResponseHandler));
   }
 
   @Override

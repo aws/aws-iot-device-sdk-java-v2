@@ -23,28 +23,23 @@ public class CreateDebugPasswordResponse implements EventStreamJsonMessage {
     };
   }
 
-  @Expose(
-      serialize = true,
-      deserialize = true
-  )
+  @Expose(serialize = true, deserialize = true)
   private Optional<String> password;
 
-  @Expose(
-      serialize = true,
-      deserialize = true
-  )
+  @Expose(serialize = true, deserialize = true)
   private Optional<String> username;
 
-  @Expose(
-      serialize = true,
-      deserialize = true
-  )
+  @Expose(serialize = true, deserialize = true)
   private Optional<Instant> passwordExpiration;
+
+  @Expose(serialize = true, deserialize = true)
+  private Optional<String> certificateSignature;
 
   public CreateDebugPasswordResponse() {
     this.password = Optional.empty();
     this.username = Optional.empty();
     this.passwordExpiration = Optional.empty();
+    this.certificateSignature = Optional.empty();
   }
 
   public String getPassword() {
@@ -80,6 +75,17 @@ public class CreateDebugPasswordResponse implements EventStreamJsonMessage {
     this.passwordExpiration = Optional.ofNullable(passwordExpiration);
   }
 
+  public String getCertificateSignature() {
+    if (certificateSignature.isPresent()) {
+      return certificateSignature.get();
+    }
+    return null;
+  }
+
+  public void setCertificateSignature(final String certificateSignature) {
+    this.certificateSignature = Optional.ofNullable(certificateSignature);
+  }
+
   @Override
   public String getApplicationModelType() {
     return APPLICATION_MODEL_TYPE;
@@ -87,19 +93,23 @@ public class CreateDebugPasswordResponse implements EventStreamJsonMessage {
 
   @Override
   public boolean equals(Object rhs) {
-    if (rhs == null) return false;
-    if (!(rhs instanceof CreateDebugPasswordResponse)) return false;
-    if (this == rhs) return true;
-    final CreateDebugPasswordResponse other = (CreateDebugPasswordResponse)rhs;
+    if (rhs == null)
+      return false;
+    if (!(rhs instanceof CreateDebugPasswordResponse))
+      return false;
+    if (this == rhs)
+      return true;
+    final CreateDebugPasswordResponse other = (CreateDebugPasswordResponse) rhs;
     boolean isEquals = true;
     isEquals = isEquals && this.password.equals(other.password);
     isEquals = isEquals && this.username.equals(other.username);
     isEquals = isEquals && this.passwordExpiration.equals(other.passwordExpiration);
+    isEquals = isEquals && this.certificateSignature.equals(other.certificateSignature);
     return isEquals;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(password, username, passwordExpiration);
+    return Objects.hash(password, username, passwordExpiration, certificateSignature);
   }
 }
