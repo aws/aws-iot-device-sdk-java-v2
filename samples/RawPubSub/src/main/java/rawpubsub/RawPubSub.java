@@ -24,7 +24,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 
-class RawPubSub {
+public class RawPubSub {
     static String clientId = "test-" + UUID.randomUUID().toString();
     static String rootCaPath;
     static String certPath;
