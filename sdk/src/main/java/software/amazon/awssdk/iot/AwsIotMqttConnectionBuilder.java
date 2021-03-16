@@ -229,6 +229,18 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     }
 
     /**
+     * Controls timeout value for requests that response is required on healthy connection. 
+     * If a response is not received within this interval, the request will fail as server not receiving it. 
+     * Applied to publish (QoS>0) and unsubscribe
+     *
+     * @param protocolOperationTimeoutMs How long to wait for a request response (in milliseconds) before failing
+     */
+    public AwsIotMqttConnectionBuilder withProtocolOperationTimeoutMs(int protocolOperationTimeoutMs) {
+        this.config.setProtocolOperationTimeoutMs(protocolOperationTimeoutMs);
+        return this;
+    }
+
+    /**
      * Configures the TCP socket connect timeout (in milliseconds)
      *
      * @param timeoutMs TCP socket timeout
