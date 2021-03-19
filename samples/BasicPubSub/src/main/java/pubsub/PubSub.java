@@ -6,6 +6,7 @@
 package pubsub;
 
 import software.amazon.awssdk.crt.CRT;
+import software.amazon.awssdk.crt.CrtResource;
 import software.amazon.awssdk.crt.CrtRuntimeException;
 import software.amazon.awssdk.crt.auth.credentials.X509CredentialsProvider;
 import software.amazon.awssdk.crt.http.HttpProxyOptions;
@@ -246,6 +247,7 @@ class PubSub {
                 .withConnectionEventCallbacks(callbacks)
                 .withClientId(clientId)
                 .withEndpoint(endpoint)
+                .withPort((short)port)
                 .withCleanSession(true);
 
             if (useWebsockets) {
@@ -318,6 +320,8 @@ class PubSub {
         } catch (CrtRuntimeException | InterruptedException | ExecutionException ex) {
             System.out.println("Exception encountered: " + ex.toString());
         }
+
+        CrtResource.waitForNoResources();
 
         System.out.println("Complete!");
     }

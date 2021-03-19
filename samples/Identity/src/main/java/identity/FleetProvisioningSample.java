@@ -264,6 +264,7 @@ public class FleetProvisioningSample {
             System.out.println("Exception encountered: " + ex.toString());
         }
 
+        CrtResource.waitForNoResources();
         System.out.println("Complete!");
     }
 

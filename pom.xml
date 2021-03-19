@@ -9,6 +9,7 @@
     <modules>
         <module>sdk</module>
         <module>samples/BasicPubSub</module>
+        <module>samples/Greengrass</module>
         <module>samples/Jobs</module>
         <module>samples/PubSubStress</module>
         <module>samples/RawPubSub</module>
