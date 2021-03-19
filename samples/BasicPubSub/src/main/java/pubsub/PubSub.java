@@ -248,7 +248,8 @@ class PubSub {
                 .withClientId(clientId)
                 .withEndpoint(endpoint)
                 .withPort((short)port)
-                .withCleanSession(true);
+                .withCleanSession(true)
+                .withProtocolOperationTimeoutMs(60000);
 
             if (useWebsockets) {
                 builder.withWebsockets(true);
