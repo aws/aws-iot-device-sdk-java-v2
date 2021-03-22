@@ -6,6 +6,7 @@
 package rawpubsub;
 
 import software.amazon.awssdk.crt.CRT;
+import software.amazon.awssdk.crt.CrtResource;
 import software.amazon.awssdk.crt.CrtRuntimeException;
 import software.amazon.awssdk.crt.io.ClientBootstrap;
 import software.amazon.awssdk.crt.io.EventLoopGroup;
@@ -245,6 +246,7 @@ class RawPubSub {
             System.out.println("Exception encountered: " + ex.toString());
         }
 
+        CrtResource.waitForNoResources();
         System.out.println("Complete!");
     }
 }

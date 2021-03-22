@@ -6,6 +6,7 @@
 package jobs;
 
 import software.amazon.awssdk.crt.CRT;
+import software.amazon.awssdk.crt.CrtResource;
 import software.amazon.awssdk.crt.CrtRuntimeException;
 import software.amazon.awssdk.crt.io.ClientBootstrap;
 import software.amazon.awssdk.crt.io.EventLoopGroup;
@@ -356,6 +357,7 @@ public class JobsSample {
             System.out.println("Exception encountered: " + ex.toString());
         }
 
+        CrtResource.waitForNoResources();
         System.out.println("Complete!");
     }
 }
