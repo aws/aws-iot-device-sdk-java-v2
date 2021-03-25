@@ -41,10 +41,24 @@ public class CreateDebugPasswordResponse implements EventStreamJsonMessage {
   )
   private Optional<Instant> passwordExpiration;
 
+  @Expose(
+      serialize = true,
+      deserialize = true
+  )
+  private Optional<String> certificateSHA256Hash;
+
+  @Expose(
+      serialize = true,
+      deserialize = true
+  )
+  private Optional<String> certificateSHA1Hash;
+
   public CreateDebugPasswordResponse() {
     this.password = Optional.empty();
     this.username = Optional.empty();
     this.passwordExpiration = Optional.empty();
+    this.certificateSHA256Hash = Optional.empty();
+    this.certificateSHA1Hash = Optional.empty();
   }
 
   public String getPassword() {
@@ -80,6 +94,28 @@ public class CreateDebugPasswordResponse implements EventStreamJsonMessage {
     this.passwordExpiration = Optional.ofNullable(passwordExpiration);
   }
 
+  public String getCertificateSHA256Hash() {
+    if (certificateSHA256Hash.isPresent()) {
+      return certificateSHA256Hash.get();
+    }
+    return null;
+  }
+
+  public void setCertificateSHA256Hash(final String certificateSHA256Hash) {
+    this.certificateSHA256Hash = Optional.ofNullable(certificateSHA256Hash);
+  }
+
+  public String getCertificateSHA1Hash() {
+    if (certificateSHA1Hash.isPresent()) {
+      return certificateSHA1Hash.get();
+    }
+    return null;
+  }
+
+  public void setCertificateSHA1Hash(final String certificateSHA1Hash) {
+    this.certificateSHA1Hash = Optional.ofNullable(certificateSHA1Hash);
+  }
+
   @Override
   public String getApplicationModelType() {
     return APPLICATION_MODEL_TYPE;
@@ -95,11 +131,13 @@ public class CreateDebugPasswordResponse implements EventStreamJsonMessage {
     isEquals = isEquals && this.password.equals(other.password);
     isEquals = isEquals && this.username.equals(other.username);
     isEquals = isEquals && this.passwordExpiration.equals(other.passwordExpiration);
+    isEquals = isEquals && this.certificateSHA256Hash.equals(other.certificateSHA256Hash);
+    isEquals = isEquals && this.certificateSHA1Hash.equals(other.certificateSHA1Hash);
     return isEquals;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(password, username, passwordExpiration);
+    return Objects.hash(password, username, passwordExpiration, certificateSHA256Hash, certificateSHA1Hash);
   }
 }
