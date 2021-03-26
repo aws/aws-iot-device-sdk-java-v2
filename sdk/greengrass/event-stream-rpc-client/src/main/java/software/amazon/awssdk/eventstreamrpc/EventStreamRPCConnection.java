@@ -39,7 +39,7 @@ public class EventStreamRPCConnection implements AutoCloseable {
     private static final Logger LOGGER = Logger.getLogger(EventStreamRPCConnection.class.getName());
 
     private final EventStreamRPCConnectionConfig config;
-    private ConnectionState connectionState;
+    protected ConnectionState connectionState;
 
     public EventStreamRPCConnection(final EventStreamRPCConnectionConfig config) {
         this.config = config;
