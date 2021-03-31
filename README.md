@@ -36,7 +36,7 @@ to Java by the [aws-crt-java](https://github.com/awslabs/aws-crt-java) package.
 * CMake 3.1+
 * Clang 3.9+ or GCC 4.4+ or MSVC 2015+
 
-### Maven dependency
+### Consuming IoT Device SDK from Maven
 
 Consuming this SDK via Maven is the preferred method of consuming it. Add the following to your pom.xml depedencies:
 
@@ -48,7 +48,7 @@ Consuming this SDK via Maven is the preferred method of consuming it. Add the fo
 </dependency>
 ```
 
-To find the latest release version consult: https://github.com/aws/aws-iot-device-sdk-java-v2/releases
+Look up the latest SDK version here: https://github.com/aws/aws-iot-device-sdk-java-v2/releases
 
 ### Build IoT Device SDK from source
 
