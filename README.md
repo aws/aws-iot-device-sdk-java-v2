@@ -36,6 +36,18 @@ to Java by the [aws-crt-java](https://github.com/awslabs/aws-crt-java) package.
 * CMake 3.1+
 * Clang 3.9+ or GCC 4.4+ or MSVC 2015+
 
+### Maven dependency
+
+Consuming this SDK via Maven is the preferred method of consuming it. Add the following to your pom.xml depedencies:
+
+``` xml
+<dependency>
+  <groupId>software.amazon.awssdk.iotdevicesdk</groupId>
+  <artifactId>aws-iot-device-sdk</artifactId>
+  <version><!-- release version --></version>
+</dependency>
+```
+
 ### Build IoT Device SDK from source
 
 ``` sh
