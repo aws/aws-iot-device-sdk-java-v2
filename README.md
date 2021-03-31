@@ -44,9 +44,11 @@ Consuming this SDK via Maven is the preferred method of consuming it. Add the fo
 <dependency>
   <groupId>software.amazon.awssdk.iotdevicesdk</groupId>
   <artifactId>aws-iot-device-sdk</artifactId>
-  <version><!-- release version --></version>
+  <version><!-- latest release version --></version>~
 </dependency>
 ```
+
+To find the latest release version consult: https://github.com/aws/aws-iot-device-sdk-java-v2/releases
 
 ### Build IoT Device SDK from source
 
