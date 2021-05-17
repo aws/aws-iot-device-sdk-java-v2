@@ -251,18 +251,18 @@ class PubSub {
                 .withCleanSession(true)
                 .withProtocolOperationTimeoutMs(60000);
 
+            HttpProxyOptions proxyOptions = null;
+            if (proxyHost != null && proxyPort > 0) {
+                proxyOptions = new HttpProxyOptions();
+                proxyOptions.setHost(proxyHost);
+                proxyOptions.setPort(proxyPort);
+
+                builder.withHttpProxyOptions(proxyOptions);
+            }
+
             if (useWebsockets) {
                 builder.withWebsockets(true);
                 builder.withWebsocketSigningRegion(region);
-
-                HttpProxyOptions proxyOptions = null;
-                if (proxyHost != null && proxyPort > 0) {
-                    proxyOptions = new HttpProxyOptions();
-                    proxyOptions.setHost(proxyHost);
-                    proxyOptions.setPort(proxyPort);
-
-                    builder.withWebsocketProxyOptions(proxyOptions);
-                }
 
                 if (useX509Credentials) {
                     try (TlsContextOptions x509TlsOptions = TlsContextOptions.createWithMtlsFromPath(x509CertPath, x509KeyPath)) {
