@@ -337,19 +337,20 @@ class PubSubStress {
                 builder.withCertificateAuthorityFromPath(null, rootCaPath)
                     .withEndpoint(endpoint)
                     .withCleanSession(true)
-                    .withBootstrap(clientBootstrap);
+                    .withBootstrap(clientBootstrap)
+                    .withProtocolOperationTimeoutMs(10000);
+
+                if (proxyHost != null && proxyPort > 0) {
+                    HttpProxyOptions proxyOptions = new HttpProxyOptions();
+                    proxyOptions.setHost(proxyHost);
+                    proxyOptions.setPort(proxyPort);
+
+                    builder.withHttpProxyOptions(proxyOptions);
+                }
 
                 if (useWebsockets) {
                     builder.withWebsockets(true);
                     builder.withWebsocketSigningRegion(region);
-
-                    if (proxyHost != null && proxyPort > 0) {
-                        HttpProxyOptions proxyOptions = new HttpProxyOptions();
-                        proxyOptions.setHost(proxyHost);
-                        proxyOptions.setPort(proxyPort);
-
-                        builder.withWebsocketProxyOptions(proxyOptions);
-                    }
                 }
 
                 try {

@@ -363,12 +363,24 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     }
 
     /**
+     * @deprecated use withHttpProxyOptions instead
      * Configures any http proxy options to use if the connection uses websockets
      *
      * @param proxyOptions http proxy options to use when establishing a websockets-based connection
      */
     public AwsIotMqttConnectionBuilder withWebsocketProxyOptions(HttpProxyOptions proxyOptions) {
-        this.config.setWebsocketProxyOptions(proxyOptions);
+        this.config.setHttpProxyOptions(proxyOptions);
+
+        return this;
+    }
+
+    /**
+     * Configures any http proxy options to use
+     *
+     * @param proxyOptions http proxy options to use when establishing a connection
+     */
+    public AwsIotMqttConnectionBuilder withHttpProxyOptions(HttpProxyOptions proxyOptions) {
+        this.config.setHttpProxyOptions(proxyOptions);
 
         return this;
     }
