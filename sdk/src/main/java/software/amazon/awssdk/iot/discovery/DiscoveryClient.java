@@ -93,8 +93,16 @@ public class DiscoveryClient implements AutoCloseable {
     }
 
     private static String getHostname(final DiscoveryClientConfig config) {
-        return String.format("greengrass-ats.iot.%s.%s",
-            config.getRegion(), AWS_DOMAIN_SUFFIX_MAP.getOrDefault(config.getRegion(), AWS_DOMAIN_DEFAULT));
+        // Temporary fix for connection with china endpoint
+        if (config.getRegion == "cn-north-1") {
+            return String.format("greengrass.ats.iot.%s.%s", 
+                config.getRegion(), AWS_DOMAIN_SUFFIX_MAP.getOrDefault(config.getRegion(), AWS_DOMAIN_DEFAULT));
+        }
+        else {
+            return String.format("greengrass-ats.iot.%s.%s", 
+                config.getRegion(), AWS_DOMAIN_SUFFIX_MAP.getOrDefault(config.getRegion(), AWS_DOMAIN_DEFAULT));
+        }
+        return endpointString;
     }
 
     @Override
