@@ -24,7 +24,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
-class PubSubStress {
+public class PubSubStress {
     private static final int PROGRESS_OP_COUNT = 100;
 
     static String clientId = "test-" + UUID.randomUUID().toString();

@@ -29,7 +29,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 
-class PubSub {
+public class PubSub {
     static String clientId = "test-" + UUID.randomUUID().toString();
     static String rootCaPath;
     static String certPath;
