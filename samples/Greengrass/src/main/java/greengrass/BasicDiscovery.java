@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
 
 import static software.amazon.awssdk.iot.discovery.DiscoveryClient.TLS_EXT_ALPN;
 
-class BasicDiscovery {
+public class BasicDiscovery {
     static String thingName;
     static String rootCaPath;
     static String certPath;

@@ -24,7 +24,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
-class PubSubStress {
+public class PubSubStress {
     private static final int PROGRESS_OP_COUNT = 100;
 
     static String clientId = "test-" + UUID.randomUUID().toString();
@@ -337,19 +337,20 @@ class PubSubStress {
                 builder.withCertificateAuthorityFromPath(null, rootCaPath)
                     .withEndpoint(endpoint)
                     .withCleanSession(true)
-                    .withBootstrap(clientBootstrap);
+                    .withBootstrap(clientBootstrap)
+                    .withProtocolOperationTimeoutMs(10000);
+
+                if (proxyHost != null && proxyPort > 0) {
+                    HttpProxyOptions proxyOptions = new HttpProxyOptions();
+                    proxyOptions.setHost(proxyHost);
+                    proxyOptions.setPort(proxyPort);
+
+                    builder.withHttpProxyOptions(proxyOptions);
+                }
 
                 if (useWebsockets) {
                     builder.withWebsockets(true);
                     builder.withWebsocketSigningRegion(region);
-
-                    if (proxyHost != null && proxyPort > 0) {
-                        HttpProxyOptions proxyOptions = new HttpProxyOptions();
-                        proxyOptions.setHost(proxyHost);
-                        proxyOptions.setPort(proxyPort);
-
-                        builder.withWebsocketProxyOptions(proxyOptions);
-                    }
                 }
 
                 try {

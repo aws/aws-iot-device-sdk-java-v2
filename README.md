@@ -36,6 +36,20 @@ to Java by the [aws-crt-java](https://github.com/awslabs/aws-crt-java) package.
 * CMake 3.1+
 * Clang 3.9+ or GCC 4.4+ or MSVC 2015+
 
+### Consuming IoT Device SDK from Maven
+
+Consuming this SDK via Maven is the preferred method of consuming it. Add the following to your pom.xml depedencies:
+
+``` xml
+<dependency>
+  <groupId>software.amazon.awssdk.iotdevicesdk</groupId>
+  <artifactId>aws-iot-device-sdk</artifactId>
+  <version><!-- latest release version --></version>~
+</dependency>
+```
+
+Look up the latest SDK version here: https://github.com/aws/aws-iot-device-sdk-java-v2/releases
+
 ### Build IoT Device SDK from source
 
 ``` sh
@@ -89,6 +103,9 @@ dependencies {
     implementation 'software.amazon.awssdk.crt:android:0.11.5'
 }
 ```
+#### Caution
+You will need to override and provide a ROOT_CERTIFICATE manually from one of the following [certificates](https://www.amazontrust.com/repository/). For overriding default trust store you can use following [method](https://github.com/aws/aws-iot-device-sdk-java-v2/blob/ed802dce740895bcd3b0b91de30ec49407e34a87/sdk/src/main/java/software/amazon/awssdk/iot/AwsIotMqttConnectionBuilder.java#L151-L160). It's a [known problem](https://github.com/aws/aws-iot-device-sdk-java-v2/issues/157).
+
 
 ## Mac-Only TLS Behavior
 
