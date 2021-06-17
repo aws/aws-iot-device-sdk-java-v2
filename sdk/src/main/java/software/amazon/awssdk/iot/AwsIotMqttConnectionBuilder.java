@@ -205,14 +205,27 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     }
 
     /**
-     * Configures MQTT keep-alive via PING messages. Note that this is not TCP
+     * @deprecated Configures MQTT keep-alive via PING messages. Note that this is not TCP
      * keepalive.
      *
      * @param keepAliveMs How often in milliseconds to send an MQTT PING message to the
      *                   service to keep connections alive
      */
+    @Deprecated
     public AwsIotMqttConnectionBuilder withKeepAliveMs(int keepAliveMs) {
-        this.config.setKeepAliveMs(keepAliveMs);
+        this.config.setKeepAliveSecs(keepAliveMs/1000);
+        return this;
+    }
+
+    /**
+     * Configures MQTT keep-alive via PING messages. Note that this is not TCP
+     * keepalive.
+     *
+     * @param keepAliveSecs How often in seconds to send an MQTT PING message to the
+     *                   service to keep connections alive
+     */
+    public AwsIotMqttConnectionBuilder withKeepAliveSecs(int keepAliveSecs) {
+        this.config.setKeepAliveSecs(keepAliveSecs);
         return this;
     }
 
@@ -229,8 +242,8 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     }
 
     /**
-     * Controls timeout value for requests that response is required on healthy connection. 
-     * If a response is not received within this interval, the request will fail as server not receiving it. 
+     * Controls timeout value for requests that response is required on healthy connection.
+     * If a response is not received within this interval, the request will fail as server not receiving it.
      * Applied to publish (QoS>0) and unsubscribe
      *
      * @param protocolOperationTimeoutMs How long to wait for a request response (in milliseconds) before failing
@@ -477,6 +490,3 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
         }
     }
 }
-
-
-
