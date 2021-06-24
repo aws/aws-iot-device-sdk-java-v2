@@ -264,6 +264,19 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     }
 
     /**
+     * Configures the minimum and maximum reconnect timeouts.
+     *
+     * The time between reconnect attempts will start at min and multiply by 2 until max is reached.
+     *
+     * @param minTimeoutSecs The timeout to start with
+     * @param maxTimeoutSecs The highest allowable wait time between reconnect attempts
+     */
+    public AwsIotMqttConnectionBuilder withReconnectTimeoutSecs(long minTimeoutSecs, long maxTimeoutSecs) {
+        this.config.setReconnectTimeoutSecs(minTimeoutSecs, maxTimeoutSecs);
+        return this;
+    }
+
+    /**
      * Configures the common settings for the socket to use for connections created by this builder
      *
      * @param socketOptions The socket settings
