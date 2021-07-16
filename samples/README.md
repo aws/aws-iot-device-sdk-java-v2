@@ -299,7 +299,7 @@ you'll need to substitute the name of the template you previously created, and o
 ``` sh
 aws iot create-provisioning-claim \
         --template-name [TemplateName] \
-        | python ../../../../../aws-iot-device-sdk-java-v2/utils/parse_cert_set_result.py \
+        | python3 ../../../../../aws-iot-device-sdk-java-v2/utils/parse_cert_set_result.py \
         --path /tmp \
         --filename provision
 ```
@@ -335,7 +335,7 @@ be skipped if you're using a certificate set capable of provisioning the device.
 ``` sh
 aws iot create-provisioning-claim \
         --template-name [TemplateName] \
-        | python ../../../../../aws-iot-device-sdk-java-v2/utils/parse_cert_set_result.py \
+        | python3 ../../../../../aws-iot-device-sdk-java-v2/utils/parse_cert_set_result.py \
         --path /tmp \
         --filename provision
 ```
