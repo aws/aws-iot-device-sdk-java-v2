@@ -158,7 +158,6 @@ public class EventStreamRPCConnection implements AutoCloseable {
                             LOGGER.severe("Erroneous connect message type received by client. Closing");
                             //TODO: client sends protocol error here?
                             disconnect();
-
                         } else if (MessageType.ProtocolError.equals(messageType) || MessageType.ServerError.equals(messageType)) {
                             LOGGER.severe("Received " + messageType.name() + ": " + CRT.awsErrorName(CRT.awsLastError()));
                             connectionState.closeReason = EventStreamError.create(headers, payload, messageType);                            

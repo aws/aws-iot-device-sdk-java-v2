@@ -171,7 +171,6 @@ public abstract class EventStreamRPCServiceModel {
     static {
         //TODO: find a reliable way to verify all of these are set? reflection cannot scan a package
         FRAMEWORK_APPLICATION_MODEL_TYPES.put(AccessDeniedException.ERROR_CODE, AccessDeniedException.class);
-
         FRAMEWORK_APPLICATION_MODEL_TYPES.put(UnsupportedOperationException.ERROR_CODE, UnsupportedOperationException.class);
         FRAMEWORK_APPLICATION_MODEL_TYPES.put(ValidationException.ERROR_CODE, ValidationException.class);
     }
