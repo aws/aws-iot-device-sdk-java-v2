@@ -16,7 +16,6 @@ phases:
       - $CODEBUILD_SRC_DIR/codebuild/samples/pubsub-linux.sh
   post_build:
     commands:
-      - cat log.txt
       - echo Build completed on `date`
 
 artifacts:
