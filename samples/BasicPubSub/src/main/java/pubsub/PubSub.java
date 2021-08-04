@@ -29,6 +29,10 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 
 public class PubSub {
+
+    static String ciPropValue = System.getProperty("aws.crt.ci");
+    static boolean isCI = ciPropValue != null && Boolean.valueOf(ciPropValue);
+
     static String clientId = "test-" + UUID.randomUUID().toString();
     static String rootCaPath;
     static String certPath;
@@ -200,21 +204,33 @@ public class PubSub {
         System.out.println("Request rejected: " + error.code.toString() + ": " + error.message);
     }
 
+    static void onApplicationFailure(Throwable cause) {
+        if (isCI) {
+            throw new RuntimeException("BasicPubSub execution failure", cause);
+        } else if (cause != null) {
+            System.out.println("Exception encountered: " + cause.toString());
+        }
+    }
+
     public static void main(String[] args) {
+
         parseCommandLine(args);
         if (showHelp || endpoint == null) {
             printUsage();
+            onApplicationFailure(null);
             return;
         }
 
         if (!useWebsockets) {
             if (certPath == null || keyPath == null) {
                 printUsage();
+                onApplicationFailure(null);
                 return;
             }
         } else if (useX509Credentials) {
             if (x509RoleAlias == null || x509Endpoint == null || x509Thing == null || x509CertPath == null || x509KeyPath == null) {
                 printUsage();
+                onApplicationFailure(null);
                 return;
             }
         }
@@ -318,7 +334,7 @@ public class PubSub {
                 disconnected.get();
             }
         } catch (CrtRuntimeException | InterruptedException | ExecutionException ex) {
-            System.out.println("Exception encountered: " + ex.toString());
+            onApplicationFailure(ex);
         }
 
         CrtResource.waitForNoResources();
