@@ -143,6 +143,7 @@ public class PubSub {
                     }
                     break;
                 case "-w":
+                case "--websockets":
                     useWebsockets = true;
                     break;
                 case "--x509":
