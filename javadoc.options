@@ -1,0 +1,10 @@
+-d docs
+-verbose
+-public
+-windowtitle 'AWS IoT SDK for Java V2'
+-doctitle 'AWS IoT SDK for Java V2'
+-header '<b>AWS IoT SDK for Java V2</b>'
+-bottom 'Copyright &copy; Amazon.com, Inc. or its affiliates. All Rights Reserved.'
+-sourcepath sdk/src/main/java
+-subpackages
+software.amazon.awssdk.iot
