@@ -42,7 +42,7 @@
     <dependency>
       <groupId>software.amazon.awssdk.crt</groupId>
       <artifactId>aws-crt</artifactId>
-      <version>0.14.0</version>
+      <version>0.14.5</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
