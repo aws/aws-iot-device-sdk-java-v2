@@ -24,47 +24,6 @@
                 <artifactId>versions-maven-plugin</artifactId>
                 <version>2.7</version>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.3.0</version>
-                <configuration>
-                    <minmemory>128m</minmemory>
-                    <maxmemory>8g</maxmemory>
-                    <includeDependencySources>false</includeDependencySources>
-                    <show>public</show>
-                    <author>false</author>
-                    <version>true</version>
-                    <use>false</use>
-                    <nottree>true</nottree>
-                    <nodeprecatedlist>true</nodeprecatedlist>
-                    <additionalJOptions>
-                        <additionalJOption>--allow-script-in-comments</additionalJOption>
-                    </additionalJOptions>
-                    <windowtitle>AWS IoT Device SDK Java V2</windowtitle>
-                    <encoding>UTF-8</encoding>
-                    <docencoding>UTF-8</docencoding>
-                    <doctitle>AWS IoT Device SDK Java V2 API Reference</doctitle>
-                    <packagesheader>AWS IoT Device SDK Java V2</packagesheader>
-                    <groups>
-                        <group>
-                            <title>IoT</title>
-                            <packages>software.amazon.awssdk.iot*</packages>
-                        </group>
-                        <group>
-                            <title>Event Stream RPC</title>
-                            <packages>software.amazon.awssdk.eventstream*</packages>
-                        </group>
-                    </groups>
-                    <excludePackageNames>
-                    pubsub:greengrass:identity:jobs:pubsubstress:rawpubsub:shadow</excludePackageNames>
-                    <header><h2>AWS IoT Device SDK Java V2 API Reference</h2></header>
-                    <footer>
-                    <div style="margin:1.2em;"><a id="fdbk" target="_blank">Provide feedback</a></div>
-                    </footer>
-                    <bottom>Just Bottom Stuff</bottom>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
 </project>
