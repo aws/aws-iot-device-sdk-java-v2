@@ -145,6 +145,9 @@
           <excludePackageNames>pubsub:greengrass:identity:jobs:pubsubstress:rawpubsub:shadow</excludePackageNames>
           <header>AWS IoT Device SDK Java V2 API Reference</header>
           <bottom>Copyright © 2021. All rights reserved.</bottom>
+          <links>
+            <link>https://awslabs.github.io/aws-crt-java/</link>
+          </links>
         </configuration>
       </plugin>
     </plugins>

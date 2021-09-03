@@ -25,6 +25,8 @@
 'Event Stream RPC' 'software.amazon.awssdk.eventstream*'
 -header
 'AWS IoT Device SDK Java V2 API Reference'
+-link
+'https://awslabs.github.io/aws-crt-java'
 -linkoffline
 'https://docs.oracle.com/javase/8/docs/api' '/Volumes/workplace/javadocgen/aws-iot-device-sdk-java-v2/sdk/target/javadoc-bundle-options'
 -nodeprecatedlist
