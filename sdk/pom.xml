@@ -121,7 +121,8 @@
           <additionalJOptions>
             <additionalJOption>--allow-script-in-comments</additionalJOption>
           </additionalJOptions>
-          <reportOutputDirectory>../docs</reportOutputDirectory>
+          <reportOutputDirectory>../</reportOutputDirectory>
+          <destDir>docs</destDir>
           <windowtitle>AWS IoT Device SDK Java V2</windowtitle>
           <encoding>UTF-8</encoding>
           <docencoding>UTF-8</docencoding>
