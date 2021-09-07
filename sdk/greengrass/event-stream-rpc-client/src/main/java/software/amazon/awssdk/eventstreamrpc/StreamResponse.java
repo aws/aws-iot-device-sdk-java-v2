@@ -10,20 +10,20 @@ public interface StreamResponse<ResponseType extends EventStreamJsonMessage, Str
     /**
      * Completable future indicating flush of the request that initiated the stream operation
      *
-     * @return
+     * @return {@link CompletableFuture}
      */
     CompletableFuture<Void> getRequestFlushFuture();
 
     /**
      * Completable future for retrieving the initial-response of the stream operation
      *
-     * @return
+     * @return {@link CompletableFuture}
      */
     CompletableFuture<ResponseType> getResponse();
 
     /**
      * Tests if the stream is closed
-     * @return
+     * @return - boolean
      */
     boolean isClosed();
 }

@@ -38,7 +38,7 @@ public abstract class EventStreamOperationError
 
     /**
      * Likely overridden by a specific field defined in service-operation model
-     * @return
+     * @return - message
      */
     public String getMessage() {
         return _message;
@@ -46,7 +46,7 @@ public abstract class EventStreamOperationError
 
     /**
      * Likely subclasses will have a more limited set of valid error codes
-     * @return
+     * @return - error code
      */
     public String getErrorCode() { return _errorCode; }
 }

@@ -9,8 +9,8 @@ public class AccessDeniedException extends EventStreamOperationError {
      *
      * Do not overexpose reason or logic for AccessDenied. Prefer internal logging
      *
-     * @param serviceName
-     * @param message
+     * @param serviceName - serviceName
+     * @param message - message
      */
     public AccessDeniedException(String serviceName, String message) {
         super(serviceName, ERROR_CODE, message);
@@ -23,7 +23,7 @@ public class AccessDeniedException extends EventStreamOperationError {
     /**
      * Returns the named model type. May be used for a header.
      *
-     * @return
+     * @return - Application Model Type
      */
     @Override
     public String getApplicationModelType() {

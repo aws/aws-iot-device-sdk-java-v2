@@ -1,1 +1,0 @@
-/Library/Java/JavaVirtualMachines/amazon-corretto-8.jdk/Contents/Home/jre/../bin/javadoc -J-Xmx8192m -J-Xms128m --allow-script-in-comments @options @packages
