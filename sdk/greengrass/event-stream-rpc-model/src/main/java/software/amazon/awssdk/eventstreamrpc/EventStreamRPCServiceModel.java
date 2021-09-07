@@ -113,9 +113,9 @@ public abstract class EventStreamRPCServiceModel {
      *
      * Note: Generated code for equals method of Smithy shapes relies on this
      *
-     * @param lhs
-     * @param rhs
-     * @return
+     * @param lhs - lhs
+     * @param rhs - rhs
+     * @return boolean
      */
     public static boolean blobTypeEquals(Optional<byte[]> lhs, Optional<byte[]> rhs) {
         if (lhs.equals(rhs)) {
@@ -162,7 +162,7 @@ public abstract class EventStreamRPCServiceModel {
 
     /**
      * For actual
-     * @return
+     * @return Service Name
      */
     public abstract String getServiceName();
 
@@ -185,7 +185,7 @@ public abstract class EventStreamRPCServiceModel {
 
     /**
      * Retreives all operations on the service
-     * @return
+     * @return Collection
      */
     public abstract Collection<String> getAllOperations();
 
@@ -203,8 +203,8 @@ public abstract class EventStreamRPCServiceModel {
      *
      * This may not be a useful interface as generated code will typically pull a known operation model context
      * Public visibility is useful for testing
-     * @param operationName
-     * @return
+     * @param operationName operationName
+     * @return {@link OperationModelContext}
      */
     public abstract OperationModelContext getOperationModelContext(String operationName);
 
@@ -247,9 +247,9 @@ public abstract class EventStreamRPCServiceModel {
 
     /**
      * Uses this service's specific model class
-     * @param applicationModelType
-     * @param payload
-     * @return
+     * @param applicationModelType - applicationModelType
+     * @param payload - payload
+     * @return {@link EventStreamJsonMessage}
      */
     public EventStreamJsonMessage fromJson(final String applicationModelType, byte[] payload) {
         final Optional<Class<? extends EventStreamJsonMessage>> clazz = getApplicationModelClass(applicationModelType);

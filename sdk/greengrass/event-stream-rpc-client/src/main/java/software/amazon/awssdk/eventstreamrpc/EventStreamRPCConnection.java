@@ -57,7 +57,8 @@ public class EventStreamRPCConnection implements AutoCloseable {
     /**
      * Connects to the event stream RPC server asynchronously
      * 
-     * @return
+     * @param lifecycleHandler - LifecycleHandler
+     * @return {@link CompletableFuture}
      */
     public CompletableFuture<Void> connect(final LifecycleHandler lifecycleHandler) {
         synchronized (connectionState) {
@@ -263,8 +264,8 @@ public class EventStreamRPCConnection implements AutoCloseable {
     /**
      * Interface to send ping. Optional MessageAmendInfo will use the headers and payload
      * for the ping message verbatim. Should trigger a pong response and server copies back
-     * @param pingData
-     * @return
+     * @param pingData - pingData
+     * @return {@link CompletableFuture}
      */
     public CompletableFuture<Void> sendPing(Optional<MessageAmendInfo> pingData) {
         ClientConnection connection;
@@ -285,8 +286,8 @@ public class EventStreamRPCConnection implements AutoCloseable {
     /**
      * Interface to send pingResponse. Optional MessageAmendInfo will use the headers and payload
      * for the ping message verbatim. Should trigger a pong response and server copies back
-     * @param pingResponseData
-     * @return
+     * @param pingResponseData - pingResponseData
+     * @return {@link CompletableFuture}
      */
     public CompletableFuture<Void> sendPingResponse(Optional<MessageAmendInfo> pingResponseData) {
         ClientConnection connection;
@@ -323,7 +324,7 @@ public class EventStreamRPCConnection implements AutoCloseable {
         /**
          * Invoked for both connect failures and disconnects from a healthy state
          *
-         * @param errorCode
+         * @param errorCode - errorCode
          */
         void onDisconnect(int errorCode);
 
@@ -338,7 +339,7 @@ public class EventStreamRPCConnection implements AutoCloseable {
          * result in closing the connection. AccessDeniedException is such an example
          *
          * @param t Exception
-         * @returns true if the connection should be terminated as a result of handling the error
+         * @return true if the connection should be terminated as a result of handling the error
          */
         boolean onError(Throwable t);
 
@@ -346,6 +347,8 @@ public class EventStreamRPCConnection implements AutoCloseable {
          * Do nothing on ping by default. Inform handler of ping data
          *
          * TODO: Could use boolean return here as a hint on whether a pong reply should be sent?
+         * @param headers - headers
+         * @param payload - payload
          */
         default void onPing(List<Header> headers, byte[] payload) { };
     }

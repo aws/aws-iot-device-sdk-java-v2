@@ -64,6 +64,7 @@ public class ComponentUpdatePolicyEvents implements EventStreamJsonMessage {
 
   /**
    * Returns an indicator for which enum member is set. Can be used to convert to proper type.
+   * @return {@link UnionMember}
    */
   public UnionMember getSetUnionMember() {
     return setUnionMember;

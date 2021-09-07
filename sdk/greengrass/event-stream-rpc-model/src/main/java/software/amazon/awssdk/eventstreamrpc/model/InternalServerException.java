@@ -10,7 +10,7 @@ public class InternalServerException extends EventStreamOperationError {
     /**
      * Returns the named model type. May be used for a header.
      *
-     * @return
+     * @return - Application Model Type
      */
     @Override
     public String getApplicationModelType() {

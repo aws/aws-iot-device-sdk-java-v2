@@ -15,8 +15,8 @@ public interface EventStreamJsonMessage {
      * with final implementations for serialization/deserialization. Or better yet, rework
      * how it works
      *
-     * @param gson
-     * @return
+     * @param gson - gson
+     * @return - byte[]
      */
     default byte[] toPayload(final Gson gson) {
         final String payloadString = gson.toJson(this);
@@ -41,7 +41,7 @@ public interface EventStreamJsonMessage {
 
     /**
      * Returns the named model type. May be used for a header.
-     * @return
+     * @return - Application Model Type
      */
     public String getApplicationModelType();
 
