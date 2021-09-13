@@ -3,11 +3,11 @@
 * [Shadow](#shadow)
 * [Jobs](#jobs)
 * [fleet provisioning](#fleet-provisioning)
+* [Greengrass](#greengrass-discovery)
 
 **Additional sample apps not described below:**
 
 * [BasicPubSub](https://github.com/aws/aws-iot-device-sdk-java-v2/tree/main/samples/BasicPubSub)
-* [Greengrass](https://github.com/aws/aws-iot-device-sdk-java-v2/tree/main/samples/Greengrass)
 * [PubSubStress](https://github.com/aws/aws-iot-device-sdk-java-v2/tree/main/samples/PubSubStress)
 * [RawPubSub](https://github.com/aws/aws-iot-device-sdk-java-v2/tree/main/samples/RawPubSub)
 
@@ -347,3 +347,11 @@ using a permanent certificate set, replace the paths specified in the `--cert` a
 mvn exec:java -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint [your endpoint]-ats.iot.[region].amazonaws.com --rootca [pathToRootCA]
 --cert /tmp/provision.cert.pem --key /tmp/provision.private.key --templateName [TemplateName] --templateParameters {\"SerialNumber\":\"1\",\"DeviceLocation\":\"Seattle\"}  --csr /tmp/deviceCert.csr"
 ```
+
+## Greengrass Discovery
+
+This sample is intended for use with the following tutorials in the AWS IoT Greengrass documentation:
+
+* [Connect and test client devices](https://docs.aws.amazon.com/greengrass/v2/developerguide/client-devices-tutorial.html) (Greengrass V2)
+* [Test client device communications](https://docs.aws.amazon.com/greengrass/v2/developerguide/test-client-device-communications.html) (Greengrass V2)
+* [Getting Started with AWS IoT Greengrass](https://docs.aws.amazon.com/greengrass/latest/developerguide/gg-gs.html) (Greengrass V1)
