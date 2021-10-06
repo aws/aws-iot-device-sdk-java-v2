@@ -20,6 +20,7 @@ import software.amazon.awssdk.crt.io.ClientBootstrap;
 import software.amazon.awssdk.crt.io.ClientTlsContext;
 import software.amazon.awssdk.crt.io.SocketOptions;
 import software.amazon.awssdk.crt.io.TlsContextOptions;
+import software.amazon.awssdk.crt.io.TlsContextPkcs11Options;
 import software.amazon.awssdk.crt.mqtt.MqttClient;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnectionEvents;
@@ -125,6 +126,18 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     public static AwsIotMqttConnectionBuilder newMtlsBuilder(byte[] certificate, byte[] privateKey)
             throws UnsupportedEncodingException {
         return newMtlsBuilder(new String(certificate, "UTF8"), new String(privateKey, "UTF8"));
+    }
+
+    /**
+     * Create a new builder with mTLS, using a PKCS#11 library for private key operations.
+     *
+     * @param pkcs11Options PKCS#11 options
+     * @return {@link AwsIotMqttConnectionBuilder}
+     */
+    public static AwsIotMqttConnectionBuilder newMtlsPkcs11Builder(TlsContextPkcs11Options pkcs11Options) {
+        try (TlsContextOptions tlsContextOptions = TlsContextOptions.createWithMtlsPkcs11(pkcs11Options)) {
+            return new AwsIotMqttConnectionBuilder(tlsContextOptions);
+        }
     }
 
     /**
