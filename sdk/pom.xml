@@ -42,7 +42,7 @@
     <dependency>
       <groupId>software.amazon.awssdk.crt</groupId>
       <artifactId>aws-crt</artifactId>
-      <version>0.14.5</version>
+      <version>0.15.8</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -117,6 +117,7 @@
           <version>true</version>
           <use>false</use>
           <nottree>true</nottree>
+          <notimestamp>true</notimestamp>
           <nodeprecatedlist>true</nodeprecatedlist>
           <additionalJOptions>
             <additionalJOption>--allow-script-in-comments</additionalJOption>
