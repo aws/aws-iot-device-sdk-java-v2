@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 import os
+import shutil
+import subprocess
 
-if os.system("mvn clean package") != 0:
-    exit("maven clean package not built.")
+subprocess.run(['mvn', 'clean', 'javadoc:javadoc'], check=True)
 
-if os.system("mvn javadoc:javadoc") != 0:
-    exit("Maven javadoc plugin did not run correctly.")
+if os.path.exists('docs'):
+    shutil.rmtree('docs')
+shutil.copytree('sdk/target/site/apidocs', 'docs')
