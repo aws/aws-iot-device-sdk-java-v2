@@ -92,18 +92,14 @@ public class DiscoveryClient implements AutoCloseable {
         });
     }
 
-    private static String CN_ENDPOINT_TEMPLATE = "greengrass.ats.iot.%s.%s";
-    private static String DEFAULT_ENDPOINT_TEMPLATE = "greengrass-ats.iot.%s.%s";
-
     private static String getHostname(final DiscoveryClientConfig config) {
-        // Temporary fix for connection with china endpoint
-        String endpointTemplate = DEFAULT_ENDPOINT_TEMPLATE;
-        if (config.getRegion().equals("cn-north-1")) {
-            endpointTemplate = CN_ENDPOINT_TEMPLATE;
-        }
-
-        return String.format(endpointTemplate,
+        //allow greengrass server endpoint to be manualy set for unique endpoints
+        if (config.getGGServerName().equals("")) {
+            return String.format("greengrass-ats.iot.%s.%s",
                 config.getRegion(), AWS_DOMAIN_SUFFIX_MAP.getOrDefault(config.getRegion(), AWS_DOMAIN_DEFAULT));
+        } else {
+            return String.format(config.getGGServerName());
+        }
     }
 
     @Override

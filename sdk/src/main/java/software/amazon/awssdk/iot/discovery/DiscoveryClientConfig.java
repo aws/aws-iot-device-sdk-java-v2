@@ -13,6 +13,7 @@ public class DiscoveryClientConfig implements AutoCloseable {
     final private String region;
     final private int maxConnections;
     final private HttpProxyOptions proxyOptions;
+    final private String ggServerName;
 
     public DiscoveryClientConfig(
             final ClientBootstrap bootstrap,
@@ -27,6 +28,24 @@ public class DiscoveryClientConfig implements AutoCloseable {
         this.region = region;
         this.maxConnections = maxConnections;
         this.proxyOptions = proxyOptions;
+        this.ggServerName = "";
+    }
+
+    public DiscoveryClientConfig(
+            final ClientBootstrap bootstrap,
+            final TlsContextOptions tlsContextOptions,
+            final SocketOptions socketOptions,
+            final String region,
+            final int maxConnections,
+            final HttpProxyOptions proxyOptions,
+            final String ggServerName) {
+        this.bootstrap = bootstrap;
+        this.tlsContext = new TlsContext(tlsContextOptions);
+        this.socketOptions = socketOptions;
+        this.region = region;
+        this.maxConnections = maxConnections;
+        this.proxyOptions = proxyOptions;
+        this.ggServerName = ggServerName;
     }
 
     public ClientBootstrap getBootstrap() {
@@ -51,6 +70,10 @@ public class DiscoveryClientConfig implements AutoCloseable {
 
     public HttpProxyOptions getProxyOptions() {
         return proxyOptions;
+    }
+
+    public String getGGServerName() {
+        return ggServerName;
     }
 
     @Override
