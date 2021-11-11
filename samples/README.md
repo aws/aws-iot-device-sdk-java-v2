@@ -11,6 +11,27 @@
 * [PubSubStress](https://github.com/aws/aws-iot-device-sdk-java-v2/tree/main/samples/PubSubStress)
 * [RawPubSub](https://github.com/aws/aws-iot-device-sdk-java-v2/tree/main/samples/RawPubSub)
 
+## Custom Key Operations PubSub
+
+This sample shows how to perform custom private key operations during the MQTT TLS handshake.
+This is necessary if you require an external library to handle private
+key operations such as signing and decrypting.
+
+Note that, for this sample, the `--key` passed via args must be a PKCS#8 file,
+instead of the typical PKCS#1 file that AWS IoT Core vends by default. To convert
+your key file from PKCS#1 (starts with "-----BEGIN RSA PRIVATE KEY-----") into
+a PKCS#8 file (starts with "-----BEGIN PRIVATE KEY-----"), run the following cmd:
+
+```sh
+> openssl pkcs8 -topk8 -in <my-private.pem.key> -out <my-private-p8.pem.key> -nocrypt
+```
+
+To Run:
+``` sh
+> mvn exec:java -pl -Dexec.mainClass=customkeyopspubsub.CustomKeyOpsPubSub -Dexec.args='--endpoint <endpoint> --rootca </path/to/AmazonRootCA1.pem> --cert <cert path> --key <pkcs8 key path>'
+```
+
+
 ## Shadow
 
 This sample uses the AWS IoT
