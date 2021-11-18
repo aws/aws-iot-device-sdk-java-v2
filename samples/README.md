@@ -40,9 +40,6 @@ The sample can connect to IoT Core in several ways:
 
 ## Pkcs11PubSub
 
-This sample shows connecting to IoT Core, using a certificate and private key for mutual TLS,
-with the private key stored on a PKCS#11 compatible smart card or Hardware Security Module (HSM).
-
 This sample shows connecting to IoT Core using mutual TLS,
 with the private key stored on a PKCS#11 compatible smart card or Hardware Security Module (HSM)
 
