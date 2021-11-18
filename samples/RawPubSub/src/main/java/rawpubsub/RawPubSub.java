@@ -14,7 +14,6 @@ import software.amazon.awssdk.crt.io.HostResolver;
 import software.amazon.awssdk.crt.io.TlsContext;
 import software.amazon.awssdk.crt.io.TlsContextOptions;
 import software.amazon.awssdk.crt.mqtt.*;
-import software.amazon.awssdk.iot.iotjobs.model.RejectedError;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -37,7 +36,7 @@ public class RawPubSub {
 
     static String userName;
     static String password;
-    static String protocolName = "mqtt";
+    static String protocolName = "x-amzn-mqtt-ca";
     static List<String> authParams;
 
     static void printUsage() {
@@ -46,7 +45,7 @@ public class RawPubSub {
                 "  --help        This message\n"+
                 "  --clientId    Client ID to use when connecting (optional)\n"+
                 "  -e|--endpoint AWS IoT service endpoint hostname\n"+
-                "  -r|--rootca   Path to the root certificate\n"+
+                "  -r|--rootca   Path to the root certificate (optional)\n"+
                 "  -c|--cert     Path to the IoT thing certificate\n"+
                 "  -k|--key      Path to the IoT thing private key\n"+
                 "  -t|--topic    Topic to subscribe/publish to (optional)\n"+
@@ -54,7 +53,7 @@ public class RawPubSub {
                 "  -n|--count    Number of messages to publish (optional)"+
                 "  -u|--username Username to use as part of the connection/authentication process\n"+
                 "  --password    Password to use as part of the connection/authentication process\n"+
-                "  --protocol    (optional) Communication protocol to use; defaults to mqtt\n"+
+                "  --protocol    (optional) ALPN protocol to use; defaults to x-amzn-mqtt-ca\n"+
                 "  --auth_params (optional) Comma delimited list of auth parameters. For websockets these will be set as headers.  For raw mqtt these will be appended to user_name.\n"
         );
     }
@@ -139,10 +138,6 @@ public class RawPubSub {
         }
     }
 
-    static void onRejectedError(RejectedError error) {
-        System.out.println("Request rejected: " + error.code.toString() + ": " + error.message);
-    }
-
     public static void main(String[] args) {
         parseCommandLine(args);
         if (showHelp || endpoint == null) {
@@ -185,7 +180,10 @@ public class RawPubSub {
             HostResolver resolver = new HostResolver(eventLoopGroup);
             ClientBootstrap clientBootstrap = new ClientBootstrap(eventLoopGroup, resolver);
             TlsContextOptions tlsContextOptions = TlsContextOptions.createWithMtlsFromPath(certPath, keyPath)) {
-            tlsContextOptions.overrideDefaultTrustStoreFromPath(null, rootCaPath);
+
+            if (rootCaPath != null) {
+                tlsContextOptions.overrideDefaultTrustStoreFromPath(null, rootCaPath);
+            }
 
             int port = 8883;
             if (TlsContextOptions.isAlpnSupported()) {
@@ -234,7 +232,7 @@ public class RawPubSub {
                         published.get();
                         Thread.sleep(1000);
                     }
-                    
+
                     countDownLatch.await();
 
                     CompletableFuture<Void> disconnected = connection.disconnect();
