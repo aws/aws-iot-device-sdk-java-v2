@@ -170,7 +170,7 @@ public class ShadowSample {
     }
 
     static CompletableFuture<Void> changeShadowValue(String value) {
-        if (localValue == value) {
+        if (localValue.equals(value)) {
             System.out.println("Local value is already " + value);
             CompletableFuture<Void> result = new CompletableFuture<>();
             result.complete(null);
