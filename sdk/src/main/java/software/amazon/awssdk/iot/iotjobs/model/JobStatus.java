@@ -17,6 +17,8 @@ public enum JobStatus {
 
     IN_PROGRESS("IN_PROGRESS"),
 
+    FAILED("FAILED"),
+
     QUEUED("QUEUED"),
 
     TIMED_OUT("TIMED_OUT"),

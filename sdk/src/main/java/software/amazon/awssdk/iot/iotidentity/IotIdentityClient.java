@@ -65,10 +65,9 @@ public class IotIdentityClient {
     /**
      * Creates new keys and a certificate. AWS IoT provides client certificates that are signed by the Amazon Root certificate authority (CA). The new certificate has a PENDING_ACTIVATION status. When you call RegisterThing to provision a thing with this certificate, the certificate status changes to ACTIVE or INACTIVE as described in the template.
      *
-     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api
-     *
-     * Publish PublishCreateKeysAndCertificate message.
      * If the device is offline, the PUBLISH packet will be sent once the connection resumes.
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api
      *
      * @param request Message to be serialized and sent
      * @param qos Quality of Service for delivering this message
@@ -90,13 +89,11 @@ public class IotIdentityClient {
     /**
      * Subscribes to the accepted topic of the CreateKeysAndCertificate operation.
      *
-     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api
-     *
-     * Subscribe to SubscribeToCreateKeysAndCertificateAccepted messages
-     *
      * Once subscribed, `handler` is invoked each time a message matching
      * the `topic` is received. It is possible for such messages to arrive before
      * the SUBACK is received.
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api
      *
      * @param request Subscription request configuration
      * @param qos Maximum requested QoS that server may use when sending messages to the client.
@@ -129,13 +126,11 @@ public class IotIdentityClient {
     /**
      * Subscribes to the accepted topic of the CreateKeysAndCertificate operation.
      *
-     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api
-     *
-     * Subscribe to SubscribeToCreateKeysAndCertificateAccepted messages
-     *
      * Once subscribed, `handler` is invoked each time a message matching
      * the `topic` is received. It is possible for such messages to arrive before
      * the SUBACK is received.
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api
      *
      * @param request Subscription request configuration
      * @param qos Maximum requested QoS that server may use when sending messages to the client.
@@ -154,13 +149,11 @@ public class IotIdentityClient {
     /**
      * Subscribes to the rejected topic of the CreateKeysAndCertificate operation.
      *
-     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api
-     *
-     * Subscribe to SubscribeToCreateKeysAndCertificateRejected messages
-     *
      * Once subscribed, `handler` is invoked each time a message matching
      * the `topic` is received. It is possible for such messages to arrive before
      * the SUBACK is received.
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api
      *
      * @param request Subscription request configuration
      * @param qos Maximum requested QoS that server may use when sending messages to the client.
@@ -193,13 +186,11 @@ public class IotIdentityClient {
     /**
      * Subscribes to the rejected topic of the CreateKeysAndCertificate operation.
      *
-     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api
-     *
-     * Subscribe to SubscribeToCreateKeysAndCertificateRejected messages
-     *
      * Once subscribed, `handler` is invoked each time a message matching
      * the `topic` is received. It is possible for such messages to arrive before
      * the SUBACK is received.
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api
      *
      * @param request Subscription request configuration
      * @param qos Maximum requested QoS that server may use when sending messages to the client.
@@ -218,13 +209,11 @@ public class IotIdentityClient {
     /**
      * Subscribes to the rejected topic of the RegisterThing operation.
      *
-     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api
-     *
-     * Subscribe to SubscribeToRegisterThingRejected messages
-     *
      * Once subscribed, `handler` is invoked each time a message matching
      * the `topic` is received. It is possible for such messages to arrive before
      * the SUBACK is received.
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api
      *
      * @param request Subscription request configuration
      * @param qos Maximum requested QoS that server may use when sending messages to the client.
@@ -263,13 +252,11 @@ public class IotIdentityClient {
     /**
      * Subscribes to the rejected topic of the RegisterThing operation.
      *
-     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api
-     *
-     * Subscribe to SubscribeToRegisterThingRejected messages
-     *
      * Once subscribed, `handler` is invoked each time a message matching
      * the `topic` is received. It is possible for such messages to arrive before
      * the SUBACK is received.
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api
      *
      * @param request Subscription request configuration
      * @param qos Maximum requested QoS that server may use when sending messages to the client.
@@ -288,13 +275,11 @@ public class IotIdentityClient {
     /**
      * Subscribes to the accepted topic of the CreateCertificateFromCsr operation.
      *
-     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api
-     *
-     * Subscribe to SubscribeToCreateCertificateFromCsrAccepted messages
-     *
      * Once subscribed, `handler` is invoked each time a message matching
      * the `topic` is received. It is possible for such messages to arrive before
      * the SUBACK is received.
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api
      *
      * @param request Subscription request configuration
      * @param qos Maximum requested QoS that server may use when sending messages to the client.
@@ -327,13 +312,11 @@ public class IotIdentityClient {
     /**
      * Subscribes to the accepted topic of the CreateCertificateFromCsr operation.
      *
-     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api
-     *
-     * Subscribe to SubscribeToCreateCertificateFromCsrAccepted messages
-     *
      * Once subscribed, `handler` is invoked each time a message matching
      * the `topic` is received. It is possible for such messages to arrive before
      * the SUBACK is received.
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api
      *
      * @param request Subscription request configuration
      * @param qos Maximum requested QoS that server may use when sending messages to the client.
@@ -352,10 +335,9 @@ public class IotIdentityClient {
     /**
      * Provisions an AWS IoT thing using a pre-defined template.
      *
-     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api
-     *
-     * Publish PublishRegisterThing message.
      * If the device is offline, the PUBLISH packet will be sent once the connection resumes.
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api
      *
      * @param request Message to be serialized and sent
      * @param qos Quality of Service for delivering this message
@@ -383,13 +365,11 @@ public class IotIdentityClient {
     /**
      * Subscribes to the accepted topic of the RegisterThing operation.
      *
-     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api
-     *
-     * Subscribe to SubscribeToRegisterThingAccepted messages
-     *
      * Once subscribed, `handler` is invoked each time a message matching
      * the `topic` is received. It is possible for such messages to arrive before
      * the SUBACK is received.
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api
      *
      * @param request Subscription request configuration
      * @param qos Maximum requested QoS that server may use when sending messages to the client.
@@ -428,13 +408,11 @@ public class IotIdentityClient {
     /**
      * Subscribes to the accepted topic of the RegisterThing operation.
      *
-     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api
-     *
-     * Subscribe to SubscribeToRegisterThingAccepted messages
-     *
      * Once subscribed, `handler` is invoked each time a message matching
      * the `topic` is received. It is possible for such messages to arrive before
      * the SUBACK is received.
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api
      *
      * @param request Subscription request configuration
      * @param qos Maximum requested QoS that server may use when sending messages to the client.
@@ -453,13 +431,11 @@ public class IotIdentityClient {
     /**
      * Subscribes to the rejected topic of the CreateCertificateFromCsr operation.
      *
-     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api
-     *
-     * Subscribe to SubscribeToCreateCertificateFromCsrRejected messages
-     *
      * Once subscribed, `handler` is invoked each time a message matching
      * the `topic` is received. It is possible for such messages to arrive before
      * the SUBACK is received.
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api
      *
      * @param request Subscription request configuration
      * @param qos Maximum requested QoS that server may use when sending messages to the client.
@@ -492,13 +468,11 @@ public class IotIdentityClient {
     /**
      * Subscribes to the rejected topic of the CreateCertificateFromCsr operation.
      *
-     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api
-     *
-     * Subscribe to SubscribeToCreateCertificateFromCsrRejected messages
-     *
      * Once subscribed, `handler` is invoked each time a message matching
      * the `topic` is received. It is possible for such messages to arrive before
      * the SUBACK is received.
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api
      *
      * @param request Subscription request configuration
      * @param qos Maximum requested QoS that server may use when sending messages to the client.
@@ -517,10 +491,9 @@ public class IotIdentityClient {
     /**
      * Creates a certificate from a certificate signing request (CSR). AWS IoT provides client certificates that are signed by the Amazon Root certificate authority (CA). The new certificate has a PENDING_ACTIVATION status. When you call RegisterThing to provision a thing with this certificate, the certificate status changes to ACTIVE or INACTIVE as described in the template.
      *
-     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api
-     *
-     * Publish PublishCreateCertificateFromCsr message.
      * If the device is offline, the PUBLISH packet will be sent once the connection resumes.
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api
      *
      * @param request Message to be serialized and sent
      * @param qos Quality of Service for delivering this message

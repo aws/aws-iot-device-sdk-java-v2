@@ -8,6 +8,8 @@
 package software.amazon.awssdk.iot.iotjobs.model;
 
 /**
+ * A value indicating the kind of error encountered while processing an AWS IoT Jobs request
+ *
  */
 public enum RejectedErrorCode {
 

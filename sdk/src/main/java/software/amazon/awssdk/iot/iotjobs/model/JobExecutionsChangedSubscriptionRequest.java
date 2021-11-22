@@ -9,7 +9,7 @@ package software.amazon.awssdk.iot.iotjobs.model;
 
 
 /**
- * Data needed to subscribe to JobExecutionsChanged responses.
+ * Data needed to subscribe to JobExecutionsChanged events.
  *
  */
 public class JobExecutionsChangedSubscriptionRequest {
