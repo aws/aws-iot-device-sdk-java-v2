@@ -28,7 +28,7 @@ a PKCS#8 file (starts with "-----BEGIN PRIVATE KEY-----"), run the following cmd
 
 To Run:
 ``` sh
-> mvn exec:java -pl -Dexec.mainClass=customkeyopspubsub.CustomKeyOpsPubSub -Dexec.args='--endpoint <endpoint> --rootca </path/to/AmazonRootCA1.pem> --cert <cert path> --key <pkcs8 key path>'
+> mvn exec:java -pl samples/CustomKeyOpsPubSub -Dexec.mainClass=customkeyopspubsub.CustomKeyOpsPubSub -Dexec.args='--endpoint <endpoint> --rootca </path/to/AmazonRootCA1.pem> --cert <cert path> --key <pkcs8 key path>'
 ```
 
 
