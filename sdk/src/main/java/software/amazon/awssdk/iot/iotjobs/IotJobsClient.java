@@ -1,6 +1,8 @@
-/**
+/*
  * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  * SPDX-License-Identifier: Apache-2.0.
+ *
+ * This file is generated.
  */
 
 package software.amazon.awssdk.iot.iotjobs;
@@ -47,6 +49,12 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
+/**
+ * The AWS IoT jobs service can be used to define a set of remote operations that are sent to and executed on one or more devices connected to AWS IoT.
+ *
+ * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/jobs-api.html#jobs-mqtt-api
+ *
+*/
 public class IotJobsClient {
     private MqttClientConnection connection = null;
     private final Gson gson = getGson();
@@ -69,6 +77,25 @@ public class IotJobsClient {
         gson.registerTypeAdapter(RejectedErrorCode.class, new EnumSerializer<RejectedErrorCode>());
     }
 
+    /**
+     * Subscribes to JobExecutionsChanged notifications for a given IoT thing.
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/jobs-api.html#mqtt-jobexecutionschanged
+     *
+     * Subscribe to SubscribeToJobExecutionsChangedEvents messages
+     *
+     * Once subscribed, `handler` is invoked each time a message matching
+     * the `topic` is received. It is possible for such messages to arrive before
+     * the SUBACK is received.
+     *
+     * @param request Subscription request configuration
+     * @param qos Maximum requested QoS that server may use when sending messages to the client.
+     *            The server may grant a lower QoS in the SUBACK
+     * @param handler callback function to invoke with messages received on the subscription topic
+     * @param exceptionHandler callback function to invoke if an exception occurred deserializing a message
+     *
+     * @return a future containing the MQTT packet id used to perform the subscribe operation
+     */
     public CompletableFuture<Integer> SubscribeToJobExecutionsChangedEvents(
         JobExecutionsChangedSubscriptionRequest request,
         QualityOfService qos,
@@ -95,6 +122,24 @@ public class IotJobsClient {
         return connection.subscribe(topic, qos, messageHandler);
     }
 
+    /**
+     * Subscribes to JobExecutionsChanged notifications for a given IoT thing.
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/jobs-api.html#mqtt-jobexecutionschanged
+     *
+     * Subscribe to SubscribeToJobExecutionsChangedEvents messages
+     *
+     * Once subscribed, `handler` is invoked each time a message matching
+     * the `topic` is received. It is possible for such messages to arrive before
+     * the SUBACK is received.
+     *
+     * @param request Subscription request configuration
+     * @param qos Maximum requested QoS that server may use when sending messages to the client.
+     *            The server may grant a lower QoS in the SUBACK
+     * @param handler callback function to invoke with messages received on the subscription topic
+     *
+     * @return a future containing the MQTT packet id used to perform the subscribe operation
+     */
     public CompletableFuture<Integer> SubscribeToJobExecutionsChangedEvents(
         JobExecutionsChangedSubscriptionRequest request,
         QualityOfService qos,
@@ -102,6 +147,25 @@ public class IotJobsClient {
         return SubscribeToJobExecutionsChangedEvents(request, qos, handler, null);
     }
 
+    /**
+     * Subscribes to the accepted topic for the StartNextPendingJobExecution operation
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/jobs-api.html#mqtt-startnextpendingjobexecution
+     *
+     * Subscribe to SubscribeToStartNextPendingJobExecutionAccepted messages
+     *
+     * Once subscribed, `handler` is invoked each time a message matching
+     * the `topic` is received. It is possible for such messages to arrive before
+     * the SUBACK is received.
+     *
+     * @param request Subscription request configuration
+     * @param qos Maximum requested QoS that server may use when sending messages to the client.
+     *            The server may grant a lower QoS in the SUBACK
+     * @param handler callback function to invoke with messages received on the subscription topic
+     * @param exceptionHandler callback function to invoke if an exception occurred deserializing a message
+     *
+     * @return a future containing the MQTT packet id used to perform the subscribe operation
+     */
     public CompletableFuture<Integer> SubscribeToStartNextPendingJobExecutionAccepted(
         StartNextPendingJobExecutionSubscriptionRequest request,
         QualityOfService qos,
@@ -128,6 +192,24 @@ public class IotJobsClient {
         return connection.subscribe(topic, qos, messageHandler);
     }
 
+    /**
+     * Subscribes to the accepted topic for the StartNextPendingJobExecution operation
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/jobs-api.html#mqtt-startnextpendingjobexecution
+     *
+     * Subscribe to SubscribeToStartNextPendingJobExecutionAccepted messages
+     *
+     * Once subscribed, `handler` is invoked each time a message matching
+     * the `topic` is received. It is possible for such messages to arrive before
+     * the SUBACK is received.
+     *
+     * @param request Subscription request configuration
+     * @param qos Maximum requested QoS that server may use when sending messages to the client.
+     *            The server may grant a lower QoS in the SUBACK
+     * @param handler callback function to invoke with messages received on the subscription topic
+     *
+     * @return a future containing the MQTT packet id used to perform the subscribe operation
+     */
     public CompletableFuture<Integer> SubscribeToStartNextPendingJobExecutionAccepted(
         StartNextPendingJobExecutionSubscriptionRequest request,
         QualityOfService qos,
@@ -135,6 +217,25 @@ public class IotJobsClient {
         return SubscribeToStartNextPendingJobExecutionAccepted(request, qos, handler, null);
     }
 
+    /**
+     * Subscribes to the rejected topic for the DescribeJobExecution operation
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/jobs-api.html#mqtt-describejobexecution
+     *
+     * Subscribe to SubscribeToDescribeJobExecutionRejected messages
+     *
+     * Once subscribed, `handler` is invoked each time a message matching
+     * the `topic` is received. It is possible for such messages to arrive before
+     * the SUBACK is received.
+     *
+     * @param request Subscription request configuration
+     * @param qos Maximum requested QoS that server may use when sending messages to the client.
+     *            The server may grant a lower QoS in the SUBACK
+     * @param handler callback function to invoke with messages received on the subscription topic
+     * @param exceptionHandler callback function to invoke if an exception occurred deserializing a message
+     *
+     * @return a future containing the MQTT packet id used to perform the subscribe operation
+     */
     public CompletableFuture<Integer> SubscribeToDescribeJobExecutionRejected(
         DescribeJobExecutionSubscriptionRequest request,
         QualityOfService qos,
@@ -167,6 +268,24 @@ public class IotJobsClient {
         return connection.subscribe(topic, qos, messageHandler);
     }
 
+    /**
+     * Subscribes to the rejected topic for the DescribeJobExecution operation
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/jobs-api.html#mqtt-describejobexecution
+     *
+     * Subscribe to SubscribeToDescribeJobExecutionRejected messages
+     *
+     * Once subscribed, `handler` is invoked each time a message matching
+     * the `topic` is received. It is possible for such messages to arrive before
+     * the SUBACK is received.
+     *
+     * @param request Subscription request configuration
+     * @param qos Maximum requested QoS that server may use when sending messages to the client.
+     *            The server may grant a lower QoS in the SUBACK
+     * @param handler callback function to invoke with messages received on the subscription topic
+     *
+     * @return a future containing the MQTT packet id used to perform the subscribe operation
+     */
     public CompletableFuture<Integer> SubscribeToDescribeJobExecutionRejected(
         DescribeJobExecutionSubscriptionRequest request,
         QualityOfService qos,
@@ -174,6 +293,25 @@ public class IotJobsClient {
         return SubscribeToDescribeJobExecutionRejected(request, qos, handler, null);
     }
 
+    /**
+     * 
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/jobs-api.html#mqtt-nextjobexecutionchanged
+     *
+     * Subscribe to SubscribeToNextJobExecutionChangedEvents messages
+     *
+     * Once subscribed, `handler` is invoked each time a message matching
+     * the `topic` is received. It is possible for such messages to arrive before
+     * the SUBACK is received.
+     *
+     * @param request Subscription request configuration
+     * @param qos Maximum requested QoS that server may use when sending messages to the client.
+     *            The server may grant a lower QoS in the SUBACK
+     * @param handler callback function to invoke with messages received on the subscription topic
+     * @param exceptionHandler callback function to invoke if an exception occurred deserializing a message
+     *
+     * @return a future containing the MQTT packet id used to perform the subscribe operation
+     */
     public CompletableFuture<Integer> SubscribeToNextJobExecutionChangedEvents(
         NextJobExecutionChangedSubscriptionRequest request,
         QualityOfService qos,
@@ -200,6 +338,24 @@ public class IotJobsClient {
         return connection.subscribe(topic, qos, messageHandler);
     }
 
+    /**
+     * 
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/jobs-api.html#mqtt-nextjobexecutionchanged
+     *
+     * Subscribe to SubscribeToNextJobExecutionChangedEvents messages
+     *
+     * Once subscribed, `handler` is invoked each time a message matching
+     * the `topic` is received. It is possible for such messages to arrive before
+     * the SUBACK is received.
+     *
+     * @param request Subscription request configuration
+     * @param qos Maximum requested QoS that server may use when sending messages to the client.
+     *            The server may grant a lower QoS in the SUBACK
+     * @param handler callback function to invoke with messages received on the subscription topic
+     *
+     * @return a future containing the MQTT packet id used to perform the subscribe operation
+     */
     public CompletableFuture<Integer> SubscribeToNextJobExecutionChangedEvents(
         NextJobExecutionChangedSubscriptionRequest request,
         QualityOfService qos,
@@ -207,6 +363,25 @@ public class IotJobsClient {
         return SubscribeToNextJobExecutionChangedEvents(request, qos, handler, null);
     }
 
+    /**
+     * Subscribes to the rejected topic for the UpdateJobExecution operation
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/jobs-api.html#mqtt-updatejobexecution
+     *
+     * Subscribe to SubscribeToUpdateJobExecutionRejected messages
+     *
+     * Once subscribed, `handler` is invoked each time a message matching
+     * the `topic` is received. It is possible for such messages to arrive before
+     * the SUBACK is received.
+     *
+     * @param request Subscription request configuration
+     * @param qos Maximum requested QoS that server may use when sending messages to the client.
+     *            The server may grant a lower QoS in the SUBACK
+     * @param handler callback function to invoke with messages received on the subscription topic
+     * @param exceptionHandler callback function to invoke if an exception occurred deserializing a message
+     *
+     * @return a future containing the MQTT packet id used to perform the subscribe operation
+     */
     public CompletableFuture<Integer> SubscribeToUpdateJobExecutionRejected(
         UpdateJobExecutionSubscriptionRequest request,
         QualityOfService qos,
@@ -239,6 +414,24 @@ public class IotJobsClient {
         return connection.subscribe(topic, qos, messageHandler);
     }
 
+    /**
+     * Subscribes to the rejected topic for the UpdateJobExecution operation
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/jobs-api.html#mqtt-updatejobexecution
+     *
+     * Subscribe to SubscribeToUpdateJobExecutionRejected messages
+     *
+     * Once subscribed, `handler` is invoked each time a message matching
+     * the `topic` is received. It is possible for such messages to arrive before
+     * the SUBACK is received.
+     *
+     * @param request Subscription request configuration
+     * @param qos Maximum requested QoS that server may use when sending messages to the client.
+     *            The server may grant a lower QoS in the SUBACK
+     * @param handler callback function to invoke with messages received on the subscription topic
+     *
+     * @return a future containing the MQTT packet id used to perform the subscribe operation
+     */
     public CompletableFuture<Integer> SubscribeToUpdateJobExecutionRejected(
         UpdateJobExecutionSubscriptionRequest request,
         QualityOfService qos,
@@ -246,6 +439,25 @@ public class IotJobsClient {
         return SubscribeToUpdateJobExecutionRejected(request, qos, handler, null);
     }
 
+    /**
+     * Subscribes to the accepted topic for the UpdateJobExecution operation
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/jobs-api.html#mqtt-updatejobexecution
+     *
+     * Subscribe to SubscribeToUpdateJobExecutionAccepted messages
+     *
+     * Once subscribed, `handler` is invoked each time a message matching
+     * the `topic` is received. It is possible for such messages to arrive before
+     * the SUBACK is received.
+     *
+     * @param request Subscription request configuration
+     * @param qos Maximum requested QoS that server may use when sending messages to the client.
+     *            The server may grant a lower QoS in the SUBACK
+     * @param handler callback function to invoke with messages received on the subscription topic
+     * @param exceptionHandler callback function to invoke if an exception occurred deserializing a message
+     *
+     * @return a future containing the MQTT packet id used to perform the subscribe operation
+     */
     public CompletableFuture<Integer> SubscribeToUpdateJobExecutionAccepted(
         UpdateJobExecutionSubscriptionRequest request,
         QualityOfService qos,
@@ -278,6 +490,24 @@ public class IotJobsClient {
         return connection.subscribe(topic, qos, messageHandler);
     }
 
+    /**
+     * Subscribes to the accepted topic for the UpdateJobExecution operation
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/jobs-api.html#mqtt-updatejobexecution
+     *
+     * Subscribe to SubscribeToUpdateJobExecutionAccepted messages
+     *
+     * Once subscribed, `handler` is invoked each time a message matching
+     * the `topic` is received. It is possible for such messages to arrive before
+     * the SUBACK is received.
+     *
+     * @param request Subscription request configuration
+     * @param qos Maximum requested QoS that server may use when sending messages to the client.
+     *            The server may grant a lower QoS in the SUBACK
+     * @param handler callback function to invoke with messages received on the subscription topic
+     *
+     * @return a future containing the MQTT packet id used to perform the subscribe operation
+     */
     public CompletableFuture<Integer> SubscribeToUpdateJobExecutionAccepted(
         UpdateJobExecutionSubscriptionRequest request,
         QualityOfService qos,
@@ -285,6 +515,22 @@ public class IotJobsClient {
         return SubscribeToUpdateJobExecutionAccepted(request, qos, handler, null);
     }
 
+    /**
+     * Updates the status of a job execution. You can optionally create a step timer by setting a value for the stepTimeoutInMinutes property. If you don't update the value of this property by running UpdateJobExecution again, the job execution times out when the step timer expires.
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/jobs-api.html#mqtt-updatejobexecution
+     *
+     * Publish PublishUpdateJobExecution message.
+     * If the device is offline, the PUBLISH packet will be sent once the connection resumes.
+     *
+     * @param request Message to be serialized and sent
+     * @param qos Quality of Service for delivering this message
+     * @return a future containing the MQTT packet id used to perform the publish operation
+     *
+     * * For QoS 0, completes as soon as the packet is sent.
+     * * For QoS 1, completes when PUBACK is received.
+     * * QoS 2 is not supported by AWS IoT.
+     */
     public CompletableFuture<Integer> PublishUpdateJobExecution(
         UpdateJobExecutionRequest request,
         QualityOfService qos) {
@@ -306,6 +552,25 @@ public class IotJobsClient {
         return connection.publish(message, qos, false);
     }
 
+    /**
+     * Subscribes to the accepted topic for the DescribeJobExecution operation
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/jobs-api.html#mqtt-describejobexecution
+     *
+     * Subscribe to SubscribeToDescribeJobExecutionAccepted messages
+     *
+     * Once subscribed, `handler` is invoked each time a message matching
+     * the `topic` is received. It is possible for such messages to arrive before
+     * the SUBACK is received.
+     *
+     * @param request Subscription request configuration
+     * @param qos Maximum requested QoS that server may use when sending messages to the client.
+     *            The server may grant a lower QoS in the SUBACK
+     * @param handler callback function to invoke with messages received on the subscription topic
+     * @param exceptionHandler callback function to invoke if an exception occurred deserializing a message
+     *
+     * @return a future containing the MQTT packet id used to perform the subscribe operation
+     */
     public CompletableFuture<Integer> SubscribeToDescribeJobExecutionAccepted(
         DescribeJobExecutionSubscriptionRequest request,
         QualityOfService qos,
@@ -338,6 +603,24 @@ public class IotJobsClient {
         return connection.subscribe(topic, qos, messageHandler);
     }
 
+    /**
+     * Subscribes to the accepted topic for the DescribeJobExecution operation
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/jobs-api.html#mqtt-describejobexecution
+     *
+     * Subscribe to SubscribeToDescribeJobExecutionAccepted messages
+     *
+     * Once subscribed, `handler` is invoked each time a message matching
+     * the `topic` is received. It is possible for such messages to arrive before
+     * the SUBACK is received.
+     *
+     * @param request Subscription request configuration
+     * @param qos Maximum requested QoS that server may use when sending messages to the client.
+     *            The server may grant a lower QoS in the SUBACK
+     * @param handler callback function to invoke with messages received on the subscription topic
+     *
+     * @return a future containing the MQTT packet id used to perform the subscribe operation
+     */
     public CompletableFuture<Integer> SubscribeToDescribeJobExecutionAccepted(
         DescribeJobExecutionSubscriptionRequest request,
         QualityOfService qos,
@@ -345,6 +628,22 @@ public class IotJobsClient {
         return SubscribeToDescribeJobExecutionAccepted(request, qos, handler, null);
     }
 
+    /**
+     * Gets the list of all jobs for a thing that are not in a terminal state.
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/jobs-api.html#mqtt-getpendingjobexecutions
+     *
+     * Publish PublishGetPendingJobExecutions message.
+     * If the device is offline, the PUBLISH packet will be sent once the connection resumes.
+     *
+     * @param request Message to be serialized and sent
+     * @param qos Quality of Service for delivering this message
+     * @return a future containing the MQTT packet id used to perform the publish operation
+     *
+     * * For QoS 0, completes as soon as the packet is sent.
+     * * For QoS 1, completes when PUBACK is received.
+     * * QoS 2 is not supported by AWS IoT.
+     */
     public CompletableFuture<Integer> PublishGetPendingJobExecutions(
         GetPendingJobExecutionsRequest request,
         QualityOfService qos) {
@@ -360,6 +659,25 @@ public class IotJobsClient {
         return connection.publish(message, qos, false);
     }
 
+    /**
+     * Subscribes to the accepted topic for the GetPendingJobsExecutions operation
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/jobs-api.html#mqtt-getpendingjobexecutions
+     *
+     * Subscribe to SubscribeToGetPendingJobExecutionsAccepted messages
+     *
+     * Once subscribed, `handler` is invoked each time a message matching
+     * the `topic` is received. It is possible for such messages to arrive before
+     * the SUBACK is received.
+     *
+     * @param request Subscription request configuration
+     * @param qos Maximum requested QoS that server may use when sending messages to the client.
+     *            The server may grant a lower QoS in the SUBACK
+     * @param handler callback function to invoke with messages received on the subscription topic
+     * @param exceptionHandler callback function to invoke if an exception occurred deserializing a message
+     *
+     * @return a future containing the MQTT packet id used to perform the subscribe operation
+     */
     public CompletableFuture<Integer> SubscribeToGetPendingJobExecutionsAccepted(
         GetPendingJobExecutionsSubscriptionRequest request,
         QualityOfService qos,
@@ -386,6 +704,24 @@ public class IotJobsClient {
         return connection.subscribe(topic, qos, messageHandler);
     }
 
+    /**
+     * Subscribes to the accepted topic for the GetPendingJobsExecutions operation
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/jobs-api.html#mqtt-getpendingjobexecutions
+     *
+     * Subscribe to SubscribeToGetPendingJobExecutionsAccepted messages
+     *
+     * Once subscribed, `handler` is invoked each time a message matching
+     * the `topic` is received. It is possible for such messages to arrive before
+     * the SUBACK is received.
+     *
+     * @param request Subscription request configuration
+     * @param qos Maximum requested QoS that server may use when sending messages to the client.
+     *            The server may grant a lower QoS in the SUBACK
+     * @param handler callback function to invoke with messages received on the subscription topic
+     *
+     * @return a future containing the MQTT packet id used to perform the subscribe operation
+     */
     public CompletableFuture<Integer> SubscribeToGetPendingJobExecutionsAccepted(
         GetPendingJobExecutionsSubscriptionRequest request,
         QualityOfService qos,
@@ -393,6 +729,25 @@ public class IotJobsClient {
         return SubscribeToGetPendingJobExecutionsAccepted(request, qos, handler, null);
     }
 
+    /**
+     * Subscribes to the rejected topic for the StartNextPendingJobExecution operation
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/jobs-api.html#mqtt-startnextpendingjobexecution
+     *
+     * Subscribe to SubscribeToStartNextPendingJobExecutionRejected messages
+     *
+     * Once subscribed, `handler` is invoked each time a message matching
+     * the `topic` is received. It is possible for such messages to arrive before
+     * the SUBACK is received.
+     *
+     * @param request Subscription request configuration
+     * @param qos Maximum requested QoS that server may use when sending messages to the client.
+     *            The server may grant a lower QoS in the SUBACK
+     * @param handler callback function to invoke with messages received on the subscription topic
+     * @param exceptionHandler callback function to invoke if an exception occurred deserializing a message
+     *
+     * @return a future containing the MQTT packet id used to perform the subscribe operation
+     */
     public CompletableFuture<Integer> SubscribeToStartNextPendingJobExecutionRejected(
         StartNextPendingJobExecutionSubscriptionRequest request,
         QualityOfService qos,
@@ -419,6 +774,24 @@ public class IotJobsClient {
         return connection.subscribe(topic, qos, messageHandler);
     }
 
+    /**
+     * Subscribes to the rejected topic for the StartNextPendingJobExecution operation
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/jobs-api.html#mqtt-startnextpendingjobexecution
+     *
+     * Subscribe to SubscribeToStartNextPendingJobExecutionRejected messages
+     *
+     * Once subscribed, `handler` is invoked each time a message matching
+     * the `topic` is received. It is possible for such messages to arrive before
+     * the SUBACK is received.
+     *
+     * @param request Subscription request configuration
+     * @param qos Maximum requested QoS that server may use when sending messages to the client.
+     *            The server may grant a lower QoS in the SUBACK
+     * @param handler callback function to invoke with messages received on the subscription topic
+     *
+     * @return a future containing the MQTT packet id used to perform the subscribe operation
+     */
     public CompletableFuture<Integer> SubscribeToStartNextPendingJobExecutionRejected(
         StartNextPendingJobExecutionSubscriptionRequest request,
         QualityOfService qos,
@@ -426,6 +799,25 @@ public class IotJobsClient {
         return SubscribeToStartNextPendingJobExecutionRejected(request, qos, handler, null);
     }
 
+    /**
+     * Subscribes to the rejected topic for the GetPendingJobsExecutions operation
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/jobs-api.html#mqtt-getpendingjobexecutions
+     *
+     * Subscribe to SubscribeToGetPendingJobExecutionsRejected messages
+     *
+     * Once subscribed, `handler` is invoked each time a message matching
+     * the `topic` is received. It is possible for such messages to arrive before
+     * the SUBACK is received.
+     *
+     * @param request Subscription request configuration
+     * @param qos Maximum requested QoS that server may use when sending messages to the client.
+     *            The server may grant a lower QoS in the SUBACK
+     * @param handler callback function to invoke with messages received on the subscription topic
+     * @param exceptionHandler callback function to invoke if an exception occurred deserializing a message
+     *
+     * @return a future containing the MQTT packet id used to perform the subscribe operation
+     */
     public CompletableFuture<Integer> SubscribeToGetPendingJobExecutionsRejected(
         GetPendingJobExecutionsSubscriptionRequest request,
         QualityOfService qos,
@@ -452,6 +844,24 @@ public class IotJobsClient {
         return connection.subscribe(topic, qos, messageHandler);
     }
 
+    /**
+     * Subscribes to the rejected topic for the GetPendingJobsExecutions operation
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/jobs-api.html#mqtt-getpendingjobexecutions
+     *
+     * Subscribe to SubscribeToGetPendingJobExecutionsRejected messages
+     *
+     * Once subscribed, `handler` is invoked each time a message matching
+     * the `topic` is received. It is possible for such messages to arrive before
+     * the SUBACK is received.
+     *
+     * @param request Subscription request configuration
+     * @param qos Maximum requested QoS that server may use when sending messages to the client.
+     *            The server may grant a lower QoS in the SUBACK
+     * @param handler callback function to invoke with messages received on the subscription topic
+     *
+     * @return a future containing the MQTT packet id used to perform the subscribe operation
+     */
     public CompletableFuture<Integer> SubscribeToGetPendingJobExecutionsRejected(
         GetPendingJobExecutionsSubscriptionRequest request,
         QualityOfService qos,
@@ -459,6 +869,22 @@ public class IotJobsClient {
         return SubscribeToGetPendingJobExecutionsRejected(request, qos, handler, null);
     }
 
+    /**
+     * Gets and starts the next pending job execution for a thing (status IN_PROGRESS or QUEUED).
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/jobs-api.html#mqtt-startnextpendingjobexecution
+     *
+     * Publish PublishStartNextPendingJobExecution message.
+     * If the device is offline, the PUBLISH packet will be sent once the connection resumes.
+     *
+     * @param request Message to be serialized and sent
+     * @param qos Quality of Service for delivering this message
+     * @return a future containing the MQTT packet id used to perform the publish operation
+     *
+     * * For QoS 0, completes as soon as the packet is sent.
+     * * For QoS 1, completes when PUBACK is received.
+     * * QoS 2 is not supported by AWS IoT.
+     */
     public CompletableFuture<Integer> PublishStartNextPendingJobExecution(
         StartNextPendingJobExecutionRequest request,
         QualityOfService qos) {
@@ -474,6 +900,22 @@ public class IotJobsClient {
         return connection.publish(message, qos, false);
     }
 
+    /**
+     * Gets detailed information about a job execution.
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/jobs-api.html#mqtt-describejobexecution
+     *
+     * Publish PublishDescribeJobExecution message.
+     * If the device is offline, the PUBLISH packet will be sent once the connection resumes.
+     *
+     * @param request Message to be serialized and sent
+     * @param qos Quality of Service for delivering this message
+     * @return a future containing the MQTT packet id used to perform the publish operation
+     *
+     * * For QoS 0, completes as soon as the packet is sent.
+     * * For QoS 1, completes when PUBACK is received.
+     * * QoS 2 is not supported by AWS IoT.
+     */
     public CompletableFuture<Integer> PublishDescribeJobExecution(
         DescribeJobExecutionRequest request,
         QualityOfService qos) {
