@@ -9,7 +9,6 @@ import software.amazon.awssdk.crt.utils.PackageInfo;
 
 import java.io.UnsupportedEncodingException;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 import software.amazon.awssdk.crt.CrtResource;
 import software.amazon.awssdk.crt.auth.credentials.CredentialsProvider;
@@ -30,11 +29,10 @@ import software.amazon.awssdk.crt.mqtt.MqttMessage;
 import software.amazon.awssdk.crt.mqtt.QualityOfService;
 import software.amazon.awssdk.crt.mqtt.WebsocketHandshakeTransformArgs;
 
-/*
+/**
  * A central class for building Mqtt connections without manually managing a large variety of native objects (some
  * still need to be created though).
  */
-
 public final class AwsIotMqttConnectionBuilder extends CrtResource {
 
     private static String IOT_SIGNING_SERVICE = "iotdevicegateway";
