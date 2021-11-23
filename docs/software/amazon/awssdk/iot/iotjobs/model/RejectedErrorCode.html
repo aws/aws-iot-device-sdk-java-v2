@@ -141,6 +141,7 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <hr>
 <pre>public enum <span class="typeNameLabel">RejectedErrorCode</span>
 extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Enum.html?is-external=true" title="class or interface in java.lang" class="externalLink">Enum</a>&lt;<a href="RejectedErrorCode.html" title="enum in software.amazon.awssdk.iot.iotjobs.model">RejectedErrorCode</a>&gt;</pre>
+<div class="block">A value indicating the kind of error encountered while processing an AWS IoT Jobs request</div>
 </li>
 </ul>
 </div>
@@ -162,35 +163,51 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Enum.html?i
 </tr>
 <tr class="altColor">
 <th class="colFirst" scope="row"><code><span class="memberNameLink"><a href="#INTERNAL_ERROR">INTERNAL_ERROR</a></span></code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">There was an internal error during the processing of the request.</div>
+</td>
 </tr>
 <tr class="rowColor">
 <th class="colFirst" scope="row"><code><span class="memberNameLink"><a href="#INVALID_JSON">INVALID_JSON</a></span></code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">The contents of the request could not be interpreted as valid UTF-8-encoded JSON.</div>
+</td>
 </tr>
 <tr class="altColor">
 <th class="colFirst" scope="row"><code><span class="memberNameLink"><a href="#INVALID_REQUEST">INVALID_REQUEST</a></span></code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">The contents of the request were invalid.</div>
+</td>
 </tr>
 <tr class="rowColor">
 <th class="colFirst" scope="row"><code><span class="memberNameLink"><a href="#INVALID_STATE_TRANSITION">INVALID_STATE_TRANSITION</a></span></code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">An update attempted to change the job execution to a state that is invalid because of the job execution's current state.</div>
+</td>
 </tr>
 <tr class="altColor">
 <th class="colFirst" scope="row"><code><span class="memberNameLink"><a href="#INVALID_TOPIC">INVALID_TOPIC</a></span></code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">The request was sent to a topic in the AWS IoT Jobs namespace that does not map to any API.</div>
+</td>
 </tr>
 <tr class="rowColor">
 <th class="colFirst" scope="row"><code><span class="memberNameLink"><a href="#REQUEST_THROTTLED">REQUEST_THROTTLED</a></span></code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">The request was throttled.</div>
+</td>
 </tr>
 <tr class="altColor">
 <th class="colFirst" scope="row"><code><span class="memberNameLink"><a href="#RESOURCE_NOT_FOUND">RESOURCE_NOT_FOUND</a></span></code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">The JobExecution specified by the request topic does not exist.</div>
+</td>
 </tr>
 <tr class="rowColor">
 <th class="colFirst" scope="row"><code><span class="memberNameLink"><a href="#TERMINAL_STATE_REACHED">TERMINAL_STATE_REACHED</a></span></code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Occurs when a command to describe a job is performed on a job that is in a terminal state.</div>
+</td>
 </tr>
 <tr class="altColor">
 <th class="colFirst" scope="row"><code><span class="memberNameLink"><a href="#UNKNOWN_ENUM_VALUE">UNKNOWN_ENUM_VALUE</a></span></code></th>
@@ -198,7 +215,9 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Enum.html?i
 </tr>
 <tr class="rowColor">
 <th class="colFirst" scope="row"><code><span class="memberNameLink"><a href="#VERSION_MISMATCH">VERSION_MISMATCH</a></span></code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">The expected version specified in the request does not match the version of the job execution in the AWS IoT Jobs service.</div>
+</td>
 </tr>
 </table>
 </li>
@@ -285,6 +304,7 @@ the order they are declared.</div>
 <li class="blockList">
 <h4>INVALID_TOPIC</h4>
 <pre>public static final&nbsp;<a href="RejectedErrorCode.html" title="enum in software.amazon.awssdk.iot.iotjobs.model">RejectedErrorCode</a> INVALID_TOPIC</pre>
+<div class="block">The request was sent to a topic in the AWS IoT Jobs namespace that does not map to any API.</div>
 </li>
 </ul>
 <a id="INVALID_STATE_TRANSITION">
@@ -294,6 +314,7 @@ the order they are declared.</div>
 <li class="blockList">
 <h4>INVALID_STATE_TRANSITION</h4>
 <pre>public static final&nbsp;<a href="RejectedErrorCode.html" title="enum in software.amazon.awssdk.iot.iotjobs.model">RejectedErrorCode</a> INVALID_STATE_TRANSITION</pre>
+<div class="block">An update attempted to change the job execution to a state that is invalid because of the job execution's current state. In this case, the body of the error message also contains the executionState field.</div>
 </li>
 </ul>
 <a id="RESOURCE_NOT_FOUND">
@@ -303,6 +324,7 @@ the order they are declared.</div>
 <li class="blockList">
 <h4>RESOURCE_NOT_FOUND</h4>
 <pre>public static final&nbsp;<a href="RejectedErrorCode.html" title="enum in software.amazon.awssdk.iot.iotjobs.model">RejectedErrorCode</a> RESOURCE_NOT_FOUND</pre>
+<div class="block">The JobExecution specified by the request topic does not exist.</div>
 </li>
 </ul>
 <a id="INVALID_REQUEST">
@@ -312,6 +334,7 @@ the order they are declared.</div>
 <li class="blockList">
 <h4>INVALID_REQUEST</h4>
 <pre>public static final&nbsp;<a href="RejectedErrorCode.html" title="enum in software.amazon.awssdk.iot.iotjobs.model">RejectedErrorCode</a> INVALID_REQUEST</pre>
+<div class="block">The contents of the request were invalid. The message contains details about the error.</div>
 </li>
 </ul>
 <a id="REQUEST_THROTTLED">
@@ -321,6 +344,7 @@ the order they are declared.</div>
 <li class="blockList">
 <h4>REQUEST_THROTTLED</h4>
 <pre>public static final&nbsp;<a href="RejectedErrorCode.html" title="enum in software.amazon.awssdk.iot.iotjobs.model">RejectedErrorCode</a> REQUEST_THROTTLED</pre>
+<div class="block">The request was throttled.</div>
 </li>
 </ul>
 <a id="INTERNAL_ERROR">
@@ -330,6 +354,7 @@ the order they are declared.</div>
 <li class="blockList">
 <h4>INTERNAL_ERROR</h4>
 <pre>public static final&nbsp;<a href="RejectedErrorCode.html" title="enum in software.amazon.awssdk.iot.iotjobs.model">RejectedErrorCode</a> INTERNAL_ERROR</pre>
+<div class="block">There was an internal error during the processing of the request.</div>
 </li>
 </ul>
 <a id="TERMINAL_STATE_REACHED">
@@ -339,6 +364,7 @@ the order they are declared.</div>
 <li class="blockList">
 <h4>TERMINAL_STATE_REACHED</h4>
 <pre>public static final&nbsp;<a href="RejectedErrorCode.html" title="enum in software.amazon.awssdk.iot.iotjobs.model">RejectedErrorCode</a> TERMINAL_STATE_REACHED</pre>
+<div class="block">Occurs when a command to describe a job is performed on a job that is in a terminal state.</div>
 </li>
 </ul>
 <a id="INVALID_JSON">
@@ -348,6 +374,7 @@ the order they are declared.</div>
 <li class="blockList">
 <h4>INVALID_JSON</h4>
 <pre>public static final&nbsp;<a href="RejectedErrorCode.html" title="enum in software.amazon.awssdk.iot.iotjobs.model">RejectedErrorCode</a> INVALID_JSON</pre>
+<div class="block">The contents of the request could not be interpreted as valid UTF-8-encoded JSON.</div>
 </li>
 </ul>
 <a id="VERSION_MISMATCH">
@@ -357,6 +384,7 @@ the order they are declared.</div>
 <li class="blockList">
 <h4>VERSION_MISMATCH</h4>
 <pre>public static final&nbsp;<a href="RejectedErrorCode.html" title="enum in software.amazon.awssdk.iot.iotjobs.model">RejectedErrorCode</a> VERSION_MISMATCH</pre>
+<div class="block">The expected version specified in the request does not match the version of the job execution in the AWS IoT Jobs service. In this case, the body of the error message also contains the executionState field.</div>
 </li>
 </ul>
 </li>

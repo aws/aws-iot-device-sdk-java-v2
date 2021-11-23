@@ -132,6 +132,9 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <hr>
 <pre>public class <span class="typeNameLabel">IotShadowClient</span>
 extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></pre>
+<div class="block">The AWS IoT Device Shadow service adds shadows to AWS IoT thing objects. Shadows are a simple data store for device properties and state.  Shadows can make a device’s state available to apps and other services whether the device is connected to AWS IoT or not.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html</div>
 </li>
 </ul>
 </div>
@@ -177,44 +180,58 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#PublishDeleteNamedShadow(software.amazon.awssdk.iot.iotshadow.model.DeleteNamedShadowRequest,software.amazon.awssdk.crt.mqtt.QualityOfService)">PublishDeleteNamedShadow</a></span>&#8203;(<a href="model/DeleteNamedShadowRequest.html" title="class in software.amazon.awssdk.iot.iotshadow.model">DeleteNamedShadowRequest</a>&nbsp;request,
                         <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Deletes a named shadow for an AWS IoT thing.</div>
+</td>
 </tr>
 <tr id="i1" class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#PublishDeleteShadow(software.amazon.awssdk.iot.iotshadow.model.DeleteShadowRequest,software.amazon.awssdk.crt.mqtt.QualityOfService)">PublishDeleteShadow</a></span>&#8203;(<a href="model/DeleteShadowRequest.html" title="class in software.amazon.awssdk.iot.iotshadow.model">DeleteShadowRequest</a>&nbsp;request,
                    <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Deletes the (classic) shadow for an AWS IoT thing.</div>
+</td>
 </tr>
 <tr id="i2" class="altColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#PublishGetNamedShadow(software.amazon.awssdk.iot.iotshadow.model.GetNamedShadowRequest,software.amazon.awssdk.crt.mqtt.QualityOfService)">PublishGetNamedShadow</a></span>&#8203;(<a href="model/GetNamedShadowRequest.html" title="class in software.amazon.awssdk.iot.iotshadow.model">GetNamedShadowRequest</a>&nbsp;request,
                      <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Gets a named shadow for an AWS IoT thing.</div>
+</td>
 </tr>
 <tr id="i3" class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#PublishGetShadow(software.amazon.awssdk.iot.iotshadow.model.GetShadowRequest,software.amazon.awssdk.crt.mqtt.QualityOfService)">PublishGetShadow</a></span>&#8203;(<a href="model/GetShadowRequest.html" title="class in software.amazon.awssdk.iot.iotshadow.model">GetShadowRequest</a>&nbsp;request,
                 <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Gets the (classic) shadow for an AWS IoT thing.</div>
+</td>
 </tr>
 <tr id="i4" class="altColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#PublishUpdateNamedShadow(software.amazon.awssdk.iot.iotshadow.model.UpdateNamedShadowRequest,software.amazon.awssdk.crt.mqtt.QualityOfService)">PublishUpdateNamedShadow</a></span>&#8203;(<a href="model/UpdateNamedShadowRequest.html" title="class in software.amazon.awssdk.iot.iotshadow.model">UpdateNamedShadowRequest</a>&nbsp;request,
                         <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Update a named shadow for a device.</div>
+</td>
 </tr>
 <tr id="i5" class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#PublishUpdateShadow(software.amazon.awssdk.iot.iotshadow.model.UpdateShadowRequest,software.amazon.awssdk.crt.mqtt.QualityOfService)">PublishUpdateShadow</a></span>&#8203;(<a href="model/UpdateShadowRequest.html" title="class in software.amazon.awssdk.iot.iotshadow.model">UpdateShadowRequest</a>&nbsp;request,
                    <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Update a device's (classic) shadow.</div>
+</td>
 </tr>
 <tr id="i6" class="altColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#SubscribeToDeleteNamedShadowAccepted(software.amazon.awssdk.iot.iotshadow.model.DeleteNamedShadowSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer)">SubscribeToDeleteNamedShadowAccepted</a></span>&#8203;(<a href="model/DeleteNamedShadowSubscriptionRequest.html" title="class in software.amazon.awssdk.iot.iotshadow.model">DeleteNamedShadowSubscriptionRequest</a>&nbsp;request,
                                     <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                     <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/DeleteShadowResponse.html" title="class in software.amazon.awssdk.iot.iotshadow.model">DeleteShadowResponse</a>&gt;&nbsp;handler)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Subscribes to the accepted topic for the DeleteNamedShadow operation.</div>
+</td>
 </tr>
 <tr id="i7" class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
@@ -222,14 +239,18 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
                                     <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                     <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/DeleteShadowResponse.html" title="class in software.amazon.awssdk.iot.iotshadow.model">DeleteShadowResponse</a>&gt;&nbsp;handler,
                                     <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a>&gt;&nbsp;exceptionHandler)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Subscribes to the accepted topic for the DeleteNamedShadow operation.</div>
+</td>
 </tr>
 <tr id="i8" class="altColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#SubscribeToDeleteNamedShadowRejected(software.amazon.awssdk.iot.iotshadow.model.DeleteNamedShadowSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer)">SubscribeToDeleteNamedShadowRejected</a></span>&#8203;(<a href="model/DeleteNamedShadowSubscriptionRequest.html" title="class in software.amazon.awssdk.iot.iotshadow.model">DeleteNamedShadowSubscriptionRequest</a>&nbsp;request,
                                     <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                     <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/ErrorResponse.html" title="class in software.amazon.awssdk.iot.iotshadow.model">ErrorResponse</a>&gt;&nbsp;handler)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Subscribes to the rejected topic for the DeleteNamedShadow operation.</div>
+</td>
 </tr>
 <tr id="i9" class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
@@ -237,14 +258,21 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
                                     <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                     <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/ErrorResponse.html" title="class in software.amazon.awssdk.iot.iotshadow.model">ErrorResponse</a>&gt;&nbsp;handler,
                                     <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a>&gt;&nbsp;exceptionHandler)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Subscribes to the rejected topic for the DeleteNamedShadow operation.</div>
+</td>
 </tr>
 <tr id="i10" class="altColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#SubscribeToDeleteShadowAccepted(software.amazon.awssdk.iot.iotshadow.model.DeleteShadowSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer)">SubscribeToDeleteShadowAccepted</a></span>&#8203;(<a href="model/DeleteShadowSubscriptionRequest.html" title="class in software.amazon.awssdk.iot.iotshadow.model">DeleteShadowSubscriptionRequest</a>&nbsp;request,
                                <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/DeleteShadowResponse.html" title="class in software.amazon.awssdk.iot.iotshadow.model">DeleteShadowResponse</a>&gt;&nbsp;handler)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Subscribes to the accepted topic for the DeleteShadow operation
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received.</div>
+</td>
 </tr>
 <tr id="i11" class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
@@ -252,14 +280,24 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
                                <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/DeleteShadowResponse.html" title="class in software.amazon.awssdk.iot.iotshadow.model">DeleteShadowResponse</a>&gt;&nbsp;handler,
                                <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a>&gt;&nbsp;exceptionHandler)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Subscribes to the accepted topic for the DeleteShadow operation
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received.</div>
+</td>
 </tr>
 <tr id="i12" class="altColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#SubscribeToDeleteShadowRejected(software.amazon.awssdk.iot.iotshadow.model.DeleteShadowSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer)">SubscribeToDeleteShadowRejected</a></span>&#8203;(<a href="model/DeleteShadowSubscriptionRequest.html" title="class in software.amazon.awssdk.iot.iotshadow.model">DeleteShadowSubscriptionRequest</a>&nbsp;request,
                                <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/ErrorResponse.html" title="class in software.amazon.awssdk.iot.iotshadow.model">ErrorResponse</a>&gt;&nbsp;handler)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Subscribes to the rejected topic for the DeleteShadow operation
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received.</div>
+</td>
 </tr>
 <tr id="i13" class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
@@ -267,14 +305,21 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
                                <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/ErrorResponse.html" title="class in software.amazon.awssdk.iot.iotshadow.model">ErrorResponse</a>&gt;&nbsp;handler,
                                <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a>&gt;&nbsp;exceptionHandler)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Subscribes to the rejected topic for the DeleteShadow operation
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received.</div>
+</td>
 </tr>
 <tr id="i14" class="altColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#SubscribeToGetNamedShadowAccepted(software.amazon.awssdk.iot.iotshadow.model.GetNamedShadowSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer)">SubscribeToGetNamedShadowAccepted</a></span>&#8203;(<a href="model/GetNamedShadowSubscriptionRequest.html" title="class in software.amazon.awssdk.iot.iotshadow.model">GetNamedShadowSubscriptionRequest</a>&nbsp;request,
                                  <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                  <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/GetShadowResponse.html" title="class in software.amazon.awssdk.iot.iotshadow.model">GetShadowResponse</a>&gt;&nbsp;handler)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Subscribes to the accepted topic for the GetNamedShadow operation.</div>
+</td>
 </tr>
 <tr id="i15" class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
@@ -282,14 +327,18 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
                                  <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                  <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/GetShadowResponse.html" title="class in software.amazon.awssdk.iot.iotshadow.model">GetShadowResponse</a>&gt;&nbsp;handler,
                                  <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a>&gt;&nbsp;exceptionHandler)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Subscribes to the accepted topic for the GetNamedShadow operation.</div>
+</td>
 </tr>
 <tr id="i16" class="altColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#SubscribeToGetNamedShadowRejected(software.amazon.awssdk.iot.iotshadow.model.GetNamedShadowSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer)">SubscribeToGetNamedShadowRejected</a></span>&#8203;(<a href="model/GetNamedShadowSubscriptionRequest.html" title="class in software.amazon.awssdk.iot.iotshadow.model">GetNamedShadowSubscriptionRequest</a>&nbsp;request,
                                  <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                  <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/ErrorResponse.html" title="class in software.amazon.awssdk.iot.iotshadow.model">ErrorResponse</a>&gt;&nbsp;handler)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Subscribes to the rejected topic for the GetNamedShadow operation.</div>
+</td>
 </tr>
 <tr id="i17" class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
@@ -297,14 +346,18 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
                                  <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                  <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/ErrorResponse.html" title="class in software.amazon.awssdk.iot.iotshadow.model">ErrorResponse</a>&gt;&nbsp;handler,
                                  <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a>&gt;&nbsp;exceptionHandler)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Subscribes to the rejected topic for the GetNamedShadow operation.</div>
+</td>
 </tr>
 <tr id="i18" class="altColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#SubscribeToGetShadowAccepted(software.amazon.awssdk.iot.iotshadow.model.GetShadowSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer)">SubscribeToGetShadowAccepted</a></span>&#8203;(<a href="model/GetShadowSubscriptionRequest.html" title="class in software.amazon.awssdk.iot.iotshadow.model">GetShadowSubscriptionRequest</a>&nbsp;request,
                             <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                             <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/GetShadowResponse.html" title="class in software.amazon.awssdk.iot.iotshadow.model">GetShadowResponse</a>&gt;&nbsp;handler)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Subscribes to the accepted topic for the GetShadow operation.</div>
+</td>
 </tr>
 <tr id="i19" class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
@@ -312,14 +365,18 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
                             <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                             <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/GetShadowResponse.html" title="class in software.amazon.awssdk.iot.iotshadow.model">GetShadowResponse</a>&gt;&nbsp;handler,
                             <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a>&gt;&nbsp;exceptionHandler)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Subscribes to the accepted topic for the GetShadow operation.</div>
+</td>
 </tr>
 <tr id="i20" class="altColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#SubscribeToGetShadowRejected(software.amazon.awssdk.iot.iotshadow.model.GetShadowSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer)">SubscribeToGetShadowRejected</a></span>&#8203;(<a href="model/GetShadowSubscriptionRequest.html" title="class in software.amazon.awssdk.iot.iotshadow.model">GetShadowSubscriptionRequest</a>&nbsp;request,
                             <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                             <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/ErrorResponse.html" title="class in software.amazon.awssdk.iot.iotshadow.model">ErrorResponse</a>&gt;&nbsp;handler)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Subscribes to the rejected topic for the GetShadow operation.</div>
+</td>
 </tr>
 <tr id="i21" class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
@@ -327,14 +384,18 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
                             <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                             <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/ErrorResponse.html" title="class in software.amazon.awssdk.iot.iotshadow.model">ErrorResponse</a>&gt;&nbsp;handler,
                             <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a>&gt;&nbsp;exceptionHandler)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Subscribes to the rejected topic for the GetShadow operation.</div>
+</td>
 </tr>
 <tr id="i22" class="altColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#SubscribeToNamedShadowDeltaUpdatedEvents(software.amazon.awssdk.iot.iotshadow.model.NamedShadowDeltaUpdatedSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer)">SubscribeToNamedShadowDeltaUpdatedEvents</a></span>&#8203;(<a href="model/NamedShadowDeltaUpdatedSubscriptionRequest.html" title="class in software.amazon.awssdk.iot.iotshadow.model">NamedShadowDeltaUpdatedSubscriptionRequest</a>&nbsp;request,
                                         <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                         <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/ShadowDeltaUpdatedEvent.html" title="class in software.amazon.awssdk.iot.iotshadow.model">ShadowDeltaUpdatedEvent</a>&gt;&nbsp;handler)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Subscribe to NamedShadowDelta events for a named shadow of an AWS IoT thing.</div>
+</td>
 </tr>
 <tr id="i23" class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
@@ -342,14 +403,18 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
                                         <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                         <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/ShadowDeltaUpdatedEvent.html" title="class in software.amazon.awssdk.iot.iotshadow.model">ShadowDeltaUpdatedEvent</a>&gt;&nbsp;handler,
                                         <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a>&gt;&nbsp;exceptionHandler)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Subscribe to NamedShadowDelta events for a named shadow of an AWS IoT thing.</div>
+</td>
 </tr>
 <tr id="i24" class="altColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#SubscribeToNamedShadowUpdatedEvents(software.amazon.awssdk.iot.iotshadow.model.NamedShadowUpdatedSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer)">SubscribeToNamedShadowUpdatedEvents</a></span>&#8203;(<a href="model/NamedShadowUpdatedSubscriptionRequest.html" title="class in software.amazon.awssdk.iot.iotshadow.model">NamedShadowUpdatedSubscriptionRequest</a>&nbsp;request,
                                    <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                    <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/ShadowUpdatedEvent.html" title="class in software.amazon.awssdk.iot.iotshadow.model">ShadowUpdatedEvent</a>&gt;&nbsp;handler)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Subscribe to ShadowUpdated events for a named shadow of an AWS IoT thing.</div>
+</td>
 </tr>
 <tr id="i25" class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
@@ -357,14 +422,18 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
                                    <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                    <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/ShadowUpdatedEvent.html" title="class in software.amazon.awssdk.iot.iotshadow.model">ShadowUpdatedEvent</a>&gt;&nbsp;handler,
                                    <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a>&gt;&nbsp;exceptionHandler)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Subscribe to ShadowUpdated events for a named shadow of an AWS IoT thing.</div>
+</td>
 </tr>
 <tr id="i26" class="altColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#SubscribeToShadowDeltaUpdatedEvents(software.amazon.awssdk.iot.iotshadow.model.ShadowDeltaUpdatedSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer)">SubscribeToShadowDeltaUpdatedEvents</a></span>&#8203;(<a href="model/ShadowDeltaUpdatedSubscriptionRequest.html" title="class in software.amazon.awssdk.iot.iotshadow.model">ShadowDeltaUpdatedSubscriptionRequest</a>&nbsp;request,
                                    <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                    <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/ShadowDeltaUpdatedEvent.html" title="class in software.amazon.awssdk.iot.iotshadow.model">ShadowDeltaUpdatedEvent</a>&gt;&nbsp;handler)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Subscribe to ShadowDelta events for the (classic) shadow of an AWS IoT thing.</div>
+</td>
 </tr>
 <tr id="i27" class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
@@ -372,14 +441,18 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
                                    <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                    <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/ShadowDeltaUpdatedEvent.html" title="class in software.amazon.awssdk.iot.iotshadow.model">ShadowDeltaUpdatedEvent</a>&gt;&nbsp;handler,
                                    <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a>&gt;&nbsp;exceptionHandler)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Subscribe to ShadowDelta events for the (classic) shadow of an AWS IoT thing.</div>
+</td>
 </tr>
 <tr id="i28" class="altColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#SubscribeToShadowUpdatedEvents(software.amazon.awssdk.iot.iotshadow.model.ShadowUpdatedSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer)">SubscribeToShadowUpdatedEvents</a></span>&#8203;(<a href="model/ShadowUpdatedSubscriptionRequest.html" title="class in software.amazon.awssdk.iot.iotshadow.model">ShadowUpdatedSubscriptionRequest</a>&nbsp;request,
                               <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                               <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/ShadowUpdatedEvent.html" title="class in software.amazon.awssdk.iot.iotshadow.model">ShadowUpdatedEvent</a>&gt;&nbsp;handler)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Subscribe to ShadowUpdated events for the (classic) shadow of an AWS IoT thing.</div>
+</td>
 </tr>
 <tr id="i29" class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
@@ -387,14 +460,21 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
                               <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                               <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/ShadowUpdatedEvent.html" title="class in software.amazon.awssdk.iot.iotshadow.model">ShadowUpdatedEvent</a>&gt;&nbsp;handler,
                               <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a>&gt;&nbsp;exceptionHandler)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Subscribe to ShadowUpdated events for the (classic) shadow of an AWS IoT thing.</div>
+</td>
 </tr>
 <tr id="i30" class="altColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#SubscribeToUpdateNamedShadowAccepted(software.amazon.awssdk.iot.iotshadow.model.UpdateNamedShadowSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer)">SubscribeToUpdateNamedShadowAccepted</a></span>&#8203;(<a href="model/UpdateNamedShadowSubscriptionRequest.html" title="class in software.amazon.awssdk.iot.iotshadow.model">UpdateNamedShadowSubscriptionRequest</a>&nbsp;request,
                                     <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                     <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/UpdateShadowResponse.html" title="class in software.amazon.awssdk.iot.iotshadow.model">UpdateShadowResponse</a>&gt;&nbsp;handler)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Subscribes to the accepted topic for the UpdateNamedShadow operation
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received.</div>
+</td>
 </tr>
 <tr id="i31" class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
@@ -402,14 +482,24 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
                                     <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                     <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/UpdateShadowResponse.html" title="class in software.amazon.awssdk.iot.iotshadow.model">UpdateShadowResponse</a>&gt;&nbsp;handler,
                                     <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a>&gt;&nbsp;exceptionHandler)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Subscribes to the accepted topic for the UpdateNamedShadow operation
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received.</div>
+</td>
 </tr>
 <tr id="i32" class="altColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#SubscribeToUpdateNamedShadowRejected(software.amazon.awssdk.iot.iotshadow.model.UpdateNamedShadowSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer)">SubscribeToUpdateNamedShadowRejected</a></span>&#8203;(<a href="model/UpdateNamedShadowSubscriptionRequest.html" title="class in software.amazon.awssdk.iot.iotshadow.model">UpdateNamedShadowSubscriptionRequest</a>&nbsp;request,
                                     <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                     <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/ErrorResponse.html" title="class in software.amazon.awssdk.iot.iotshadow.model">ErrorResponse</a>&gt;&nbsp;handler)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Subscribes to the rejected topic for the UpdateNamedShadow operation
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received.</div>
+</td>
 </tr>
 <tr id="i33" class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
@@ -417,14 +507,24 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
                                     <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                     <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/ErrorResponse.html" title="class in software.amazon.awssdk.iot.iotshadow.model">ErrorResponse</a>&gt;&nbsp;handler,
                                     <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a>&gt;&nbsp;exceptionHandler)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Subscribes to the rejected topic for the UpdateNamedShadow operation
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received.</div>
+</td>
 </tr>
 <tr id="i34" class="altColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#SubscribeToUpdateShadowAccepted(software.amazon.awssdk.iot.iotshadow.model.UpdateShadowSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer)">SubscribeToUpdateShadowAccepted</a></span>&#8203;(<a href="model/UpdateShadowSubscriptionRequest.html" title="class in software.amazon.awssdk.iot.iotshadow.model">UpdateShadowSubscriptionRequest</a>&nbsp;request,
                                <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/UpdateShadowResponse.html" title="class in software.amazon.awssdk.iot.iotshadow.model">UpdateShadowResponse</a>&gt;&nbsp;handler)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Subscribes to the accepted topic for the UpdateShadow operation
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received.</div>
+</td>
 </tr>
 <tr id="i35" class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
@@ -432,14 +532,24 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
                                <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/UpdateShadowResponse.html" title="class in software.amazon.awssdk.iot.iotshadow.model">UpdateShadowResponse</a>&gt;&nbsp;handler,
                                <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a>&gt;&nbsp;exceptionHandler)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Subscribes to the accepted topic for the UpdateShadow operation
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received.</div>
+</td>
 </tr>
 <tr id="i36" class="altColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#SubscribeToUpdateShadowRejected(software.amazon.awssdk.iot.iotshadow.model.UpdateShadowSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer)">SubscribeToUpdateShadowRejected</a></span>&#8203;(<a href="model/UpdateShadowSubscriptionRequest.html" title="class in software.amazon.awssdk.iot.iotshadow.model">UpdateShadowSubscriptionRequest</a>&nbsp;request,
                                <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/ErrorResponse.html" title="class in software.amazon.awssdk.iot.iotshadow.model">ErrorResponse</a>&gt;&nbsp;handler)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Subscribes to the rejected topic for the UpdateShadow operation
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received.</div>
+</td>
 </tr>
 <tr id="i37" class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
@@ -447,7 +557,12 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
                                <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/ErrorResponse.html" title="class in software.amazon.awssdk.iot.iotshadow.model">ErrorResponse</a>&gt;&nbsp;handler,
                                <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a>&gt;&nbsp;exceptionHandler)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Subscribes to the rejected topic for the UpdateShadow operation
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received.</div>
+</td>
 </tr>
 </table>
 <ul class="blockList">
@@ -502,6 +617,23 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
                                                                   <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                                                   <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/ErrorResponse.html" title="class in software.amazon.awssdk.iot.iotshadow.model">ErrorResponse</a>&gt;&nbsp;handler,
                                                                   <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a>&gt;&nbsp;exceptionHandler)</pre>
+<div class="block">Subscribes to the rejected topic for the UpdateShadow operation
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received. It is possible for such messages to arrive before
+ the SUBACK is received.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#update-rejected-pub-sub-topic</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - Subscription request configuration</dd>
+<dd><code>qos</code> - Maximum requested QoS that server may use when sending messages to the client.
+            The server may grant a lower QoS in the SUBACK</dd>
+<dd><code>handler</code> - callback function to invoke with messages received on the subscription topic</dd>
+<dd><code>exceptionHandler</code> - callback function to invoke if an exception occurred deserializing a message</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a future containing the MQTT packet id used to perform the subscribe operation</dd>
+</dl>
 </li>
 </ul>
 <a id="SubscribeToUpdateShadowRejected(software.amazon.awssdk.iot.iotshadow.model.UpdateShadowSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer)">
@@ -513,6 +645,22 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <pre class="methodSignature">public&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;SubscribeToUpdateShadowRejected&#8203;(<a href="model/UpdateShadowSubscriptionRequest.html" title="class in software.amazon.awssdk.iot.iotshadow.model">UpdateShadowSubscriptionRequest</a>&nbsp;request,
                                                                   <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                                                   <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/ErrorResponse.html" title="class in software.amazon.awssdk.iot.iotshadow.model">ErrorResponse</a>&gt;&nbsp;handler)</pre>
+<div class="block">Subscribes to the rejected topic for the UpdateShadow operation
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received. It is possible for such messages to arrive before
+ the SUBACK is received.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#update-rejected-pub-sub-topic</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - Subscription request configuration</dd>
+<dd><code>qos</code> - Maximum requested QoS that server may use when sending messages to the client.
+            The server may grant a lower QoS in the SUBACK</dd>
+<dd><code>handler</code> - callback function to invoke with messages received on the subscription topic</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a future containing the MQTT packet id used to perform the subscribe operation</dd>
+</dl>
 </li>
 </ul>
 <a id="SubscribeToShadowDeltaUpdatedEvents(software.amazon.awssdk.iot.iotshadow.model.ShadowDeltaUpdatedSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer,java.util.function.Consumer)">
@@ -525,6 +673,23 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
                                                                       <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                                                       <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/ShadowDeltaUpdatedEvent.html" title="class in software.amazon.awssdk.iot.iotshadow.model">ShadowDeltaUpdatedEvent</a>&gt;&nbsp;handler,
                                                                       <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a>&gt;&nbsp;exceptionHandler)</pre>
+<div class="block">Subscribe to ShadowDelta events for the (classic) shadow of an AWS IoT thing.
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received. It is possible for such messages to arrive before
+ the SUBACK is received.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#update-delta-pub-sub-topic</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - Subscription request configuration</dd>
+<dd><code>qos</code> - Maximum requested QoS that server may use when sending messages to the client.
+            The server may grant a lower QoS in the SUBACK</dd>
+<dd><code>handler</code> - callback function to invoke with messages received on the subscription topic</dd>
+<dd><code>exceptionHandler</code> - callback function to invoke if an exception occurred deserializing a message</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a future containing the MQTT packet id used to perform the subscribe operation</dd>
+</dl>
 </li>
 </ul>
 <a id="SubscribeToShadowDeltaUpdatedEvents(software.amazon.awssdk.iot.iotshadow.model.ShadowDeltaUpdatedSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer)">
@@ -536,6 +701,22 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <pre class="methodSignature">public&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;SubscribeToShadowDeltaUpdatedEvents&#8203;(<a href="model/ShadowDeltaUpdatedSubscriptionRequest.html" title="class in software.amazon.awssdk.iot.iotshadow.model">ShadowDeltaUpdatedSubscriptionRequest</a>&nbsp;request,
                                                                       <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                                                       <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/ShadowDeltaUpdatedEvent.html" title="class in software.amazon.awssdk.iot.iotshadow.model">ShadowDeltaUpdatedEvent</a>&gt;&nbsp;handler)</pre>
+<div class="block">Subscribe to ShadowDelta events for the (classic) shadow of an AWS IoT thing.
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received. It is possible for such messages to arrive before
+ the SUBACK is received.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#update-delta-pub-sub-topic</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - Subscription request configuration</dd>
+<dd><code>qos</code> - Maximum requested QoS that server may use when sending messages to the client.
+            The server may grant a lower QoS in the SUBACK</dd>
+<dd><code>handler</code> - callback function to invoke with messages received on the subscription topic</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a future containing the MQTT packet id used to perform the subscribe operation</dd>
+</dl>
 </li>
 </ul>
 <a id="SubscribeToGetNamedShadowRejected(software.amazon.awssdk.iot.iotshadow.model.GetNamedShadowSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer,java.util.function.Consumer)">
@@ -548,6 +729,23 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
                                                                     <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                                                     <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/ErrorResponse.html" title="class in software.amazon.awssdk.iot.iotshadow.model">ErrorResponse</a>&gt;&nbsp;handler,
                                                                     <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a>&gt;&nbsp;exceptionHandler)</pre>
+<div class="block">Subscribes to the rejected topic for the GetNamedShadow operation.
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received. It is possible for such messages to arrive before
+ the SUBACK is received.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#get-rejected-pub-sub-topic</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - Subscription request configuration</dd>
+<dd><code>qos</code> - Maximum requested QoS that server may use when sending messages to the client.
+            The server may grant a lower QoS in the SUBACK</dd>
+<dd><code>handler</code> - callback function to invoke with messages received on the subscription topic</dd>
+<dd><code>exceptionHandler</code> - callback function to invoke if an exception occurred deserializing a message</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a future containing the MQTT packet id used to perform the subscribe operation</dd>
+</dl>
 </li>
 </ul>
 <a id="SubscribeToGetNamedShadowRejected(software.amazon.awssdk.iot.iotshadow.model.GetNamedShadowSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer)">
@@ -559,6 +757,22 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <pre class="methodSignature">public&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;SubscribeToGetNamedShadowRejected&#8203;(<a href="model/GetNamedShadowSubscriptionRequest.html" title="class in software.amazon.awssdk.iot.iotshadow.model">GetNamedShadowSubscriptionRequest</a>&nbsp;request,
                                                                     <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                                                     <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/ErrorResponse.html" title="class in software.amazon.awssdk.iot.iotshadow.model">ErrorResponse</a>&gt;&nbsp;handler)</pre>
+<div class="block">Subscribes to the rejected topic for the GetNamedShadow operation.
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received. It is possible for such messages to arrive before
+ the SUBACK is received.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#get-rejected-pub-sub-topic</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - Subscription request configuration</dd>
+<dd><code>qos</code> - Maximum requested QoS that server may use when sending messages to the client.
+            The server may grant a lower QoS in the SUBACK</dd>
+<dd><code>handler</code> - callback function to invoke with messages received on the subscription topic</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a future containing the MQTT packet id used to perform the subscribe operation</dd>
+</dl>
 </li>
 </ul>
 <a id="SubscribeToDeleteNamedShadowRejected(software.amazon.awssdk.iot.iotshadow.model.DeleteNamedShadowSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer,java.util.function.Consumer)">
@@ -571,6 +785,23 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
                                                                        <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                                                        <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/ErrorResponse.html" title="class in software.amazon.awssdk.iot.iotshadow.model">ErrorResponse</a>&gt;&nbsp;handler,
                                                                        <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a>&gt;&nbsp;exceptionHandler)</pre>
+<div class="block">Subscribes to the rejected topic for the DeleteNamedShadow operation.
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received. It is possible for such messages to arrive before
+ the SUBACK is received.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#delete-rejected-pub-sub-topic</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - Subscription request configuration</dd>
+<dd><code>qos</code> - Maximum requested QoS that server may use when sending messages to the client.
+            The server may grant a lower QoS in the SUBACK</dd>
+<dd><code>handler</code> - callback function to invoke with messages received on the subscription topic</dd>
+<dd><code>exceptionHandler</code> - callback function to invoke if an exception occurred deserializing a message</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a future containing the MQTT packet id used to perform the subscribe operation</dd>
+</dl>
 </li>
 </ul>
 <a id="SubscribeToDeleteNamedShadowRejected(software.amazon.awssdk.iot.iotshadow.model.DeleteNamedShadowSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer)">
@@ -582,6 +813,22 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <pre class="methodSignature">public&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;SubscribeToDeleteNamedShadowRejected&#8203;(<a href="model/DeleteNamedShadowSubscriptionRequest.html" title="class in software.amazon.awssdk.iot.iotshadow.model">DeleteNamedShadowSubscriptionRequest</a>&nbsp;request,
                                                                        <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                                                        <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/ErrorResponse.html" title="class in software.amazon.awssdk.iot.iotshadow.model">ErrorResponse</a>&gt;&nbsp;handler)</pre>
+<div class="block">Subscribes to the rejected topic for the DeleteNamedShadow operation.
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received. It is possible for such messages to arrive before
+ the SUBACK is received.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#delete-rejected-pub-sub-topic</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - Subscription request configuration</dd>
+<dd><code>qos</code> - Maximum requested QoS that server may use when sending messages to the client.
+            The server may grant a lower QoS in the SUBACK</dd>
+<dd><code>handler</code> - callback function to invoke with messages received on the subscription topic</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a future containing the MQTT packet id used to perform the subscribe operation</dd>
+</dl>
 </li>
 </ul>
 <a id="PublishDeleteShadow(software.amazon.awssdk.iot.iotshadow.model.DeleteShadowRequest,software.amazon.awssdk.crt.mqtt.QualityOfService)">
@@ -592,6 +839,22 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <h4>PublishDeleteShadow</h4>
 <pre class="methodSignature">public&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;PublishDeleteShadow&#8203;(<a href="model/DeleteShadowRequest.html" title="class in software.amazon.awssdk.iot.iotshadow.model">DeleteShadowRequest</a>&nbsp;request,
                                                       <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos)</pre>
+<div class="block">Deletes the (classic) shadow for an AWS IoT thing.
+
+ If the device is offline, the PUBLISH packet will be sent once the connection resumes.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#delete-pub-sub-topic</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - Message to be serialized and sent</dd>
+<dd><code>qos</code> - Quality of Service for delivering this message</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a future containing the MQTT packet id used to perform the publish operation
+
+ * For QoS 0, completes as soon as the packet is sent.
+ * For QoS 1, completes when PUBACK is received.
+ * QoS 2 is not supported by AWS IoT.</dd>
+</dl>
 </li>
 </ul>
 <a id="PublishGetNamedShadow(software.amazon.awssdk.iot.iotshadow.model.GetNamedShadowRequest,software.amazon.awssdk.crt.mqtt.QualityOfService)">
@@ -602,6 +865,22 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <h4>PublishGetNamedShadow</h4>
 <pre class="methodSignature">public&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;PublishGetNamedShadow&#8203;(<a href="model/GetNamedShadowRequest.html" title="class in software.amazon.awssdk.iot.iotshadow.model">GetNamedShadowRequest</a>&nbsp;request,
                                                         <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos)</pre>
+<div class="block">Gets a named shadow for an AWS IoT thing.
+
+ If the device is offline, the PUBLISH packet will be sent once the connection resumes.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#get-pub-sub-topic</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - Message to be serialized and sent</dd>
+<dd><code>qos</code> - Quality of Service for delivering this message</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a future containing the MQTT packet id used to perform the publish operation
+
+ * For QoS 0, completes as soon as the packet is sent.
+ * For QoS 1, completes when PUBACK is received.
+ * QoS 2 is not supported by AWS IoT.</dd>
+</dl>
 </li>
 </ul>
 <a id="SubscribeToDeleteShadowAccepted(software.amazon.awssdk.iot.iotshadow.model.DeleteShadowSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer,java.util.function.Consumer)">
@@ -614,6 +893,23 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
                                                                   <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                                                   <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/DeleteShadowResponse.html" title="class in software.amazon.awssdk.iot.iotshadow.model">DeleteShadowResponse</a>&gt;&nbsp;handler,
                                                                   <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a>&gt;&nbsp;exceptionHandler)</pre>
+<div class="block">Subscribes to the accepted topic for the DeleteShadow operation
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received. It is possible for such messages to arrive before
+ the SUBACK is received.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#delete-accepted-pub-sub-topic</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - Subscription request configuration</dd>
+<dd><code>qos</code> - Maximum requested QoS that server may use when sending messages to the client.
+            The server may grant a lower QoS in the SUBACK</dd>
+<dd><code>handler</code> - callback function to invoke with messages received on the subscription topic</dd>
+<dd><code>exceptionHandler</code> - callback function to invoke if an exception occurred deserializing a message</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a future containing the MQTT packet id used to perform the subscribe operation</dd>
+</dl>
 </li>
 </ul>
 <a id="SubscribeToDeleteShadowAccepted(software.amazon.awssdk.iot.iotshadow.model.DeleteShadowSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer)">
@@ -625,6 +921,22 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <pre class="methodSignature">public&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;SubscribeToDeleteShadowAccepted&#8203;(<a href="model/DeleteShadowSubscriptionRequest.html" title="class in software.amazon.awssdk.iot.iotshadow.model">DeleteShadowSubscriptionRequest</a>&nbsp;request,
                                                                   <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                                                   <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/DeleteShadowResponse.html" title="class in software.amazon.awssdk.iot.iotshadow.model">DeleteShadowResponse</a>&gt;&nbsp;handler)</pre>
+<div class="block">Subscribes to the accepted topic for the DeleteShadow operation
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received. It is possible for such messages to arrive before
+ the SUBACK is received.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#delete-accepted-pub-sub-topic</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - Subscription request configuration</dd>
+<dd><code>qos</code> - Maximum requested QoS that server may use when sending messages to the client.
+            The server may grant a lower QoS in the SUBACK</dd>
+<dd><code>handler</code> - callback function to invoke with messages received on the subscription topic</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a future containing the MQTT packet id used to perform the subscribe operation</dd>
+</dl>
 </li>
 </ul>
 <a id="SubscribeToGetShadowAccepted(software.amazon.awssdk.iot.iotshadow.model.GetShadowSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer,java.util.function.Consumer)">
@@ -637,6 +949,23 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
                                                                <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                                                <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/GetShadowResponse.html" title="class in software.amazon.awssdk.iot.iotshadow.model">GetShadowResponse</a>&gt;&nbsp;handler,
                                                                <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a>&gt;&nbsp;exceptionHandler)</pre>
+<div class="block">Subscribes to the accepted topic for the GetShadow operation.
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received. It is possible for such messages to arrive before
+ the SUBACK is received.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#get-accepted-pub-sub-topic</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - Subscription request configuration</dd>
+<dd><code>qos</code> - Maximum requested QoS that server may use when sending messages to the client.
+            The server may grant a lower QoS in the SUBACK</dd>
+<dd><code>handler</code> - callback function to invoke with messages received on the subscription topic</dd>
+<dd><code>exceptionHandler</code> - callback function to invoke if an exception occurred deserializing a message</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a future containing the MQTT packet id used to perform the subscribe operation</dd>
+</dl>
 </li>
 </ul>
 <a id="SubscribeToGetShadowAccepted(software.amazon.awssdk.iot.iotshadow.model.GetShadowSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer)">
@@ -648,6 +977,22 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <pre class="methodSignature">public&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;SubscribeToGetShadowAccepted&#8203;(<a href="model/GetShadowSubscriptionRequest.html" title="class in software.amazon.awssdk.iot.iotshadow.model">GetShadowSubscriptionRequest</a>&nbsp;request,
                                                                <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                                                <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/GetShadowResponse.html" title="class in software.amazon.awssdk.iot.iotshadow.model">GetShadowResponse</a>&gt;&nbsp;handler)</pre>
+<div class="block">Subscribes to the accepted topic for the GetShadow operation.
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received. It is possible for such messages to arrive before
+ the SUBACK is received.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#get-accepted-pub-sub-topic</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - Subscription request configuration</dd>
+<dd><code>qos</code> - Maximum requested QoS that server may use when sending messages to the client.
+            The server may grant a lower QoS in the SUBACK</dd>
+<dd><code>handler</code> - callback function to invoke with messages received on the subscription topic</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a future containing the MQTT packet id used to perform the subscribe operation</dd>
+</dl>
 </li>
 </ul>
 <a id="SubscribeToGetNamedShadowAccepted(software.amazon.awssdk.iot.iotshadow.model.GetNamedShadowSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer,java.util.function.Consumer)">
@@ -660,6 +1005,23 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
                                                                     <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                                                     <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/GetShadowResponse.html" title="class in software.amazon.awssdk.iot.iotshadow.model">GetShadowResponse</a>&gt;&nbsp;handler,
                                                                     <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a>&gt;&nbsp;exceptionHandler)</pre>
+<div class="block">Subscribes to the accepted topic for the GetNamedShadow operation.
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received. It is possible for such messages to arrive before
+ the SUBACK is received.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#get-accepted-pub-sub-topic</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - Subscription request configuration</dd>
+<dd><code>qos</code> - Maximum requested QoS that server may use when sending messages to the client.
+            The server may grant a lower QoS in the SUBACK</dd>
+<dd><code>handler</code> - callback function to invoke with messages received on the subscription topic</dd>
+<dd><code>exceptionHandler</code> - callback function to invoke if an exception occurred deserializing a message</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a future containing the MQTT packet id used to perform the subscribe operation</dd>
+</dl>
 </li>
 </ul>
 <a id="SubscribeToGetNamedShadowAccepted(software.amazon.awssdk.iot.iotshadow.model.GetNamedShadowSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer)">
@@ -671,6 +1033,22 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <pre class="methodSignature">public&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;SubscribeToGetNamedShadowAccepted&#8203;(<a href="model/GetNamedShadowSubscriptionRequest.html" title="class in software.amazon.awssdk.iot.iotshadow.model">GetNamedShadowSubscriptionRequest</a>&nbsp;request,
                                                                     <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                                                     <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/GetShadowResponse.html" title="class in software.amazon.awssdk.iot.iotshadow.model">GetShadowResponse</a>&gt;&nbsp;handler)</pre>
+<div class="block">Subscribes to the accepted topic for the GetNamedShadow operation.
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received. It is possible for such messages to arrive before
+ the SUBACK is received.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#get-accepted-pub-sub-topic</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - Subscription request configuration</dd>
+<dd><code>qos</code> - Maximum requested QoS that server may use when sending messages to the client.
+            The server may grant a lower QoS in the SUBACK</dd>
+<dd><code>handler</code> - callback function to invoke with messages received on the subscription topic</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a future containing the MQTT packet id used to perform the subscribe operation</dd>
+</dl>
 </li>
 </ul>
 <a id="SubscribeToNamedShadowUpdatedEvents(software.amazon.awssdk.iot.iotshadow.model.NamedShadowUpdatedSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer,java.util.function.Consumer)">
@@ -683,6 +1061,23 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
                                                                       <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                                                       <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/ShadowUpdatedEvent.html" title="class in software.amazon.awssdk.iot.iotshadow.model">ShadowUpdatedEvent</a>&gt;&nbsp;handler,
                                                                       <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a>&gt;&nbsp;exceptionHandler)</pre>
+<div class="block">Subscribe to ShadowUpdated events for a named shadow of an AWS IoT thing.
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received. It is possible for such messages to arrive before
+ the SUBACK is received.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#update-documents-pub-sub-topic</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - Subscription request configuration</dd>
+<dd><code>qos</code> - Maximum requested QoS that server may use when sending messages to the client.
+            The server may grant a lower QoS in the SUBACK</dd>
+<dd><code>handler</code> - callback function to invoke with messages received on the subscription topic</dd>
+<dd><code>exceptionHandler</code> - callback function to invoke if an exception occurred deserializing a message</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a future containing the MQTT packet id used to perform the subscribe operation</dd>
+</dl>
 </li>
 </ul>
 <a id="SubscribeToNamedShadowUpdatedEvents(software.amazon.awssdk.iot.iotshadow.model.NamedShadowUpdatedSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer)">
@@ -694,6 +1089,22 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <pre class="methodSignature">public&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;SubscribeToNamedShadowUpdatedEvents&#8203;(<a href="model/NamedShadowUpdatedSubscriptionRequest.html" title="class in software.amazon.awssdk.iot.iotshadow.model">NamedShadowUpdatedSubscriptionRequest</a>&nbsp;request,
                                                                       <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                                                       <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/ShadowUpdatedEvent.html" title="class in software.amazon.awssdk.iot.iotshadow.model">ShadowUpdatedEvent</a>&gt;&nbsp;handler)</pre>
+<div class="block">Subscribe to ShadowUpdated events for a named shadow of an AWS IoT thing.
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received. It is possible for such messages to arrive before
+ the SUBACK is received.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#update-documents-pub-sub-topic</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - Subscription request configuration</dd>
+<dd><code>qos</code> - Maximum requested QoS that server may use when sending messages to the client.
+            The server may grant a lower QoS in the SUBACK</dd>
+<dd><code>handler</code> - callback function to invoke with messages received on the subscription topic</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a future containing the MQTT packet id used to perform the subscribe operation</dd>
+</dl>
 </li>
 </ul>
 <a id="SubscribeToShadowUpdatedEvents(software.amazon.awssdk.iot.iotshadow.model.ShadowUpdatedSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer,java.util.function.Consumer)">
@@ -706,6 +1117,23 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
                                                                  <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                                                  <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/ShadowUpdatedEvent.html" title="class in software.amazon.awssdk.iot.iotshadow.model">ShadowUpdatedEvent</a>&gt;&nbsp;handler,
                                                                  <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a>&gt;&nbsp;exceptionHandler)</pre>
+<div class="block">Subscribe to ShadowUpdated events for the (classic) shadow of an AWS IoT thing.
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received. It is possible for such messages to arrive before
+ the SUBACK is received.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#update-documents-pub-sub-topic</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - Subscription request configuration</dd>
+<dd><code>qos</code> - Maximum requested QoS that server may use when sending messages to the client.
+            The server may grant a lower QoS in the SUBACK</dd>
+<dd><code>handler</code> - callback function to invoke with messages received on the subscription topic</dd>
+<dd><code>exceptionHandler</code> - callback function to invoke if an exception occurred deserializing a message</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a future containing the MQTT packet id used to perform the subscribe operation</dd>
+</dl>
 </li>
 </ul>
 <a id="SubscribeToShadowUpdatedEvents(software.amazon.awssdk.iot.iotshadow.model.ShadowUpdatedSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer)">
@@ -717,6 +1145,22 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <pre class="methodSignature">public&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;SubscribeToShadowUpdatedEvents&#8203;(<a href="model/ShadowUpdatedSubscriptionRequest.html" title="class in software.amazon.awssdk.iot.iotshadow.model">ShadowUpdatedSubscriptionRequest</a>&nbsp;request,
                                                                  <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                                                  <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/ShadowUpdatedEvent.html" title="class in software.amazon.awssdk.iot.iotshadow.model">ShadowUpdatedEvent</a>&gt;&nbsp;handler)</pre>
+<div class="block">Subscribe to ShadowUpdated events for the (classic) shadow of an AWS IoT thing.
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received. It is possible for such messages to arrive before
+ the SUBACK is received.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#update-documents-pub-sub-topic</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - Subscription request configuration</dd>
+<dd><code>qos</code> - Maximum requested QoS that server may use when sending messages to the client.
+            The server may grant a lower QoS in the SUBACK</dd>
+<dd><code>handler</code> - callback function to invoke with messages received on the subscription topic</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a future containing the MQTT packet id used to perform the subscribe operation</dd>
+</dl>
 </li>
 </ul>
 <a id="PublishDeleteNamedShadow(software.amazon.awssdk.iot.iotshadow.model.DeleteNamedShadowRequest,software.amazon.awssdk.crt.mqtt.QualityOfService)">
@@ -727,6 +1171,22 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <h4>PublishDeleteNamedShadow</h4>
 <pre class="methodSignature">public&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;PublishDeleteNamedShadow&#8203;(<a href="model/DeleteNamedShadowRequest.html" title="class in software.amazon.awssdk.iot.iotshadow.model">DeleteNamedShadowRequest</a>&nbsp;request,
                                                            <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos)</pre>
+<div class="block">Deletes a named shadow for an AWS IoT thing.
+
+ If the device is offline, the PUBLISH packet will be sent once the connection resumes.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#delete-pub-sub-topic</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - Message to be serialized and sent</dd>
+<dd><code>qos</code> - Quality of Service for delivering this message</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a future containing the MQTT packet id used to perform the publish operation
+
+ * For QoS 0, completes as soon as the packet is sent.
+ * For QoS 1, completes when PUBACK is received.
+ * QoS 2 is not supported by AWS IoT.</dd>
+</dl>
 </li>
 </ul>
 <a id="SubscribeToDeleteNamedShadowAccepted(software.amazon.awssdk.iot.iotshadow.model.DeleteNamedShadowSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer,java.util.function.Consumer)">
@@ -739,6 +1199,23 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
                                                                        <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                                                        <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/DeleteShadowResponse.html" title="class in software.amazon.awssdk.iot.iotshadow.model">DeleteShadowResponse</a>&gt;&nbsp;handler,
                                                                        <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a>&gt;&nbsp;exceptionHandler)</pre>
+<div class="block">Subscribes to the accepted topic for the DeleteNamedShadow operation.
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received. It is possible for such messages to arrive before
+ the SUBACK is received.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#delete-accepted-pub-sub-topic</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - Subscription request configuration</dd>
+<dd><code>qos</code> - Maximum requested QoS that server may use when sending messages to the client.
+            The server may grant a lower QoS in the SUBACK</dd>
+<dd><code>handler</code> - callback function to invoke with messages received on the subscription topic</dd>
+<dd><code>exceptionHandler</code> - callback function to invoke if an exception occurred deserializing a message</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a future containing the MQTT packet id used to perform the subscribe operation</dd>
+</dl>
 </li>
 </ul>
 <a id="SubscribeToDeleteNamedShadowAccepted(software.amazon.awssdk.iot.iotshadow.model.DeleteNamedShadowSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer)">
@@ -750,6 +1227,22 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <pre class="methodSignature">public&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;SubscribeToDeleteNamedShadowAccepted&#8203;(<a href="model/DeleteNamedShadowSubscriptionRequest.html" title="class in software.amazon.awssdk.iot.iotshadow.model">DeleteNamedShadowSubscriptionRequest</a>&nbsp;request,
                                                                        <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                                                        <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/DeleteShadowResponse.html" title="class in software.amazon.awssdk.iot.iotshadow.model">DeleteShadowResponse</a>&gt;&nbsp;handler)</pre>
+<div class="block">Subscribes to the accepted topic for the DeleteNamedShadow operation.
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received. It is possible for such messages to arrive before
+ the SUBACK is received.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#delete-accepted-pub-sub-topic</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - Subscription request configuration</dd>
+<dd><code>qos</code> - Maximum requested QoS that server may use when sending messages to the client.
+            The server may grant a lower QoS in the SUBACK</dd>
+<dd><code>handler</code> - callback function to invoke with messages received on the subscription topic</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a future containing the MQTT packet id used to perform the subscribe operation</dd>
+</dl>
 </li>
 </ul>
 <a id="SubscribeToDeleteShadowRejected(software.amazon.awssdk.iot.iotshadow.model.DeleteShadowSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer,java.util.function.Consumer)">
@@ -762,6 +1255,23 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
                                                                   <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                                                   <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/ErrorResponse.html" title="class in software.amazon.awssdk.iot.iotshadow.model">ErrorResponse</a>&gt;&nbsp;handler,
                                                                   <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a>&gt;&nbsp;exceptionHandler)</pre>
+<div class="block">Subscribes to the rejected topic for the DeleteShadow operation
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received. It is possible for such messages to arrive before
+ the SUBACK is received.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#delete-rejected-pub-sub-topic</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - Subscription request configuration</dd>
+<dd><code>qos</code> - Maximum requested QoS that server may use when sending messages to the client.
+            The server may grant a lower QoS in the SUBACK</dd>
+<dd><code>handler</code> - callback function to invoke with messages received on the subscription topic</dd>
+<dd><code>exceptionHandler</code> - callback function to invoke if an exception occurred deserializing a message</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a future containing the MQTT packet id used to perform the subscribe operation</dd>
+</dl>
 </li>
 </ul>
 <a id="SubscribeToDeleteShadowRejected(software.amazon.awssdk.iot.iotshadow.model.DeleteShadowSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer)">
@@ -773,6 +1283,22 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <pre class="methodSignature">public&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;SubscribeToDeleteShadowRejected&#8203;(<a href="model/DeleteShadowSubscriptionRequest.html" title="class in software.amazon.awssdk.iot.iotshadow.model">DeleteShadowSubscriptionRequest</a>&nbsp;request,
                                                                   <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                                                   <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/ErrorResponse.html" title="class in software.amazon.awssdk.iot.iotshadow.model">ErrorResponse</a>&gt;&nbsp;handler)</pre>
+<div class="block">Subscribes to the rejected topic for the DeleteShadow operation
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received. It is possible for such messages to arrive before
+ the SUBACK is received.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#delete-rejected-pub-sub-topic</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - Subscription request configuration</dd>
+<dd><code>qos</code> - Maximum requested QoS that server may use when sending messages to the client.
+            The server may grant a lower QoS in the SUBACK</dd>
+<dd><code>handler</code> - callback function to invoke with messages received on the subscription topic</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a future containing the MQTT packet id used to perform the subscribe operation</dd>
+</dl>
 </li>
 </ul>
 <a id="SubscribeToGetShadowRejected(software.amazon.awssdk.iot.iotshadow.model.GetShadowSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer,java.util.function.Consumer)">
@@ -785,6 +1311,23 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
                                                                <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                                                <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/ErrorResponse.html" title="class in software.amazon.awssdk.iot.iotshadow.model">ErrorResponse</a>&gt;&nbsp;handler,
                                                                <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a>&gt;&nbsp;exceptionHandler)</pre>
+<div class="block">Subscribes to the rejected topic for the GetShadow operation.
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received. It is possible for such messages to arrive before
+ the SUBACK is received.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#get-rejected-pub-sub-topic</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - Subscription request configuration</dd>
+<dd><code>qos</code> - Maximum requested QoS that server may use when sending messages to the client.
+            The server may grant a lower QoS in the SUBACK</dd>
+<dd><code>handler</code> - callback function to invoke with messages received on the subscription topic</dd>
+<dd><code>exceptionHandler</code> - callback function to invoke if an exception occurred deserializing a message</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a future containing the MQTT packet id used to perform the subscribe operation</dd>
+</dl>
 </li>
 </ul>
 <a id="SubscribeToGetShadowRejected(software.amazon.awssdk.iot.iotshadow.model.GetShadowSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer)">
@@ -796,6 +1339,22 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <pre class="methodSignature">public&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;SubscribeToGetShadowRejected&#8203;(<a href="model/GetShadowSubscriptionRequest.html" title="class in software.amazon.awssdk.iot.iotshadow.model">GetShadowSubscriptionRequest</a>&nbsp;request,
                                                                <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                                                <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/ErrorResponse.html" title="class in software.amazon.awssdk.iot.iotshadow.model">ErrorResponse</a>&gt;&nbsp;handler)</pre>
+<div class="block">Subscribes to the rejected topic for the GetShadow operation.
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received. It is possible for such messages to arrive before
+ the SUBACK is received.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#get-rejected-pub-sub-topic</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - Subscription request configuration</dd>
+<dd><code>qos</code> - Maximum requested QoS that server may use when sending messages to the client.
+            The server may grant a lower QoS in the SUBACK</dd>
+<dd><code>handler</code> - callback function to invoke with messages received on the subscription topic</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a future containing the MQTT packet id used to perform the subscribe operation</dd>
+</dl>
 </li>
 </ul>
 <a id="PublishUpdateShadow(software.amazon.awssdk.iot.iotshadow.model.UpdateShadowRequest,software.amazon.awssdk.crt.mqtt.QualityOfService)">
@@ -806,6 +1365,22 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <h4>PublishUpdateShadow</h4>
 <pre class="methodSignature">public&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;PublishUpdateShadow&#8203;(<a href="model/UpdateShadowRequest.html" title="class in software.amazon.awssdk.iot.iotshadow.model">UpdateShadowRequest</a>&nbsp;request,
                                                       <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos)</pre>
+<div class="block">Update a device's (classic) shadow.
+
+ If the device is offline, the PUBLISH packet will be sent once the connection resumes.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#update-pub-sub-topic</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - Message to be serialized and sent</dd>
+<dd><code>qos</code> - Quality of Service for delivering this message</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a future containing the MQTT packet id used to perform the publish operation
+
+ * For QoS 0, completes as soon as the packet is sent.
+ * For QoS 1, completes when PUBACK is received.
+ * QoS 2 is not supported by AWS IoT.</dd>
+</dl>
 </li>
 </ul>
 <a id="PublishGetShadow(software.amazon.awssdk.iot.iotshadow.model.GetShadowRequest,software.amazon.awssdk.crt.mqtt.QualityOfService)">
@@ -816,6 +1391,22 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <h4>PublishGetShadow</h4>
 <pre class="methodSignature">public&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;PublishGetShadow&#8203;(<a href="model/GetShadowRequest.html" title="class in software.amazon.awssdk.iot.iotshadow.model">GetShadowRequest</a>&nbsp;request,
                                                    <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos)</pre>
+<div class="block">Gets the (classic) shadow for an AWS IoT thing.
+
+ If the device is offline, the PUBLISH packet will be sent once the connection resumes.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#get-pub-sub-topic</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - Message to be serialized and sent</dd>
+<dd><code>qos</code> - Quality of Service for delivering this message</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a future containing the MQTT packet id used to perform the publish operation
+
+ * For QoS 0, completes as soon as the packet is sent.
+ * For QoS 1, completes when PUBACK is received.
+ * QoS 2 is not supported by AWS IoT.</dd>
+</dl>
 </li>
 </ul>
 <a id="SubscribeToUpdateShadowAccepted(software.amazon.awssdk.iot.iotshadow.model.UpdateShadowSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer,java.util.function.Consumer)">
@@ -828,6 +1419,23 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
                                                                   <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                                                   <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/UpdateShadowResponse.html" title="class in software.amazon.awssdk.iot.iotshadow.model">UpdateShadowResponse</a>&gt;&nbsp;handler,
                                                                   <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a>&gt;&nbsp;exceptionHandler)</pre>
+<div class="block">Subscribes to the accepted topic for the UpdateShadow operation
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received. It is possible for such messages to arrive before
+ the SUBACK is received.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#update-accepted-pub-sub-topic</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - Subscription request configuration</dd>
+<dd><code>qos</code> - Maximum requested QoS that server may use when sending messages to the client.
+            The server may grant a lower QoS in the SUBACK</dd>
+<dd><code>handler</code> - callback function to invoke with messages received on the subscription topic</dd>
+<dd><code>exceptionHandler</code> - callback function to invoke if an exception occurred deserializing a message</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a future containing the MQTT packet id used to perform the subscribe operation</dd>
+</dl>
 </li>
 </ul>
 <a id="SubscribeToUpdateShadowAccepted(software.amazon.awssdk.iot.iotshadow.model.UpdateShadowSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer)">
@@ -839,6 +1447,22 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <pre class="methodSignature">public&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;SubscribeToUpdateShadowAccepted&#8203;(<a href="model/UpdateShadowSubscriptionRequest.html" title="class in software.amazon.awssdk.iot.iotshadow.model">UpdateShadowSubscriptionRequest</a>&nbsp;request,
                                                                   <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                                                   <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/UpdateShadowResponse.html" title="class in software.amazon.awssdk.iot.iotshadow.model">UpdateShadowResponse</a>&gt;&nbsp;handler)</pre>
+<div class="block">Subscribes to the accepted topic for the UpdateShadow operation
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received. It is possible for such messages to arrive before
+ the SUBACK is received.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#update-accepted-pub-sub-topic</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - Subscription request configuration</dd>
+<dd><code>qos</code> - Maximum requested QoS that server may use when sending messages to the client.
+            The server may grant a lower QoS in the SUBACK</dd>
+<dd><code>handler</code> - callback function to invoke with messages received on the subscription topic</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a future containing the MQTT packet id used to perform the subscribe operation</dd>
+</dl>
 </li>
 </ul>
 <a id="SubscribeToUpdateNamedShadowRejected(software.amazon.awssdk.iot.iotshadow.model.UpdateNamedShadowSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer,java.util.function.Consumer)">
@@ -851,6 +1475,23 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
                                                                        <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                                                        <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/ErrorResponse.html" title="class in software.amazon.awssdk.iot.iotshadow.model">ErrorResponse</a>&gt;&nbsp;handler,
                                                                        <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a>&gt;&nbsp;exceptionHandler)</pre>
+<div class="block">Subscribes to the rejected topic for the UpdateNamedShadow operation
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received. It is possible for such messages to arrive before
+ the SUBACK is received.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#update-rejected-pub-sub-topic</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - Subscription request configuration</dd>
+<dd><code>qos</code> - Maximum requested QoS that server may use when sending messages to the client.
+            The server may grant a lower QoS in the SUBACK</dd>
+<dd><code>handler</code> - callback function to invoke with messages received on the subscription topic</dd>
+<dd><code>exceptionHandler</code> - callback function to invoke if an exception occurred deserializing a message</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a future containing the MQTT packet id used to perform the subscribe operation</dd>
+</dl>
 </li>
 </ul>
 <a id="SubscribeToUpdateNamedShadowRejected(software.amazon.awssdk.iot.iotshadow.model.UpdateNamedShadowSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer)">
@@ -862,6 +1503,22 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <pre class="methodSignature">public&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;SubscribeToUpdateNamedShadowRejected&#8203;(<a href="model/UpdateNamedShadowSubscriptionRequest.html" title="class in software.amazon.awssdk.iot.iotshadow.model">UpdateNamedShadowSubscriptionRequest</a>&nbsp;request,
                                                                        <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                                                        <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/ErrorResponse.html" title="class in software.amazon.awssdk.iot.iotshadow.model">ErrorResponse</a>&gt;&nbsp;handler)</pre>
+<div class="block">Subscribes to the rejected topic for the UpdateNamedShadow operation
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received. It is possible for such messages to arrive before
+ the SUBACK is received.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#update-rejected-pub-sub-topic</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - Subscription request configuration</dd>
+<dd><code>qos</code> - Maximum requested QoS that server may use when sending messages to the client.
+            The server may grant a lower QoS in the SUBACK</dd>
+<dd><code>handler</code> - callback function to invoke with messages received on the subscription topic</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a future containing the MQTT packet id used to perform the subscribe operation</dd>
+</dl>
 </li>
 </ul>
 <a id="PublishUpdateNamedShadow(software.amazon.awssdk.iot.iotshadow.model.UpdateNamedShadowRequest,software.amazon.awssdk.crt.mqtt.QualityOfService)">
@@ -872,6 +1529,22 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <h4>PublishUpdateNamedShadow</h4>
 <pre class="methodSignature">public&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;PublishUpdateNamedShadow&#8203;(<a href="model/UpdateNamedShadowRequest.html" title="class in software.amazon.awssdk.iot.iotshadow.model">UpdateNamedShadowRequest</a>&nbsp;request,
                                                            <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos)</pre>
+<div class="block">Update a named shadow for a device.
+
+ If the device is offline, the PUBLISH packet will be sent once the connection resumes.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#update-pub-sub-topic</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - Message to be serialized and sent</dd>
+<dd><code>qos</code> - Quality of Service for delivering this message</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a future containing the MQTT packet id used to perform the publish operation
+
+ * For QoS 0, completes as soon as the packet is sent.
+ * For QoS 1, completes when PUBACK is received.
+ * QoS 2 is not supported by AWS IoT.</dd>
+</dl>
 </li>
 </ul>
 <a id="SubscribeToNamedShadowDeltaUpdatedEvents(software.amazon.awssdk.iot.iotshadow.model.NamedShadowDeltaUpdatedSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer,java.util.function.Consumer)">
@@ -884,6 +1557,23 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
                                                                            <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                                                            <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/ShadowDeltaUpdatedEvent.html" title="class in software.amazon.awssdk.iot.iotshadow.model">ShadowDeltaUpdatedEvent</a>&gt;&nbsp;handler,
                                                                            <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a>&gt;&nbsp;exceptionHandler)</pre>
+<div class="block">Subscribe to NamedShadowDelta events for a named shadow of an AWS IoT thing.
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received. It is possible for such messages to arrive before
+ the SUBACK is received.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#update-delta-pub-sub-topic</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - Subscription request configuration</dd>
+<dd><code>qos</code> - Maximum requested QoS that server may use when sending messages to the client.
+            The server may grant a lower QoS in the SUBACK</dd>
+<dd><code>handler</code> - callback function to invoke with messages received on the subscription topic</dd>
+<dd><code>exceptionHandler</code> - callback function to invoke if an exception occurred deserializing a message</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a future containing the MQTT packet id used to perform the subscribe operation</dd>
+</dl>
 </li>
 </ul>
 <a id="SubscribeToNamedShadowDeltaUpdatedEvents(software.amazon.awssdk.iot.iotshadow.model.NamedShadowDeltaUpdatedSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer)">
@@ -895,6 +1585,22 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <pre class="methodSignature">public&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;SubscribeToNamedShadowDeltaUpdatedEvents&#8203;(<a href="model/NamedShadowDeltaUpdatedSubscriptionRequest.html" title="class in software.amazon.awssdk.iot.iotshadow.model">NamedShadowDeltaUpdatedSubscriptionRequest</a>&nbsp;request,
                                                                            <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                                                            <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/ShadowDeltaUpdatedEvent.html" title="class in software.amazon.awssdk.iot.iotshadow.model">ShadowDeltaUpdatedEvent</a>&gt;&nbsp;handler)</pre>
+<div class="block">Subscribe to NamedShadowDelta events for a named shadow of an AWS IoT thing.
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received. It is possible for such messages to arrive before
+ the SUBACK is received.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#update-delta-pub-sub-topic</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - Subscription request configuration</dd>
+<dd><code>qos</code> - Maximum requested QoS that server may use when sending messages to the client.
+            The server may grant a lower QoS in the SUBACK</dd>
+<dd><code>handler</code> - callback function to invoke with messages received on the subscription topic</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a future containing the MQTT packet id used to perform the subscribe operation</dd>
+</dl>
 </li>
 </ul>
 <a id="SubscribeToUpdateNamedShadowAccepted(software.amazon.awssdk.iot.iotshadow.model.UpdateNamedShadowSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer,java.util.function.Consumer)">
@@ -907,6 +1613,23 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
                                                                        <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                                                        <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/UpdateShadowResponse.html" title="class in software.amazon.awssdk.iot.iotshadow.model">UpdateShadowResponse</a>&gt;&nbsp;handler,
                                                                        <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a>&gt;&nbsp;exceptionHandler)</pre>
+<div class="block">Subscribes to the accepted topic for the UpdateNamedShadow operation
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received. It is possible for such messages to arrive before
+ the SUBACK is received.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#update-accepted-pub-sub-topic</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - Subscription request configuration</dd>
+<dd><code>qos</code> - Maximum requested QoS that server may use when sending messages to the client.
+            The server may grant a lower QoS in the SUBACK</dd>
+<dd><code>handler</code> - callback function to invoke with messages received on the subscription topic</dd>
+<dd><code>exceptionHandler</code> - callback function to invoke if an exception occurred deserializing a message</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a future containing the MQTT packet id used to perform the subscribe operation</dd>
+</dl>
 </li>
 </ul>
 <a id="SubscribeToUpdateNamedShadowAccepted(software.amazon.awssdk.iot.iotshadow.model.UpdateNamedShadowSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer)">
@@ -918,6 +1641,22 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <pre class="methodSignature">public&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;SubscribeToUpdateNamedShadowAccepted&#8203;(<a href="model/UpdateNamedShadowSubscriptionRequest.html" title="class in software.amazon.awssdk.iot.iotshadow.model">UpdateNamedShadowSubscriptionRequest</a>&nbsp;request,
                                                                        <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                                                        <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/UpdateShadowResponse.html" title="class in software.amazon.awssdk.iot.iotshadow.model">UpdateShadowResponse</a>&gt;&nbsp;handler)</pre>
+<div class="block">Subscribes to the accepted topic for the UpdateNamedShadow operation
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received. It is possible for such messages to arrive before
+ the SUBACK is received.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#update-accepted-pub-sub-topic</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - Subscription request configuration</dd>
+<dd><code>qos</code> - Maximum requested QoS that server may use when sending messages to the client.
+            The server may grant a lower QoS in the SUBACK</dd>
+<dd><code>handler</code> - callback function to invoke with messages received on the subscription topic</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a future containing the MQTT packet id used to perform the subscribe operation</dd>
+</dl>
 </li>
 </ul>
 </li>
