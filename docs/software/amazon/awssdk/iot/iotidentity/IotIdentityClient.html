@@ -132,6 +132,9 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <hr>
 <pre>public class <span class="typeNameLabel">IotIdentityClient</span>
 extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></pre>
+<div class="block">An AWS IoT service that assists with provisioning a device and installing unique client certificates on it
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html</div>
 </li>
 </ul>
 </div>
@@ -177,26 +180,34 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#PublishCreateCertificateFromCsr(software.amazon.awssdk.iot.iotidentity.model.CreateCertificateFromCsrRequest,software.amazon.awssdk.crt.mqtt.QualityOfService)">PublishCreateCertificateFromCsr</a></span>&#8203;(<a href="model/CreateCertificateFromCsrRequest.html" title="class in software.amazon.awssdk.iot.iotidentity.model">CreateCertificateFromCsrRequest</a>&nbsp;request,
                                <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Creates a certificate from a certificate signing request (CSR).</div>
+</td>
 </tr>
 <tr id="i1" class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#PublishCreateKeysAndCertificate(software.amazon.awssdk.iot.iotidentity.model.CreateKeysAndCertificateRequest,software.amazon.awssdk.crt.mqtt.QualityOfService)">PublishCreateKeysAndCertificate</a></span>&#8203;(<a href="model/CreateKeysAndCertificateRequest.html" title="class in software.amazon.awssdk.iot.iotidentity.model">CreateKeysAndCertificateRequest</a>&nbsp;request,
                                <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Creates new keys and a certificate.</div>
+</td>
 </tr>
 <tr id="i2" class="altColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#PublishRegisterThing(software.amazon.awssdk.iot.iotidentity.model.RegisterThingRequest,software.amazon.awssdk.crt.mqtt.QualityOfService)">PublishRegisterThing</a></span>&#8203;(<a href="model/RegisterThingRequest.html" title="class in software.amazon.awssdk.iot.iotidentity.model">RegisterThingRequest</a>&nbsp;request,
                     <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Provisions an AWS IoT thing using a pre-defined template.</div>
+</td>
 </tr>
 <tr id="i3" class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#SubscribeToCreateCertificateFromCsrAccepted(software.amazon.awssdk.iot.iotidentity.model.CreateCertificateFromCsrSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer)">SubscribeToCreateCertificateFromCsrAccepted</a></span>&#8203;(<a href="model/CreateCertificateFromCsrSubscriptionRequest.html" title="class in software.amazon.awssdk.iot.iotidentity.model">CreateCertificateFromCsrSubscriptionRequest</a>&nbsp;request,
                                            <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                            <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/CreateCertificateFromCsrResponse.html" title="class in software.amazon.awssdk.iot.iotidentity.model">CreateCertificateFromCsrResponse</a>&gt;&nbsp;handler)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Subscribes to the accepted topic of the CreateCertificateFromCsr operation.</div>
+</td>
 </tr>
 <tr id="i4" class="altColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
@@ -204,14 +215,18 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
                                            <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                            <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/CreateCertificateFromCsrResponse.html" title="class in software.amazon.awssdk.iot.iotidentity.model">CreateCertificateFromCsrResponse</a>&gt;&nbsp;handler,
                                            <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a>&gt;&nbsp;exceptionHandler)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Subscribes to the accepted topic of the CreateCertificateFromCsr operation.</div>
+</td>
 </tr>
 <tr id="i5" class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#SubscribeToCreateCertificateFromCsrRejected(software.amazon.awssdk.iot.iotidentity.model.CreateCertificateFromCsrSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer)">SubscribeToCreateCertificateFromCsrRejected</a></span>&#8203;(<a href="model/CreateCertificateFromCsrSubscriptionRequest.html" title="class in software.amazon.awssdk.iot.iotidentity.model">CreateCertificateFromCsrSubscriptionRequest</a>&nbsp;request,
                                            <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                            <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/ErrorResponse.html" title="class in software.amazon.awssdk.iot.iotidentity.model">ErrorResponse</a>&gt;&nbsp;handler)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Subscribes to the rejected topic of the CreateCertificateFromCsr operation.</div>
+</td>
 </tr>
 <tr id="i6" class="altColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
@@ -219,14 +234,18 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
                                            <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                            <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/ErrorResponse.html" title="class in software.amazon.awssdk.iot.iotidentity.model">ErrorResponse</a>&gt;&nbsp;handler,
                                            <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a>&gt;&nbsp;exceptionHandler)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Subscribes to the rejected topic of the CreateCertificateFromCsr operation.</div>
+</td>
 </tr>
 <tr id="i7" class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#SubscribeToCreateKeysAndCertificateAccepted(software.amazon.awssdk.iot.iotidentity.model.CreateKeysAndCertificateSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer)">SubscribeToCreateKeysAndCertificateAccepted</a></span>&#8203;(<a href="model/CreateKeysAndCertificateSubscriptionRequest.html" title="class in software.amazon.awssdk.iot.iotidentity.model">CreateKeysAndCertificateSubscriptionRequest</a>&nbsp;request,
                                            <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                            <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/CreateKeysAndCertificateResponse.html" title="class in software.amazon.awssdk.iot.iotidentity.model">CreateKeysAndCertificateResponse</a>&gt;&nbsp;handler)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Subscribes to the accepted topic of the CreateKeysAndCertificate operation.</div>
+</td>
 </tr>
 <tr id="i8" class="altColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
@@ -234,14 +253,18 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
                                            <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                            <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/CreateKeysAndCertificateResponse.html" title="class in software.amazon.awssdk.iot.iotidentity.model">CreateKeysAndCertificateResponse</a>&gt;&nbsp;handler,
                                            <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a>&gt;&nbsp;exceptionHandler)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Subscribes to the accepted topic of the CreateKeysAndCertificate operation.</div>
+</td>
 </tr>
 <tr id="i9" class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#SubscribeToCreateKeysAndCertificateRejected(software.amazon.awssdk.iot.iotidentity.model.CreateKeysAndCertificateSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer)">SubscribeToCreateKeysAndCertificateRejected</a></span>&#8203;(<a href="model/CreateKeysAndCertificateSubscriptionRequest.html" title="class in software.amazon.awssdk.iot.iotidentity.model">CreateKeysAndCertificateSubscriptionRequest</a>&nbsp;request,
                                            <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                            <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/ErrorResponse.html" title="class in software.amazon.awssdk.iot.iotidentity.model">ErrorResponse</a>&gt;&nbsp;handler)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Subscribes to the rejected topic of the CreateKeysAndCertificate operation.</div>
+</td>
 </tr>
 <tr id="i10" class="altColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
@@ -249,14 +272,18 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
                                            <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                            <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/ErrorResponse.html" title="class in software.amazon.awssdk.iot.iotidentity.model">ErrorResponse</a>&gt;&nbsp;handler,
                                            <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a>&gt;&nbsp;exceptionHandler)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Subscribes to the rejected topic of the CreateKeysAndCertificate operation.</div>
+</td>
 </tr>
 <tr id="i11" class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#SubscribeToRegisterThingAccepted(software.amazon.awssdk.iot.iotidentity.model.RegisterThingSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer)">SubscribeToRegisterThingAccepted</a></span>&#8203;(<a href="model/RegisterThingSubscriptionRequest.html" title="class in software.amazon.awssdk.iot.iotidentity.model">RegisterThingSubscriptionRequest</a>&nbsp;request,
                                 <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                 <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/RegisterThingResponse.html" title="class in software.amazon.awssdk.iot.iotidentity.model">RegisterThingResponse</a>&gt;&nbsp;handler)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Subscribes to the accepted topic of the RegisterThing operation.</div>
+</td>
 </tr>
 <tr id="i12" class="altColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
@@ -264,14 +291,18 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
                                 <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                 <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/RegisterThingResponse.html" title="class in software.amazon.awssdk.iot.iotidentity.model">RegisterThingResponse</a>&gt;&nbsp;handler,
                                 <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a>&gt;&nbsp;exceptionHandler)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Subscribes to the accepted topic of the RegisterThing operation.</div>
+</td>
 </tr>
 <tr id="i13" class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#SubscribeToRegisterThingRejected(software.amazon.awssdk.iot.iotidentity.model.RegisterThingSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer)">SubscribeToRegisterThingRejected</a></span>&#8203;(<a href="model/RegisterThingSubscriptionRequest.html" title="class in software.amazon.awssdk.iot.iotidentity.model">RegisterThingSubscriptionRequest</a>&nbsp;request,
                                 <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                 <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/ErrorResponse.html" title="class in software.amazon.awssdk.iot.iotidentity.model">ErrorResponse</a>&gt;&nbsp;handler)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Subscribes to the rejected topic of the RegisterThing operation.</div>
+</td>
 </tr>
 <tr id="i14" class="altColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
@@ -279,7 +310,9 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
                                 <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                 <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/ErrorResponse.html" title="class in software.amazon.awssdk.iot.iotidentity.model">ErrorResponse</a>&gt;&nbsp;handler,
                                 <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a>&gt;&nbsp;exceptionHandler)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Subscribes to the rejected topic of the RegisterThing operation.</div>
+</td>
 </tr>
 </table>
 <ul class="blockList">
@@ -332,6 +365,22 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <h4>PublishCreateKeysAndCertificate</h4>
 <pre class="methodSignature">public&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;PublishCreateKeysAndCertificate&#8203;(<a href="model/CreateKeysAndCertificateRequest.html" title="class in software.amazon.awssdk.iot.iotidentity.model">CreateKeysAndCertificateRequest</a>&nbsp;request,
                                                                   <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos)</pre>
+<div class="block">Creates new keys and a certificate. AWS IoT provides client certificates that are signed by the Amazon Root certificate authority (CA). The new certificate has a PENDING_ACTIVATION status. When you call RegisterThing to provision a thing with this certificate, the certificate status changes to ACTIVE or INACTIVE as described in the template.
+
+ If the device is offline, the PUBLISH packet will be sent once the connection resumes.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - Message to be serialized and sent</dd>
+<dd><code>qos</code> - Quality of Service for delivering this message</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a future containing the MQTT packet id used to perform the publish operation
+
+ * For QoS 0, completes as soon as the packet is sent.
+ * For QoS 1, completes when PUBACK is received.
+ * QoS 2 is not supported by AWS IoT.</dd>
+</dl>
 </li>
 </ul>
 <a id="SubscribeToCreateKeysAndCertificateAccepted(software.amazon.awssdk.iot.iotidentity.model.CreateKeysAndCertificateSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer,java.util.function.Consumer)">
@@ -344,6 +393,23 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
                                                                               <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                                                               <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/CreateKeysAndCertificateResponse.html" title="class in software.amazon.awssdk.iot.iotidentity.model">CreateKeysAndCertificateResponse</a>&gt;&nbsp;handler,
                                                                               <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a>&gt;&nbsp;exceptionHandler)</pre>
+<div class="block">Subscribes to the accepted topic of the CreateKeysAndCertificate operation.
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received. It is possible for such messages to arrive before
+ the SUBACK is received.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - Subscription request configuration</dd>
+<dd><code>qos</code> - Maximum requested QoS that server may use when sending messages to the client.
+            The server may grant a lower QoS in the SUBACK</dd>
+<dd><code>handler</code> - callback function to invoke with messages received on the subscription topic</dd>
+<dd><code>exceptionHandler</code> - callback function to invoke if an exception occurred deserializing a message</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a future containing the MQTT packet id used to perform the subscribe operation</dd>
+</dl>
 </li>
 </ul>
 <a id="SubscribeToCreateKeysAndCertificateAccepted(software.amazon.awssdk.iot.iotidentity.model.CreateKeysAndCertificateSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer)">
@@ -355,6 +421,22 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <pre class="methodSignature">public&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;SubscribeToCreateKeysAndCertificateAccepted&#8203;(<a href="model/CreateKeysAndCertificateSubscriptionRequest.html" title="class in software.amazon.awssdk.iot.iotidentity.model">CreateKeysAndCertificateSubscriptionRequest</a>&nbsp;request,
                                                                               <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                                                               <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/CreateKeysAndCertificateResponse.html" title="class in software.amazon.awssdk.iot.iotidentity.model">CreateKeysAndCertificateResponse</a>&gt;&nbsp;handler)</pre>
+<div class="block">Subscribes to the accepted topic of the CreateKeysAndCertificate operation.
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received. It is possible for such messages to arrive before
+ the SUBACK is received.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - Subscription request configuration</dd>
+<dd><code>qos</code> - Maximum requested QoS that server may use when sending messages to the client.
+            The server may grant a lower QoS in the SUBACK</dd>
+<dd><code>handler</code> - callback function to invoke with messages received on the subscription topic</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a future containing the MQTT packet id used to perform the subscribe operation</dd>
+</dl>
 </li>
 </ul>
 <a id="SubscribeToCreateKeysAndCertificateRejected(software.amazon.awssdk.iot.iotidentity.model.CreateKeysAndCertificateSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer,java.util.function.Consumer)">
@@ -367,6 +449,23 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
                                                                               <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                                                               <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/ErrorResponse.html" title="class in software.amazon.awssdk.iot.iotidentity.model">ErrorResponse</a>&gt;&nbsp;handler,
                                                                               <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a>&gt;&nbsp;exceptionHandler)</pre>
+<div class="block">Subscribes to the rejected topic of the CreateKeysAndCertificate operation.
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received. It is possible for such messages to arrive before
+ the SUBACK is received.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - Subscription request configuration</dd>
+<dd><code>qos</code> - Maximum requested QoS that server may use when sending messages to the client.
+            The server may grant a lower QoS in the SUBACK</dd>
+<dd><code>handler</code> - callback function to invoke with messages received on the subscription topic</dd>
+<dd><code>exceptionHandler</code> - callback function to invoke if an exception occurred deserializing a message</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a future containing the MQTT packet id used to perform the subscribe operation</dd>
+</dl>
 </li>
 </ul>
 <a id="SubscribeToCreateKeysAndCertificateRejected(software.amazon.awssdk.iot.iotidentity.model.CreateKeysAndCertificateSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer)">
@@ -378,6 +477,22 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <pre class="methodSignature">public&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;SubscribeToCreateKeysAndCertificateRejected&#8203;(<a href="model/CreateKeysAndCertificateSubscriptionRequest.html" title="class in software.amazon.awssdk.iot.iotidentity.model">CreateKeysAndCertificateSubscriptionRequest</a>&nbsp;request,
                                                                               <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                                                               <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/ErrorResponse.html" title="class in software.amazon.awssdk.iot.iotidentity.model">ErrorResponse</a>&gt;&nbsp;handler)</pre>
+<div class="block">Subscribes to the rejected topic of the CreateKeysAndCertificate operation.
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received. It is possible for such messages to arrive before
+ the SUBACK is received.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - Subscription request configuration</dd>
+<dd><code>qos</code> - Maximum requested QoS that server may use when sending messages to the client.
+            The server may grant a lower QoS in the SUBACK</dd>
+<dd><code>handler</code> - callback function to invoke with messages received on the subscription topic</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a future containing the MQTT packet id used to perform the subscribe operation</dd>
+</dl>
 </li>
 </ul>
 <a id="SubscribeToRegisterThingRejected(software.amazon.awssdk.iot.iotidentity.model.RegisterThingSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer,java.util.function.Consumer)">
@@ -390,6 +505,23 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
                                                                    <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                                                    <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/ErrorResponse.html" title="class in software.amazon.awssdk.iot.iotidentity.model">ErrorResponse</a>&gt;&nbsp;handler,
                                                                    <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a>&gt;&nbsp;exceptionHandler)</pre>
+<div class="block">Subscribes to the rejected topic of the RegisterThing operation.
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received. It is possible for such messages to arrive before
+ the SUBACK is received.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - Subscription request configuration</dd>
+<dd><code>qos</code> - Maximum requested QoS that server may use when sending messages to the client.
+            The server may grant a lower QoS in the SUBACK</dd>
+<dd><code>handler</code> - callback function to invoke with messages received on the subscription topic</dd>
+<dd><code>exceptionHandler</code> - callback function to invoke if an exception occurred deserializing a message</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a future containing the MQTT packet id used to perform the subscribe operation</dd>
+</dl>
 </li>
 </ul>
 <a id="SubscribeToRegisterThingRejected(software.amazon.awssdk.iot.iotidentity.model.RegisterThingSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer)">
@@ -401,6 +533,22 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <pre class="methodSignature">public&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;SubscribeToRegisterThingRejected&#8203;(<a href="model/RegisterThingSubscriptionRequest.html" title="class in software.amazon.awssdk.iot.iotidentity.model">RegisterThingSubscriptionRequest</a>&nbsp;request,
                                                                    <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                                                    <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/ErrorResponse.html" title="class in software.amazon.awssdk.iot.iotidentity.model">ErrorResponse</a>&gt;&nbsp;handler)</pre>
+<div class="block">Subscribes to the rejected topic of the RegisterThing operation.
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received. It is possible for such messages to arrive before
+ the SUBACK is received.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - Subscription request configuration</dd>
+<dd><code>qos</code> - Maximum requested QoS that server may use when sending messages to the client.
+            The server may grant a lower QoS in the SUBACK</dd>
+<dd><code>handler</code> - callback function to invoke with messages received on the subscription topic</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a future containing the MQTT packet id used to perform the subscribe operation</dd>
+</dl>
 </li>
 </ul>
 <a id="SubscribeToCreateCertificateFromCsrAccepted(software.amazon.awssdk.iot.iotidentity.model.CreateCertificateFromCsrSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer,java.util.function.Consumer)">
@@ -413,6 +561,23 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
                                                                               <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                                                               <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/CreateCertificateFromCsrResponse.html" title="class in software.amazon.awssdk.iot.iotidentity.model">CreateCertificateFromCsrResponse</a>&gt;&nbsp;handler,
                                                                               <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a>&gt;&nbsp;exceptionHandler)</pre>
+<div class="block">Subscribes to the accepted topic of the CreateCertificateFromCsr operation.
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received. It is possible for such messages to arrive before
+ the SUBACK is received.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - Subscription request configuration</dd>
+<dd><code>qos</code> - Maximum requested QoS that server may use when sending messages to the client.
+            The server may grant a lower QoS in the SUBACK</dd>
+<dd><code>handler</code> - callback function to invoke with messages received on the subscription topic</dd>
+<dd><code>exceptionHandler</code> - callback function to invoke if an exception occurred deserializing a message</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a future containing the MQTT packet id used to perform the subscribe operation</dd>
+</dl>
 </li>
 </ul>
 <a id="SubscribeToCreateCertificateFromCsrAccepted(software.amazon.awssdk.iot.iotidentity.model.CreateCertificateFromCsrSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer)">
@@ -424,6 +589,22 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <pre class="methodSignature">public&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;SubscribeToCreateCertificateFromCsrAccepted&#8203;(<a href="model/CreateCertificateFromCsrSubscriptionRequest.html" title="class in software.amazon.awssdk.iot.iotidentity.model">CreateCertificateFromCsrSubscriptionRequest</a>&nbsp;request,
                                                                               <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                                                               <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/CreateCertificateFromCsrResponse.html" title="class in software.amazon.awssdk.iot.iotidentity.model">CreateCertificateFromCsrResponse</a>&gt;&nbsp;handler)</pre>
+<div class="block">Subscribes to the accepted topic of the CreateCertificateFromCsr operation.
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received. It is possible for such messages to arrive before
+ the SUBACK is received.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - Subscription request configuration</dd>
+<dd><code>qos</code> - Maximum requested QoS that server may use when sending messages to the client.
+            The server may grant a lower QoS in the SUBACK</dd>
+<dd><code>handler</code> - callback function to invoke with messages received on the subscription topic</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a future containing the MQTT packet id used to perform the subscribe operation</dd>
+</dl>
 </li>
 </ul>
 <a id="PublishRegisterThing(software.amazon.awssdk.iot.iotidentity.model.RegisterThingRequest,software.amazon.awssdk.crt.mqtt.QualityOfService)">
@@ -434,6 +615,22 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <h4>PublishRegisterThing</h4>
 <pre class="methodSignature">public&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;PublishRegisterThing&#8203;(<a href="model/RegisterThingRequest.html" title="class in software.amazon.awssdk.iot.iotidentity.model">RegisterThingRequest</a>&nbsp;request,
                                                        <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos)</pre>
+<div class="block">Provisions an AWS IoT thing using a pre-defined template.
+
+ If the device is offline, the PUBLISH packet will be sent once the connection resumes.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - Message to be serialized and sent</dd>
+<dd><code>qos</code> - Quality of Service for delivering this message</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a future containing the MQTT packet id used to perform the publish operation
+
+ * For QoS 0, completes as soon as the packet is sent.
+ * For QoS 1, completes when PUBACK is received.
+ * QoS 2 is not supported by AWS IoT.</dd>
+</dl>
 </li>
 </ul>
 <a id="SubscribeToRegisterThingAccepted(software.amazon.awssdk.iot.iotidentity.model.RegisterThingSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer,java.util.function.Consumer)">
@@ -446,6 +643,23 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
                                                                    <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                                                    <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/RegisterThingResponse.html" title="class in software.amazon.awssdk.iot.iotidentity.model">RegisterThingResponse</a>&gt;&nbsp;handler,
                                                                    <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a>&gt;&nbsp;exceptionHandler)</pre>
+<div class="block">Subscribes to the accepted topic of the RegisterThing operation.
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received. It is possible for such messages to arrive before
+ the SUBACK is received.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - Subscription request configuration</dd>
+<dd><code>qos</code> - Maximum requested QoS that server may use when sending messages to the client.
+            The server may grant a lower QoS in the SUBACK</dd>
+<dd><code>handler</code> - callback function to invoke with messages received on the subscription topic</dd>
+<dd><code>exceptionHandler</code> - callback function to invoke if an exception occurred deserializing a message</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a future containing the MQTT packet id used to perform the subscribe operation</dd>
+</dl>
 </li>
 </ul>
 <a id="SubscribeToRegisterThingAccepted(software.amazon.awssdk.iot.iotidentity.model.RegisterThingSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer)">
@@ -457,6 +671,22 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <pre class="methodSignature">public&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;SubscribeToRegisterThingAccepted&#8203;(<a href="model/RegisterThingSubscriptionRequest.html" title="class in software.amazon.awssdk.iot.iotidentity.model">RegisterThingSubscriptionRequest</a>&nbsp;request,
                                                                    <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                                                    <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/RegisterThingResponse.html" title="class in software.amazon.awssdk.iot.iotidentity.model">RegisterThingResponse</a>&gt;&nbsp;handler)</pre>
+<div class="block">Subscribes to the accepted topic of the RegisterThing operation.
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received. It is possible for such messages to arrive before
+ the SUBACK is received.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - Subscription request configuration</dd>
+<dd><code>qos</code> - Maximum requested QoS that server may use when sending messages to the client.
+            The server may grant a lower QoS in the SUBACK</dd>
+<dd><code>handler</code> - callback function to invoke with messages received on the subscription topic</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a future containing the MQTT packet id used to perform the subscribe operation</dd>
+</dl>
 </li>
 </ul>
 <a id="SubscribeToCreateCertificateFromCsrRejected(software.amazon.awssdk.iot.iotidentity.model.CreateCertificateFromCsrSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer,java.util.function.Consumer)">
@@ -469,6 +699,23 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
                                                                               <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                                                               <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/ErrorResponse.html" title="class in software.amazon.awssdk.iot.iotidentity.model">ErrorResponse</a>&gt;&nbsp;handler,
                                                                               <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a>&gt;&nbsp;exceptionHandler)</pre>
+<div class="block">Subscribes to the rejected topic of the CreateCertificateFromCsr operation.
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received. It is possible for such messages to arrive before
+ the SUBACK is received.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - Subscription request configuration</dd>
+<dd><code>qos</code> - Maximum requested QoS that server may use when sending messages to the client.
+            The server may grant a lower QoS in the SUBACK</dd>
+<dd><code>handler</code> - callback function to invoke with messages received on the subscription topic</dd>
+<dd><code>exceptionHandler</code> - callback function to invoke if an exception occurred deserializing a message</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a future containing the MQTT packet id used to perform the subscribe operation</dd>
+</dl>
 </li>
 </ul>
 <a id="SubscribeToCreateCertificateFromCsrRejected(software.amazon.awssdk.iot.iotidentity.model.CreateCertificateFromCsrSubscriptionRequest,software.amazon.awssdk.crt.mqtt.QualityOfService,java.util.function.Consumer)">
@@ -480,6 +727,22 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <pre class="methodSignature">public&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;SubscribeToCreateCertificateFromCsrRejected&#8203;(<a href="model/CreateCertificateFromCsrSubscriptionRequest.html" title="class in software.amazon.awssdk.iot.iotidentity.model">CreateCertificateFromCsrSubscriptionRequest</a>&nbsp;request,
                                                                               <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos,
                                                                               <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Consumer</a>&lt;<a href="model/ErrorResponse.html" title="class in software.amazon.awssdk.iot.iotidentity.model">ErrorResponse</a>&gt;&nbsp;handler)</pre>
+<div class="block">Subscribes to the rejected topic of the CreateCertificateFromCsr operation.
+
+ Once subscribed, `handler` is invoked each time a message matching
+ the `topic` is received. It is possible for such messages to arrive before
+ the SUBACK is received.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - Subscription request configuration</dd>
+<dd><code>qos</code> - Maximum requested QoS that server may use when sending messages to the client.
+            The server may grant a lower QoS in the SUBACK</dd>
+<dd><code>handler</code> - callback function to invoke with messages received on the subscription topic</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a future containing the MQTT packet id used to perform the subscribe operation</dd>
+</dl>
 </li>
 </ul>
 <a id="PublishCreateCertificateFromCsr(software.amazon.awssdk.iot.iotidentity.model.CreateCertificateFromCsrRequest,software.amazon.awssdk.crt.mqtt.QualityOfService)">
@@ -490,6 +753,22 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <h4>PublishCreateCertificateFromCsr</h4>
 <pre class="methodSignature">public&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;PublishCreateCertificateFromCsr&#8203;(<a href="model/CreateCertificateFromCsrRequest.html" title="class in software.amazon.awssdk.iot.iotidentity.model">CreateCertificateFromCsrRequest</a>&nbsp;request,
                                                                   <a href="https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/QualityOfService.html?is-external=true" title="class or interface in software.amazon.awssdk.crt.mqtt" class="externalLink">QualityOfService</a>&nbsp;qos)</pre>
+<div class="block">Creates a certificate from a certificate signing request (CSR). AWS IoT provides client certificates that are signed by the Amazon Root certificate authority (CA). The new certificate has a PENDING_ACTIVATION status. When you call RegisterThing to provision a thing with this certificate, the certificate status changes to ACTIVE or INACTIVE as described in the template.
+
+ If the device is offline, the PUBLISH packet will be sent once the connection resumes.
+
+ AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - Message to be serialized and sent</dd>
+<dd><code>qos</code> - Quality of Service for delivering this message</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a future containing the MQTT packet id used to perform the publish operation
+
+ * For QoS 0, completes as soon as the packet is sent.
+ * For QoS 1, completes when PUBACK is received.
+ * QoS 2 is not supported by AWS IoT.</dd>
+</dl>
 </li>
 </ul>
 </li>

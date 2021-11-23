@@ -126,6 +126,7 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <hr>
 <pre>public class <span class="typeNameLabel">NextJobExecutionChangedEvent</span>
 extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></pre>
+<div class="block">Sent whenever there is a change to which job execution is next on the list of pending job executions for a thing, as defined for DescribeJobExecution with jobId $next. This message is not sent when the next job's execution details change, only when the next job that would be returned by DescribeJobExecution with jobId $next has changed.</div>
 </li>
 </ul>
 </div>
@@ -149,12 +150,16 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <tr class="altColor">
 <td class="colFirst"><code><a href="JobExecutionData.html" title="class in software.amazon.awssdk.iot.iotjobs.model">JobExecutionData</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#execution">execution</a></span></code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Contains data about a job execution.</div>
+</td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code><a href="../../Timestamp.html" title="class in software.amazon.awssdk.iot">Timestamp</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#timestamp">timestamp</a></span></code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">The time when the message was sent.</div>
+</td>
 </tr>
 </table>
 </li>
@@ -218,6 +223,7 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <li class="blockList">
 <h4>execution</h4>
 <pre>public&nbsp;<a href="JobExecutionData.html" title="class in software.amazon.awssdk.iot.iotjobs.model">JobExecutionData</a> execution</pre>
+<div class="block">Contains data about a job execution.</div>
 </li>
 </ul>
 <a id="timestamp">
@@ -227,6 +233,7 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <li class="blockList">
 <h4>timestamp</h4>
 <pre>public&nbsp;<a href="../../Timestamp.html" title="class in software.amazon.awssdk.iot">Timestamp</a> timestamp</pre>
+<div class="block">The time when the message was sent.</div>
 </li>
 </ul>
 </li>

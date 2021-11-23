@@ -126,6 +126,7 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <hr>
 <pre>public class <span class="typeNameLabel">JobExecutionSummary</span>
 extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></pre>
+<div class="block">Contains a subset of information about a job execution.</div>
 </li>
 </ul>
 </div>
@@ -149,32 +150,44 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <tr class="altColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Long.html?is-external=true" title="class or interface in java.lang" class="externalLink">Long</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#executionNumber">executionNumber</a></span></code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">A number that identifies a job execution on a device.</div>
+</td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#jobId">jobId</a></span></code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">The unique identifier you assigned to this job when it was created.</div>
+</td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code><a href="../../Timestamp.html" title="class in software.amazon.awssdk.iot">Timestamp</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#lastUpdatedAt">lastUpdatedAt</a></span></code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">The time when the job execution was last updated.</div>
+</td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code><a href="../../Timestamp.html" title="class in software.amazon.awssdk.iot">Timestamp</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#queuedAt">queuedAt</a></span></code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">The time when the job execution was enqueued.</div>
+</td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code><a href="../../Timestamp.html" title="class in software.amazon.awssdk.iot">Timestamp</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#startedAt">startedAt</a></span></code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">The time when the job execution started.</div>
+</td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#versionNumber">versionNumber</a></span></code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">The version of the job execution.</div>
+</td>
 </tr>
 </table>
 </li>
@@ -238,6 +251,7 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <li class="blockList">
 <h4>lastUpdatedAt</h4>
 <pre>public&nbsp;<a href="../../Timestamp.html" title="class in software.amazon.awssdk.iot">Timestamp</a> lastUpdatedAt</pre>
+<div class="block">The time when the job execution was last updated.</div>
 </li>
 </ul>
 <a id="executionNumber">
@@ -247,6 +261,7 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <li class="blockList">
 <h4>executionNumber</h4>
 <pre>public&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Long.html?is-external=true" title="class or interface in java.lang" class="externalLink">Long</a> executionNumber</pre>
+<div class="block">A number that identifies a job execution on a device.</div>
 </li>
 </ul>
 <a id="startedAt">
@@ -256,6 +271,7 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <li class="blockList">
 <h4>startedAt</h4>
 <pre>public&nbsp;<a href="../../Timestamp.html" title="class in software.amazon.awssdk.iot">Timestamp</a> startedAt</pre>
+<div class="block">The time when the job execution started.</div>
 </li>
 </ul>
 <a id="versionNumber">
@@ -265,6 +281,7 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <li class="blockList">
 <h4>versionNumber</h4>
 <pre>public&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a> versionNumber</pre>
+<div class="block">The version of the job execution. Job execution versions are incremented each time the AWS IoT Jobs service receives an update from a device.</div>
 </li>
 </ul>
 <a id="jobId">
@@ -274,6 +291,7 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <li class="blockList">
 <h4>jobId</h4>
 <pre>public&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a> jobId</pre>
+<div class="block">The unique identifier you assigned to this job when it was created.</div>
 </li>
 </ul>
 <a id="queuedAt">
@@ -283,6 +301,7 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <li class="blockList">
 <h4>queuedAt</h4>
 <pre>public&nbsp;<a href="../../Timestamp.html" title="class in software.amazon.awssdk.iot">Timestamp</a> queuedAt</pre>
+<div class="block">The time when the job execution was enqueued.</div>
 </li>
 </ul>
 </li>

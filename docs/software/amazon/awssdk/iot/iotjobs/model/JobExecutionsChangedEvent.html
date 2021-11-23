@@ -126,6 +126,7 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <hr>
 <pre>public class <span class="typeNameLabel">JobExecutionsChangedEvent</span>
 extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></pre>
+<div class="block">Sent whenever a job execution is added to or removed from the list of pending job executions for a thing.</div>
 </li>
 </ul>
 </div>
@@ -149,12 +150,16 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <tr class="altColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true" title="class or interface in java.util" class="externalLink">HashMap</a>&lt;<a href="JobStatus.html" title="enum in software.amazon.awssdk.iot.iotjobs.model">JobStatus</a>,&#8203;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="JobExecutionSummary.html" title="class in software.amazon.awssdk.iot.iotjobs.model">JobExecutionSummary</a>&gt;&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#jobs">jobs</a></span></code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Map from JobStatus to a list of Jobs transitioning to that status.</div>
+</td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code><a href="../../Timestamp.html" title="class in software.amazon.awssdk.iot">Timestamp</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#timestamp">timestamp</a></span></code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">The time when the message was sent.</div>
+</td>
 </tr>
 </table>
 </li>
@@ -218,6 +223,7 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <li class="blockList">
 <h4>jobs</h4>
 <pre>public&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true" title="class or interface in java.util" class="externalLink">HashMap</a>&lt;<a href="JobStatus.html" title="enum in software.amazon.awssdk.iot.iotjobs.model">JobStatus</a>,&#8203;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="JobExecutionSummary.html" title="class in software.amazon.awssdk.iot.iotjobs.model">JobExecutionSummary</a>&gt;&gt; jobs</pre>
+<div class="block">Map from JobStatus to a list of Jobs transitioning to that status.</div>
 </li>
 </ul>
 <a id="timestamp">
@@ -227,6 +233,7 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <li class="blockList">
 <h4>timestamp</h4>
 <pre>public&nbsp;<a href="../../Timestamp.html" title="class in software.amazon.awssdk.iot">Timestamp</a> timestamp</pre>
+<div class="block">The time when the message was sent.</div>
 </li>
 </ul>
 </li>
