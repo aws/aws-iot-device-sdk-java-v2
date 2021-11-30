@@ -23,10 +23,10 @@ public class EventStreamError
 
     /**
      * Put
-     * @param headers - currently unusued, but likely a useful element for output
-     * @param payload - payload
-     * @param messageType - message type
-     * @return {@link EventStreamError}
+     * @param headers currently unusued, but likely a useful element for output
+     * @param payload
+     * @param messageType
+     * @return
      */
     public static EventStreamError create(final List<Header> headers, final byte[] payload, final MessageType messageType) {
         final HashMap<String, Object> map = EventStreamRPCServiceModel.getStaticGson().fromJson(new String(payload), HashMap.class);

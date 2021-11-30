@@ -11,10 +11,10 @@ import java.util.Optional;
  * Smithy code generation should produce one of these per model, but we aren't going to take steps to prevent
  * hand construction.
  *
- * @param <RequestType> - Request Type
- * @param <ResponseType> - Response Type
- * @param <StreamingRequestType> - Streaming Request Type
- * @param <StreamingResponseType> - Streaming Response Type
+ * @param <RequestType>
+ * @param <ResponseType>
+ * @param <StreamingRequestType>
+ * @param <StreamingResponseType>
  */
 public interface OperationModelContext
         <RequestType extends EventStreamJsonMessage,
@@ -26,7 +26,7 @@ public interface OperationModelContext
      * Returns the service model which can look up all/any Java error class types if an
      * operation throws it so the handling has a chance
      *
-     * @return {@link EventStreamRPCServiceModel}
+     * @return
      */
     EventStreamRPCServiceModel getServiceModel();
 
@@ -35,64 +35,64 @@ public interface OperationModelContext
      * Namespace included
      *
      * Example: aws.greengrass#SubscribeToTopic
-     * @return - Operation Name
+     * @return
      */
     String getOperationName();
 
     /**
      * Returns the initial-request java class type
-     * @return - Type
+     * @return
      */
     Class<RequestType> getRequestTypeClass();
 
     /**
      * Returns the application model type string for the initial-request object
-     * @return - Application Model Type
+     * @return
      */
     String getRequestApplicationModelType();
 
     /**
      * Returns the initial-response java class type
-     * @return - Response Type
+     * @return
      */
     Class<ResponseType> getResponseTypeClass();
 
     /**
      * Returns the application model type string for the initial response object
-     * @return - Response Application Model Type
+     * @return
      */
     String getResponseApplicationModelType();
 
     /**
      * Returns the streaming-request java class type
-     * @return - Streaming Request Type Class
+     * @return
      */
     Optional<Class<StreamingRequestType>> getStreamingRequestTypeClass();
 
     /**
      * Returns the application model type of
-     * @return - Streaming Request Application Model Type
+     * @return
      */
     Optional<String> getStreamingRequestApplicationModelType();
 
     /**
      * Returns the streaming-response java class type
      *
-     * @return - Streaming Response Type Class
+     * @return
      */
     Optional<Class<StreamingResponseType>> getStreamingResponseTypeClass();
 
     /**
      * Returns the streaming response application model string
      *
-     * @return - Streaming Response Application Model Type
+     * @return
      */
     Optional<String> getStreamingResponseApplicationModelType();
 
     /**
      * Returns true if there is a streaming request or response associated with the operation
      * or both
-     * @return boolean
+     * @return
      */
     default boolean isStreamingOperation() {
         return getStreamingRequestTypeClass().isPresent() || getStreamingResponseTypeClass().isPresent();

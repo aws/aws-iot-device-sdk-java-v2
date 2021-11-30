@@ -32,10 +32,17 @@ public class RunWithInfo implements EventStreamJsonMessage {
       serialize = true,
       deserialize = true
   )
+  private Optional<String> windowsUser;
+
+  @Expose(
+      serialize = true,
+      deserialize = true
+  )
   private Optional<SystemResourceLimits> systemResourceLimits;
 
   public RunWithInfo() {
     this.posixUser = Optional.empty();
+    this.windowsUser = Optional.empty();
     this.systemResourceLimits = Optional.empty();
   }
 
@@ -48,6 +55,17 @@ public class RunWithInfo implements EventStreamJsonMessage {
 
   public void setPosixUser(final String posixUser) {
     this.posixUser = Optional.ofNullable(posixUser);
+  }
+
+  public String getWindowsUser() {
+    if (windowsUser.isPresent()) {
+      return windowsUser.get();
+    }
+    return null;
+  }
+
+  public void setWindowsUser(final String windowsUser) {
+    this.windowsUser = Optional.ofNullable(windowsUser);
   }
 
   public SystemResourceLimits getSystemResourceLimits() {
@@ -74,12 +92,13 @@ public class RunWithInfo implements EventStreamJsonMessage {
     final RunWithInfo other = (RunWithInfo)rhs;
     boolean isEquals = true;
     isEquals = isEquals && this.posixUser.equals(other.posixUser);
+    isEquals = isEquals && this.windowsUser.equals(other.windowsUser);
     isEquals = isEquals && this.systemResourceLimits.equals(other.systemResourceLimits);
     return isEquals;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(posixUser, systemResourceLimits);
+    return Objects.hash(posixUser, windowsUser, systemResourceLimits);
   }
 }

@@ -28,14 +28,7 @@ public class EventStreamRPCClient {
     /**
      * Work horse of all operations, streaming or otherwise.
      *
-     * @param <ReqType> - Extends {@link EventStreamJsonMessage}
-     * @param <RespType> - Extends {@link EventStreamJsonMessage}
-     * @param <StrReqType> - Extends {@link EventStreamJsonMessage}
-     * @param <StrRespType> - Extends {@link EventStreamJsonMessage}
-     * @param operationModelContext - operationModelContext
-     * @param request - request
-     * @param streamResponseHandler - streamResponseHandler
-     * @return {@link OperationResponse}
+     * @return
      */
     public <ReqType extends EventStreamJsonMessage,
             RespType extends EventStreamJsonMessage,
