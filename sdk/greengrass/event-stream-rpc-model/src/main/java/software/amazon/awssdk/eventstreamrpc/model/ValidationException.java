@@ -10,7 +10,7 @@ public class ValidationException extends EventStreamOperationError {
     /**
      * Returns the named model type. May be used for a header.
      *
-     * @return - Application Model Type
+     * @return
      */
     @Override
     public String getApplicationModelType() {

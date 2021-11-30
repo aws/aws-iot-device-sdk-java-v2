@@ -38,66 +38,24 @@ import software.amazon.awssdk.eventstreamrpc.StreamResponseHandler;
 import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
 
 public interface GreengrassCoreIPC {
-  SubscribeToIoTCoreResponseHandler subscribeToIoTCore(final SubscribeToIoTCoreRequest request,
-      final Optional<StreamResponseHandler<IoTCoreMessage>> streamResponseHandler);
-
-  ResumeComponentResponseHandler resumeComponent(final ResumeComponentRequest request,
+  CreateDebugPasswordResponseHandler createDebugPassword(final CreateDebugPasswordRequest request,
       final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler);
 
-  PublishToIoTCoreResponseHandler publishToIoTCore(final PublishToIoTCoreRequest request,
-      final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler);
-
-  SubscribeToConfigurationUpdateResponseHandler subscribeToConfigurationUpdate(
-      final SubscribeToConfigurationUpdateRequest request,
-      final Optional<StreamResponseHandler<ConfigurationUpdateEvents>> streamResponseHandler);
-
-  DeleteThingShadowResponseHandler deleteThingShadow(final DeleteThingShadowRequest request,
+  CreateLocalDeploymentResponseHandler createLocalDeployment(
+      final CreateLocalDeploymentRequest request,
       final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler);
 
   DeferComponentUpdateResponseHandler deferComponentUpdate(
       final DeferComponentUpdateRequest request,
       final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler);
 
-  SubscribeToValidateConfigurationUpdatesResponseHandler subscribeToValidateConfigurationUpdates(
-      final SubscribeToValidateConfigurationUpdatesRequest request,
-      final Optional<StreamResponseHandler<ValidateConfigurationUpdateEvents>> streamResponseHandler);
-
-  GetConfigurationResponseHandler getConfiguration(final GetConfigurationRequest request,
+  DeleteThingShadowResponseHandler deleteThingShadow(final DeleteThingShadowRequest request,
       final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler);
-
-  SubscribeToTopicResponseHandler subscribeToTopic(final SubscribeToTopicRequest request,
-      final Optional<StreamResponseHandler<SubscriptionResponseMessage>> streamResponseHandler);
 
   GetComponentDetailsResponseHandler getComponentDetails(final GetComponentDetailsRequest request,
       final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler);
 
-  PublishToTopicResponseHandler publishToTopic(final PublishToTopicRequest request,
-      final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler);
-
-  ListComponentsResponseHandler listComponents(final ListComponentsRequest request,
-      final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler);
-
-  CreateDebugPasswordResponseHandler createDebugPassword(final CreateDebugPasswordRequest request,
-      final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler);
-
-  GetThingShadowResponseHandler getThingShadow(final GetThingShadowRequest request,
-      final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler);
-
-  SendConfigurationValidityReportResponseHandler sendConfigurationValidityReport(
-      final SendConfigurationValidityReportRequest request,
-      final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler);
-
-  UpdateThingShadowResponseHandler updateThingShadow(final UpdateThingShadowRequest request,
-      final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler);
-
-  UpdateConfigurationResponseHandler updateConfiguration(final UpdateConfigurationRequest request,
-      final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler);
-
-  ValidateAuthorizationTokenResponseHandler validateAuthorizationToken(
-      final ValidateAuthorizationTokenRequest request,
-      final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler);
-
-  RestartComponentResponseHandler restartComponent(final RestartComponentRequest request,
+  GetConfigurationResponseHandler getConfiguration(final GetConfigurationRequest request,
       final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler);
 
   GetLocalDeploymentStatusResponseHandler getLocalDeploymentStatus(
@@ -107,28 +65,70 @@ public interface GreengrassCoreIPC {
   GetSecretValueResponseHandler getSecretValue(final GetSecretValueRequest request,
       final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler);
 
-  UpdateStateResponseHandler updateState(final UpdateStateRequest request,
+  GetThingShadowResponseHandler getThingShadow(final GetThingShadowRequest request,
+      final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler);
+
+  ListComponentsResponseHandler listComponents(final ListComponentsRequest request,
+      final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler);
+
+  ListLocalDeploymentsResponseHandler listLocalDeployments(
+      final ListLocalDeploymentsRequest request,
       final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler);
 
   ListNamedShadowsForThingResponseHandler listNamedShadowsForThing(
       final ListNamedShadowsForThingRequest request,
       final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler);
 
-  SubscribeToComponentUpdatesResponseHandler subscribeToComponentUpdates(
-      final SubscribeToComponentUpdatesRequest request,
-      final Optional<StreamResponseHandler<ComponentUpdatePolicyEvents>> streamResponseHandler);
+  PauseComponentResponseHandler pauseComponent(final PauseComponentRequest request,
+      final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler);
 
-  ListLocalDeploymentsResponseHandler listLocalDeployments(
-      final ListLocalDeploymentsRequest request,
+  PublishToIoTCoreResponseHandler publishToIoTCore(final PublishToIoTCoreRequest request,
+      final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler);
+
+  PublishToTopicResponseHandler publishToTopic(final PublishToTopicRequest request,
+      final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler);
+
+  RestartComponentResponseHandler restartComponent(final RestartComponentRequest request,
+      final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler);
+
+  ResumeComponentResponseHandler resumeComponent(final ResumeComponentRequest request,
+      final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler);
+
+  SendConfigurationValidityReportResponseHandler sendConfigurationValidityReport(
+      final SendConfigurationValidityReportRequest request,
       final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler);
 
   StopComponentResponseHandler stopComponent(final StopComponentRequest request,
       final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler);
 
-  PauseComponentResponseHandler pauseComponent(final PauseComponentRequest request,
+  SubscribeToComponentUpdatesResponseHandler subscribeToComponentUpdates(
+      final SubscribeToComponentUpdatesRequest request,
+      final Optional<StreamResponseHandler<ComponentUpdatePolicyEvents>> streamResponseHandler);
+
+  SubscribeToConfigurationUpdateResponseHandler subscribeToConfigurationUpdate(
+      final SubscribeToConfigurationUpdateRequest request,
+      final Optional<StreamResponseHandler<ConfigurationUpdateEvents>> streamResponseHandler);
+
+  SubscribeToIoTCoreResponseHandler subscribeToIoTCore(final SubscribeToIoTCoreRequest request,
+      final Optional<StreamResponseHandler<IoTCoreMessage>> streamResponseHandler);
+
+  SubscribeToTopicResponseHandler subscribeToTopic(final SubscribeToTopicRequest request,
+      final Optional<StreamResponseHandler<SubscriptionResponseMessage>> streamResponseHandler);
+
+  SubscribeToValidateConfigurationUpdatesResponseHandler subscribeToValidateConfigurationUpdates(
+      final SubscribeToValidateConfigurationUpdatesRequest request,
+      final Optional<StreamResponseHandler<ValidateConfigurationUpdateEvents>> streamResponseHandler);
+
+  UpdateConfigurationResponseHandler updateConfiguration(final UpdateConfigurationRequest request,
       final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler);
 
-  CreateLocalDeploymentResponseHandler createLocalDeployment(
-      final CreateLocalDeploymentRequest request,
+  UpdateStateResponseHandler updateState(final UpdateStateRequest request,
+      final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler);
+
+  UpdateThingShadowResponseHandler updateThingShadow(final UpdateThingShadowRequest request,
+      final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler);
+
+  ValidateAuthorizationTokenResponseHandler validateAuthorizationToken(
+      final ValidateAuthorizationTokenRequest request,
       final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler);
 }
