@@ -53,6 +53,7 @@ android {
         ndkVersion "23.1.7779620"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'consumer-rules.pro'
+        versionName = "1.5.4-Klika-SNAPSHOT"
     }
 
     sourceSets {
@@ -68,6 +69,10 @@ android {
 
     buildTypes {
         release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
@@ -87,7 +92,7 @@ repositories {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+//    implementation fileTree(dir: 'libs', include: ['*.jar'])
 
 //    implementation 'software.amazon.awssdk.crt:android:0.15.8'
     implementation 'software.amazon.awssdk.crt:aws-crt-android:0.15.11'
@@ -132,23 +137,30 @@ afterEvaluate {
                 from components.release
 
                 groupId = 'software.amazon.awssdk.iotdevicesdk'
-                artifactId = 'android'
+                artifactId = 'aws-iot-device-sdk-android'
                 version = android.defaultConfig.versionName
             }
+
+/*
             debug(MavenPublication) {
                 from components.debug
 
                 groupId = 'software.amazon.awssdk.iotdevicesdk'
-                artifactId = 'android'
-                version = android.defaultConfig.versionName + '-SNAPSHOT'
+                artifactId = 'aws-iot-device-sdk-android-debug'
+                version = android.defaultConfig.versionName
             }
+*/
         }
         repositories {
+/*
             maven {
                 def snapshotRepo = "https://aws.oss.sonatype.org/content/repositories/snapshots"
                 def releaseRepo = "https://aws.oss.sonatype.org/"
                 url = version.endsWith('SNAPSHOT') ? snapshotRepo : releaseRepo
             }
+*/
+            mavenLocal()
+
         }
     }
 }
