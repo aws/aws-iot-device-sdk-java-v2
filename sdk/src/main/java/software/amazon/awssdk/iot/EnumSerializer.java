@@ -5,8 +5,6 @@
 
 package software.amazon.awssdk.iot;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSerializer;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonSerializationContext;
@@ -18,6 +16,10 @@ import com.google.gson.JsonParseException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
+/**
+ * Custom JSON serializer for enumerated types within IoT service models
+ * @param <E> the enumeration type the serializer should work with
+ */
 public class EnumSerializer<E> implements JsonSerializer<E>, JsonDeserializer<E> {
     public JsonElement serialize(E enumValue, Type typeOfEnum, JsonSerializationContext context) {
         return new JsonPrimitive(enumValue.toString());

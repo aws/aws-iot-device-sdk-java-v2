@@ -9,7 +9,6 @@ import software.amazon.awssdk.crt.utils.PackageInfo;
 
 import java.io.UnsupportedEncodingException;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 import software.amazon.awssdk.crt.CrtResource;
 import software.amazon.awssdk.crt.auth.credentials.CredentialsProvider;
@@ -20,6 +19,7 @@ import software.amazon.awssdk.crt.io.ClientBootstrap;
 import software.amazon.awssdk.crt.io.ClientTlsContext;
 import software.amazon.awssdk.crt.io.SocketOptions;
 import software.amazon.awssdk.crt.io.TlsContextOptions;
+import software.amazon.awssdk.crt.io.TlsContextPkcs11Options;
 import software.amazon.awssdk.crt.mqtt.MqttClient;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnectionEvents;
@@ -29,11 +29,10 @@ import software.amazon.awssdk.crt.mqtt.MqttMessage;
 import software.amazon.awssdk.crt.mqtt.QualityOfService;
 import software.amazon.awssdk.crt.mqtt.WebsocketHandshakeTransformArgs;
 
-/*
+/**
  * A central class for building Mqtt connections without manually managing a large variety of native objects (some
  * still need to be created though).
  */
-
 public final class AwsIotMqttConnectionBuilder extends CrtResource {
 
     private static String IOT_SIGNING_SERVICE = "iotdevicegateway";
@@ -93,6 +92,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      *
      * @param certPath       - Path to certificate, in PEM format
      * @param privateKeyPath - Path to private key, in PEM format
+     * @return {@link AwsIotMqttConnectionBuilder}
      */
     public static AwsIotMqttConnectionBuilder newMtlsBuilderFromPath(String certPath, String privateKeyPath) {
         try (TlsContextOptions tlsContextOptions = TlsContextOptions.createWithMtlsFromPath(certPath, privateKeyPath)) {
@@ -105,6 +105,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      *
      * @param certificate - Certificate, in PEM format
      * @param privateKey  - Private key, in PEM format
+     * @return {@link AwsIotMqttConnectionBuilder}
      */
     public static AwsIotMqttConnectionBuilder newMtlsBuilder(String certificate, String privateKey) {
         try (TlsContextOptions tlsContextOptions = TlsContextOptions.createWithMtls(certificate, privateKey)) {
@@ -117,6 +118,8 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      *
      * @param certificate - Certificate, in PEM format
      * @param privateKey  - Private key, in PEM format
+     * @return {@link AwsIotMqttConnectionBuilder}
+     * @throws UnsupportedEncodingException if encoding is unsupported
      */
     public static AwsIotMqttConnectionBuilder newMtlsBuilder(byte[] certificate, byte[] privateKey)
             throws UnsupportedEncodingException {
@@ -124,9 +127,22 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     }
 
     /**
+     * Create a new builder with mTLS, using a PKCS#11 library for private key operations.
+     *
+     * @param pkcs11Options PKCS#11 options
+     * @return {@link AwsIotMqttConnectionBuilder}
+     */
+    public static AwsIotMqttConnectionBuilder newMtlsPkcs11Builder(TlsContextPkcs11Options pkcs11Options) {
+        try (TlsContextOptions tlsContextOptions = TlsContextOptions.createWithMtlsPkcs11(pkcs11Options)) {
+            return new AwsIotMqttConnectionBuilder(tlsContextOptions);
+        }
+    }
+
+    /**
      * Create a new builder with no default Tls options
      *
      * @return a new builder with default Tls options
+     * @throws UnsupportedEncodingException if encoding is unsupported
      */
     public static AwsIotMqttConnectionBuilder newDefaultBuilder()
             throws UnsupportedEncodingException {
@@ -141,6 +157,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      * @param caDirPath  - Only used on Unix-style systems where all trust anchors
      *                    are stored in a directory (e.g. /etc/ssl/certs).
      * @param caFilePath - Single file containing all trust CAs, in PEM format
+     * @return {@link AwsIotMqttConnectionBuilder}
      */
     public AwsIotMqttConnectionBuilder withCertificateAuthorityFromPath(String caDirPath, String caFilePath) {
         this.tlsOptions.overrideDefaultTrustStoreFromPath(caDirPath, caFilePath);
@@ -152,6 +169,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      * Overrides the default system trust store.
      *
      * @param caRoot - Buffer containing all trust CAs, in PEM format
+     * @return {@link AwsIotMqttConnectionBuilder}
      */
     public AwsIotMqttConnectionBuilder withCertificateAuthority(String caRoot) {
         this.tlsOptions.overrideDefaultTrustStore(caRoot);
@@ -163,6 +181,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      * Configures the IoT endpoint for connections from this builder.
      *
      * @param endpoint The IoT endpoint to connect to
+     * @return {@link AwsIotMqttConnectionBuilder}
      */
     public AwsIotMqttConnectionBuilder withEndpoint(String endpoint) {
         this.config.setEndpoint(endpoint);
@@ -175,6 +194,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      *
      * @param port The port to connect to on the IoT endpoint. Usually 8883 for
      *             MQTT, or 443 for websockets
+     * @return {@link AwsIotMqttConnectionBuilder}
      */
     public AwsIotMqttConnectionBuilder withPort(short port) {
         this.config.setPort(port);
@@ -186,6 +206,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      *
      * @param clientId The client id for connections from this builder. Needs to be unique across
      *                  all devices/clients.
+     * @return {@link AwsIotMqttConnectionBuilder}
      */
     public AwsIotMqttConnectionBuilder withClientId(String clientId) {
         this.config.setClientId(clientId);
@@ -198,6 +219,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      *
      * @param cleanSession true if the session should drop prior subscriptions when
      *                     a connection from this builder is established, false to resume the session
+     * @return {@link AwsIotMqttConnectionBuilder}
      */
     public AwsIotMqttConnectionBuilder withCleanSession(boolean cleanSession) {
         this.config.setCleanSession(cleanSession);
@@ -205,14 +227,29 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     }
 
     /**
-     * Configures MQTT keep-alive via PING messages. Note that this is not TCP
+     * @deprecated Configures MQTT keep-alive via PING messages. Note that this is not TCP
      * keepalive.
      *
      * @param keepAliveMs How often in milliseconds to send an MQTT PING message to the
      *                   service to keep connections alive
+     * @return {@link AwsIotMqttConnectionBuilder}
      */
+    @Deprecated
     public AwsIotMqttConnectionBuilder withKeepAliveMs(int keepAliveMs) {
-        this.config.setKeepAliveMs(keepAliveMs);
+        this.config.setKeepAliveSecs(keepAliveMs/1000);
+        return this;
+    }
+
+    /**
+     * Configures MQTT keep-alive via PING messages. Note that this is not TCP
+     * keepalive.
+     *
+     * @param keepAliveSecs How often in seconds to send an MQTT PING message to the
+     *                   service to keep connections alive
+     * @return {@link AwsIotMqttConnectionBuilder}
+     */
+    public AwsIotMqttConnectionBuilder withKeepAliveSecs(int keepAliveSecs) {
+        this.config.setKeepAliveSecs(keepAliveSecs);
         return this;
     }
 
@@ -222,6 +259,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      *
      * @param pingTimeoutMs How long to wait for a ping response before resetting a connection built from this
      *                        builder.
+     * @return {@link AwsIotMqttConnectionBuilder}
      */
     public AwsIotMqttConnectionBuilder withPingTimeoutMs(int pingTimeoutMs) {
         this.config.setPingTimeoutMs(pingTimeoutMs);
@@ -229,11 +267,12 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     }
 
     /**
-     * Controls timeout value for requests that response is required on healthy connection. 
-     * If a response is not received within this interval, the request will fail as server not receiving it. 
-     * Applied to publish (QoS>0) and unsubscribe
+     * Controls timeout value for requests that response is required on healthy connection.
+     * If a response is not received within this interval, the request will fail as server not receiving it.
+     * Applied to publish (QoS greater than 0) and unsubscribe
      *
      * @param protocolOperationTimeoutMs How long to wait for a request response (in milliseconds) before failing
+     * @return {@link AwsIotMqttConnectionBuilder}
      */
     public AwsIotMqttConnectionBuilder withProtocolOperationTimeoutMs(int protocolOperationTimeoutMs) {
         this.config.setProtocolOperationTimeoutMs(protocolOperationTimeoutMs);
@@ -244,6 +283,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      * Configures the TCP socket connect timeout (in milliseconds)
      *
      * @param timeoutMs TCP socket timeout
+     * @return {@link AwsIotMqttConnectionBuilder}
      */
     public AwsIotMqttConnectionBuilder withTimeoutMs(int timeoutMs) {
         this.config.getSocketOptions().connectTimeoutMs = timeoutMs;
@@ -251,9 +291,24 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     }
 
     /**
+     * Configures the minimum and maximum reconnect timeouts.
+     *
+     * The time between reconnect attempts will start at min and multiply by 2 until max is reached.
+     *
+     * @param minTimeoutSecs The timeout to start with
+     * @param maxTimeoutSecs The highest allowable wait time between reconnect attempts
+     * @return {@link AwsIotMqttConnectionBuilder}
+     */
+    public AwsIotMqttConnectionBuilder withReconnectTimeoutSecs(long minTimeoutSecs, long maxTimeoutSecs) {
+        this.config.setReconnectTimeoutSecs(minTimeoutSecs, maxTimeoutSecs);
+        return this;
+    }
+
+    /**
      * Configures the common settings for the socket to use for connections created by this builder
      *
      * @param socketOptions The socket settings
+     * @return {@link AwsIotMqttConnectionBuilder}
      */
     public AwsIotMqttConnectionBuilder withSocketOptions(SocketOptions socketOptions) {
         this.config.setSocketOptions(socketOptions);
@@ -264,6 +319,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      * Configures the username to include in the initial CONNECT mqtt packet for connections created by this builder.
      *
      * @param username username to use in CONNECT
+     * @return {@link AwsIotMqttConnectionBuilder}
      */
     public AwsIotMqttConnectionBuilder withUsername(String username) {
         this.config.setUsername(username);
@@ -274,6 +330,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      * Configures the password to include in the initial CONNECT mqtt packet for connections created by this builder.
      *
      * @param password password to use in CONNECT
+     * @return {@link AwsIotMqttConnectionBuilder}
      */
     public AwsIotMqttConnectionBuilder withPassword(String password) {
         this.config.setPassword(password);
@@ -284,6 +341,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      * Configures the connection-related callbacks to use for connections created by this builder
      *
      * @param callbacks connection event callbacks to use
+     * @return {@link AwsIotMqttConnectionBuilder}
      */
     public AwsIotMqttConnectionBuilder withConnectionEventCallbacks(MqttClientConnectionEvents callbacks) {
         this.config.setConnectionCallbacks(callbacks);
@@ -298,6 +356,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      *                topic that the message will be published to on disconnect,
      *                along with the {@link QualityOfService} that it will be
      *                published with and whether it will be retained when it is published.
+     * @return {@link AwsIotMqttConnectionBuilder}
      */
     public AwsIotMqttConnectionBuilder withWill(MqttMessage message) throws MqttException {
         this.config.setWillMessage(message);
@@ -307,6 +366,10 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
 
     /**
      * @deprecated Use alternate withWill(). QoS and retain are now set directly on the {@link MqttMessage}
+     * @param message deprecated
+     * @param qos deprecated
+     * @param retain depricated
+     * @return {@link AwsIotMqttConnectionBuilder}
      */
     @Deprecated
     public AwsIotMqttConnectionBuilder withWill(MqttMessage message, QualityOfService qos, boolean retain) throws MqttException {
@@ -317,6 +380,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      * Configures the client bootstrap to use for connections created by this builder
      *
      * @param bootstrap client bootstrap to use for created connections
+     * @return {@link AwsIotMqttConnectionBuilder}
      */
     public AwsIotMqttConnectionBuilder withBootstrap(ClientBootstrap bootstrap) {
         swapReferenceTo(this.bootstrap, bootstrap);
@@ -330,6 +394,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      * Configures whether or not to the connection uses websockets
      *
      * @param useWebsockets whether or not to use websockets
+     * @return {@link AwsIotMqttConnectionBuilder}
      */
     public AwsIotMqttConnectionBuilder withWebsockets(boolean useWebsockets) {
         this.config.setUseWebsockets(useWebsockets);
@@ -355,6 +420,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      * transform args parameter.
      *
      * @param handshakeTransform handshake request transformation function
+     * @return {@link AwsIotMqttConnectionBuilder}
      */
     public AwsIotMqttConnectionBuilder withWebsocketHandshakeTransform(Consumer<WebsocketHandshakeTransformArgs> handshakeTransform) {
         this.config.setWebsocketHandshakeTransform(handshakeTransform);
@@ -367,6 +433,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      * Configures any http proxy options to use if the connection uses websockets
      *
      * @param proxyOptions http proxy options to use when establishing a websockets-based connection
+     * @return {@link AwsIotMqttConnectionBuilder}
      */
     public AwsIotMqttConnectionBuilder withWebsocketProxyOptions(HttpProxyOptions proxyOptions) {
         this.config.setHttpProxyOptions(proxyOptions);
@@ -378,6 +445,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      * Configures any http proxy options to use
      *
      * @param proxyOptions http proxy options to use when establishing a connection
+     * @return {@link AwsIotMqttConnectionBuilder}
      */
     public AwsIotMqttConnectionBuilder withHttpProxyOptions(HttpProxyOptions proxyOptions) {
         this.config.setHttpProxyOptions(proxyOptions);
@@ -390,6 +458,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      * if the handshake transform is null (enabling the default sigv4 transform injection).
      *
      * @param region region to use when signing the websocket upgrade request
+     * @return {@link AwsIotMqttConnectionBuilder}
      */
     public AwsIotMqttConnectionBuilder withWebsocketSigningRegion(String region) {
         this.websocketSigningRegion = region;
@@ -402,6 +471,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      * based authentication.  If provider is null, the default provider chain will be used.
      *
      * @param provider  credentials provider to pull Aws credentials from.
+     * @return {@link AwsIotMqttConnectionBuilder}
      */
     public AwsIotMqttConnectionBuilder withWebsocketCredentialsProvider(CredentialsProvider provider) {
         swapReferenceTo(this.websocketCredentialsProvider, provider);
@@ -489,6 +559,3 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
         }
     }
 }
-
-
-

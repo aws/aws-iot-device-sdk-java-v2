@@ -6,6 +6,9 @@ import software.amazon.awssdk.crt.io.SocketOptions;
 import software.amazon.awssdk.crt.io.TlsContext;
 import software.amazon.awssdk.crt.io.TlsContextOptions;
 
+/**
+ * Configuration object for the Greengrass discovery client
+ */
 public class DiscoveryClientConfig implements AutoCloseable {
     final private ClientBootstrap bootstrap;
     final private TlsContext tlsContext;
@@ -17,13 +20,15 @@ public class DiscoveryClientConfig implements AutoCloseable {
 
     /**
      * Constructor for DiscoveryClientConfig creates the correct endpoint if not in a special region
-     * 
-     * @param bootstrap ClientBootstrap
-     * @param tlsContextOptions TlsContextOptions
-     * @param socketOptions SocketOptions
-     * @param region AWS region. Not used when ggServerName is specified
-     * @param maxConnections integer of max connections
-     * @param proxyOptions HttpProxyOptions
+     *
+     * @param bootstrap client bootstrap to use to establish network connections
+     * @param tlsContextOptions tls configuration for client network connections.  For greengrass discovery, the
+     *                          tls context must be initialized with the certificate and private key of the
+     *                          device/thing that is querying greengrass core availability.
+     * @param socketOptions socket configuration for client network connections
+     * @param region AWS region to query for greengrass information
+     * @param maxConnections maximum concurrent http connections within the client
+     * @param proxyOptions proxy configuration for client network connections
      */
     public DiscoveryClientConfig(
             final ClientBootstrap bootstrap,
@@ -44,11 +49,13 @@ public class DiscoveryClientConfig implements AutoCloseable {
     /**
      * Default Constructor for DiscoveryClientConfig that allows the specification of a specific ggServerName to use in special regions
      * 
-     * @param bootstrap ClientBootstrap
-     * @param tlsContextOptions TlsContextOptions
-     * @param socketOptions SocketOptions
-     * @param maxConnections integer of max connections
-     * @param proxyOptions HttpProxyOptions
+     * @param bootstrap client bootstrap to use to establish network connections
+     * @param tlsContextOptions tls configuration for client network connections.  For greengrass discovery, the
+     *                          tls context must be initialized with the certificate and private key of the
+     *                          device/thing that is querying greengrass core availability.
+     * @param socketOptions socket configuration for client network connections
+     * @param maxConnections maximum concurrent http connections within the client
+     * @param proxyOptions proxy configuration for client network connections
      * @param ggServerName full endpoint to use when connecting in special regions
      */
     public DiscoveryClientConfig(
@@ -67,26 +74,44 @@ public class DiscoveryClientConfig implements AutoCloseable {
         this.ggServerName = ggServerName;
     }
 
+    /**
+     * @return client bootstrap to use to establish network connections
+     */
     public ClientBootstrap getBootstrap() {
         return bootstrap;
     }
 
+    /**
+     * @return tls configuration for client network connections
+     */
     public TlsContext getTlsContext() {
         return tlsContext;
     }
 
+    /**
+     * @return socket configuration for client network connections
+     */
     public SocketOptions getSocketOptions() {
         return socketOptions;
     }
 
+    /**
+     * @return AWS region to query for greengrass information
+     */
     public String getRegion() {
         return region;
     }
 
+    /**
+     * @return maximum concurrent http connections within the client
+     */
     public int getMaxConnections() {
         return maxConnections;
     }
 
+    /**
+     * @return proxy configuration for client network connections
+     */
     public HttpProxyOptions getProxyOptions() {
         return proxyOptions;
     }

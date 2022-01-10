@@ -14,6 +14,10 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * Class for performing network-based discovery of the connectivity properties of registered greengrass cores
+ * associated with an AWS account and region.
+ */
 public class DiscoveryClient implements AutoCloseable {
     public static final String TLS_EXT_ALPN = "x-amzn-http-ca";
 
@@ -31,6 +35,10 @@ public class DiscoveryClient implements AutoCloseable {
 
     private final HttpClientConnectionManager httpClientConnectionManager;
 
+    /**
+     *
+     * @param config Greengrass discovery client configuration
+     */
     public DiscoveryClient(final DiscoveryClientConfig config) {
         this.httpClientConnectionManager = HttpClientConnectionManager.create(
                 new HttpClientConnectionManagerOptions()
@@ -43,6 +51,11 @@ public class DiscoveryClient implements AutoCloseable {
                     .withPort(TlsContextOptions.isAlpnSupported() ? 443 : 8443));
     }
 
+    /**
+     * Based on configuration, make an http request to query connectivity information about available Greengrass cores
+     * @param thingName name of the thing/device making the greengrass core query
+     * @return future holding connectivity information about greengrass cores available to the device/thing
+     */
     public CompletableFuture<DiscoverResponse> discover(final String thingName) {
         if(thingName == null) {
             throw new IllegalArgumentException("ThingName cannot be null!");

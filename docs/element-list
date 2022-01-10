@@ -1,0 +1,13 @@
+software.amazon.awssdk.aws.greengrass
+software.amazon.awssdk.aws.greengrass.model
+software.amazon.awssdk.eventstreamrpc
+software.amazon.awssdk.eventstreamrpc.model
+software.amazon.awssdk.iot
+software.amazon.awssdk.iot.discovery
+software.amazon.awssdk.iot.discovery.model
+software.amazon.awssdk.iot.iotidentity
+software.amazon.awssdk.iot.iotidentity.model
+software.amazon.awssdk.iot.iotjobs
+software.amazon.awssdk.iot.iotjobs.model
+software.amazon.awssdk.iot.iotshadow
+software.amazon.awssdk.iot.iotshadow.model
