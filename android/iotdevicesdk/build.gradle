@@ -42,18 +42,17 @@ ext {
 }
 
 android {
-    compileSdkVersion 29
-//    buildToolsVersion "29.0.3"
+    compileSdkVersion 30
     buildToolsVersion "30.0.2"
 
     defaultConfig {
-        minSdkVersion 26
-        targetSdkVersion 29
-//        ndkVersion "21.0.6113669"
+        minSdkVersion 29
+        targetSdkVersion 30
+        versionCode = gitVersionCode()
+        versionName = gitVersionName()
         ndkVersion "23.1.7779620"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'consumer-rules.pro'
-        versionName = "1.5.4-Klika-SNAPSHOT"
     }
 
     sourceSets {
@@ -82,21 +81,16 @@ android {
         sourceCompatibility = 1.8
         targetCompatibility = 1.8
     }
+    ndkVersion '23.1.7779620'
 }
 
 repositories {
+    mavenLocal()
     mavenCentral()
-    maven {
-        url System.getenv('HOME') + "/.m2/repository"
-    }
 }
 
 dependencies {
-//    implementation fileTree(dir: 'libs', include: ['*.jar'])
-
-//    implementation 'software.amazon.awssdk.crt:android:0.15.8'
     implementation 'software.amazon.awssdk.crt:aws-crt-android:0.15.11'
-
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'androidx.appcompat:appcompat:1.1.0'
     testImplementation 'junit:junit:4.12'
