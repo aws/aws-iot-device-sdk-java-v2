@@ -4,7 +4,7 @@ This document provides information about the AWS IoT device SDK for Java V2.
 
 If you have any issues or feature requests, please file an issue or pull request.
 
-API documentation: (https://aws.github.io/aws-iot-device-sdk-java-v2/)
+API documentation: https://aws.github.io/aws-iot-device-sdk-java-v2/
 
 This SDK is built on the AWS Common Runtime, a collection of libraries
 ([aws-c-common](https://github.com/awslabs/aws-c-common),
