@@ -16,8 +16,10 @@ public class DiscoveryClientConfig implements AutoCloseable {
     final private String region;
     final private int maxConnections;
     final private HttpProxyOptions proxyOptions;
+    final private String ggServerName;
 
     /**
+     * Constructor for DiscoveryClientConfig creates the correct endpoint if not in a special region
      *
      * @param bootstrap client bootstrap to use to establish network connections
      * @param tlsContextOptions tls configuration for client network connections.  For greengrass discovery, the
@@ -41,6 +43,35 @@ public class DiscoveryClientConfig implements AutoCloseable {
         this.region = region;
         this.maxConnections = maxConnections;
         this.proxyOptions = proxyOptions;
+        this.ggServerName = "";
+    }
+
+    /**
+     * Default Constructor for DiscoveryClientConfig that allows the specification of a specific ggServerName to use in special regions
+     * 
+     * @param bootstrap client bootstrap to use to establish network connections
+     * @param tlsContextOptions tls configuration for client network connections.  For greengrass discovery, the
+     *                          tls context must be initialized with the certificate and private key of the
+     *                          device/thing that is querying greengrass core availability.
+     * @param socketOptions socket configuration for client network connections
+     * @param maxConnections maximum concurrent http connections within the client
+     * @param proxyOptions proxy configuration for client network connections
+     * @param ggServerName full endpoint to use when connecting in special regions
+     */
+    public DiscoveryClientConfig(
+            final ClientBootstrap bootstrap,
+            final TlsContextOptions tlsContextOptions,
+            final SocketOptions socketOptions,
+            final int maxConnections,
+            final HttpProxyOptions proxyOptions,
+            final String ggServerName) {
+        this.bootstrap = bootstrap;
+        this.tlsContext = new TlsContext(tlsContextOptions);
+        this.socketOptions = socketOptions;
+        this.region = "";
+        this.maxConnections = maxConnections;
+        this.proxyOptions = proxyOptions;
+        this.ggServerName = ggServerName;
     }
 
     /**
@@ -83,6 +114,10 @@ public class DiscoveryClientConfig implements AutoCloseable {
      */
     public HttpProxyOptions getProxyOptions() {
         return proxyOptions;
+    }
+
+    public String getGGServerName() {
+        return ggServerName;
     }
 
     @Override
