@@ -60,6 +60,7 @@ android {
             srcDirs = ['../../sdk/src/main/java',
                        '../../sdk/greengrass/event-stream-rpc-model/src/main/java',
                        '../../sdk/greengrass/event-stream-rpc-client/src/main/java',
+                       '../../sdk/greengrass/event-stream-rpc-server/src/main/java',
                        '../../sdk/greengrass/greengrass-client/src/event-stream-rpc-java/client',
                        '../../sdk/greengrass/greengrass-client/src/event-stream-rpc-java/model'
             ]
