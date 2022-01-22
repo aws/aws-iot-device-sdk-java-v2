@@ -40,12 +40,13 @@ public class SecretValue implements EventStreamJsonMessage {
     return null;
   }
 
-  public void setSecretString(final String secretString) {
+  public SecretValue setSecretString(final String secretString) {
     if (setUnionMember != null) {
       setUnionMember.nullify(this);
     }
     this.secretString = Optional.of(secretString);
     this.setUnionMember = UnionMember.SECRET_STRING;
+    return this;
   }
 
   public byte[] getSecretBinary() {
@@ -55,12 +56,13 @@ public class SecretValue implements EventStreamJsonMessage {
     return null;
   }
 
-  public void setSecretBinary(final byte[] secretBinary) {
+  public SecretValue setSecretBinary(final byte[] secretBinary) {
     if (setUnionMember != null) {
       setUnionMember.nullify(this);
     }
     this.secretBinary = Optional.of(secretBinary);
     this.setUnionMember = UnionMember.SECRET_BINARY;
+    return this;
   }
 
   /**

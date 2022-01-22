@@ -39,8 +39,9 @@ public class GetLocalDeploymentStatusRequest implements EventStreamJsonMessage {
     return null;
   }
 
-  public void setDeploymentId(final String deploymentId) {
+  public GetLocalDeploymentStatusRequest setDeploymentId(final String deploymentId) {
     this.deploymentId = Optional.ofNullable(deploymentId);
+    return this;
   }
 
   @Override

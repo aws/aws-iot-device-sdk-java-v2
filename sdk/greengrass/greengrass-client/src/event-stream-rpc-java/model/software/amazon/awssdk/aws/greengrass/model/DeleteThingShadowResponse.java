@@ -40,8 +40,9 @@ public class DeleteThingShadowResponse implements EventStreamJsonMessage {
     return null;
   }
 
-  public void setPayload(final byte[] payload) {
+  public DeleteThingShadowResponse setPayload(final byte[] payload) {
     this.payload = Optional.ofNullable(payload);
+    return this;
   }
 
   @Override

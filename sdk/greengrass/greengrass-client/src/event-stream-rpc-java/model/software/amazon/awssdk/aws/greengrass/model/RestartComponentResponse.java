@@ -57,8 +57,9 @@ public class RestartComponentResponse implements EventStreamJsonMessage {
     this.restartStatus = Optional.ofNullable(restartStatus.getValue());
   }
 
-  public void setRestartStatus(final String restartStatus) {
+  public RestartComponentResponse setRestartStatus(final String restartStatus) {
     this.restartStatus = Optional.ofNullable(restartStatus);
+    return this;
   }
 
   public String getMessage() {
@@ -68,8 +69,9 @@ public class RestartComponentResponse implements EventStreamJsonMessage {
     return null;
   }
 
-  public void setMessage(final String message) {
+  public RestartComponentResponse setMessage(final String message) {
     this.message = Optional.ofNullable(message);
+    return this;
   }
 
   @Override

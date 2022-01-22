@@ -39,8 +39,9 @@ public class PostComponentUpdateEvent implements EventStreamJsonMessage {
     return null;
   }
 
-  public void setDeploymentId(final String deploymentId) {
+  public PostComponentUpdateEvent setDeploymentId(final String deploymentId) {
     this.deploymentId = Optional.ofNullable(deploymentId);
+    return this;
   }
 
   @Override

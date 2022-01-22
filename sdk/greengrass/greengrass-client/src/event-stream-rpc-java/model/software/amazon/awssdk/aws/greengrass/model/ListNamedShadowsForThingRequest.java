@@ -54,8 +54,9 @@ public class ListNamedShadowsForThingRequest implements EventStreamJsonMessage {
     return null;
   }
 
-  public void setThingName(final String thingName) {
+  public ListNamedShadowsForThingRequest setThingName(final String thingName) {
     this.thingName = Optional.ofNullable(thingName);
+    return this;
   }
 
   public String getNextToken() {
@@ -65,8 +66,9 @@ public class ListNamedShadowsForThingRequest implements EventStreamJsonMessage {
     return null;
   }
 
-  public void setNextToken(final String nextToken) {
+  public ListNamedShadowsForThingRequest setNextToken(final String nextToken) {
     this.nextToken = Optional.ofNullable(nextToken);
+    return this;
   }
 
   public Integer getPageSize() {
@@ -76,8 +78,9 @@ public class ListNamedShadowsForThingRequest implements EventStreamJsonMessage {
     return null;
   }
 
-  public void setPageSize(final Integer pageSize) {
+  public ListNamedShadowsForThingRequest setPageSize(final Integer pageSize) {
     this.pageSize = Optional.ofNullable(pageSize);
+    return this;
   }
 
   @Override

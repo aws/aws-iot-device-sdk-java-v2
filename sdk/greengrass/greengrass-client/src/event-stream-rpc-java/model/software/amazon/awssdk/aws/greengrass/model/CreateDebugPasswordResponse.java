@@ -68,8 +68,9 @@ public class CreateDebugPasswordResponse implements EventStreamJsonMessage {
     return null;
   }
 
-  public void setPassword(final String password) {
+  public CreateDebugPasswordResponse setPassword(final String password) {
     this.password = Optional.ofNullable(password);
+    return this;
   }
 
   public String getUsername() {
@@ -79,8 +80,9 @@ public class CreateDebugPasswordResponse implements EventStreamJsonMessage {
     return null;
   }
 
-  public void setUsername(final String username) {
+  public CreateDebugPasswordResponse setUsername(final String username) {
     this.username = Optional.ofNullable(username);
+    return this;
   }
 
   public Instant getPasswordExpiration() {
@@ -90,8 +92,9 @@ public class CreateDebugPasswordResponse implements EventStreamJsonMessage {
     return null;
   }
 
-  public void setPasswordExpiration(final Instant passwordExpiration) {
+  public CreateDebugPasswordResponse setPasswordExpiration(final Instant passwordExpiration) {
     this.passwordExpiration = Optional.ofNullable(passwordExpiration);
+    return this;
   }
 
   public String getCertificateSHA256Hash() {
@@ -101,8 +104,9 @@ public class CreateDebugPasswordResponse implements EventStreamJsonMessage {
     return null;
   }
 
-  public void setCertificateSHA256Hash(final String certificateSHA256Hash) {
+  public CreateDebugPasswordResponse setCertificateSHA256Hash(final String certificateSHA256Hash) {
     this.certificateSHA256Hash = Optional.ofNullable(certificateSHA256Hash);
+    return this;
   }
 
   public String getCertificateSHA1Hash() {
@@ -112,8 +116,9 @@ public class CreateDebugPasswordResponse implements EventStreamJsonMessage {
     return null;
   }
 
-  public void setCertificateSHA1Hash(final String certificateSHA1Hash) {
+  public CreateDebugPasswordResponse setCertificateSHA1Hash(final String certificateSHA1Hash) {
     this.certificateSHA1Hash = Optional.ofNullable(certificateSHA1Hash);
+    return this;
   }
 
   @Override

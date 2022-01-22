@@ -39,9 +39,10 @@ public class SendConfigurationValidityReportRequest implements EventStreamJsonMe
     return null;
   }
 
-  public void setConfigurationValidityReport(
+  public SendConfigurationValidityReportRequest setConfigurationValidityReport(
       final ConfigurationValidityReport configurationValidityReport) {
     this.configurationValidityReport = Optional.ofNullable(configurationValidityReport);
+    return this;
   }
 
   @Override

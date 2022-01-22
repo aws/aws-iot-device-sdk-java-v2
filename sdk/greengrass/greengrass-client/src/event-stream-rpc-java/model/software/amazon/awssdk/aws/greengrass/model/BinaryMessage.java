@@ -40,8 +40,9 @@ public class BinaryMessage implements EventStreamJsonMessage {
     return null;
   }
 
-  public void setMessage(final byte[] message) {
+  public BinaryMessage setMessage(final byte[] message) {
     this.message = Optional.ofNullable(message);
+    return this;
   }
 
   @Override

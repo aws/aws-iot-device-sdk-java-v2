@@ -40,8 +40,9 @@ public class JsonMessage implements EventStreamJsonMessage {
     return null;
   }
 
-  public void setMessage(final Map<String, Object> message) {
+  public JsonMessage setMessage(final Map<String, Object> message) {
     this.message = Optional.ofNullable(message);
+    return this;
   }
 
   @Override

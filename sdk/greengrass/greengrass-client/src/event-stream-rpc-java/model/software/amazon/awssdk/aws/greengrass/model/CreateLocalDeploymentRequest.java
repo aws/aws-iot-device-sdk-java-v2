@@ -83,8 +83,9 @@ public class CreateLocalDeploymentRequest implements EventStreamJsonMessage {
     return null;
   }
 
-  public void setGroupName(final String groupName) {
+  public CreateLocalDeploymentRequest setGroupName(final String groupName) {
     this.groupName = Optional.ofNullable(groupName);
+    return this;
   }
 
   public Map<String, String> getRootComponentVersionsToAdd() {
@@ -94,8 +95,10 @@ public class CreateLocalDeploymentRequest implements EventStreamJsonMessage {
     return null;
   }
 
-  public void setRootComponentVersionsToAdd(final Map<String, String> rootComponentVersionsToAdd) {
+  public CreateLocalDeploymentRequest setRootComponentVersionsToAdd(
+      final Map<String, String> rootComponentVersionsToAdd) {
     this.rootComponentVersionsToAdd = Optional.ofNullable(rootComponentVersionsToAdd);
+    return this;
   }
 
   public List<String> getRootComponentsToRemove() {
@@ -105,8 +108,10 @@ public class CreateLocalDeploymentRequest implements EventStreamJsonMessage {
     return null;
   }
 
-  public void setRootComponentsToRemove(final List<String> rootComponentsToRemove) {
+  public CreateLocalDeploymentRequest setRootComponentsToRemove(
+      final List<String> rootComponentsToRemove) {
     this.rootComponentsToRemove = Optional.ofNullable(rootComponentsToRemove);
+    return this;
   }
 
   public Map<String, Map<String, Object>> getComponentToConfiguration() {
@@ -116,9 +121,10 @@ public class CreateLocalDeploymentRequest implements EventStreamJsonMessage {
     return null;
   }
 
-  public void setComponentToConfiguration(
+  public CreateLocalDeploymentRequest setComponentToConfiguration(
       final Map<String, Map<String, Object>> componentToConfiguration) {
     this.componentToConfiguration = Optional.ofNullable(componentToConfiguration);
+    return this;
   }
 
   public Map<String, RunWithInfo> getComponentToRunWithInfo() {
@@ -128,8 +134,10 @@ public class CreateLocalDeploymentRequest implements EventStreamJsonMessage {
     return null;
   }
 
-  public void setComponentToRunWithInfo(final Map<String, RunWithInfo> componentToRunWithInfo) {
+  public CreateLocalDeploymentRequest setComponentToRunWithInfo(
+      final Map<String, RunWithInfo> componentToRunWithInfo) {
     this.componentToRunWithInfo = Optional.ofNullable(componentToRunWithInfo);
+    return this;
   }
 
   public String getRecipeDirectoryPath() {
@@ -139,8 +147,9 @@ public class CreateLocalDeploymentRequest implements EventStreamJsonMessage {
     return null;
   }
 
-  public void setRecipeDirectoryPath(final String recipeDirectoryPath) {
+  public CreateLocalDeploymentRequest setRecipeDirectoryPath(final String recipeDirectoryPath) {
     this.recipeDirectoryPath = Optional.ofNullable(recipeDirectoryPath);
+    return this;
   }
 
   public String getArtifactsDirectoryPath() {
@@ -150,8 +159,10 @@ public class CreateLocalDeploymentRequest implements EventStreamJsonMessage {
     return null;
   }
 
-  public void setArtifactsDirectoryPath(final String artifactsDirectoryPath) {
+  public CreateLocalDeploymentRequest setArtifactsDirectoryPath(
+      final String artifactsDirectoryPath) {
     this.artifactsDirectoryPath = Optional.ofNullable(artifactsDirectoryPath);
+    return this;
   }
 
   @Override
