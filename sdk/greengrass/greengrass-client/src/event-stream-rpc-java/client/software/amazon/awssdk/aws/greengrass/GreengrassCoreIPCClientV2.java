@@ -128,6 +128,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
 
   /**
    * Perform the createDebugPassword operation synchronously.
+   *
    * @throws InterruptedException if thread is interrupted while waiting for the response
    * @return the response
    *
@@ -140,6 +141,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
 
   /**
    * Perform the createDebugPassword operation asynchronously.
+   *
    * @return a future which resolves to the response
    *
    * @param request request object
@@ -151,6 +153,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
 
   /**
    * Perform the createLocalDeployment operation synchronously.
+   *
    * @throws InterruptedException if thread is interrupted while waiting for the response
    * @return the response
    *
@@ -163,6 +166,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
 
   /**
    * Perform the createLocalDeployment operation asynchronously.
+   *
    * @return a future which resolves to the response
    *
    * @param request request object
@@ -174,6 +178,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
 
   /**
    * Perform the deferComponentUpdate operation synchronously.
+   *
    * @throws InterruptedException if thread is interrupted while waiting for the response
    * @return the response
    *
@@ -186,6 +191,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
 
   /**
    * Perform the deferComponentUpdate operation asynchronously.
+   *
    * @return a future which resolves to the response
    *
    * @param request request object
@@ -197,6 +203,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
 
   /**
    * Perform the deleteThingShadow operation synchronously.
+   *
    * @throws InterruptedException if thread is interrupted while waiting for the response
    * @return the response
    *
@@ -209,6 +216,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
 
   /**
    * Perform the deleteThingShadow operation asynchronously.
+   *
    * @return a future which resolves to the response
    *
    * @param request request object
@@ -220,6 +228,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
 
   /**
    * Perform the getComponentDetails operation synchronously.
+   *
    * @throws InterruptedException if thread is interrupted while waiting for the response
    * @return the response
    *
@@ -232,6 +241,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
 
   /**
    * Perform the getComponentDetails operation asynchronously.
+   *
    * @return a future which resolves to the response
    *
    * @param request request object
@@ -243,6 +253,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
 
   /**
    * Perform the getConfiguration operation synchronously.
+   *
    * @throws InterruptedException if thread is interrupted while waiting for the response
    * @return the response
    *
@@ -255,6 +266,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
 
   /**
    * Perform the getConfiguration operation asynchronously.
+   *
    * @return a future which resolves to the response
    *
    * @param request request object
@@ -266,6 +278,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
 
   /**
    * Perform the getLocalDeploymentStatus operation synchronously.
+   *
    * @throws InterruptedException if thread is interrupted while waiting for the response
    * @return the response
    *
@@ -278,6 +291,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
 
   /**
    * Perform the getLocalDeploymentStatus operation asynchronously.
+   *
    * @return a future which resolves to the response
    *
    * @param request request object
@@ -289,6 +303,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
 
   /**
    * Perform the getSecretValue operation synchronously.
+   *
    * @throws InterruptedException if thread is interrupted while waiting for the response
    * @return the response
    *
@@ -301,6 +316,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
 
   /**
    * Perform the getSecretValue operation asynchronously.
+   *
    * @return a future which resolves to the response
    *
    * @param request request object
@@ -312,6 +328,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
 
   /**
    * Perform the getThingShadow operation synchronously.
+   *
    * @throws InterruptedException if thread is interrupted while waiting for the response
    * @return the response
    *
@@ -324,6 +341,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
 
   /**
    * Perform the getThingShadow operation asynchronously.
+   *
    * @return a future which resolves to the response
    *
    * @param request request object
@@ -335,6 +353,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
 
   /**
    * Perform the listComponents operation synchronously.
+   *
    * @throws InterruptedException if thread is interrupted while waiting for the response
    * @return the response
    *
@@ -347,6 +366,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
 
   /**
    * Perform the listComponents operation asynchronously.
+   *
    * @return a future which resolves to the response
    *
    * @param request request object
@@ -358,6 +378,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
 
   /**
    * Perform the listLocalDeployments operation synchronously.
+   *
    * @throws InterruptedException if thread is interrupted while waiting for the response
    * @return the response
    *
@@ -370,6 +391,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
 
   /**
    * Perform the listLocalDeployments operation asynchronously.
+   *
    * @return a future which resolves to the response
    *
    * @param request request object
@@ -381,6 +403,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
 
   /**
    * Perform the listNamedShadowsForThing operation synchronously.
+   *
    * @throws InterruptedException if thread is interrupted while waiting for the response
    * @return the response
    *
@@ -393,6 +416,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
 
   /**
    * Perform the listNamedShadowsForThing operation asynchronously.
+   *
    * @return a future which resolves to the response
    *
    * @param request request object
@@ -404,6 +428,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
 
   /**
    * Perform the pauseComponent operation synchronously.
+   *
    * @throws InterruptedException if thread is interrupted while waiting for the response
    * @return the response
    *
@@ -416,6 +441,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
 
   /**
    * Perform the pauseComponent operation asynchronously.
+   *
    * @return a future which resolves to the response
    *
    * @param request request object
@@ -427,6 +453,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
 
   /**
    * Perform the publishToIoTCore operation synchronously.
+   *
    * @throws InterruptedException if thread is interrupted while waiting for the response
    * @return the response
    *
@@ -439,6 +466,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
 
   /**
    * Perform the publishToIoTCore operation asynchronously.
+   *
    * @return a future which resolves to the response
    *
    * @param request request object
@@ -450,6 +478,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
 
   /**
    * Perform the publishToTopic operation synchronously.
+   *
    * @throws InterruptedException if thread is interrupted while waiting for the response
    * @return the response
    *
@@ -462,6 +491,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
 
   /**
    * Perform the publishToTopic operation asynchronously.
+   *
    * @return a future which resolves to the response
    *
    * @param request request object
@@ -473,6 +503,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
 
   /**
    * Perform the restartComponent operation synchronously.
+   *
    * @throws InterruptedException if thread is interrupted while waiting for the response
    * @return the response
    *
@@ -485,6 +516,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
 
   /**
    * Perform the restartComponent operation asynchronously.
+   *
    * @return a future which resolves to the response
    *
    * @param request request object
@@ -496,6 +528,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
 
   /**
    * Perform the resumeComponent operation synchronously.
+   *
    * @throws InterruptedException if thread is interrupted while waiting for the response
    * @return the response
    *
@@ -508,6 +541,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
 
   /**
    * Perform the resumeComponent operation asynchronously.
+   *
    * @return a future which resolves to the response
    *
    * @param request request object
@@ -519,6 +553,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
 
   /**
    * Perform the sendConfigurationValidityReport operation synchronously.
+   *
    * @throws InterruptedException if thread is interrupted while waiting for the response
    * @return the response
    *
@@ -531,6 +566,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
 
   /**
    * Perform the sendConfigurationValidityReport operation asynchronously.
+   *
    * @return a future which resolves to the response
    *
    * @param request request object
@@ -542,6 +578,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
 
   /**
    * Perform the stopComponent operation synchronously.
+   *
    * @throws InterruptedException if thread is interrupted while waiting for the response
    * @return the response
    *
@@ -554,6 +591,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
 
   /**
    * Perform the stopComponent operation asynchronously.
+   *
    * @return a future which resolves to the response
    *
    * @param request request object
@@ -567,6 +605,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
    * Perform the subscribeToComponentUpdates operation asynchronously.
    * The initial response or error will be returned as the result of the asynchronous future, further events will
    * arrive via the streaming callbacks.
+   *
    * @return a future which resolves to the response
    *
    * @param request request object
@@ -588,6 +627,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
    * Perform the subscribeToComponentUpdates operation synchronously.
    * The initial response or error will be returned synchronously,
    * further events will arrive via the streaming callbacks.
+   *
    * @throws InterruptedException if thread is interrupted while waiting for the response
    * @return the response
    *
@@ -611,6 +651,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
    * Perform the subscribeToComponentUpdates operation synchronously.
    * The initial response or error will be returned synchronously, further events will
    * arrive via the streaming callbacks.
+   *
    * @throws InterruptedException if thread is interrupted while waiting for the response
    * @return the response
    *
@@ -630,6 +671,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
    * Perform the subscribeToComponentUpdates operation asynchronously.
    * The initial response or error will be returned as the result of the asynchronous future, further events will
    * arrive via the streaming callbacks.
+   *
    * @return a future which resolves to the response
    *
    * @param request request object
@@ -647,6 +689,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
    * Perform the subscribeToConfigurationUpdate operation asynchronously.
    * The initial response or error will be returned as the result of the asynchronous future, further events will
    * arrive via the streaming callbacks.
+   *
    * @return a future which resolves to the response
    *
    * @param request request object
@@ -668,6 +711,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
    * Perform the subscribeToConfigurationUpdate operation synchronously.
    * The initial response or error will be returned synchronously,
    * further events will arrive via the streaming callbacks.
+   *
    * @throws InterruptedException if thread is interrupted while waiting for the response
    * @return the response
    *
@@ -691,6 +735,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
    * Perform the subscribeToConfigurationUpdate operation synchronously.
    * The initial response or error will be returned synchronously, further events will
    * arrive via the streaming callbacks.
+   *
    * @throws InterruptedException if thread is interrupted while waiting for the response
    * @return the response
    *
@@ -710,6 +755,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
    * Perform the subscribeToConfigurationUpdate operation asynchronously.
    * The initial response or error will be returned as the result of the asynchronous future, further events will
    * arrive via the streaming callbacks.
+   *
    * @return a future which resolves to the response
    *
    * @param request request object
@@ -727,6 +773,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
    * Perform the subscribeToIoTCore operation asynchronously.
    * The initial response or error will be returned as the result of the asynchronous future, further events will
    * arrive via the streaming callbacks.
+   *
    * @return a future which resolves to the response
    *
    * @param request request object
@@ -747,6 +794,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
    * Perform the subscribeToIoTCore operation synchronously.
    * The initial response or error will be returned synchronously,
    * further events will arrive via the streaming callbacks.
+   *
    * @throws InterruptedException if thread is interrupted while waiting for the response
    * @return the response
    *
@@ -769,6 +817,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
    * Perform the subscribeToIoTCore operation synchronously.
    * The initial response or error will be returned synchronously, further events will
    * arrive via the streaming callbacks.
+   *
    * @throws InterruptedException if thread is interrupted while waiting for the response
    * @return the response
    *
@@ -788,6 +837,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
    * Perform the subscribeToIoTCore operation asynchronously.
    * The initial response or error will be returned as the result of the asynchronous future, further events will
    * arrive via the streaming callbacks.
+   *
    * @return a future which resolves to the response
    *
    * @param request request object
@@ -805,6 +855,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
    * Perform the subscribeToTopic operation asynchronously.
    * The initial response or error will be returned as the result of the asynchronous future, further events will
    * arrive via the streaming callbacks.
+   *
    * @return a future which resolves to the response
    *
    * @param request request object
@@ -825,6 +876,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
    * Perform the subscribeToTopic operation synchronously.
    * The initial response or error will be returned synchronously,
    * further events will arrive via the streaming callbacks.
+   *
    * @throws InterruptedException if thread is interrupted while waiting for the response
    * @return the response
    *
@@ -847,6 +899,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
    * Perform the subscribeToTopic operation synchronously.
    * The initial response or error will be returned synchronously, further events will
    * arrive via the streaming callbacks.
+   *
    * @throws InterruptedException if thread is interrupted while waiting for the response
    * @return the response
    *
@@ -866,6 +919,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
    * Perform the subscribeToTopic operation asynchronously.
    * The initial response or error will be returned as the result of the asynchronous future, further events will
    * arrive via the streaming callbacks.
+   *
    * @return a future which resolves to the response
    *
    * @param request request object
@@ -883,6 +937,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
    * Perform the subscribeToValidateConfigurationUpdates operation asynchronously.
    * The initial response or error will be returned as the result of the asynchronous future, further events will
    * arrive via the streaming callbacks.
+   *
    * @return a future which resolves to the response
    *
    * @param request request object
@@ -904,6 +959,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
    * Perform the subscribeToValidateConfigurationUpdates operation synchronously.
    * The initial response or error will be returned synchronously,
    * further events will arrive via the streaming callbacks.
+   *
    * @throws InterruptedException if thread is interrupted while waiting for the response
    * @return the response
    *
@@ -927,6 +983,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
    * Perform the subscribeToValidateConfigurationUpdates operation synchronously.
    * The initial response or error will be returned synchronously, further events will
    * arrive via the streaming callbacks.
+   *
    * @throws InterruptedException if thread is interrupted while waiting for the response
    * @return the response
    *
@@ -946,6 +1003,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
    * Perform the subscribeToValidateConfigurationUpdates operation asynchronously.
    * The initial response or error will be returned as the result of the asynchronous future, further events will
    * arrive via the streaming callbacks.
+   *
    * @return a future which resolves to the response
    *
    * @param request request object
@@ -961,6 +1019,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
 
   /**
    * Perform the updateConfiguration operation synchronously.
+   *
    * @throws InterruptedException if thread is interrupted while waiting for the response
    * @return the response
    *
@@ -973,6 +1032,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
 
   /**
    * Perform the updateConfiguration operation asynchronously.
+   *
    * @return a future which resolves to the response
    *
    * @param request request object
@@ -984,6 +1044,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
 
   /**
    * Perform the updateState operation synchronously.
+   *
    * @throws InterruptedException if thread is interrupted while waiting for the response
    * @return the response
    *
@@ -996,6 +1057,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
 
   /**
    * Perform the updateState operation asynchronously.
+   *
    * @return a future which resolves to the response
    *
    * @param request request object
@@ -1006,6 +1068,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
 
   /**
    * Perform the updateThingShadow operation synchronously.
+   *
    * @throws InterruptedException if thread is interrupted while waiting for the response
    * @return the response
    *
@@ -1018,6 +1081,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
 
   /**
    * Perform the updateThingShadow operation asynchronously.
+   *
    * @return a future which resolves to the response
    *
    * @param request request object
@@ -1029,6 +1093,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
 
   /**
    * Perform the validateAuthorizationToken operation synchronously.
+   *
    * @throws InterruptedException if thread is interrupted while waiting for the response
    * @return the response
    *
@@ -1041,6 +1106,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
 
   /**
    * Perform the validateAuthorizationToken operation asynchronously.
+   *
    * @return a future which resolves to the response
    *
    * @param request request object

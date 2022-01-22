@@ -1,0 +1,1 @@
+/usr/local/homebrew/Cellar/openjdk@8/1.8.0+302/libexec/openjdk.jdk/Contents/Home/jre/../bin/javadoc -J-Xmx8192m -J-Xms128m --allow-script-in-comments @options @packages
