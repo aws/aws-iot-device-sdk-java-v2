@@ -98,7 +98,6 @@
               <sources>
                 <source>greengrass/event-stream-rpc-model/src/main/java</source>
                 <source>greengrass/event-stream-rpc-client/src/main/java</source>
-                <source>greengrass/event-stream-rpc-server/src/main/java</source>
                 <source>greengrass/greengrass-client/src/event-stream-rpc-java/client</source>
                 <source>greengrass/greengrass-client/src/event-stream-rpc-java/model</source>
               </sources>
@@ -114,6 +113,10 @@
               <sources>
                 <source>greengrass/event-stream-rpc-model/src/test/java</source>
                 <source>greengrass/event-stream-rpc-client/src/test/java</source>
+                <!-- Include server sources as part of the test scope instead of including it in the main source.
+                     This prevents the server code from being distributed, but lets us test with it.
+                 -->
+                <source>greengrass/event-stream-rpc-server/src/main/java</source>
                 <source>greengrass/event-stream-rpc-server/src/test/java</source>
                 <source>greengrass/greengrass-client/src/test/java</source>
               </sources>
