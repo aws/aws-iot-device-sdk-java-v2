@@ -50,8 +50,9 @@ public class ComponentNotFoundError extends GreengrassCoreIPCError implements Ev
     return null;
   }
 
-  public void setMessage(final String message) {
+  public ComponentNotFoundError setMessage(final String message) {
     this.message = Optional.ofNullable(message);
+    return this;
   }
 
   @Override

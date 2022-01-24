@@ -39,12 +39,13 @@ public class PublishMessage implements EventStreamJsonMessage {
     return null;
   }
 
-  public void setJsonMessage(final JsonMessage jsonMessage) {
+  public PublishMessage setJsonMessage(final JsonMessage jsonMessage) {
     if (setUnionMember != null) {
       setUnionMember.nullify(this);
     }
     this.jsonMessage = Optional.of(jsonMessage);
     this.setUnionMember = UnionMember.JSON_MESSAGE;
+    return this;
   }
 
   public BinaryMessage getBinaryMessage() {
@@ -54,12 +55,13 @@ public class PublishMessage implements EventStreamJsonMessage {
     return null;
   }
 
-  public void setBinaryMessage(final BinaryMessage binaryMessage) {
+  public PublishMessage setBinaryMessage(final BinaryMessage binaryMessage) {
     if (setUnionMember != null) {
       setUnionMember.nullify(this);
     }
     this.binaryMessage = Optional.of(binaryMessage);
     this.setUnionMember = UnionMember.BINARY_MESSAGE;
+    return this;
   }
 
   /**

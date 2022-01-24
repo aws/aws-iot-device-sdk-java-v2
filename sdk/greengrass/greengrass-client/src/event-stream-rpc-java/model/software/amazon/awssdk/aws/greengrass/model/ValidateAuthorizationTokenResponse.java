@@ -40,8 +40,9 @@ public class ValidateAuthorizationTokenResponse implements EventStreamJsonMessag
     return null;
   }
 
-  public void setIsValid(final Boolean isValid) {
+  public ValidateAuthorizationTokenResponse setIsValid(final Boolean isValid) {
     this.isValid = Optional.ofNullable(isValid);
+    return this;
   }
 
   @Override

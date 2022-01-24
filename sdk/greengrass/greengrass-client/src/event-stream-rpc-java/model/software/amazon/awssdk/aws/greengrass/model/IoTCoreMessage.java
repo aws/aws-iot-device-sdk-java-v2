@@ -32,12 +32,13 @@ public class IoTCoreMessage implements EventStreamJsonMessage {
     return null;
   }
 
-  public void setMessage(final MQTTMessage message) {
+  public IoTCoreMessage setMessage(final MQTTMessage message) {
     if (setUnionMember != null) {
       setUnionMember.nullify(this);
     }
     this.message = Optional.of(message);
     this.setUnionMember = UnionMember.MESSAGE;
+    return this;
   }
 
   /**

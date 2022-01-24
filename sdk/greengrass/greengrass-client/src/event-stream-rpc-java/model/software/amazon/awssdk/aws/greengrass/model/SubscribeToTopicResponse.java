@@ -39,8 +39,9 @@ public class SubscribeToTopicResponse implements EventStreamJsonMessage {
     return null;
   }
 
-  public void setTopicName(final String topicName) {
+  public SubscribeToTopicResponse setTopicName(final String topicName) {
     this.topicName = Optional.ofNullable(topicName);
+    return this;
   }
 
   @Override

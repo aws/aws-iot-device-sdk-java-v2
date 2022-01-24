@@ -54,8 +54,9 @@ public class PublishToIoTCoreRequest implements EventStreamJsonMessage {
     return null;
   }
 
-  public void setTopicName(final String topicName) {
+  public PublishToIoTCoreRequest setTopicName(final String topicName) {
     this.topicName = Optional.ofNullable(topicName);
+    return this;
   }
 
   public QOS getQos() {
@@ -76,8 +77,9 @@ public class PublishToIoTCoreRequest implements EventStreamJsonMessage {
     this.qos = Optional.ofNullable(qos.getValue());
   }
 
-  public void setQos(final String qos) {
+  public PublishToIoTCoreRequest setQos(final String qos) {
     this.qos = Optional.ofNullable(qos);
+    return this;
   }
 
   public byte[] getPayload() {
@@ -87,8 +89,9 @@ public class PublishToIoTCoreRequest implements EventStreamJsonMessage {
     return null;
   }
 
-  public void setPayload(final byte[] payload) {
+  public PublishToIoTCoreRequest setPayload(final byte[] payload) {
     this.payload = Optional.ofNullable(payload);
+    return this;
   }
 
   @Override
