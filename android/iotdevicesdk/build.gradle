@@ -42,33 +42,39 @@ ext {
 }
 
 android {
-    compileSdkVersion 29
-    buildToolsVersion "29.0.3"
+    compileSdkVersion 30
+    buildToolsVersion "30.0.2"
 
     defaultConfig {
         minSdkVersion 26
-        targetSdkVersion 29
+        targetSdkVersion 30
         versionCode = gitVersionCode()
         versionName = gitVersionName()
-        ndkVersion "21.0.6113669"
+        ndkVersion "23.1.7779620"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'consumer-rules.pro'
     }
 
     sourceSets {
-        main {
-            java.srcDir '../../sdk/src/main/java'
+        main.java {
+            srcDirs = ['../../sdk/src/main/java',
+                       '../../sdk/greengrass/event-stream-rpc-model/src/main/java',
+                       '../../sdk/greengrass/event-stream-rpc-client/src/main/java',
+                       '../../sdk/greengrass/event-stream-rpc-server/src/main/java',
+                       '../../sdk/greengrass/greengrass-client/src/event-stream-rpc-java/client',
+                       '../../sdk/greengrass/greengrass-client/src/event-stream-rpc-java/model'
+            ]
         }
     }
 
     buildTypes {
-        debug {
-            versionNameSuffix = gitVersionTag()
-        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            versionNameSuffix ""
+        }
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 
@@ -76,18 +82,16 @@ android {
         sourceCompatibility = 1.8
         targetCompatibility = 1.8
     }
+    ndkVersion '23.1.7779620'
 }
 
 repositories {
+    mavenLocal()
     mavenCentral()
-    maven {
-        url System.getenv('HOME') + "/.m2/repository"
-    }
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'software.amazon.awssdk.crt:android:0.15.8'
+    implementation 'software.amazon.awssdk.crt:aws-crt-android:0.15.11'
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'androidx.appcompat:appcompat:1.1.0'
     testImplementation 'junit:junit:4.12'
@@ -128,16 +132,19 @@ afterEvaluate {
                 from components.release
 
                 groupId = 'software.amazon.awssdk.iotdevicesdk'
-                artifactId = 'android'
+                artifactId = 'aws-iot-device-sdk-android'
                 version = android.defaultConfig.versionName
             }
+
+
             debug(MavenPublication) {
                 from components.debug
 
                 groupId = 'software.amazon.awssdk.iotdevicesdk'
-                artifactId = 'android'
+                artifactId = 'aws-iot-device-sdk-android'
                 version = android.defaultConfig.versionName + '-SNAPSHOT'
             }
+
         }
         repositories {
             maven {
@@ -145,6 +152,8 @@ afterEvaluate {
                 def releaseRepo = "https://aws.oss.sonatype.org/"
                 url = version.endsWith('SNAPSHOT') ? snapshotRepo : releaseRepo
             }
+            mavenLocal()
+
         }
     }
 }
