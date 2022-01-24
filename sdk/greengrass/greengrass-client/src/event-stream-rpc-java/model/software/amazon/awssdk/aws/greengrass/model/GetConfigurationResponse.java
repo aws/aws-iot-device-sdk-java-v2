@@ -47,8 +47,9 @@ public class GetConfigurationResponse implements EventStreamJsonMessage {
     return null;
   }
 
-  public void setComponentName(final String componentName) {
+  public GetConfigurationResponse setComponentName(final String componentName) {
     this.componentName = Optional.ofNullable(componentName);
+    return this;
   }
 
   public Map<String, Object> getValue() {
@@ -58,8 +59,9 @@ public class GetConfigurationResponse implements EventStreamJsonMessage {
     return null;
   }
 
-  public void setValue(final Map<String, Object> value) {
+  public GetConfigurationResponse setValue(final Map<String, Object> value) {
     this.value = Optional.ofNullable(value);
+    return this;
   }
 
   @Override

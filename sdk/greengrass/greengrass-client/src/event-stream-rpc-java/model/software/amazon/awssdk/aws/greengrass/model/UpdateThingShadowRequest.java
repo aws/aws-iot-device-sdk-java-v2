@@ -54,8 +54,9 @@ public class UpdateThingShadowRequest implements EventStreamJsonMessage {
     return null;
   }
 
-  public void setThingName(final String thingName) {
+  public UpdateThingShadowRequest setThingName(final String thingName) {
     this.thingName = Optional.ofNullable(thingName);
+    return this;
   }
 
   public String getShadowName() {
@@ -65,8 +66,9 @@ public class UpdateThingShadowRequest implements EventStreamJsonMessage {
     return null;
   }
 
-  public void setShadowName(final String shadowName) {
+  public UpdateThingShadowRequest setShadowName(final String shadowName) {
     this.shadowName = Optional.ofNullable(shadowName);
+    return this;
   }
 
   public byte[] getPayload() {
@@ -76,8 +78,9 @@ public class UpdateThingShadowRequest implements EventStreamJsonMessage {
     return null;
   }
 
-  public void setPayload(final byte[] payload) {
+  public UpdateThingShadowRequest setPayload(final byte[] payload) {
     this.payload = Optional.ofNullable(payload);
+    return this;
   }
 
   @Override

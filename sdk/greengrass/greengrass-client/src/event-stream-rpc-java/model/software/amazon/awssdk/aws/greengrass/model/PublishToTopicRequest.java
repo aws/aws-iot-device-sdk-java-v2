@@ -46,8 +46,9 @@ public class PublishToTopicRequest implements EventStreamJsonMessage {
     return null;
   }
 
-  public void setTopic(final String topic) {
+  public PublishToTopicRequest setTopic(final String topic) {
     this.topic = Optional.ofNullable(topic);
+    return this;
   }
 
   public PublishMessage getPublishMessage() {
@@ -57,8 +58,9 @@ public class PublishToTopicRequest implements EventStreamJsonMessage {
     return null;
   }
 
-  public void setPublishMessage(final PublishMessage publishMessage) {
+  public PublishToTopicRequest setPublishMessage(final PublishMessage publishMessage) {
     this.publishMessage = Optional.ofNullable(publishMessage);
+    return this;
   }
 
   @Override

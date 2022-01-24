@@ -50,8 +50,9 @@ public class FailedUpdateConditionCheckError extends GreengrassCoreIPCError impl
     return null;
   }
 
-  public void setMessage(final String message) {
+  public FailedUpdateConditionCheckError setMessage(final String message) {
     this.message = Optional.ofNullable(message);
+    return this;
   }
 
   @Override

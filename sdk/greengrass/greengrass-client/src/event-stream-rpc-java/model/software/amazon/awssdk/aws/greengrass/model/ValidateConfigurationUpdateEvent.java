@@ -47,8 +47,10 @@ public class ValidateConfigurationUpdateEvent implements EventStreamJsonMessage 
     return null;
   }
 
-  public void setConfiguration(final Map<String, Object> configuration) {
+  public ValidateConfigurationUpdateEvent setConfiguration(
+      final Map<String, Object> configuration) {
     this.configuration = Optional.ofNullable(configuration);
+    return this;
   }
 
   public String getDeploymentId() {
@@ -58,8 +60,9 @@ public class ValidateConfigurationUpdateEvent implements EventStreamJsonMessage 
     return null;
   }
 
-  public void setDeploymentId(final String deploymentId) {
+  public ValidateConfigurationUpdateEvent setDeploymentId(final String deploymentId) {
     this.deploymentId = Optional.ofNullable(deploymentId);
+    return this;
   }
 
   @Override

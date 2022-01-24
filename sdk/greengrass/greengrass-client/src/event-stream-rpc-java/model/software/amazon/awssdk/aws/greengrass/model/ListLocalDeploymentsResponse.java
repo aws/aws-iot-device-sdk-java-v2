@@ -40,8 +40,10 @@ public class ListLocalDeploymentsResponse implements EventStreamJsonMessage {
     return null;
   }
 
-  public void setLocalDeployments(final List<LocalDeployment> localDeployments) {
+  public ListLocalDeploymentsResponse setLocalDeployments(
+      final List<LocalDeployment> localDeployments) {
     this.localDeployments = Optional.ofNullable(localDeployments);
+    return this;
   }
 
   @Override

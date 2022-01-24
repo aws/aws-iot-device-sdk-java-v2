@@ -66,8 +66,9 @@ public class ResourceNotFoundError extends GreengrassCoreIPCError implements Eve
     return null;
   }
 
-  public void setMessage(final String message) {
+  public ResourceNotFoundError setMessage(final String message) {
     this.message = Optional.ofNullable(message);
+    return this;
   }
 
   public String getResourceType() {
@@ -77,8 +78,9 @@ public class ResourceNotFoundError extends GreengrassCoreIPCError implements Eve
     return null;
   }
 
-  public void setResourceType(final String resourceType) {
+  public ResourceNotFoundError setResourceType(final String resourceType) {
     this.resourceType = Optional.ofNullable(resourceType);
+    return this;
   }
 
   public String getResourceName() {
@@ -88,8 +90,9 @@ public class ResourceNotFoundError extends GreengrassCoreIPCError implements Eve
     return null;
   }
 
-  public void setResourceName(final String resourceName) {
+  public ResourceNotFoundError setResourceName(final String resourceName) {
     this.resourceName = Optional.ofNullable(resourceName);
+    return this;
   }
 
   @Override

@@ -47,8 +47,9 @@ public class PreComponentUpdateEvent implements EventStreamJsonMessage {
     return null;
   }
 
-  public void setDeploymentId(final String deploymentId) {
+  public PreComponentUpdateEvent setDeploymentId(final String deploymentId) {
     this.deploymentId = Optional.ofNullable(deploymentId);
+    return this;
   }
 
   public Boolean isIsGgcRestarting() {
@@ -58,8 +59,9 @@ public class PreComponentUpdateEvent implements EventStreamJsonMessage {
     return null;
   }
 
-  public void setIsGgcRestarting(final Boolean isGgcRestarting) {
+  public PreComponentUpdateEvent setIsGgcRestarting(final Boolean isGgcRestarting) {
     this.isGgcRestarting = Optional.ofNullable(isGgcRestarting);
+    return this;
   }
 
   @Override

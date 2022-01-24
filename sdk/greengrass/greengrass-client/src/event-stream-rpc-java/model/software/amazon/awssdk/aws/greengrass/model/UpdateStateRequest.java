@@ -50,8 +50,9 @@ public class UpdateStateRequest implements EventStreamJsonMessage {
     this.state = Optional.ofNullable(state.getValue());
   }
 
-  public void setState(final String state) {
+  public UpdateStateRequest setState(final String state) {
     this.state = Optional.ofNullable(state);
+    return this;
   }
 
   @Override

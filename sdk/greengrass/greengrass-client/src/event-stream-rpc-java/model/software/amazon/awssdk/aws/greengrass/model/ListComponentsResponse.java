@@ -40,8 +40,9 @@ public class ListComponentsResponse implements EventStreamJsonMessage {
     return null;
   }
 
-  public void setComponents(final List<ComponentDetails> components) {
+  public ListComponentsResponse setComponents(final List<ComponentDetails> components) {
     this.components = Optional.ofNullable(components);
+    return this;
   }
 
   @Override

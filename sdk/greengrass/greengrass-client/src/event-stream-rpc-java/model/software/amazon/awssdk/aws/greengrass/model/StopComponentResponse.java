@@ -57,8 +57,9 @@ public class StopComponentResponse implements EventStreamJsonMessage {
     this.stopStatus = Optional.ofNullable(stopStatus.getValue());
   }
 
-  public void setStopStatus(final String stopStatus) {
+  public StopComponentResponse setStopStatus(final String stopStatus) {
     this.stopStatus = Optional.ofNullable(stopStatus);
+    return this;
   }
 
   public String getMessage() {
@@ -68,8 +69,9 @@ public class StopComponentResponse implements EventStreamJsonMessage {
     return null;
   }
 
-  public void setMessage(final String message) {
+  public StopComponentResponse setMessage(final String message) {
     this.message = Optional.ofNullable(message);
+    return this;
   }
 
   @Override
