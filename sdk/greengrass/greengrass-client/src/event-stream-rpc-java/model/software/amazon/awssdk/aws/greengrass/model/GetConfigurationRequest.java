@@ -47,8 +47,9 @@ public class GetConfigurationRequest implements EventStreamJsonMessage {
     return null;
   }
 
-  public void setComponentName(final String componentName) {
+  public GetConfigurationRequest setComponentName(final String componentName) {
     this.componentName = Optional.ofNullable(componentName);
+    return this;
   }
 
   public List<String> getKeyPath() {
@@ -58,8 +59,9 @@ public class GetConfigurationRequest implements EventStreamJsonMessage {
     return null;
   }
 
-  public void setKeyPath(final List<String> keyPath) {
+  public GetConfigurationRequest setKeyPath(final List<String> keyPath) {
     this.keyPath = Optional.ofNullable(keyPath);
+    return this;
   }
 
   @Override

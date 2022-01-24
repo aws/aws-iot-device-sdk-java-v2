@@ -46,8 +46,9 @@ public class SubscribeToIoTCoreRequest implements EventStreamJsonMessage {
     return null;
   }
 
-  public void setTopicName(final String topicName) {
+  public SubscribeToIoTCoreRequest setTopicName(final String topicName) {
     this.topicName = Optional.ofNullable(topicName);
+    return this;
   }
 
   public QOS getQos() {
@@ -68,8 +69,9 @@ public class SubscribeToIoTCoreRequest implements EventStreamJsonMessage {
     this.qos = Optional.ofNullable(qos.getValue());
   }
 
-  public void setQos(final String qos) {
+  public SubscribeToIoTCoreRequest setQos(final String qos) {
     this.qos = Optional.ofNullable(qos);
+    return this;
   }
 
   @Override

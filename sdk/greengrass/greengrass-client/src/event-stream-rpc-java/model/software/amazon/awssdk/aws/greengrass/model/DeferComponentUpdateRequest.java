@@ -54,8 +54,9 @@ public class DeferComponentUpdateRequest implements EventStreamJsonMessage {
     return null;
   }
 
-  public void setDeploymentId(final String deploymentId) {
+  public DeferComponentUpdateRequest setDeploymentId(final String deploymentId) {
     this.deploymentId = Optional.ofNullable(deploymentId);
+    return this;
   }
 
   public String getMessage() {
@@ -65,8 +66,9 @@ public class DeferComponentUpdateRequest implements EventStreamJsonMessage {
     return null;
   }
 
-  public void setMessage(final String message) {
+  public DeferComponentUpdateRequest setMessage(final String message) {
     this.message = Optional.ofNullable(message);
+    return this;
   }
 
   public Long getRecheckAfterMs() {
@@ -76,8 +78,9 @@ public class DeferComponentUpdateRequest implements EventStreamJsonMessage {
     return null;
   }
 
-  public void setRecheckAfterMs(final Long recheckAfterMs) {
+  public DeferComponentUpdateRequest setRecheckAfterMs(final Long recheckAfterMs) {
     this.recheckAfterMs = Optional.ofNullable(recheckAfterMs);
+    return this;
   }
 
   @Override

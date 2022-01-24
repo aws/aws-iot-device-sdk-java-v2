@@ -50,8 +50,9 @@ public class InvalidArtifactsDirectoryPathError extends GreengrassCoreIPCError i
     return null;
   }
 
-  public void setMessage(final String message) {
+  public InvalidArtifactsDirectoryPathError setMessage(final String message) {
     this.message = Optional.ofNullable(message);
+    return this;
   }
 
   @Override

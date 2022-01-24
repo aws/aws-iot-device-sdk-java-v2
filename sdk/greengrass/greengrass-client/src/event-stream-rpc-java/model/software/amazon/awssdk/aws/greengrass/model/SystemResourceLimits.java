@@ -48,8 +48,9 @@ public class SystemResourceLimits implements EventStreamJsonMessage {
     return null;
   }
 
-  public void setMemory(final Long memory) {
+  public SystemResourceLimits setMemory(final Long memory) {
     this.memory = Optional.ofNullable(memory);
+    return this;
   }
 
   public Double getCpus() {
@@ -59,8 +60,9 @@ public class SystemResourceLimits implements EventStreamJsonMessage {
     return null;
   }
 
-  public void setCpus(final Double cpus) {
+  public SystemResourceLimits setCpus(final Double cpus) {
     this.cpus = Optional.ofNullable(cpus);
+    return this;
   }
 
   @Override

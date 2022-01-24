@@ -53,8 +53,9 @@ public class RunWithInfo implements EventStreamJsonMessage {
     return null;
   }
 
-  public void setPosixUser(final String posixUser) {
+  public RunWithInfo setPosixUser(final String posixUser) {
     this.posixUser = Optional.ofNullable(posixUser);
+    return this;
   }
 
   public String getWindowsUser() {
@@ -64,8 +65,9 @@ public class RunWithInfo implements EventStreamJsonMessage {
     return null;
   }
 
-  public void setWindowsUser(final String windowsUser) {
+  public RunWithInfo setWindowsUser(final String windowsUser) {
     this.windowsUser = Optional.ofNullable(windowsUser);
+    return this;
   }
 
   public SystemResourceLimits getSystemResourceLimits() {
@@ -75,8 +77,9 @@ public class RunWithInfo implements EventStreamJsonMessage {
     return null;
   }
 
-  public void setSystemResourceLimits(final SystemResourceLimits systemResourceLimits) {
+  public RunWithInfo setSystemResourceLimits(final SystemResourceLimits systemResourceLimits) {
     this.systemResourceLimits = Optional.ofNullable(systemResourceLimits);
+    return this;
   }
 
   @Override

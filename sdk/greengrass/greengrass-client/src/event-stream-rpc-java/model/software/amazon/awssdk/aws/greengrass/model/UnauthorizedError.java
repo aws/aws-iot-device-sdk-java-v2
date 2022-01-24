@@ -50,8 +50,9 @@ public class UnauthorizedError extends GreengrassCoreIPCError implements EventSt
     return null;
   }
 
-  public void setMessage(final String message) {
+  public UnauthorizedError setMessage(final String message) {
     this.message = Optional.ofNullable(message);
+    return this;
   }
 
   @Override

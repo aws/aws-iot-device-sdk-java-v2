@@ -39,8 +39,9 @@ public class CreateLocalDeploymentResponse implements EventStreamJsonMessage {
     return null;
   }
 
-  public void setDeploymentId(final String deploymentId) {
+  public CreateLocalDeploymentResponse setDeploymentId(final String deploymentId) {
     this.deploymentId = Optional.ofNullable(deploymentId);
+    return this;
   }
 
   @Override
