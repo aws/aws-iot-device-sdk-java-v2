@@ -2,6 +2,7 @@ package software.amazon.awssdk.eventstreamrpc;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import software.amazon.awssdk.crt.CrtResource;
 import software.amazon.awssdk.crt.Log;
 import software.amazon.awssdk.crt.eventstream.ServerConnectionContinuationHandler;
 import software.amazon.awssdk.crt.io.EventLoopGroup;
@@ -13,7 +14,11 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Random;
+import java.util.Set;
 import java.util.function.Function;
 
 /**
@@ -31,10 +36,6 @@ public class IpcServerTests {
     @Test
     public void testStartStopIpcServer() {
         final int port = randomPort();
-        SocketOptions socketOptions = new SocketOptions();
-        socketOptions.connectTimeoutMs = 3000;
-        socketOptions.domain = SocketOptions.SocketDomain.IPv4;
-        socketOptions.type = SocketOptions.SocketType.STREAM;
 
         final EventStreamRPCServiceHandler handler = new EventStreamRPCServiceHandler() {
             @Override
@@ -74,27 +75,31 @@ public class IpcServerTests {
         handler.setAuthenticationHandler(TestAuthNZHandlers.getAuthNHandler());
         handler.setAuthorizationHandler(TestAuthNZHandlers.getAuthZHandler());
 
-        try(final EventLoopGroup elGroup = new EventLoopGroup(1)) {
-            final IpcServer ipcServer = new IpcServer(elGroup, socketOptions, null, "127.0.0.1", port, handler);
-            ipcServer.runServer();
+        try(final EventLoopGroup elGroup = new EventLoopGroup(1);
+            SocketOptions socketOptions = new SocketOptions()) {
+            socketOptions.connectTimeoutMs = 3000;
+            socketOptions.domain = SocketOptions.SocketDomain.IPv4;
+            socketOptions.type = SocketOptions.SocketType.STREAM;
+            
+            try (final IpcServer ipcServer = new IpcServer(elGroup, socketOptions, null, "127.0.0.1", port, handler)) {
+                ipcServer.runServer();
 
-            Socket clientSocket = new Socket();
-            SocketAddress address = new InetSocketAddress("127.0.0.1", port);
-            clientSocket.connect(address, 3000);
-            //no real assertion to be made here as long as the above connection works...
-            clientSocket.close();
+                Socket clientSocket = new Socket();
+                SocketAddress address = new InetSocketAddress("127.0.0.1", port);
+                clientSocket.connect(address, 3000);
+                //no real assertion to be made here as long as the above connection works...
+                clientSocket.close();
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        CrtResource.waitForNoResources();
     }
 
     @Test
     public void testIpcServerDoubleStartFailure() {
         final int port = randomPort();
-        SocketOptions socketOptions = new SocketOptions();
-        socketOptions.connectTimeoutMs = 3000;
-        socketOptions.domain = SocketOptions.SocketDomain.IPv4;
-        socketOptions.type = SocketOptions.SocketType.STREAM;
 
         final EventStreamRPCServiceHandler handler = new EventStreamRPCServiceHandler() {
             @Override
@@ -125,22 +130,24 @@ public class IpcServerTests {
         handler.setAuthenticationHandler(TestAuthNZHandlers.getAuthNHandler());
         handler.setAuthorizationHandler(TestAuthNZHandlers.getAuthZHandler());
 
-        try (final EventLoopGroup elGroup = new EventLoopGroup(1)) {
-            final IpcServer ipcServer = new IpcServer(elGroup, socketOptions, null, "127.0.0.1", port, handler);
-            ipcServer.runServer();
-            Assertions.assertThrows(IllegalStateException.class, () -> {
+        try (final EventLoopGroup elGroup = new EventLoopGroup(1);
+                    SocketOptions socketOptions = new SocketOptions()) {
+            socketOptions.connectTimeoutMs = 3000;
+            socketOptions.domain = SocketOptions.SocketDomain.IPv4;
+            socketOptions.type = SocketOptions.SocketType.STREAM;
+            try(final IpcServer ipcServer = new IpcServer(elGroup, socketOptions, null, "127.0.0.1", port, handler)) {
                 ipcServer.runServer();
-            });
+                Assertions.assertThrows(IllegalStateException.class, () -> {
+                    ipcServer.runServer();
+                });
+            }
         }
+        CrtResource.waitForNoResources();
     }
 
     @Test
     public void testIpcServerModelNotSet() {
         final int port = randomPort();
-        SocketOptions socketOptions = new SocketOptions();
-        socketOptions.connectTimeoutMs = 3000;
-        socketOptions.domain = SocketOptions.SocketDomain.IPv4;
-        socketOptions.type = SocketOptions.SocketType.STREAM;
 
         final EventStreamRPCServiceHandler handler = new EventStreamRPCServiceHandler() {
             @Override
@@ -159,21 +166,23 @@ public class IpcServerTests {
         handler.setAuthenticationHandler(TestAuthNZHandlers.getAuthNHandler());
         handler.setAuthorizationHandler(TestAuthNZHandlers.getAuthZHandler());
 
-        try (final EventLoopGroup elGroup = new EventLoopGroup(1)) {
-            final IpcServer ipcServer = new IpcServer(elGroup, socketOptions, null, "127.0.0.1", port, handler);
-            Assertions.assertThrows(InvalidServiceConfigurationException.class, () -> {
-                ipcServer.runServer();
-            });
+        try (final EventLoopGroup elGroup = new EventLoopGroup(1);
+                    SocketOptions socketOptions = new SocketOptions()) {
+            socketOptions.connectTimeoutMs = 3000;
+            socketOptions.domain = SocketOptions.SocketDomain.IPv4;
+            socketOptions.type = SocketOptions.SocketType.STREAM;
+            try (final IpcServer ipcServer = new IpcServer(elGroup, socketOptions, null, "127.0.0.1", port, handler)) {
+                Assertions.assertThrows(InvalidServiceConfigurationException.class, () -> {
+                    ipcServer.runServer();
+                });
+            }
         }
+        CrtResource.waitForNoResources();
     }
 
     @Test
     public void testIpcServerOperationNotSet() {
         final int port = randomPort();
-        SocketOptions socketOptions = new SocketOptions();
-        socketOptions.connectTimeoutMs = 3000;
-        socketOptions.domain = SocketOptions.SocketDomain.IPv4;
-        socketOptions.type = SocketOptions.SocketType.STREAM;
         final Set<String> OPERATION_SET = new HashSet<>();
         OPERATION_SET.add("dummyOperationName");
 
@@ -206,21 +215,23 @@ public class IpcServerTests {
         handler.setAuthenticationHandler(TestAuthNZHandlers.getAuthNHandler());
         handler.setAuthorizationHandler(TestAuthNZHandlers.getAuthZHandler());
 
-        try (final EventLoopGroup elGroup = new EventLoopGroup(1)) {
-            final IpcServer ipcServer = new IpcServer(elGroup, socketOptions, null, "127.0.0.1", port, handler);
-            Assertions.assertThrows(InvalidServiceConfigurationException.class, () -> {
-                ipcServer.runServer();
-            });
+        try (final EventLoopGroup elGroup = new EventLoopGroup(1);
+                    SocketOptions socketOptions = new SocketOptions()) {
+            socketOptions.connectTimeoutMs = 3000;
+            socketOptions.domain = SocketOptions.SocketDomain.IPv4;
+            socketOptions.type = SocketOptions.SocketType.STREAM;
+            try (final IpcServer ipcServer = new IpcServer(elGroup, socketOptions, null, "127.0.0.1", port, handler)) {
+                Assertions.assertThrows(InvalidServiceConfigurationException.class, () -> {
+                    ipcServer.runServer();
+                });
+            }
         }
+        CrtResource.waitForNoResources();
     }
 
     @Test
     public void testIpcServerAuthNUnset() {
         final int port = randomPort();
-        SocketOptions socketOptions = new SocketOptions();
-        socketOptions.connectTimeoutMs = 3000;
-        socketOptions.domain = SocketOptions.SocketDomain.IPv4;
-        socketOptions.type = SocketOptions.SocketType.STREAM;
         final Set<String> OPERATION_SET = new HashSet<>();
         OPERATION_SET.add("dummyOperationName");
 
@@ -253,21 +264,23 @@ public class IpcServerTests {
         //missing handler.setAuthenticationHandler(TestAuthNZHandlers.getAuthNHandler());
         handler.setAuthorizationHandler(TestAuthNZHandlers.getAuthZHandler());
 
-        try (final EventLoopGroup elGroup = new EventLoopGroup(1)) {
-            final IpcServer ipcServer = new IpcServer(elGroup, socketOptions, null, "127.0.0.1", port, handler);
-            Assertions.assertThrows(InvalidServiceConfigurationException.class, () -> {
-                ipcServer.runServer();
-            });
+        try (final EventLoopGroup elGroup = new EventLoopGroup(1);
+                    SocketOptions socketOptions = new SocketOptions()) {
+            socketOptions.connectTimeoutMs = 3000;
+            socketOptions.domain = SocketOptions.SocketDomain.IPv4;
+            socketOptions.type = SocketOptions.SocketType.STREAM;
+            try (final IpcServer ipcServer = new IpcServer(elGroup, socketOptions, null, "127.0.0.1", port, handler)) {
+                Assertions.assertThrows(InvalidServiceConfigurationException.class, () -> {
+                    ipcServer.runServer();
+                });
+            }
         }
+        CrtResource.waitForNoResources();
     }
 
     @Test
     public void testIpcServerAuthZUnset() {
         final int port = randomPort();
-        SocketOptions socketOptions = new SocketOptions();
-        socketOptions.connectTimeoutMs = 3000;
-        socketOptions.domain = SocketOptions.SocketDomain.IPv4;
-        socketOptions.type = SocketOptions.SocketType.STREAM;
         final Set<String> OPERATION_SET = new HashSet<>();
         OPERATION_SET.add("dummyOperationName");
 
@@ -300,11 +313,17 @@ public class IpcServerTests {
         handler.setAuthenticationHandler(TestAuthNZHandlers.getAuthNHandler());
         //missing: handler.setAuthorizationHandler(TestAuthNZHandlers.getAuthZHandler());
 
-        try (final EventLoopGroup elGroup = new EventLoopGroup(1)) {
-            final IpcServer ipcServer = new IpcServer(elGroup, socketOptions, null, "127.0.0.1", port, handler);
-            Assertions.assertThrows(InvalidServiceConfigurationException.class, () -> {
-                ipcServer.runServer();
-            });
+        try (final EventLoopGroup elGroup = new EventLoopGroup(1);
+                    SocketOptions socketOptions = new SocketOptions()) {
+            socketOptions.connectTimeoutMs = 3000;
+            socketOptions.domain = SocketOptions.SocketDomain.IPv4;
+            socketOptions.type = SocketOptions.SocketType.STREAM;
+            try (final IpcServer ipcServer = new IpcServer(elGroup, socketOptions, null, "127.0.0.1", port, handler)) {
+                Assertions.assertThrows(InvalidServiceConfigurationException.class, () -> {
+                    ipcServer.runServer();
+                });
+            }
         }
+        CrtResource.waitForNoResources();
     }
 }

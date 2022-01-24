@@ -1,10 +1,10 @@
 package software.amazon.awssdk.eventstreamrpc;
 
+import software.amazon.awssdk.crt.eventstream.ServerConnectionContinuationHandler;
+
 import java.util.Collection;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import software.amazon.awssdk.crt.eventstream.ServerConnectionContinuationHandler;
 
 /**
  * This is really the entire service interface base class
