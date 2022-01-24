@@ -29,7 +29,7 @@ public final class EchoTestRPCService extends EventStreamRPCServiceHandler {
   public static final String GET_ALL_CUSTOMERS = SERVICE_NAMESPACE + "#GetAllCustomers";
 
   static {
-    SERVICE_OPERATION_SET = new HashSet();
+    SERVICE_OPERATION_SET = new HashSet<>();
     SERVICE_OPERATION_SET.add(GET_ALL_PRODUCTS);
     SERVICE_OPERATION_SET.add(CAUSE_SERVICE_ERROR);
     SERVICE_OPERATION_SET.add(CAUSE_STREAM_SERVICE_TO_ERROR);
@@ -41,7 +41,7 @@ public final class EchoTestRPCService extends EventStreamRPCServiceHandler {
   private final Map<String, Function<OperationContinuationHandlerContext, ? extends ServerConnectionContinuationHandler>> operationSupplierMap;
 
   public EchoTestRPCService() {
-    this.operationSupplierMap = new HashMap();
+    this.operationSupplierMap = new HashMap<>();
   }
 
   @Override
