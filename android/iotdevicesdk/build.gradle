@@ -136,24 +136,22 @@ afterEvaluate {
                 version = android.defaultConfig.versionName
             }
 
-/*
+
             debug(MavenPublication) {
                 from components.debug
 
                 groupId = 'software.amazon.awssdk.iotdevicesdk'
-                artifactId = 'aws-iot-device-sdk-android-debug'
-                version = android.defaultConfig.versionName
+                artifactId = 'aws-iot-device-sdk-android'
+                version = android.defaultConfig.versionName + '-SNAPSHOT'
             }
-*/
+
         }
         repositories {
-/*
             maven {
                 def snapshotRepo = "https://aws.oss.sonatype.org/content/repositories/snapshots"
                 def releaseRepo = "https://aws.oss.sonatype.org/"
                 url = version.endsWith('SNAPSHOT') ? snapshotRepo : releaseRepo
             }
-*/
             mavenLocal()
 
         }
