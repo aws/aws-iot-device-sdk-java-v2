@@ -34,7 +34,7 @@ public class IpcServerTests {
     }
 
     @Test
-    public void testStartStopIpcServer() {
+    public void testStartStopIpcServer() throws InterruptedException {
         final int port = randomPort();
 
         final EventStreamRPCServiceHandler handler = new EventStreamRPCServiceHandler() {
@@ -89,6 +89,7 @@ public class IpcServerTests {
                 clientSocket.connect(address, 3000);
                 //no real assertion to be made here as long as the above connection works...
                 clientSocket.close();
+                Thread.sleep(1_000);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
