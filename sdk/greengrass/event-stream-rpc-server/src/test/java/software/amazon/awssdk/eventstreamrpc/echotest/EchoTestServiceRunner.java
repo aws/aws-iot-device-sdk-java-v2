@@ -14,7 +14,8 @@ import software.amazon.awssdk.eventstreamrpc.EventStreamRPCConnectionConfig;
 import software.amazon.awssdk.eventstreamrpc.RpcServer;
 import software.amazon.awssdk.eventstreamrpc.test.TestAuthNZHandlers;
 
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Semaphore;
@@ -150,14 +151,12 @@ public class EchoTestServiceRunner implements AutoCloseable {
      * 
      * !!! WARNING SocketOptions.SocketDomain is LOCAL for this server. Test client must match
      */
-    public static void runLocalEchoTestServerClientLoopUnixDomain(final File domainSocketFile, final BiConsumer<EventStreamRPCConnection, EchoTestRPC> testClientLogic, int nCount) throws Exception {
+    public static void runLocalEchoTestServerClientLoopUnixDomain(final String domainSocket,
+                                                                  final BiConsumer<EventStreamRPCConnection, EchoTestRPC> testClientLogic, int nCount) throws Exception {
         final int port = randomPort();
-        if (domainSocketFile.exists()) {
-            domainSocketFile.delete();
-        }
-        final String hostname = domainSocketFile.getAbsolutePath();
+        Files.deleteIfExists(Paths.get(domainSocket));
         try (final EventLoopGroup elGroup = new EventLoopGroup(1);
-             final EchoTestServiceRunner runner = new EchoTestServiceRunner(elGroup, SocketOptions.SocketDomain.LOCAL, hostname, port);
+             final EchoTestServiceRunner runner = new EchoTestServiceRunner(elGroup, SocketOptions.SocketDomain.LOCAL, domainSocket, port);
              final SocketOptions socketOptions = new SocketOptions();
              final HostResolver hostResolver = new HostResolver(elGroup, 64);
              final ClientBootstrap clientBootstrap = new ClientBootstrap(elGroup, hostResolver)) {
@@ -168,7 +167,7 @@ public class EchoTestServiceRunner implements AutoCloseable {
             runner.runService();
             for (int i = 0; i < nCount; ++i) {
                 final EventStreamRPCConnectionConfig config = new EventStreamRPCConnectionConfig(clientBootstrap, elGroup,
-                        socketOptions, null, hostname, port, () -> TestAuthNZHandlers.getClientAuth("accepted.foo"));
+                        socketOptions, null, domainSocket, port, () -> TestAuthNZHandlers.getClientAuth("accepted.foo"));
                 try (EventStreamRPCConnection connection = new EventStreamRPCConnection(config)) {
                     final CompletableFuture<Void> connectFuture = new CompletableFuture<>();
                     final CompletableFuture<Void> clientErrorFuture = new CompletableFuture<>(); //only completes exceptionally if there's an error

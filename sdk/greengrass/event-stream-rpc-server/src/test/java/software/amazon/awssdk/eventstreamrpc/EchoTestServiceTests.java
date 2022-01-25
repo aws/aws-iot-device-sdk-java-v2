@@ -2,7 +2,6 @@ package software.amazon.awssdk.eventstreamrpc;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.opentest4j.AssertionFailedError;
 import software.amazon.awssdk.awstest.CauseServiceErrorResponseHandler;
 import software.amazon.awssdk.awstest.CauseStreamServiceToErrorResponseHandler;
 import software.amazon.awssdk.awstest.EchoMessageResponseHandler;
@@ -18,12 +17,12 @@ import software.amazon.awssdk.awstest.model.FruitEnum;
 import software.amazon.awssdk.awstest.model.MessageData;
 import software.amazon.awssdk.awstest.model.Pair;
 import software.amazon.awssdk.awstest.model.ServiceError;
+import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.crt.CrtResource;
 import software.amazon.awssdk.crt.Log;
 import software.amazon.awssdk.eventstreamrpc.echotest.EchoTestServiceRunner;
 import software.amazon.awssdk.eventstreamrpc.model.EventStreamOperationError;
 
-import java.io.File;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,6 +30,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -95,7 +95,7 @@ public class EchoTestServiceTests {
     }
     
     @Test //this test takes too long to complete so turn it off by default
-    public void testLongRunningServerOperations() {
+    public void testLongRunningServerOperations() throws Exception {
         final int numIterations = Integer.parseInt(System.getProperty("numIterations", "10"));
         final int threadPoolSize = Integer.parseInt(System.getProperty("threadPoolSize", "16"));          //max threads, since tasks are IO intense, doesn't need to be large 
         final int parallelTaskMultiplyFactor = Integer.parseInt(System.getProperty("parallelTaskFactor", "10"));  //however many tasks to run in parallel
@@ -167,41 +167,37 @@ public class EchoTestServiceTests {
             }
         });
         int count[] = { 0 };
-        try {
-            EchoTestServiceRunner.runLocalEchoTestServerClientLoopUnixDomain(new File("/tmp/ipc.sock"), (connection, client) -> {
-                final Collection<Future<?>> taskFutures = new LinkedList<>(); 
-                     
-                for (int i = 0; i < parallelTaskMultiplyFactor; ++i) {  //multiply the tasks evenly
-                    taskFutures.addAll(tasks.stream()
-                            .map(task -> service.submit(()-> {
-                                for (int taskExecIndx = 0; taskExecIndx < taskLengthMultiplyFactor; ++taskExecIndx) {
-                                    task.accept(connection, client);
-                                    try {
-                                        Thread.sleep(taskRepeatSleepDelayMs);
-                                    } catch (InterruptedException e) {
-                                        throw new RuntimeException(e);
-                                    }
-                                    System.out.println("Task repeat...");
-                                }
-                            }))
-                            .collect(Collectors.toList()));
-                }
+        EchoTestServiceRunner.runLocalEchoTestServerClientLoopUnixDomain(
+                CRT.getOSIdentifier().equals("windows") ? "\\\\.\\pipe\\TestP-" + UUID.randomUUID() : "/tmp/ipc.sock",
+                (connection, client) -> {
+                    final Collection<Future<?>> taskFutures = new LinkedList<>();
 
-                taskFutures.forEach(task -> {
-                    try {
-                        task.get();
-                    } catch (InterruptedException | ExecutionException e) {
-                        Assertions.fail(e);
-                    }
-                });
-                System.out.println("ALL TASKS finished an ITERATION: " + ++count[0]);
-            }, numIterations);
-            CrtResource.waitForNoResources();
-        } catch (AssertionFailedError e) {
-            throw e;
-        } catch (Exception e) {
-            Assertions.fail(e);
-        }
+                    for (int i = 0; i < parallelTaskMultiplyFactor; ++i) {  //multiply the tasks evenly
+                taskFutures.addAll(tasks.stream()
+                        .map(task -> service.submit(()-> {
+                            for (int taskExecIndx = 0; taskExecIndx < taskLengthMultiplyFactor; ++taskExecIndx) {
+                                task.accept(connection, client);
+                                try {
+                                    Thread.sleep(taskRepeatSleepDelayMs);
+                                } catch (InterruptedException e) {
+                                    throw new RuntimeException(e);
+                                }
+                                System.out.println("Task repeat...");
+                            }
+                        }))
+                        .collect(Collectors.toList()));
+            }
+
+            taskFutures.forEach(task -> {
+                try {
+                    task.get();
+                } catch (InterruptedException | ExecutionException e) {
+                    Assertions.fail(e);
+                }
+            });
+            System.out.println("ALL TASKS finished an ITERATION: " + ++count[0]);
+        }, numIterations);
+        CrtResource.waitForNoResources();
     }
 
     public void futureCausesOperationError(final CompletableFuture<?> future, Class<? extends EventStreamOperationError> clazz, String code) {
