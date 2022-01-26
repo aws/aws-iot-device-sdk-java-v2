@@ -23,8 +23,8 @@ jobs:
       fail-fast: false
       matrix:
         image:
-          #- manylinux2014-x64 disabled until we get non end-of-life maven installed
-          #- al2-x64 disabled until we get non end-of-life maven installed
+          - manylinux2014-x64
+          - al2-x64
           - fedora-34-x64
           - opensuse-leap
           - rhel8-x64
