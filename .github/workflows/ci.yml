@@ -20,10 +20,11 @@ jobs:
   linux-compat:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         image:
           - manylinux2014-x64
-          - al2-x64
+          #- al2-x64 until we get non-ancient maven installed
           - fedora-34-x64
           - opensuse-leap
           - rhel8-x64
