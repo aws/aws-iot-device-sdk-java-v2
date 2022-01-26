@@ -23,7 +23,7 @@ public interface EventStreamJsonMessage {
         if (payloadString == null || payloadString.isEmpty() || payloadString.equals("null")) {
             return "{}".getBytes(StandardCharsets.UTF_8);
         }
-        return gson.toJson(this).getBytes(StandardCharsets.UTF_8);
+        return payloadString.getBytes(StandardCharsets.UTF_8);
     }
 
     default EventStreamJsonMessage fromJson(final Gson gson, byte[] payload) {

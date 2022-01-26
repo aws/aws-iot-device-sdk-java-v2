@@ -20,6 +20,7 @@ jobs:
   linux-compat:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         image:
           - manylinux2014-x64

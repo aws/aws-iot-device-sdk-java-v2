@@ -1,17 +1,18 @@
 package software.amazon.awssdk.eventstreamrpc;
 
 import com.google.gson.Gson;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
 
 import java.nio.charset.StandardCharsets;
-import java.util.logging.Logger;
 
 /**
  * Useful to set as a handler for an operation with no implementation yet.
  */
 public class DebugLoggingOperationHandler extends OperationContinuationHandler
         <EventStreamJsonMessage, EventStreamJsonMessage, EventStreamJsonMessage, EventStreamJsonMessage> {
-    private static final Logger LOGGER = Logger.getLogger(DebugLoggingOperationHandler.class.getName());
+    private static Logger LOGGER = LoggerFactory.getLogger(DebugLoggingOperationHandler.class);
     private final OperationModelContext operationModelContext;
 
     public DebugLoggingOperationHandler(final OperationModelContext modelContext, final OperationContinuationHandlerContext context) {
@@ -31,14 +32,13 @@ public class DebugLoggingOperationHandler extends OperationContinuationHandler
      */
     @Override
     protected void onStreamClosed() {
-        LOGGER.info(String.format("%s operation onStreamClosed()",
-                operationModelContext.getOperationName()));
+        LOGGER.info("{} operation onStreamClosed()", operationModelContext.getOperationName());
     }
 
     @Override
     public EventStreamJsonMessage handleRequest(EventStreamJsonMessage request) {
-        LOGGER.info(String.format("%s operation handleRequest() ::  %s", operationModelContext.getOperationName(),
-                operationModelContext.getServiceModel().toJson(request)));
+        LOGGER.info("{} operation handleRequest() ::  {}", operationModelContext.getOperationName(),
+                operationModelContext.getServiceModel().toJson(request));
         return new EventStreamJsonMessage() {
             @Override
             public byte[] toPayload(Gson gson) {
@@ -54,7 +54,7 @@ public class DebugLoggingOperationHandler extends OperationContinuationHandler
 
     @Override
     public void handleStreamEvent(EventStreamJsonMessage streamRequestEvent) {
-        LOGGER.info(String.format("%s operation handleStreamEvent() ::  %s", operationModelContext.getOperationName(),
-                operationModelContext.getServiceModel().toJson(streamRequestEvent)));
+        LOGGER.info("{} operation handleStreamEvent() ::  {}", operationModelContext.getOperationName(),
+                operationModelContext.getServiceModel().toJson(streamRequestEvent));
     }
 }
