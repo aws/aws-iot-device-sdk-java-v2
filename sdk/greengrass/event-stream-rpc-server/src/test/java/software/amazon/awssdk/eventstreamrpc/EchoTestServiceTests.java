@@ -52,8 +52,8 @@ public class EchoTestServiceTests {
         final EchoMessageResponseHandler responseHandler = client.echoMessage(request, Optional.empty());
         EchoMessageResponse response = null;
         try {
-            response = responseHandler.getResponse().get();
-        } catch (InterruptedException | ExecutionException e) {
+            response = responseHandler.getResponse().get(10, TimeUnit.SECONDS);
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
             Assertions.fail(e);
         }
         Assertions.assertEquals(request.getMessage(), response.getMessage(), "Data echoed back not equivalent!");
@@ -156,13 +156,11 @@ public class EchoTestServiceTests {
                 data.setStringMessage("basicStringMessage");
                 msg.setStreamMessage(data);
                 streamErrorResponseHandler.sendStreamEvent(msg);   //sends message, exception should be is the response
-                final Throwable t = exceptionReceivedFuture.get();
+                final Throwable t = exceptionReceivedFuture.get(10, TimeUnit.SECONDS);
                 Assertions.assertTrue(t instanceof ServiceError);
                 final ServiceError error = (ServiceError)t;
                 Assertions.assertEquals("ServiceError", error.getErrorCode());
-            } catch (InterruptedException e) {
-                Assertions.fail(e);
-            } catch (ExecutionException e) {
+            } catch (InterruptedException | ExecutionException | TimeoutException e) {
                 Assertions.fail(e);
             }
         });
@@ -190,8 +188,8 @@ public class EchoTestServiceTests {
 
             taskFutures.forEach(task -> {
                 try {
-                    task.get();
-                } catch (InterruptedException | ExecutionException e) {
+                    task.get(10, TimeUnit.SECONDS);
+                } catch (InterruptedException | ExecutionException | TimeoutException e) {
                     Assertions.fail(e);
                 }
             });
@@ -202,7 +200,7 @@ public class EchoTestServiceTests {
 
     public void futureCausesOperationError(final CompletableFuture<?> future, Class<? extends EventStreamOperationError> clazz, String code) {
         try {
-            future.get();
+            future.get(10, TimeUnit.SECONDS);
         } catch (ExecutionException e) {
             final Throwable t = e.getCause();
             if (t == null) {
@@ -213,7 +211,7 @@ public class EchoTestServiceTests {
                 final EventStreamOperationError error = (EventStreamOperationError)t;
                 Assertions.assertEquals(code, error.getErrorCode(), "Non-matching error code returned");
             }
-        } catch (InterruptedException e) {
+        } catch (InterruptedException | TimeoutException e) {
             Assertions.fail(e.getCause());
         }
     }
@@ -506,13 +504,11 @@ public class EchoTestServiceTests {
                 data.setStringMessage("basicStringMessage");
                 msg.setStreamMessage(data);
                 streamErrorResponseHandler.sendStreamEvent(msg);   //sends message, exception should be is the response
-                final Throwable t = exceptionReceivedFuture.get();
+                final Throwable t = exceptionReceivedFuture.get(10, TimeUnit.SECONDS);
                 Assertions.assertTrue(t instanceof ServiceError);
                 final ServiceError error = (ServiceError)t;
                 Assertions.assertEquals("ServiceError", error.getErrorCode());
-            } catch (InterruptedException e) {
-                Assertions.fail(e);
-            } catch (ExecutionException e) {
+            } catch (InterruptedException | ExecutionException | TimeoutException e) {
                 Assertions.fail(e);
             }
 

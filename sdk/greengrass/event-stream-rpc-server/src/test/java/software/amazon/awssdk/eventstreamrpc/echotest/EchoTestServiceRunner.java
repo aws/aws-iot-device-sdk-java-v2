@@ -19,6 +19,7 @@ import java.nio.file.Paths;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 
 /**
@@ -57,12 +58,12 @@ public class EchoTestServiceRunner implements AutoCloseable {
 
             final EchoTestRPCService service = new EchoTestRPCService();
             //wiring of operation handlers
-            service.setEchoMessageHandler((context) -> new EchoMessageHandler(context));
-            service.setEchoStreamMessagesHandler((context) -> new EchoStreamMessagesHandler(context));
-            service.setCauseServiceErrorHandler((context) -> new CauseServiceErrorHandler(context));
-            service.setCauseStreamServiceToErrorHandler((context) -> new CauseStreamServiceToError(context));
-            service.setGetAllCustomersHandler((context) -> new GetAllCustomersHandler(context));
-            service.setGetAllProductsHandler((context) -> new GetAllProductsHandler(context));
+            service.setEchoMessageHandler(EchoMessageHandler::new);
+            service.setEchoStreamMessagesHandler(EchoStreamMessagesHandler::new);
+            service.setCauseServiceErrorHandler(CauseServiceErrorHandler::new);
+            service.setCauseStreamServiceToErrorHandler(CauseStreamServiceToError::new);
+            service.setGetAllCustomersHandler(GetAllCustomersHandler::new);
+            service.setGetAllProductsHandler(GetAllProductsHandler::new);
 
             service.setAuthenticationHandler(TestAuthNZHandlers.getAuthNHandler());
             service.setAuthorizationHandler(TestAuthNZHandlers.getAuthZHandler());
@@ -135,11 +136,11 @@ public class EchoTestServiceRunner implements AutoCloseable {
                         return false;
                     }
                 });
-                connectFuture.get();    //wait for connection to move forward
+                connectFuture.get(10, TimeUnit.SECONDS);    //wait for connection to move forward
                 final EchoTestRPC client = new EchoTestRPCClient(connection);
                 final CompletableFuture<Object> runClientOrError =
                         CompletableFuture.anyOf(clientErrorFuture, CompletableFuture.runAsync(() -> { testClientLogic.accept(connection, client); }));
-                runClientOrError.get();
+                runClientOrError.get(10, TimeUnit.SECONDS);
                 return clientErrorFuture;
             }
         }
@@ -197,13 +198,13 @@ public class EchoTestServiceRunner implements AutoCloseable {
                             return false;
                         }
                     });
-                    connectFuture.get();    //wait for connection to move forward
+                    connectFuture.get(10, TimeUnit.SECONDS);    //wait for connection to move forward
                     final EchoTestRPC client = new EchoTestRPCClient(connection);
                     final CompletableFuture<Object> runClientOrError =
                             CompletableFuture.anyOf(clientErrorFuture, CompletableFuture.runAsync(() -> {
                                 testClientLogic.accept(connection, client);
                             }));
-                    runClientOrError.get();
+                    runClientOrError.get(10, TimeUnit.SECONDS);
                 }
             }
         }
