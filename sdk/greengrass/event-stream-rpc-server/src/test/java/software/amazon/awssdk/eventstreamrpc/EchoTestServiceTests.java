@@ -475,26 +475,22 @@ public class EchoTestServiceTests {
     @Test
     public void testInvokeEchoStreamError() throws Exception {
         final CompletableFuture<Void> clientErrorAfter = EchoTestServiceRunner.runLocalEchoTestServer((connection, client) -> {
-            System.out.println("Run cb testInvokeEchoStreamError");
             final CompletableFuture<Throwable> exceptionReceivedFuture = new CompletableFuture<>();
             final CauseStreamServiceToErrorResponseHandler streamErrorResponseHandler = client.causeStreamServiceToError(EchoStreamingRequest.VOID, Optional.of(new StreamResponseHandler<EchoStreamingMessage>() {
                 @Override
                 public void onStreamEvent(EchoStreamingMessage streamEvent) {
-                    System.out.println("testInvokeEchoStreamError onstreamevent");
                     exceptionReceivedFuture.completeExceptionally(new RuntimeException("Stream event received when expecting error!"));
                }
 
                 @Override
                 public boolean onStreamError(Throwable error) {
                     //this is normal, but we are looking for a specific one
-                    System.out.println("testInvokeEchoStreamError onstreamerror");
                     exceptionReceivedFuture.complete(error);
                     return true;
                 }
 
                 @Override
                 public void onStreamClosed() {
-                    System.out.println("testInvokeEchoStreamError onstreamclosed");
                     if (!exceptionReceivedFuture.isDone()) {
                         exceptionReceivedFuture.completeExceptionally(new RuntimeException("Stream closed before exception thrown!"));
                     }
@@ -506,11 +502,8 @@ public class EchoTestServiceTests {
                 final MessageData data = new MessageData();
                 data.setStringMessage("basicStringMessage");
                 msg.setStreamMessage(data);
-                System.out.println("testInvokeEchoStreamError sendstremevent");
                 streamErrorResponseHandler.sendStreamEvent(msg);   //sends message, exception should be is the response
-                System.out.println("testInvokeEchoStreamError wait");
                 final Throwable t = exceptionReceivedFuture.get(60, TimeUnit.SECONDS);
-                System.out.println("testInvokeEchoStreamError done waiting");
                 Assertions.assertTrue(t instanceof ServiceError);
                 final ServiceError error = (ServiceError)t;
                 Assertions.assertEquals("ServiceError", error.getErrorCode());
@@ -522,7 +515,6 @@ public class EchoTestServiceTests {
             //connection that should still be open for business
             final MessageData data = new MessageData();
             data.setStringMessage("Post stream error string message");
-            System.out.println("testInvokeEchoStreamError echo accept");
             DO_ECHO_FN.accept(client, data);
         });
         try {
