@@ -72,5 +72,5 @@ jobs:
           cache: maven
       - name: Build ${{ env.PACKAGE_NAME }} + consumers
         run: |
-          java --version
+          java -version
           mvn -B test
