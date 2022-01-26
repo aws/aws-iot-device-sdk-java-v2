@@ -18,6 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
@@ -136,11 +137,13 @@ public class EchoTestServiceRunner implements AutoCloseable {
                         return false;
                     }
                 });
-                connectFuture.get(10, TimeUnit.SECONDS);    //wait for connection to move forward
+                connectFuture.get(480, TimeUnit.SECONDS);    //wait for connection to move forward
                 final EchoTestRPC client = new EchoTestRPCClient(connection);
                 final CompletableFuture<Object> runClientOrError =
-                        CompletableFuture.anyOf(clientErrorFuture, CompletableFuture.runAsync(() -> { testClientLogic.accept(connection, client); }));
-                runClientOrError.get(10, TimeUnit.SECONDS);
+                        CompletableFuture.anyOf(clientErrorFuture,
+                                CompletableFuture.runAsync(() -> testClientLogic.accept(connection, client),
+                                        Executors.newSingleThreadExecutor()));
+                runClientOrError.get(240, TimeUnit.SECONDS);
                 return clientErrorFuture;
             }
         }
@@ -198,13 +201,12 @@ public class EchoTestServiceRunner implements AutoCloseable {
                             return false;
                         }
                     });
-                    connectFuture.get(10, TimeUnit.SECONDS);    //wait for connection to move forward
+                    connectFuture.get(30, TimeUnit.SECONDS);    //wait for connection to move forward
                     final EchoTestRPC client = new EchoTestRPCClient(connection);
                     final CompletableFuture<Object> runClientOrError =
-                            CompletableFuture.anyOf(clientErrorFuture, CompletableFuture.runAsync(() -> {
-                                testClientLogic.accept(connection, client);
-                            }));
-                    runClientOrError.get(10, TimeUnit.SECONDS);
+                            CompletableFuture.anyOf(clientErrorFuture, CompletableFuture.runAsync(
+                                    () -> testClientLogic.accept(connection, client), Executors.newSingleThreadExecutor()));
+                    runClientOrError.get(240, TimeUnit.SECONDS);
                 }
             }
         }

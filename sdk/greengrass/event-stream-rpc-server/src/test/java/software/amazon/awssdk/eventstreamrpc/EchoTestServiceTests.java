@@ -200,7 +200,7 @@ public class EchoTestServiceTests {
 
     public void futureCausesOperationError(final CompletableFuture<?> future, Class<? extends EventStreamOperationError> clazz, String code) {
         try {
-            future.get(10, TimeUnit.SECONDS);
+            future.get(60, TimeUnit.SECONDS);
         } catch (ExecutionException e) {
             final Throwable t = e.getCause();
             if (t == null) {
@@ -212,7 +212,7 @@ public class EchoTestServiceTests {
                 Assertions.assertEquals(code, error.getErrorCode(), "Non-matching error code returned");
             }
         } catch (InterruptedException | TimeoutException e) {
-            Assertions.fail(e.getCause());
+            throw new RuntimeException(e);
         }
     }
 
@@ -504,7 +504,7 @@ public class EchoTestServiceTests {
                 data.setStringMessage("basicStringMessage");
                 msg.setStreamMessage(data);
                 streamErrorResponseHandler.sendStreamEvent(msg);   //sends message, exception should be is the response
-                final Throwable t = exceptionReceivedFuture.get(10, TimeUnit.SECONDS);
+                final Throwable t = exceptionReceivedFuture.get(60, TimeUnit.SECONDS);
                 Assertions.assertTrue(t instanceof ServiceError);
                 final ServiceError error = (ServiceError)t;
                 Assertions.assertEquals("ServiceError", error.getErrorCode());
