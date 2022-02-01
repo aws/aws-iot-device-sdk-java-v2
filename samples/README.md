@@ -25,6 +25,7 @@ source: `samples/BasicPubSub`
 
 To Run:
 ```sh
+# Windows Platform: Windows command prompt does not support single quote, please use double quote.
 mvn exec:java -pl samples/BasicPubSub -Dexec.mainClass=pubsub.PubSub -Dexec.args='--endpoint <xxxx-ats.iot.xxxx.amazonaws.com> --cert <certificate.pem.crt> --key <private.pem.key> --rootca <AmazonRootCA1.pem>'
 ```
 
