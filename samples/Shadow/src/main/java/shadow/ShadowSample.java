@@ -159,8 +159,18 @@ public class ShadowSample {
     }
 
     static void onUpdateShadowAccepted(UpdateShadowResponse response) {
-        String value = response.state.reported.get(SHADOW_PROPERTY).toString();
-        System.out.println("Shadow updated, value is " + value);
+        if (response.state.reported != null) {
+            if (response.state.reported.containsKey(SHADOW_PROPERTY)) {
+                String value = response.state.reported.get(SHADOW_PROPERTY).toString();
+                System.out.println("Shadow updated, value is " + value);
+            }
+            else {
+                System.out.println("Shadow updated, value is Null");
+            }
+        }
+        else {
+            System.out.println("Shadow updated, reported is Null");
+        }
         gotResponse.complete(null);
     }
 
@@ -170,11 +180,13 @@ public class ShadowSample {
     }
 
     static CompletableFuture<Void> changeShadowValue(String value) {
-        if (localValue.equals(value)) {
-            System.out.println("Local value is already " + value);
-            CompletableFuture<Void> result = new CompletableFuture<>();
-            result.complete(null);
-            return result;
+        if (localValue != null) {
+            if (localValue.equals(value)) {
+                System.out.println("Local value is already " + value);
+                CompletableFuture<Void> result = new CompletableFuture<>();
+                result.complete(null);
+                return result;
+            }
         }
 
         System.out.println("Changed local value to " + value);
@@ -186,12 +198,35 @@ public class ShadowSample {
         UpdateShadowRequest request = new UpdateShadowRequest();
         request.thingName = thingName;
         request.state = new ShadowState();
+        
         request.state.reported = new HashMap<String, Object>() {{
            put(SHADOW_PROPERTY, value);
         }};
         request.state.desired = new HashMap<String, Object>() {{
             put(SHADOW_PROPERTY, value);
         }};
+
+        if (value.compareToIgnoreCase("clear_shadow") == 0) {
+            request.state.desiredNullIsValid = true;
+            request.state.reportedNullIsValid = true;
+            request.state.desired = null;
+            request.state.reported = null;
+        }
+        else if (value.compareToIgnoreCase("null") == 0) {
+            // A bit of a hack - we have to set reportedNullIsValid OR desiredNullIsValid
+            // so the JSON formatter will allow null , otherwise null will always be
+            // be converted to "null"
+            // As long as we're passing a Hashmap that is NOT assigned to null, it will not
+            // clear the data - so we pass an empty HashMap to avoid clearing data we want to keep
+            request.state.desiredNullIsValid = true;
+            request.state.reportedNullIsValid = false;
+
+            // We will only clear desired, so we need to pass an empty HashMap for reported
+            request.state.reported = new HashMap<String, Object>() {{}};
+             request.state.desired = new HashMap<String, Object>() {{
+                 put(SHADOW_PROPERTY, null);
+             }};
+        }
 
         // Publish the request
         return shadow.PublishUpdateShadow(request, QualityOfService.AT_LEAST_ONCE).thenRun(() -> {

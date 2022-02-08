@@ -21,10 +21,14 @@ public class ShadowState {
      */
     public HashMap<String, Object> desired;
 
+    public transient boolean desiredNullIsValid;
+
     /**
      * The (last) reported shadow state from the device.
      *
      */
     public HashMap<String, Object> reported;
+
+    public transient boolean reportedNullIsValid;
 
 }

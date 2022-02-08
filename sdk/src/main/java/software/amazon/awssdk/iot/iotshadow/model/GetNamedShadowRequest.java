@@ -20,16 +20,19 @@ public class GetNamedShadowRequest {
      */
     public String clientToken;
 
+
     /**
      * Name of the shadow to get.
      *
      */
     public String shadowName;
 
+
     /**
      * AWS IoT thing to get the named shadow for.
      *
      */
     public String thingName;
+
 
 }

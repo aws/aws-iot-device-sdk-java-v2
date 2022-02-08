@@ -10,17 +10,10 @@ package software.amazon.awssdk.iot.iotshadow.model;
 import java.util.HashMap;
 
 /**
- * (Potentially partial) state of an AWS IoT thing's shadow.  Includes the delta between the reported and desired states.
+ * A filled state of an AWS IoT thing's shadow.
  *
  */
-public class ShadowStateWithDelta {
-
-    /**
-     * The delta between the reported and desired states.
-     *
-     */
-    public HashMap<String, Object> delta;
-
+public class ShadowStateFull {
 
     /**
      * The (last) reported shadow state from the device.
@@ -28,12 +21,10 @@ public class ShadowStateWithDelta {
      */
     public HashMap<String, Object> reported;
 
-
     /**
      * The desired shadow state (from external services and devices).
      *
      */
     public HashMap<String, Object> desired;
-
 
 }

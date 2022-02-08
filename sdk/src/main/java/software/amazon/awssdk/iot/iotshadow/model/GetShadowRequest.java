@@ -20,10 +20,12 @@ public class GetShadowRequest {
      */
     public String thingName;
 
+
     /**
      * Optional. A client token used to correlate requests and responses. Enter an arbitrary value here and it is reflected in the response.
      *
      */
     public String clientToken;
+
 
 }

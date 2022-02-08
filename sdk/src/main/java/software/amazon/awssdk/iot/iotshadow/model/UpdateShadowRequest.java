@@ -21,11 +21,13 @@ public class UpdateShadowRequest {
      */
     public ShadowState state;
 
+
     /**
      * Aws IoT thing to update the (classic) shadow of.
      *
      */
     public String thingName;
+
 
     /**
      * (Optional) The Device Shadow service processes the update only if the specified version matches the latest version.
@@ -33,10 +35,12 @@ public class UpdateShadowRequest {
      */
     public Integer version;
 
+
     /**
      * Optional. A client token used to correlate requests and responses. Enter an arbitrary value here and it is reflected in the response.
      *
      */
     public String clientToken;
+
 
 }
