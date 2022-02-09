@@ -169,7 +169,12 @@ public class ShadowSample {
             }
         }
         else {
-            System.out.println("Shadow updated, reported is Null");
+            if (response.state.reportedIsNullable == true) {
+                System.out.println("Shadow updated, reported and desired is null");
+            }
+            else {
+                System.out.println("Shadow update, data cleared");
+            }
         }
         gotResponse.complete(null);
     }
@@ -207,8 +212,8 @@ public class ShadowSample {
         }};
 
         if (value.compareToIgnoreCase("clear_shadow") == 0) {
-            request.state.desiredNullIsValid = true;
-            request.state.reportedNullIsValid = true;
+            request.state.desiredIsNullable = true;
+            request.state.reportedIsNullable = true;
             request.state.desired = null;
             request.state.reported = null;
         }
@@ -218,8 +223,8 @@ public class ShadowSample {
             // be converted to "null"
             // As long as we're passing a Hashmap that is NOT assigned to null, it will not
             // clear the data - so we pass an empty HashMap to avoid clearing data we want to keep
-            request.state.desiredNullIsValid = true;
-            request.state.reportedNullIsValid = false;
+            request.state.desiredIsNullable = true;
+            request.state.reportedIsNullable = false;
 
             // We will only clear desired, so we need to pass an empty HashMap for reported
             request.state.reported = new HashMap<String, Object>() {{}};

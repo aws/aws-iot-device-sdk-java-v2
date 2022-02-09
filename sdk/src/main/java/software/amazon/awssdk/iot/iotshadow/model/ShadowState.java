@@ -21,7 +21,7 @@ public class ShadowState {
      */
     public HashMap<String, Object> desired;
 
-    public transient boolean desiredNullIsValid;
+    public transient boolean desiredIsNullable;
 
     /**
      * The (last) reported shadow state from the device.
@@ -29,6 +29,6 @@ public class ShadowState {
      */
     public HashMap<String, Object> reported;
 
-    public transient boolean reportedNullIsValid;
+    public transient boolean reportedIsNullable;
 
 }

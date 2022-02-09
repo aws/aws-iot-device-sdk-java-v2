@@ -27,24 +27,35 @@ public class ShadowStateFactory implements TypeAdapterFactory {
             public void write(JsonWriter out, T shadowValue) throws IOException {
                 // Are null values allowed?
                 ShadowState shadow = (ShadowState)shadowValue;
-                if (shadow.desiredNullIsValid == true || shadow.reportedNullIsValid == true) {
+                if (shadow.desiredIsNullable == true || shadow.reportedIsNullable == true) {
                     out.setSerializeNulls(true);
                 }
                 // If a property is null but null is not valid for it, then just send an empty HashMap
-                if (shadow.desired == null && shadow.desiredNullIsValid == false) {
+                if (shadow.desired == null && shadow.desiredIsNullable == false) {
                     shadow.desired = new HashMap<String, Object>();
                 }
-                if (shadow.reported == null && shadow.reportedNullIsValid == false) {
+                if (shadow.reported == null && shadow.reportedIsNullable == false) {
                     shadow.reported = new HashMap<String, Object>();
                 }
                 delegate.write(out, shadowValue);
-                if (shadow.desiredNullIsValid == true || shadow.reportedNullIsValid == true) {
+                if (shadow.desiredIsNullable == true || shadow.reportedIsNullable == true) {
                     out.setSerializeNulls(false);
                 }
             }
             public T read(JsonReader in) throws IOException {
-                // No post-processing needed
-                return delegate.read(in);
+                T returnType = delegate.read(in);
+
+                // Set <Name>IsNullable if the field we get is null
+                ShadowState shadow = (ShadowState)returnType;
+                if (shadow.desired == null) {
+                    shadow.desiredIsNullable = true;
+                }
+                if (shadow.reported == null) {
+                    shadow.reportedIsNullable = true;
+                }
+                returnType = (T)shadow;
+
+                return returnType;
             }
         };
     }
