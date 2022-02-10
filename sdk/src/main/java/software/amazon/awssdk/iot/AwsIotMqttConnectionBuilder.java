@@ -391,6 +391,16 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     }
 
     /**
+     * Configures and creates a default bootstrap, event loop, and resolver for this builder
+     * @return
+    */
+    public AwsIotMqttConnectionBuilder withBootstrap() {
+        ClientBootstrap newBootstrap = new ClientBootstrap(null, null);
+        withBootstrap(newBootstrap);
+        return this;
+    }
+
+    /**
      * Configures whether or not to the connection uses websockets
      *
      * @param useWebsockets whether or not to use websockets

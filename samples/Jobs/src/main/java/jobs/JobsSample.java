@@ -8,9 +8,6 @@ package jobs;
 import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.crt.CrtResource;
 import software.amazon.awssdk.crt.CrtRuntimeException;
-import software.amazon.awssdk.crt.io.ClientBootstrap;
-import software.amazon.awssdk.crt.io.EventLoopGroup;
-import software.amazon.awssdk.crt.io.HostResolver;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnectionEvents;
 import software.amazon.awssdk.crt.mqtt.QualityOfService;
@@ -176,16 +173,14 @@ public class JobsSample {
             }
         };
 
-        try(EventLoopGroup eventLoopGroup = new EventLoopGroup(1);
-            HostResolver resolver = new HostResolver(eventLoopGroup);
-            ClientBootstrap clientBootstrap = new ClientBootstrap(eventLoopGroup, resolver);
+        try(
             AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(certPath, keyPath)) {
 
             builder.withCertificateAuthorityFromPath(null, rootCaPath)
                 .withEndpoint(endpoint)
                 .withClientId(clientId)
                 .withCleanSession(true)
-                .withBootstrap(clientBootstrap)
+                .withBootstrap()
                 .withConnectionEventCallbacks(callbacks);
 
             try(MqttClientConnection connection = builder.build()) {

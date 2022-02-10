@@ -176,9 +176,7 @@ public class RawPubSub {
             }
         }
 
-        try(EventLoopGroup eventLoopGroup = new EventLoopGroup(1);
-            HostResolver resolver = new HostResolver(eventLoopGroup);
-            ClientBootstrap clientBootstrap = new ClientBootstrap(eventLoopGroup, resolver);
+        try(
             TlsContextOptions tlsContextOptions = TlsContextOptions.createWithMtlsFromPath(certPath, keyPath)) {
 
             if (rootCaPath != null) {
@@ -192,7 +190,7 @@ public class RawPubSub {
             }
 
             try(TlsContext tlsContext = new TlsContext(tlsContextOptions);
-                MqttClient client = new MqttClient(clientBootstrap, tlsContext);
+                MqttClient client = new MqttClient(tlsContext);
                 MqttConnectionConfig config = new MqttConnectionConfig()) {
 
                 config.setMqttClient(client);
