@@ -9,14 +9,13 @@ import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.crt.CrtResource;
 import software.amazon.awssdk.crt.CrtRuntimeException;
 import software.amazon.awssdk.crt.io.ClientBootstrap;
-import software.amazon.awssdk.crt.io.EventLoopGroup;
-import software.amazon.awssdk.crt.io.HostResolver;
 import software.amazon.awssdk.crt.io.TlsContext;
 import software.amazon.awssdk.crt.io.TlsContextOptions;
 import software.amazon.awssdk.crt.mqtt.*;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.EmptyStackException;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -240,6 +239,9 @@ public class RawPubSub {
         } catch (CrtRuntimeException | InterruptedException | ExecutionException ex) {
             System.out.println("Exception encountered: " + ex.toString());
         }
+
+        // Free the static client bootstrap created by the MqttClient
+        ClientBootstrap.releaseStaticDefault();
 
         CrtResource.waitForNoResources();
         System.out.println("Complete!");

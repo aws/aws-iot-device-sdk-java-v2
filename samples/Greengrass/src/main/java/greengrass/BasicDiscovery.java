@@ -143,9 +143,7 @@ public class BasicDiscovery {
             return;
         }
 
-        try(final EventLoopGroup eventLoopGroup = new EventLoopGroup(1);
-                final HostResolver resolver = new HostResolver(eventLoopGroup);
-                final ClientBootstrap clientBootstrap = new ClientBootstrap(eventLoopGroup, resolver);
+        try(final ClientBootstrap clientBootstrap = ClientBootstrap.getOrCreateStaticDefault();
                 final TlsContextOptions tlsCtxOptions = TlsContextOptions.createWithMtlsFromPath(certPath, keyPath)) {
             if(TlsContextOptions.isAlpnSupported()) {
                 tlsCtxOptions.withAlpnList(TLS_EXT_ALPN);
@@ -200,6 +198,7 @@ public class BasicDiscovery {
             System.out.println("Exception thrown: " + ex.toString());
             ex.printStackTrace();
         }
+        ClientBootstrap.releaseStaticDefault();
         CrtResource.waitForNoResources();
         System.out.println("Complete!");
     }

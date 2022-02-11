@@ -391,12 +391,14 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     }
 
     /**
-     * Configures and creates a default bootstrap, event loop, and resolver for this builder
+     * Configures and uses the static default bootstrap, event loop, and resolver for this builder
      * @return
     */
     public AwsIotMqttConnectionBuilder withBootstrap() {
-        ClientBootstrap newBootstrap = new ClientBootstrap(null, null);
-        withBootstrap(newBootstrap);
+        withBootstrap(ClientBootstrap.getOrCreateStaticDefault());
+        this.config.setCleanStaticDefaultClientBootstrap(true);
+        this.config.setCleanStaticDefaultEventLoopGroup(true);
+        this.config.setCleanStaticDefaultHostResolver(true);
         return this;
     }
 
