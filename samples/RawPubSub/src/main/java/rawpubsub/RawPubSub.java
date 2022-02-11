@@ -15,7 +15,6 @@ import software.amazon.awssdk.crt.mqtt.*;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.EmptyStackException;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;

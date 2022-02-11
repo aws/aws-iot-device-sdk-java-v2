@@ -10,6 +10,7 @@ import software.amazon.awssdk.crt.CrtResource;
 import software.amazon.awssdk.crt.CrtRuntimeException;
 import software.amazon.awssdk.crt.auth.credentials.X509CredentialsProvider;
 import software.amazon.awssdk.crt.http.HttpProxyOptions;
+import software.amazon.awssdk.crt.io.ClientBootstrap;
 import software.amazon.awssdk.crt.io.ClientTlsContext;
 import software.amazon.awssdk.crt.io.TlsContextOptions;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
@@ -338,6 +339,11 @@ public class PubSub {
             }
         } catch (CrtRuntimeException | InterruptedException | ExecutionException ex) {
             onApplicationFailure(ex);
+        }
+
+        if (useX509Credentials) {
+            // Clean the static ClientBootstrap created by the X509CredentialsProviderBuilder
+            ClientBootstrap.releaseStaticDefault();
         }
 
         CrtResource.waitForNoResources();
