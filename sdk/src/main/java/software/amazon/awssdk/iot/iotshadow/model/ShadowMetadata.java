@@ -21,10 +21,12 @@ public class ShadowMetadata {
      */
     public HashMap<String, Object> desired;
 
+
     /**
      * Contains the timestamps for each attribute in the reported section of a shadow's state.
      *
      */
     public HashMap<String, Object> reported;
+
 
 }
