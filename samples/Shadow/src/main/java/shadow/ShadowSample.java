@@ -203,13 +203,6 @@ public class ShadowSample {
         UpdateShadowRequest request = new UpdateShadowRequest();
         request.thingName = thingName;
         request.state = new ShadowState();
-        
-        request.state.reported = new HashMap<String, Object>() {{
-           put(SHADOW_PROPERTY, value);
-        }};
-        request.state.desired = new HashMap<String, Object>() {{
-            put(SHADOW_PROPERTY, value);
-        }};
 
         if (value.compareToIgnoreCase("clear_shadow") == 0) {
             request.state.desiredIsNullable = true;
@@ -228,9 +221,18 @@ public class ShadowSample {
 
             // We will only clear desired, so we need to pass an empty HashMap for reported
             request.state.reported = new HashMap<String, Object>() {{}};
-             request.state.desired = new HashMap<String, Object>() {{
+            request.state.desired = new HashMap<String, Object>() {{
                  put(SHADOW_PROPERTY, null);
              }};
+        }
+        else
+        {
+            request.state.reported = new HashMap<String, Object>() {{
+            put(SHADOW_PROPERTY, value);
+            }};
+            request.state.desired = new HashMap<String, Object>() {{
+                put(SHADOW_PROPERTY, value);
+            }};
         }
 
         // Publish the request
