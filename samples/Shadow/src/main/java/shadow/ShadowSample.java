@@ -228,7 +228,7 @@ public class ShadowSample {
         else
         {
             request.state.reported = new HashMap<String, Object>() {{
-            put(SHADOW_PROPERTY, value);
+                put(SHADOW_PROPERTY, value);
             }};
             request.state.desired = new HashMap<String, Object>() {{
                 put(SHADOW_PROPERTY, value);
@@ -358,6 +358,7 @@ public class ShadowSample {
                     changeShadowValue(newValue).get();
                     gotResponse.get();
                 }
+                scanner.close();
 
                 CompletableFuture<Void> disconnected = connection.disconnect();
                 disconnected.get();
