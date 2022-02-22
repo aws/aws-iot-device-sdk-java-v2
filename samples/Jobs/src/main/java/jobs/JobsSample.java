@@ -37,6 +37,8 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import utils.commandlineutils.CommandLineUtils;
+
 public class JobsSample {
     static String clientId = "test-" + UUID.randomUUID().toString();
     static String thingName;
@@ -44,7 +46,6 @@ public class JobsSample {
     static String certPath;
     static String keyPath;
     static String endpoint;
-    static boolean showHelp = false;
     static int port = 8883;
 
     static CompletableFuture<Void> gotResponse;
@@ -53,71 +54,7 @@ public class JobsSample {
     static long currentExecutionNumber = 0;
     static int currentVersionNumber = 0;
 
-    static void printUsage() {
-        System.out.println(
-                "Usage:\n"+
-                "  --help        This message\n"+
-                "  --thingName   The name of the IoT thing\n"+
-                "  --clientId    Client ID to use when connecting (optional)\n"+
-                "  -e|--endpoint AWS IoT service endpoint hostname\n"+
-                "  -p|--port     Port to connect to on the endpoint\n"+
-                "  -r|--rootca   Path to the root certificate\n"+
-                "  -c|--cert     Path to the IoT thing certificate\n"+
-                "  -k|--key      Path to the IoT thing private key"
-        );
-    }
-
-    static void parseCommandLine(String[] args) {
-        for (int idx = 0; idx < args.length; ++idx) {
-            switch (args[idx]) {
-                case "--help":
-                    showHelp = true;
-                    break;
-                case "--clientId":
-                    if (idx + 1 < args.length) {
-                        clientId = args[++idx];
-                    }
-                    break;
-                case "--thingName":
-                    if (idx + 1 < args.length) {
-                        thingName = args[++idx];
-                    }
-                    break;
-                case "-e":
-                case "--endpoint":
-                    if (idx + 1 < args.length) {
-                        endpoint = args[++idx];
-                    }
-                    break;
-                case "-p":
-                case "--port":
-                    if (idx + 1 < args.length) {
-                        port = Integer.parseInt(args[++idx]);
-                    }
-                    break;
-                case "-r":
-                case "--rootca":
-                    if (idx + 1 < args.length) {
-                        rootCaPath = args[++idx];
-                    }
-                    break;
-                case "-c":
-                case "--cert":
-                    if (idx + 1 < args.length) {
-                        certPath = args[++idx];
-                    }
-                    break;
-                case "-k":
-                case "--key":
-                    if (idx + 1 < args.length) {
-                        keyPath = args[++idx];
-                    }
-                    break;
-                default:
-                    System.out.println("Unrecognized argument: " + args[idx]);
-            }
-        }
-    }
+    static CommandLineUtils cmdUtils;
 
     static void onRejectedError(RejectedError error) {
         System.out.println("Request rejected: " + error.code.toString() + ": " + error.message);
@@ -156,11 +93,28 @@ public class JobsSample {
     }
 
     public static void main(String[] args) {
-        parseCommandLine(args);
-        if (showHelp || thingName == null || endpoint == null || rootCaPath == null || certPath == null || keyPath == null) {
-            printUsage();
-            return;
+
+        cmdUtils = new CommandLineUtils();
+        cmdUtils.registerProgramName("JobsSample");
+        cmdUtils.addCommonMQTTCommands();
+        cmdUtils.registerCommand("client_id", "<int>", "Client id to use (optional, default='test-*').");
+        cmdUtils.registerCommand("thing_name", "<str>", "The name of the IoT thing.");
+        cmdUtils.registerCommand("port", "<int>", "Port to connect to on the endpoint (optional, default='8883').");
+        cmdUtils.registerCommand("help", "", "Prints this message");
+        cmdUtils.sendArguments(args);
+
+        if (cmdUtils.hasCommand("help")) {
+            cmdUtils.printHelp();
+            System.exit(1);
         }
+
+        clientId = cmdUtils.getCommandOrDefault("client_id", clientId);
+        thingName = cmdUtils.getCommandRequired("thing_name", "");
+        endpoint = cmdUtils.getCommandRequired("endpoint", "");
+        port = Integer.parseInt(cmdUtils.getCommandOrDefault("port", String.valueOf(port)));
+        rootCaPath = cmdUtils.getCommandRequired("root_ca", "");
+        certPath = cmdUtils.getCommandRequired("cert", "");
+        keyPath = cmdUtils.getCommandRequired("key", "");
 
         MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
             @Override

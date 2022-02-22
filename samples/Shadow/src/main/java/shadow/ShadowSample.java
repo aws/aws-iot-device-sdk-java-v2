@@ -33,6 +33,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.Scanner;
 import java.util.UUID;
 
+import utils.commandlineutils.CommandLineUtils;
+
 public class ShadowSample {
     static String clientId = "test-" + UUID.randomUUID().toString();
     static String thingName;
@@ -40,7 +42,6 @@ public class ShadowSample {
     static String certPath;
     static String keyPath;
     static String endpoint;
-    static boolean showHelp = false;
     static int port = 8883;
 
     final static String SHADOW_PROPERTY = "color";
@@ -51,67 +52,7 @@ public class ShadowSample {
     static String localValue = null;
     static CompletableFuture<Void> gotResponse;
 
-    static void printUsage() {
-        System.out.println(
-                "Usage:\n"+
-                "  --help        This message\n"+
-                "  --thingName   The name of the IoT thing\n"+
-                "  --clientId    The Client ID to use when connecting\n"+
-                "  -e|--endpoint AWS IoT service endpoint hostname\n"+
-                "  -r|--rootca   Path to the root certificate\n"+
-                "  -c|--cert     Path to the IoT thing certificate\n"+
-                "  -k|--key      Path to the IoT thing private key\n"+
-                "  -p|--port     Port to use (optional)"
-        );
-    }
-
-    static void parseCommandLine(String[] args) {
-        for (int idx = 0; idx < args.length; ++idx) {
-            switch (args[idx]) {
-                case "--help":
-                    showHelp = true;
-                    break;
-                case "--clientId":
-                    clientId = args[++idx];
-                    break;
-                case "--thingName":
-                    thingName = args[++idx];
-                    break;
-                case "-e":
-                case "--endpoint":
-                    if (idx + 1 < args.length) {
-                        endpoint = args[++idx];
-                    }
-                    break;
-                case "-r":
-                case "--rootca":
-                    if (idx + 1 < args.length) {
-                        rootCaPath = args[++idx];
-                    }
-                    break;
-                case "-c":
-                case "--cert":
-                    if (idx + 1 < args.length) {
-                        certPath = args[++idx];
-                    }
-                    break;
-                case "-k":
-                case "--key":
-                    if (idx + 1 < args.length) {
-                        keyPath = args[++idx];
-                    }
-                    break;
-                case "-p":
-                case "--port":
-                    if (idx +1 < args.length) {
-                        port = Integer.parseInt(args[++idx]);
-                    }
-                    break;
-                default:
-                    System.out.println("Unrecognized argument: " + args[idx]);
-            }
-        }
-    }
+    static CommandLineUtils cmdUtils;
 
     static void onGetShadowAccepted(GetShadowResponse response) {
         System.out.println("Received initial shadow state");
@@ -244,10 +185,26 @@ public class ShadowSample {
     }
 
     public static void main(String[] args) {
-        parseCommandLine(args);
-        if (thingName == null || endpoint == null || certPath == null || keyPath == null || clientId == null) {
-            printUsage();
-            return;
+        cmdUtils = new CommandLineUtils();
+        cmdUtils.registerProgramName("ShadowSample");
+        cmdUtils.addCommonMQTTCommands();
+        cmdUtils.registerCommand("port", "<int>", "Port to use (optional, default='8883').");
+        cmdUtils.registerCommand("thing_name", "<str>", "The name of the IoT thing.");
+        cmdUtils.registerCommand("client_id", "<int>", "Client id to use (optional, default='test-*')");
+        cmdUtils.registerCommand("help", "", "Prints this message");
+        cmdUtils.sendArguments(args);
+
+        thingName = cmdUtils.getCommandRequired("thing_name", "");
+        endpoint = cmdUtils.getCommandRequired("endpoint", "");
+        certPath = cmdUtils.getCommandRequired("cert", "");
+        keyPath = cmdUtils.getCommandRequired("key", "");
+        rootCaPath = cmdUtils.getCommandOrDefault("root_ca", rootCaPath);
+        clientId = cmdUtils.getCommandOrDefault("client_id", clientId);
+        port = Integer.parseInt(cmdUtils.getCommandOrDefault("port", String.valueOf(port)));
+
+        if (cmdUtils.hasCommand("help")) {
+            cmdUtils.printHelp();
+            System.exit(1);
         }
 
         MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
