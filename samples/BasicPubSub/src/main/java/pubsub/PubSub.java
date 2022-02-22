@@ -132,7 +132,7 @@ public class PubSub {
         proxyPort = Integer.parseInt(cmdUtils.getCommandOrDefault("proxy_port", String.valueOf(proxyPort)));
         region = cmdUtils.getCommandOrDefault("region", region);
 
-        if (!useWebsockets) {
+        if (useWebsockets == false) {
             if (certPath == null || keyPath == null) {
                 cmdUtils.printHelp();
                 System.out.println("--cert and --key required if not using websockets.");
