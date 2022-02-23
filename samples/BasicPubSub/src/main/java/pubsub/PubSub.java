@@ -117,7 +117,7 @@ public class PubSub {
         topic = cmdUtils.getCommandOrDefault("topic", topic);
         message = cmdUtils.getCommandOrDefault("message", message);
         messagesToPublish = Integer.parseInt(cmdUtils.getCommandOrDefault("count", String.valueOf(messagesToPublish)));
-        useWebsockets = cmdUtils.hasCommand("use_websockets");
+        useWebsockets = cmdUtils.hasCommand("use_websocket");
         useX509Credentials = cmdUtils.hasCommand("x509");
         if (useX509Credentials) {
             useWebsockets = true;
@@ -135,7 +135,7 @@ public class PubSub {
         if (useWebsockets == false) {
             if (certPath == null || keyPath == null) {
                 cmdUtils.printHelp();
-                System.out.println("--cert and --key required if not using websockets.");
+                System.out.println("--cert and --key required if not using --use_websocket.");
                 onApplicationFailure(null);
                 return;
             }
