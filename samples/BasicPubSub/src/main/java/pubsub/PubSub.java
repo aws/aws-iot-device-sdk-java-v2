@@ -291,7 +291,6 @@ public class PubSub {
 
                         try (ClientTlsContext x509TlsContext = new ClientTlsContext(x509TlsOptions)) {
                             X509CredentialsProvider.X509CredentialsProviderBuilder x509builder = new X509CredentialsProvider.X509CredentialsProviderBuilder()
-                                    .withClientBootstrap()
                                     .withTlsContext(x509TlsContext)
                                     .withEndpoint(x509Endpoint)
                                     .withRoleAlias(x509RoleAlias)
@@ -339,11 +338,6 @@ public class PubSub {
             }
         } catch (CrtRuntimeException | InterruptedException | ExecutionException ex) {
             onApplicationFailure(ex);
-        }
-
-        if (useX509Credentials) {
-            // Clean the static ClientBootstrap created by the X509CredentialsProviderBuilder
-            ClientBootstrap.releaseStaticDefault();
         }
 
         CrtResource.waitForNoResources();

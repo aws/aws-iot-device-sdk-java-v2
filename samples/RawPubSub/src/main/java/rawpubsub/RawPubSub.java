@@ -239,9 +239,6 @@ public class RawPubSub {
             System.out.println("Exception encountered: " + ex.toString());
         }
 
-        // Free the static client bootstrap created by the MqttClient
-        ClientBootstrap.releaseStaticDefault();
-
         CrtResource.waitForNoResources();
         System.out.println("Complete!");
     }
