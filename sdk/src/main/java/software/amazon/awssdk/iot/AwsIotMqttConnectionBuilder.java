@@ -395,7 +395,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      * @return
     */
     public AwsIotMqttConnectionBuilder withBootstrap() {
-        withBootstrap(ClientBootstrap.getOrCreateDefault());
+        withBootstrap(ClientBootstrap.getOrCreateStaticDefault());
         return this;
     }
 

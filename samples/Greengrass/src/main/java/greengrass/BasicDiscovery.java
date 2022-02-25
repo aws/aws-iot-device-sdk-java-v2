@@ -143,7 +143,7 @@ public class BasicDiscovery {
             return;
         }
 
-        try(final ClientBootstrap clientBootstrap = ClientBootstrap.getOrCreateDefault();
+        try(final ClientBootstrap clientBootstrap = ClientBootstrap.getOrCreateStaticDefault();
                 final TlsContextOptions tlsCtxOptions = TlsContextOptions.createWithMtlsFromPath(certPath, keyPath)) {
             if(TlsContextOptions.isAlpnSupported()) {
                 tlsCtxOptions.withAlpnList(TLS_EXT_ALPN);
