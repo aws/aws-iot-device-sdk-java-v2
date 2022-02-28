@@ -332,7 +332,6 @@ public class PubSubStress {
                 builder.withCertificateAuthorityFromPath(null, rootCaPath)
                     .withEndpoint(endpoint)
                     .withCleanSession(true)
-                    .withBootstrap()
                     .withProtocolOperationTimeoutMs(10000);
 
                 if (proxyHost != null && proxyPort > 0) {

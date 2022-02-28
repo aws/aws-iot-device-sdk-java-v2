@@ -262,6 +262,7 @@ public class PubSub {
                 builder.withCertificateAuthorityFromPath(null, rootCaPath);
             }
 
+            /*
             builder.withBootstrap()
                 .withConnectionEventCallbacks(callbacks)
                 .withClientId(clientId)
@@ -269,6 +270,13 @@ public class PubSub {
                 .withPort((short)port)
                 .withCleanSession(true)
                 .withProtocolOperationTimeoutMs(60000);
+            */
+            builder.withConnectionEventCallbacks(callbacks)
+                    .withClientId(clientId)
+                    .withEndpoint(endpoint)
+                    .withPort((short)port)
+                    .withCleanSession(true)
+                    .withProtocolOperationTimeoutMs(60000);
 
             HttpProxyOptions proxyOptions = null;
             if (proxyHost != null && proxyPort > 0) {

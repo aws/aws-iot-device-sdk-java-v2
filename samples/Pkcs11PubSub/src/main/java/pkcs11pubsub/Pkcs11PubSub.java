@@ -211,7 +211,7 @@ public class Pkcs11PubSub {
                     builder.withCertificateAuthorityFromPath(null, rootCaPath);
                 }
 
-                builder.withBootstrap().withConnectionEventCallbacks(callbacks).withClientId(clientId)
+                builder.withConnectionEventCallbacks(callbacks).withClientId(clientId)
                         .withEndpoint(endpoint).withPort((short) port).withCleanSession(true)
                         .withProtocolOperationTimeoutMs(60000);
 

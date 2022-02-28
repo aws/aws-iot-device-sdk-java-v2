@@ -391,15 +391,6 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     }
 
     /**
-     * Configures and uses the static default bootstrap, event loop, and resolver for this builder
-     * @return
-    */
-    public AwsIotMqttConnectionBuilder withBootstrap() {
-        withBootstrap(ClientBootstrap.getOrCreateStaticDefault());
-        return this;
-    }
-
-    /**
      * Configures whether or not to the connection uses websockets
      *
      * @param useWebsockets whether or not to use websockets
@@ -498,7 +489,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     public MqttClientConnection build() {
         // Validate
         if (bootstrap == null) {
-            throw new MqttException("client bootstrap must be non-null");
+            bootstrap = ClientBootstrap.getOrCreateStaticDefault();
         }
 
         // Lazy create

@@ -224,7 +224,6 @@ public class FleetProvisioningSample {
                     .withEndpoint(endpoint)
                     .withClientId(clientId)
                     .withCleanSession(true)
-                    .withBootstrap()
                     .withConnectionEventCallbacks(callbacks);
 
             try(MqttClientConnection connection = builder.build()) {

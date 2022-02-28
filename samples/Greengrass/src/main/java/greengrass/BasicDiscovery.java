@@ -143,8 +143,7 @@ public class BasicDiscovery {
             return;
         }
 
-        try(final ClientBootstrap clientBootstrap = ClientBootstrap.getOrCreateStaticDefault();
-                final TlsContextOptions tlsCtxOptions = TlsContextOptions.createWithMtlsFromPath(certPath, keyPath)) {
+        try(final TlsContextOptions tlsCtxOptions = TlsContextOptions.createWithMtlsFromPath(certPath, keyPath)) {
             if(TlsContextOptions.isAlpnSupported()) {
                 tlsCtxOptions.withAlpnList(TLS_EXT_ALPN);
             }
@@ -159,10 +158,10 @@ public class BasicDiscovery {
             }
 
             try(final DiscoveryClientConfig discoveryClientConfig =
-                        new DiscoveryClientConfig(clientBootstrap, tlsCtxOptions,
+                        new DiscoveryClientConfig(tlsCtxOptions,
                         new SocketOptions(), region, 1, proxyOptions);
                 final DiscoveryClient discoveryClient = new DiscoveryClient(discoveryClientConfig);
-                final MqttClientConnection connection = getClientFromDiscovery(discoveryClient, clientBootstrap)) {
+                final MqttClientConnection connection = getClientFromDiscovery(discoveryClient)) {
 
                 if ("subscribe".equals(mode) || "both".equals(mode)) {
                     final CompletableFuture<Integer> subFuture = connection.subscribe(topic, QualityOfService.AT_MOST_ONCE, message -> {
@@ -202,8 +201,8 @@ public class BasicDiscovery {
         System.out.println("Complete!");
     }
 
-    private static MqttClientConnection getClientFromDiscovery(final DiscoveryClient discoveryClient,
-                                                               final ClientBootstrap bootstrap) throws ExecutionException, InterruptedException {
+    private static MqttClientConnection getClientFromDiscovery(final DiscoveryClient discoveryClient
+                                                               ) throws ExecutionException, InterruptedException {
         final CompletableFuture<DiscoverResponse> futureResponse = discoveryClient.discover(thingName);
         final DiscoverResponse response = futureResponse.get();
         if(response.getGGGroups() != null) {
@@ -223,7 +222,6 @@ public class BasicDiscovery {
                             .withClientId(thingName)
                             .withPort(port.shortValue())
                             .withEndpoint(dnsOrIp)
-                            .withBootstrap(bootstrap)
                             .withConnectionEventCallbacks(new MqttClientConnectionEvents() {
                                 @Override
                                 public void onConnectionInterrupted(int errorCode) {

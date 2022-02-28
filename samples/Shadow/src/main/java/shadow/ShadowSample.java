@@ -231,8 +231,7 @@ public class ShadowSample {
             builder.withClientId(clientId)
                     .withEndpoint(endpoint)
                     .withCleanSession(true)
-                    .withConnectionEventCallbacks(callbacks)
-                    .withBootstrap();
+                    .withConnectionEventCallbacks(callbacks);
 
             try(MqttClientConnection connection = builder.build()) {
                 shadow = new IotShadowClient(connection);
