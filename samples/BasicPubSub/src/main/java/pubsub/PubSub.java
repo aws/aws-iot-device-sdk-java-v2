@@ -261,16 +261,7 @@ public class PubSub {
             if (rootCaPath != null) {
                 builder.withCertificateAuthorityFromPath(null, rootCaPath);
             }
-
-            /*
-            builder.withBootstrap()
-                .withConnectionEventCallbacks(callbacks)
-                .withClientId(clientId)
-                .withEndpoint(endpoint)
-                .withPort((short)port)
-                .withCleanSession(true)
-                .withProtocolOperationTimeoutMs(60000);
-            */
+            
             builder.withConnectionEventCallbacks(callbacks)
                     .withClientId(clientId)
                     .withEndpoint(endpoint)
