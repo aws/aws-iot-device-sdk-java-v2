@@ -39,8 +39,12 @@ public class RestartComponentRequest implements EventStreamJsonMessage {
     return null;
   }
 
-  public RestartComponentRequest setComponentName(final String componentName) {
+  public void setComponentName(final String componentName) {
     this.componentName = Optional.ofNullable(componentName);
+  }
+
+  public RestartComponentRequest withComponentName(final String componentName) {
+    setComponentName(componentName);
     return this;
   }
 

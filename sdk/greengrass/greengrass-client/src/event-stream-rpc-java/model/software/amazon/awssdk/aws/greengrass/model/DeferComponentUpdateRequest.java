@@ -54,8 +54,12 @@ public class DeferComponentUpdateRequest implements EventStreamJsonMessage {
     return null;
   }
 
-  public DeferComponentUpdateRequest setDeploymentId(final String deploymentId) {
+  public void setDeploymentId(final String deploymentId) {
     this.deploymentId = Optional.ofNullable(deploymentId);
+  }
+
+  public DeferComponentUpdateRequest withDeploymentId(final String deploymentId) {
+    setDeploymentId(deploymentId);
     return this;
   }
 
@@ -66,8 +70,12 @@ public class DeferComponentUpdateRequest implements EventStreamJsonMessage {
     return null;
   }
 
-  public DeferComponentUpdateRequest setMessage(final String message) {
+  public void setMessage(final String message) {
     this.message = Optional.ofNullable(message);
+  }
+
+  public DeferComponentUpdateRequest withMessage(final String message) {
+    setMessage(message);
     return this;
   }
 
@@ -78,8 +86,12 @@ public class DeferComponentUpdateRequest implements EventStreamJsonMessage {
     return null;
   }
 
-  public DeferComponentUpdateRequest setRecheckAfterMs(final Long recheckAfterMs) {
+  public void setRecheckAfterMs(final Long recheckAfterMs) {
     this.recheckAfterMs = Optional.ofNullable(recheckAfterMs);
+  }
+
+  public DeferComponentUpdateRequest withRecheckAfterMs(final Long recheckAfterMs) {
+    setRecheckAfterMs(recheckAfterMs);
     return this;
   }
 
