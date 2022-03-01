@@ -20,6 +20,8 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import DATestUtils.DATestUtils;
+
 public class MQTTConnect {
 
     // When run normally, we want to exit nicely even if something goes wrong
@@ -29,9 +31,6 @@ public class MQTTConnect {
     static boolean isCI = ciPropValue != null && Boolean.valueOf(ciPropValue);
 
     static String clientId = "test-" + UUID.randomUUID().toString();
-    static String certPath;
-    static String keyPath;
-    static String endpoint;
     static int port = 8883;
 
     static String region = "us-east-1";
@@ -47,41 +46,25 @@ public class MQTTConnect {
     static void onApplicationFailure(Throwable cause) {
         if (isCI) {
             throw new RuntimeException("BasicPubSub execution failure", cause);
-        } else if (cause != null) {
-            System.out.println("Exception encountered: " + cause.toString());
         }
     }
 
     public static void main(String[] args) {
 
-        endpoint = System.getenv("DA_ENDPOINT");
-        certPath = System.getenv("DA_CERTI");
-        keyPath = System.getenv("DA_KEY");
-
-        MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
-            @Override
-            public void onConnectionInterrupted(int errorCode) {
-                if (errorCode != 0) {
-                    System.out.println("Connection interrupted: " + errorCode + ": " + CRT.awsErrorString(errorCode));
-                }
-            }
-
-            @Override
-            public void onConnectionResumed(boolean sessionPresent) {
-                System.out.println("Connection resumed: " + (sessionPresent ? "existing session" : "clean session"));
-            }
-        };
+        if(!DATestUtils.init(DATestUtils.TestType.CONNECT))
+        {
+            throw new RuntimeException("Failed to initialize environment variables.");
+        }
 
         try(EventLoopGroup eventLoopGroup = new EventLoopGroup(1);
             HostResolver resolver = new HostResolver(eventLoopGroup);
             ClientBootstrap clientBootstrap = new ClientBootstrap(eventLoopGroup, resolver);
-            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(certPath, keyPath)) {
+            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(DATestUtils.certificatePath, DATestUtils.keyPath)) {
 
 
             builder.withBootstrap(clientBootstrap)
-                .withConnectionEventCallbacks(callbacks)
                 .withClientId(clientId)
-                .withEndpoint(endpoint)
+                .withEndpoint(DATestUtils.endpoint)
                 .withPort((short)port)
                 .withCleanSession(true)
                 .withProtocolOperationTimeoutMs(60000);
@@ -91,7 +74,6 @@ public class MQTTConnect {
                 CompletableFuture<Boolean> connected = connection.connect();
                 try {
                     boolean sessionPresent = connected.get();
-                    System.out.println("Connected to " + (!sessionPresent ? "new" : "existing") + " session!");
                 } catch (Exception ex) {
                     throw new RuntimeException("Exception occurred during connect", ex);
                 }
@@ -100,11 +82,9 @@ public class MQTTConnect {
                 disconnected.get();
             }
         } catch (CrtRuntimeException | InterruptedException | ExecutionException ex) {
-            onApplicationFailure(ex);
+            
         }
 
         CrtResource.waitForNoResources();
-
-        System.out.println("Complete!");
     }
 }
