@@ -22,6 +22,8 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import DATestUtils.DATestUtils;
+
 public class MQTTSubscribe {
 
     // When run normally, we want to exit nicely even if something goes wrong
@@ -31,17 +33,7 @@ public class MQTTSubscribe {
     static boolean isCI = ciPropValue != null && Boolean.valueOf(ciPropValue);
 
     static String clientId = "test-" + UUID.randomUUID().toString();
-    static String certPath;
-    static String keyPath;
-    static String endpoint;
-    static String topic;
     static int port = 8883;
-
-    static String region = "us-east-1";
-
-    static void onRejectedError(RejectedError error) {
-        System.out.println("Request rejected: " + error.code.toString() + ": " + error.message);
-    }
 
     /*
      * When called during a CI run, throw an exception that will escape and fail the exec:java task
@@ -50,42 +42,25 @@ public class MQTTSubscribe {
     static void onApplicationFailure(Throwable cause) {
         if (isCI) {
             throw new RuntimeException("BasicPubSub execution failure", cause);
-        } else if (cause != null) {
-            System.out.println("Exception encountered: " + cause.toString());
         }
     }
 
     public static void main(String[] args) {
 
-        endpoint = System.getenv("DA_ENDPOINT");
-        certPath = System.getenv("DA_CERTI");
-        keyPath = System.getenv("DA_KEY");
-        topic = System.getenv("DA_TOPIC");
-
-        MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
-            @Override
-            public void onConnectionInterrupted(int errorCode) {
-                if (errorCode != 0) {
-                    System.out.println("Connection interrupted: " + errorCode + ": " + CRT.awsErrorString(errorCode));
-                }
-            }
-
-            @Override
-            public void onConnectionResumed(boolean sessionPresent) {
-                System.out.println("Connection resumed: " + (sessionPresent ? "existing session" : "clean session"));
-            }
-        };
+        if(!DATestUtils.init(DATestUtils.TestType.SUB_PUB))
+        {
+            throw new RuntimeException("Failed to initialize environment variables.");
+        }
 
         try(EventLoopGroup eventLoopGroup = new EventLoopGroup(1);
             HostResolver resolver = new HostResolver(eventLoopGroup);
             ClientBootstrap clientBootstrap = new ClientBootstrap(eventLoopGroup, resolver);
-            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(certPath, keyPath)) {
+            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(DATestUtils.certificatePath, DATestUtils.keyPath)) {
 
 
             builder.withBootstrap(clientBootstrap)
-                .withConnectionEventCallbacks(callbacks)
                 .withClientId(clientId)
-                .withEndpoint(endpoint)
+                .withEndpoint(DATestUtils.endpoint)
                 .withPort((short)port)
                 .withCleanSession(true)
                 .withProtocolOperationTimeoutMs(60000);
@@ -95,12 +70,11 @@ public class MQTTSubscribe {
                 CompletableFuture<Boolean> connected = connection.connect();
                 try {
                     boolean sessionPresent = connected.get();
-                    System.out.println("Connected to " + (!sessionPresent ? "new" : "existing") + " session!");
                 } catch (Exception ex) {
                     throw new RuntimeException("Exception occurred during connect", ex);
                 }
 
-                CompletableFuture<Integer> subscribed = connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, (message) -> {
+                CompletableFuture<Integer> subscribed = connection.subscribe(DATestUtils.topic, QualityOfService.AT_LEAST_ONCE, (message) -> {
                     String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
                     System.out.println("MESSAGE: " + payload);
                 });
@@ -115,7 +89,5 @@ public class MQTTSubscribe {
         }
 
         CrtResource.waitForNoResources();
-
-        System.out.println("Complete!");
     }
 }

@@ -35,10 +35,6 @@ public class MQTTConnect {
 
     static String region = "us-east-1";
 
-    static void onRejectedError(RejectedError error) {
-        System.out.println("Request rejected: " + error.code.toString() + ": " + error.message);
-    }
-
     /*
      * When called during a CI run, throw an exception that will escape and fail the exec:java task
      * When called otherwise, print what went wrong (if anything) and just continue (return from main)

@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0.
  */
 
-package shadowUpdate;
+package ShadowUpdate;
 
 import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.crt.CrtResource;
@@ -12,7 +12,6 @@ import software.amazon.awssdk.crt.io.ClientBootstrap;
 import software.amazon.awssdk.crt.io.EventLoopGroup;
 import software.amazon.awssdk.crt.io.HostResolver;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
-import software.amazon.awssdk.crt.mqtt.MqttClientConnectionEvents;
 import software.amazon.awssdk.crt.mqtt.QualityOfService;
 import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
 import software.amazon.awssdk.iot.iotshadow.IotShadowClient;
@@ -26,15 +25,10 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.UUID;
 
+import DATestUtils.DATestUtils;
+
 public class ShadowUpdate {
     static String clientId = "test-" + UUID.randomUUID().toString();
-    static String thingName;
-    static String rootCaPath;
-    static String certPath;
-    static String keyPath;
-    static String endpoint;
-    static String newValue;
-    static String shadowProperty;
     static int port = 8883;
 
     static MqttClientConnection connection;
@@ -49,18 +43,18 @@ public class ShadowUpdate {
         System.exit(2);
     }
 
-    static CompletableFuture<Void> changeShadowValue(String value) {
+    static CompletableFuture<Void> changeShadowValue() {
         // build a request to let the service know our current value and desired value, and that we only want
         // to update if the version matches the version we know about
         UpdateShadowRequest request = new UpdateShadowRequest();
-        request.thingName = thingName;
+        request.thingName = DATestUtils.thing_name;
         request.state = new ShadowState();
         
         request.state.reported = new HashMap<String, Object>() {{
-           put(shadowProperty, value);
+           put(DATestUtils.shadowProperty, DATestUtils.shadowValue);
         }};
         request.state.desired = new HashMap<String, Object>() {{
-            put(shadowProperty, value);
+            put(DATestUtils.shadowProperty, DATestUtils.shadowValue);
         }};
 
 
@@ -74,24 +68,19 @@ public class ShadowUpdate {
 
     public static void main(String[] args) {
         // Set vars
-        endpoint = System.getenv("DA_ENDPOINT");
-        certPath = System.getenv("DA_CERTI");
-        keyPath = System.getenv("DA_KEY");
-        thingName = System.getenv("DA_THING_NAME");
-        shadowProperty = System.getenv("DA_SHADOW_PROPERTY");
-        newValue = System.getenv("DA_SHADOW_VALUE_SET");
+        if(!DATestUtils.init(DATestUtils.TestType.SUB_PUB))
+        {
+            throw new RuntimeException("Failed to initialize environment variables.");
+        }
 
         try(EventLoopGroup eventLoopGroup = new EventLoopGroup(1);
             HostResolver resolver = new HostResolver(eventLoopGroup);
             ClientBootstrap clientBootstrap = new ClientBootstrap(eventLoopGroup, resolver);
-            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(certPath, keyPath)) {
+            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(DATestUtils.certificatePath, DATestUtils.keyPath)) {
 
-            if (rootCaPath != null) {
-                builder.withCertificateAuthorityFromPath(null, rootCaPath);
-            }
 
             builder.withClientId(clientId)
-                    .withEndpoint(endpoint)
+                    .withEndpoint(DATestUtils.endpoint)
                     .withCleanSession(true)
                     .withBootstrap(clientBootstrap);
 
@@ -107,7 +96,7 @@ public class ShadowUpdate {
 
 
                 gotResponse = new CompletableFuture<>();
-                changeShadowValue(newValue).get();
+                changeShadowValue().get();
                 gotResponse.get();
 
                 CompletableFuture<Void> disconnected = connection.disconnect();
