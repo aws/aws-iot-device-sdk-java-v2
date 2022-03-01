@@ -47,8 +47,12 @@ public class GetConfigurationRequest implements EventStreamJsonMessage {
     return null;
   }
 
-  public GetConfigurationRequest setComponentName(final String componentName) {
+  public void setComponentName(final String componentName) {
     this.componentName = Optional.ofNullable(componentName);
+  }
+
+  public GetConfigurationRequest withComponentName(final String componentName) {
+    setComponentName(componentName);
     return this;
   }
 
@@ -59,8 +63,12 @@ public class GetConfigurationRequest implements EventStreamJsonMessage {
     return null;
   }
 
-  public GetConfigurationRequest setKeyPath(final List<String> keyPath) {
+  public void setKeyPath(final List<String> keyPath) {
     this.keyPath = Optional.ofNullable(keyPath);
+  }
+
+  public GetConfigurationRequest withKeyPath(final List<String> keyPath) {
+    setKeyPath(keyPath);
     return this;
   }
 

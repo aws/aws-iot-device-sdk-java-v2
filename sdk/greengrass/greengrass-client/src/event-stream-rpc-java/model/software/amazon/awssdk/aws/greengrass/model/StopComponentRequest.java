@@ -39,8 +39,12 @@ public class StopComponentRequest implements EventStreamJsonMessage {
     return null;
   }
 
-  public StopComponentRequest setComponentName(final String componentName) {
+  public void setComponentName(final String componentName) {
     this.componentName = Optional.ofNullable(componentName);
+  }
+
+  public StopComponentRequest withComponentName(final String componentName) {
+    setComponentName(componentName);
     return this;
   }
 
