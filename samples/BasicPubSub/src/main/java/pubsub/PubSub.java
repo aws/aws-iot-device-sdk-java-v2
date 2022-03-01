@@ -12,8 +12,6 @@ import software.amazon.awssdk.crt.auth.credentials.X509CredentialsProvider;
 import software.amazon.awssdk.crt.http.HttpProxyOptions;
 import software.amazon.awssdk.crt.io.ClientBootstrap;
 import software.amazon.awssdk.crt.io.ClientTlsContext;
-import software.amazon.awssdk.crt.io.EventLoopGroup;
-import software.amazon.awssdk.crt.io.HostResolver;
 import software.amazon.awssdk.crt.io.TlsContextOptions;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnectionEvents;
@@ -257,22 +255,19 @@ public class PubSub {
             }
         };
 
-        try(EventLoopGroup eventLoopGroup = new EventLoopGroup(1);
-            HostResolver resolver = new HostResolver(eventLoopGroup);
-            ClientBootstrap clientBootstrap = new ClientBootstrap(eventLoopGroup, resolver);
+        try (
             AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(certPath, keyPath)) {
 
             if (rootCaPath != null) {
                 builder.withCertificateAuthorityFromPath(null, rootCaPath);
             }
-
-            builder.withBootstrap(clientBootstrap)
-                .withConnectionEventCallbacks(callbacks)
-                .withClientId(clientId)
-                .withEndpoint(endpoint)
-                .withPort((short)port)
-                .withCleanSession(true)
-                .withProtocolOperationTimeoutMs(60000);
+            
+            builder.withConnectionEventCallbacks(callbacks)
+                    .withClientId(clientId)
+                    .withEndpoint(endpoint)
+                    .withPort((short)port)
+                    .withCleanSession(true)
+                    .withProtocolOperationTimeoutMs(60000);
 
             HttpProxyOptions proxyOptions = null;
             if (proxyHost != null && proxyPort > 0) {
@@ -295,7 +290,6 @@ public class PubSub {
 
                         try (ClientTlsContext x509TlsContext = new ClientTlsContext(x509TlsOptions)) {
                             X509CredentialsProvider.X509CredentialsProviderBuilder x509builder = new X509CredentialsProvider.X509CredentialsProviderBuilder()
-                                    .withClientBootstrap(clientBootstrap)
                                     .withTlsContext(x509TlsContext)
                                     .withEndpoint(x509Endpoint)
                                     .withRoleAlias(x509RoleAlias)

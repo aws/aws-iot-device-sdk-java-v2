@@ -203,9 +203,7 @@ public class Pkcs11PubSub {
                 pkcs11Options.withPrivateKeyObjectLabel(pkcs11KeyLabel);
             }
 
-            try (EventLoopGroup eventLoopGroup = new EventLoopGroup(1);
-                    HostResolver resolver = new HostResolver(eventLoopGroup);
-                    ClientBootstrap clientBootstrap = new ClientBootstrap(eventLoopGroup, resolver);
+            try (
                     AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder
                             .newMtlsPkcs11Builder(pkcs11Options)) {
 
@@ -213,7 +211,7 @@ public class Pkcs11PubSub {
                     builder.withCertificateAuthorityFromPath(null, rootCaPath);
                 }
 
-                builder.withBootstrap(clientBootstrap).withConnectionEventCallbacks(callbacks).withClientId(clientId)
+                builder.withConnectionEventCallbacks(callbacks).withClientId(clientId)
                         .withEndpoint(endpoint).withPort((short) port).withCleanSession(true)
                         .withProtocolOperationTimeoutMs(60000);
 
