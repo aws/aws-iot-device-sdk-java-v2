@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0.
  */
 
-package MQTTConnect;
+package MQTTSubscribe;
 
 import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.crt.CrtResource;
@@ -13,14 +13,16 @@ import software.amazon.awssdk.crt.io.EventLoopGroup;
 import software.amazon.awssdk.crt.io.HostResolver;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnectionEvents;
+import software.amazon.awssdk.crt.mqtt.QualityOfService;
 import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
 import software.amazon.awssdk.iot.iotjobs.model.RejectedError;
 
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-public class MQTTConnect {
+public class MQTTSubscribe {
 
     // When run normally, we want to exit nicely even if something goes wrong
     // When run from CI, we want to let an exception escape which in turn causes the
@@ -32,6 +34,7 @@ public class MQTTConnect {
     static String certPath;
     static String keyPath;
     static String endpoint;
+    static String topic;
     static int port = 8883;
 
     static String region = "us-east-1";
@@ -57,6 +60,7 @@ public class MQTTConnect {
         endpoint = System.getenv("DA_ENDPOINT");
         certPath = System.getenv("DA_CERTI");
         keyPath = System.getenv("DA_KEY");
+        topic = System.getenv("DA_TOPIC");
 
         MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
             @Override
@@ -95,6 +99,13 @@ public class MQTTConnect {
                 } catch (Exception ex) {
                     throw new RuntimeException("Exception occurred during connect", ex);
                 }
+
+                CompletableFuture<Integer> subscribed = connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, (message) -> {
+                    String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
+                    System.out.println("MESSAGE: " + payload);
+                });
+
+                subscribed.get();
 
                 CompletableFuture<Void> disconnected = connection.disconnect();
                 disconnected.get();
