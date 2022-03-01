@@ -8,13 +8,9 @@ package MQTTConnect;
 import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.crt.CrtResource;
 import software.amazon.awssdk.crt.CrtRuntimeException;
-import software.amazon.awssdk.crt.io.ClientBootstrap;
-import software.amazon.awssdk.crt.io.EventLoopGroup;
-import software.amazon.awssdk.crt.io.HostResolver;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnectionEvents;
 import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
-import software.amazon.awssdk.iot.iotjobs.model.RejectedError;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -33,8 +29,6 @@ public class MQTTConnect {
     static String clientId = "test-" + UUID.randomUUID().toString();
     static int port = 8883;
 
-    static String region = "us-east-1";
-
     /*
      * When called during a CI run, throw an exception that will escape and fail the exec:java task
      * When called otherwise, print what went wrong (if anything) and just continue (return from main)
@@ -52,14 +46,9 @@ public class MQTTConnect {
             throw new RuntimeException("Failed to initialize environment variables.");
         }
 
-        try(EventLoopGroup eventLoopGroup = new EventLoopGroup(1);
-            HostResolver resolver = new HostResolver(eventLoopGroup);
-            ClientBootstrap clientBootstrap = new ClientBootstrap(eventLoopGroup, resolver);
-            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(DATestUtils.certificatePath, DATestUtils.keyPath)) {
+        try(AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(DATestUtils.certificatePath, DATestUtils.keyPath)) {
 
-
-            builder.withBootstrap(clientBootstrap)
-                .withClientId(clientId)
+            builder.withClientId(clientId)
                 .withEndpoint(DATestUtils.endpoint)
                 .withPort((short)port)
                 .withCleanSession(true)

@@ -8,17 +8,12 @@ package ShadowUpdate;
 import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.crt.CrtResource;
 import software.amazon.awssdk.crt.CrtRuntimeException;
-import software.amazon.awssdk.crt.io.ClientBootstrap;
-import software.amazon.awssdk.crt.io.EventLoopGroup;
-import software.amazon.awssdk.crt.io.HostResolver;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
 import software.amazon.awssdk.crt.mqtt.QualityOfService;
 import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
 import software.amazon.awssdk.iot.iotshadow.IotShadowClient;
-import software.amazon.awssdk.iot.iotshadow.model.ErrorResponse;
 import software.amazon.awssdk.iot.iotshadow.model.ShadowState;
 import software.amazon.awssdk.iot.iotshadow.model.UpdateShadowRequest;
-import software.amazon.awssdk.iot.iotshadow.model.UpdateShadowResponse;
 
 import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
@@ -34,14 +29,6 @@ public class ShadowUpdate {
     static MqttClientConnection connection;
     static IotShadowClient shadow;
     static CompletableFuture<Void> gotResponse;
-
-    static void onUpdateShadowAccepted(UpdateShadowResponse response) {
-        gotResponse.complete(null);
-    }
-
-    static void onUpdateShadowRejected(ErrorResponse response) {
-        System.exit(2);
-    }
 
     static CompletableFuture<Void> changeShadowValue() {
         // build a request to let the service know our current value and desired value, and that we only want
@@ -73,16 +60,12 @@ public class ShadowUpdate {
             throw new RuntimeException("Failed to initialize environment variables.");
         }
 
-        try(EventLoopGroup eventLoopGroup = new EventLoopGroup(1);
-            HostResolver resolver = new HostResolver(eventLoopGroup);
-            ClientBootstrap clientBootstrap = new ClientBootstrap(eventLoopGroup, resolver);
-            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(DATestUtils.certificatePath, DATestUtils.keyPath)) {
+        try(AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(DATestUtils.certificatePath, DATestUtils.keyPath)) {
 
 
             builder.withClientId(clientId)
                     .withEndpoint(DATestUtils.endpoint)
-                    .withCleanSession(true)
-                    .withBootstrap(clientBootstrap);
+                    .withCleanSession(true);
 
             try(MqttClientConnection connection = builder.build()) {
                 shadow = new IotShadowClient(connection);
