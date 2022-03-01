@@ -50,8 +50,12 @@ public class ConflictError extends GreengrassCoreIPCError implements EventStream
     return null;
   }
 
-  public ConflictError setMessage(final String message) {
+  public void setMessage(final String message) {
     this.message = Optional.ofNullable(message);
+  }
+
+  public ConflictError withMessage(final String message) {
+    setMessage(message);
     return this;
   }
 
