@@ -22,16 +22,19 @@ public class ShadowUpdatedSnapshot {
      */
     public ShadowState state;
 
+
     /**
      * Contains the timestamps for each attribute in the desired and reported sections of the state.
      *
      */
     public ShadowMetadata metadata;
 
+
     /**
      * The current version of the document for the device's shadow.
      *
      */
     public Integer version;
+
 
 }

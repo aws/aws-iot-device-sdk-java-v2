@@ -20,4 +20,5 @@ public class GetShadowSubscriptionRequest {
      */
     public String thingName;
 
+
 }

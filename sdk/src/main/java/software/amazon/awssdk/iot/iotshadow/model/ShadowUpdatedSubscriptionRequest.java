@@ -20,4 +20,5 @@ public class ShadowUpdatedSubscriptionRequest {
      */
     public String thingName;
 
+
 }

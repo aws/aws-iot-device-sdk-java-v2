@@ -21,11 +21,13 @@ public class ErrorResponse {
      */
     public Timestamp timestamp;
 
+
     /**
      * A text message that provides additional information.
      *
      */
     public String message;
+
 
     /**
      * Opaque request-response correlation data.  Present only if a client token was used in the request.
@@ -33,10 +35,12 @@ public class ErrorResponse {
      */
     public String clientToken;
 
+
     /**
      * An HTTP response code that indicates the type of error.
      *
      */
     public Integer code;
+
 
 }

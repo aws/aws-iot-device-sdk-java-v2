@@ -60,12 +60,21 @@ public class ConfigurationValidityReport implements EventStreamJsonMessage {
     return null;
   }
 
+  public void setStatus(final String status) {
+    this.status = Optional.ofNullable(status);
+  }
+
+  public ConfigurationValidityReport withStatus(final String status) {
+    setStatus(status);
+    return this;
+  }
+
   public void setStatus(final ConfigurationValidityStatus status) {
     this.status = Optional.ofNullable(status.getValue());
   }
 
-  public ConfigurationValidityReport setStatus(final String status) {
-    this.status = Optional.ofNullable(status);
+  public ConfigurationValidityReport withStatus(final ConfigurationValidityStatus status) {
+    setStatus(status);
     return this;
   }
 
@@ -76,8 +85,12 @@ public class ConfigurationValidityReport implements EventStreamJsonMessage {
     return null;
   }
 
-  public ConfigurationValidityReport setDeploymentId(final String deploymentId) {
+  public void setDeploymentId(final String deploymentId) {
     this.deploymentId = Optional.ofNullable(deploymentId);
+  }
+
+  public ConfigurationValidityReport withDeploymentId(final String deploymentId) {
+    setDeploymentId(deploymentId);
     return this;
   }
 
@@ -88,8 +101,12 @@ public class ConfigurationValidityReport implements EventStreamJsonMessage {
     return null;
   }
 
-  public ConfigurationValidityReport setMessage(final String message) {
+  public void setMessage(final String message) {
     this.message = Optional.ofNullable(message);
+  }
+
+  public ConfigurationValidityReport withMessage(final String message) {
+    setMessage(message);
     return this;
   }
 

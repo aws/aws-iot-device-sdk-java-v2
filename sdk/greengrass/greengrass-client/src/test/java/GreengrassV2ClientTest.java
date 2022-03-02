@@ -63,7 +63,7 @@ public class GreengrassV2ClientTest {
 
                 @Override
                 public CreateLocalDeploymentResponse handleRequest(CreateLocalDeploymentRequest request) {
-                    return new CreateLocalDeploymentResponse().setDeploymentId("deployment");
+                    return new CreateLocalDeploymentResponse().withDeploymentId("deployment");
                 }
 
                 @Override
@@ -79,10 +79,10 @@ public class GreengrassV2ClientTest {
                 @Override
                 public SubscribeToTopicResponse handleRequest(SubscribeToTopicRequest request) {
                     new Thread(() -> {
-                        sendStreamEvent(new SubscriptionResponseMessage().setBinaryMessage(
-                                new BinaryMessage().setMessage("message".getBytes(StandardCharsets.UTF_8))));
+                        sendStreamEvent(new SubscriptionResponseMessage().withBinaryMessage(
+                                new BinaryMessage().withMessage("message".getBytes(StandardCharsets.UTF_8))));
                     }).start();
-                    return new SubscribeToTopicResponse().setTopicName(request.getTopic());
+                    return new SubscribeToTopicResponse().withTopicName(request.getTopic());
                 }
 
                 @Override
@@ -126,7 +126,7 @@ public class GreengrassV2ClientTest {
         CompletableFuture<String> receivedMessage = new CompletableFuture<>();
         CompletableFuture<String> finalReceivedMessage = receivedMessage;
         GreengrassCoreIPCClientV2.StreamingResponse<SubscribeToTopicResponse, SubscribeToTopicResponseHandler> subResp =
-                client.subscribeToTopic(new SubscribeToTopicRequest().setTopic("abc"), (x) -> {
+                client.subscribeToTopic(new SubscribeToTopicRequest().withTopic("abc"), (x) -> {
                     if (!Thread.currentThread().getName().contains("pool")) {
                         System.out.println(Thread.currentThread().getName());
                         finalReceivedMessage.completeExceptionally(
@@ -142,7 +142,8 @@ public class GreengrassV2ClientTest {
         subscriptionClosed = new CompletableFuture<>();
         receivedMessage = new CompletableFuture<>();
         CompletableFuture<String> finalReceivedMessage1 = receivedMessage;
-        subResp = client.subscribeToTopic(new SubscribeToTopicRequest().setTopic("abc"), new StreamResponseHandler<SubscriptionResponseMessage>() {
+        subResp = client.subscribeToTopic(new SubscribeToTopicRequest().withTopic("abc"),
+                new StreamResponseHandler<SubscriptionResponseMessage>() {
             @Override
             public void onStreamEvent(SubscriptionResponseMessage streamEvent) {
                 if (!Thread.currentThread().getName().contains("pool")) {
@@ -170,7 +171,7 @@ public class GreengrassV2ClientTest {
         receivedMessage = new CompletableFuture<>();
         CompletableFuture<String> finalReceivedMessage2 = receivedMessage;
         GreengrassCoreIPCClientV2.StreamingResponse<CompletableFuture<SubscribeToTopicResponse>, SubscribeToTopicResponseHandler>
-                subRespAsync = client.subscribeToTopicAsync(new SubscribeToTopicRequest().setTopic("abc"),
+                subRespAsync = client.subscribeToTopicAsync(new SubscribeToTopicRequest().withTopic("abc"),
                 new StreamResponseHandler<SubscriptionResponseMessage>() {
                     @Override
                     public void onStreamEvent(SubscriptionResponseMessage streamEvent) {
@@ -198,7 +199,7 @@ public class GreengrassV2ClientTest {
         subscriptionClosed = new CompletableFuture<>();
         receivedMessage = new CompletableFuture<>();
         CompletableFuture<String> finalReceivedMessage3 = receivedMessage;
-        subRespAsync = client.subscribeToTopicAsync(new SubscribeToTopicRequest().setTopic("abc"), (x) -> {
+        subRespAsync = client.subscribeToTopicAsync(new SubscribeToTopicRequest().withTopic("abc"), (x) -> {
             if (!Thread.currentThread().getName().contains("pool")) {
                 finalReceivedMessage3.completeExceptionally(
                         new RuntimeException("Ran on event loop instead of executor"));

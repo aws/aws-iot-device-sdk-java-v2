@@ -21,16 +21,19 @@ public class ShadowStateWithDelta {
      */
     public HashMap<String, Object> delta;
 
+
     /**
      * The (last) reported shadow state from the device.
      *
      */
     public HashMap<String, Object> reported;
 
+
     /**
      * The desired shadow state (from external services and devices).
      *
      */
     public HashMap<String, Object> desired;
+
 
 }
