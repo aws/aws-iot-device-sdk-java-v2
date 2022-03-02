@@ -68,8 +68,12 @@ public class CreateDebugPasswordResponse implements EventStreamJsonMessage {
     return null;
   }
 
-  public CreateDebugPasswordResponse setPassword(final String password) {
+  public void setPassword(final String password) {
     this.password = Optional.ofNullable(password);
+  }
+
+  public CreateDebugPasswordResponse withPassword(final String password) {
+    setPassword(password);
     return this;
   }
 
@@ -80,8 +84,12 @@ public class CreateDebugPasswordResponse implements EventStreamJsonMessage {
     return null;
   }
 
-  public CreateDebugPasswordResponse setUsername(final String username) {
+  public void setUsername(final String username) {
     this.username = Optional.ofNullable(username);
+  }
+
+  public CreateDebugPasswordResponse withUsername(final String username) {
+    setUsername(username);
     return this;
   }
 
@@ -92,8 +100,12 @@ public class CreateDebugPasswordResponse implements EventStreamJsonMessage {
     return null;
   }
 
-  public CreateDebugPasswordResponse setPasswordExpiration(final Instant passwordExpiration) {
+  public void setPasswordExpiration(final Instant passwordExpiration) {
     this.passwordExpiration = Optional.ofNullable(passwordExpiration);
+  }
+
+  public CreateDebugPasswordResponse withPasswordExpiration(final Instant passwordExpiration) {
+    setPasswordExpiration(passwordExpiration);
     return this;
   }
 
@@ -104,8 +116,12 @@ public class CreateDebugPasswordResponse implements EventStreamJsonMessage {
     return null;
   }
 
-  public CreateDebugPasswordResponse setCertificateSHA256Hash(final String certificateSHA256Hash) {
+  public void setCertificateSHA256Hash(final String certificateSHA256Hash) {
     this.certificateSHA256Hash = Optional.ofNullable(certificateSHA256Hash);
+  }
+
+  public CreateDebugPasswordResponse withCertificateSHA256Hash(final String certificateSHA256Hash) {
+    setCertificateSHA256Hash(certificateSHA256Hash);
     return this;
   }
 
@@ -116,8 +132,12 @@ public class CreateDebugPasswordResponse implements EventStreamJsonMessage {
     return null;
   }
 
-  public CreateDebugPasswordResponse setCertificateSHA1Hash(final String certificateSHA1Hash) {
+  public void setCertificateSHA1Hash(final String certificateSHA1Hash) {
     this.certificateSHA1Hash = Optional.ofNullable(certificateSHA1Hash);
+  }
+
+  public CreateDebugPasswordResponse withCertificateSHA1Hash(final String certificateSHA1Hash) {
+    setCertificateSHA1Hash(certificateSHA1Hash);
     return this;
   }
 

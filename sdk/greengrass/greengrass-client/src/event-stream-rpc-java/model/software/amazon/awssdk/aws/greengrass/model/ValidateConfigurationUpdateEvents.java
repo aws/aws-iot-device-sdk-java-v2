@@ -32,13 +32,18 @@ public class ValidateConfigurationUpdateEvents implements EventStreamJsonMessage
     return null;
   }
 
-  public ValidateConfigurationUpdateEvents setValidateConfigurationUpdateEvent(
+  public void setValidateConfigurationUpdateEvent(
       final ValidateConfigurationUpdateEvent validateConfigurationUpdateEvent) {
     if (setUnionMember != null) {
       setUnionMember.nullify(this);
     }
     this.validateConfigurationUpdateEvent = Optional.of(validateConfigurationUpdateEvent);
     this.setUnionMember = UnionMember.VALIDATE_CONFIGURATION_UPDATE_EVENT;
+  }
+
+  public ValidateConfigurationUpdateEvents withValidateConfigurationUpdateEvent(
+      final ValidateConfigurationUpdateEvent validateConfigurationUpdateEvent) {
+    setValidateConfigurationUpdateEvent(validateConfigurationUpdateEvent);
     return this;
   }
 

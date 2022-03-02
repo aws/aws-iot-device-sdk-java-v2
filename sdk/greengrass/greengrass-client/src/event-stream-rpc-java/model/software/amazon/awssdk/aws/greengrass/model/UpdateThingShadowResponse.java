@@ -40,8 +40,12 @@ public class UpdateThingShadowResponse implements EventStreamJsonMessage {
     return null;
   }
 
-  public UpdateThingShadowResponse setPayload(final byte[] payload) {
+  public void setPayload(final byte[] payload) {
     this.payload = Optional.ofNullable(payload);
+  }
+
+  public UpdateThingShadowResponse withPayload(final byte[] payload) {
+    setPayload(payload);
     return this;
   }
 
