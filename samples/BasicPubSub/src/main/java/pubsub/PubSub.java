@@ -26,6 +26,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 
+import utils.commandlineutils.CommandLineUtils;
+
 public class PubSub {
 
     // When run normally, we want to exit nicely even if something goes wrong
@@ -42,7 +44,6 @@ public class PubSub {
     static String topic = "test/topic";
     static String message = "Hello World!";
     static int    messagesToPublish = 10;
-    static boolean showHelp = false;
     static int port = 8883;
 
     static String proxyHost;
@@ -57,150 +58,7 @@ public class PubSub {
     static String x509KeyPath;
     static String x509RootCaPath;
 
-    static void printUsage() {
-        System.out.println(
-                "Usage:\n"+
-                "  --help            This message\n"+
-                "  --clientId        Client ID to use when connecting (optional)\n"+
-                "  -e|--endpoint     AWS IoT service endpoint hostname\n"+
-                "  -p|--port         Port to connect to on the endpoint\n"+
-                "  -r|--rootca       Path to the root certificate\n"+
-                "  -c|--cert         Path to the IoT thing certificate\n"+
-                "  -k|--key          Path to the IoT thing private key\n"+
-                "  -t|--topic        Topic to subscribe/publish to (optional)\n"+
-                "  -m|--message      Message to publish (optional)\n"+
-                "  -n|--count        Number of messages to publish (optional)\n" +
-                "  -w|--websockets   Use websockets\n" +
-                "  --proxyhost       Websocket proxy host to use\n" +
-                "  --proxyport       Websocket proxy port to use\n" +
-                "  --region          Websocket signing region to use\n" +
-                "  --x509            Use the x509 credentials provider while using websockets\n" +
-                "  --x509rolealias   Role alias to use with the x509 credentials provider\n" +
-                "  --x509endpoint    Endpoint to fetch x509 credentials from\n" +
-                "  --x509thing       Thing name to fetch x509 credentials on behalf of\n" +
-                "  --x509cert        Path to the IoT thing certificate used in fetching x509 credentials\n" +
-                "  --x509key         Path to the IoT thing private key used in fetching x509 credentials\n" +
-                "  --x509rootca      Path to the root certificate used in fetching x509 credentials\n"
-        );
-    }
-
-    static void parseCommandLine(String[] args) {
-        for (int idx = 0; idx < args.length; ++idx) {
-            switch (args[idx]) {
-                case "--help":
-                    showHelp = true;
-                    break;
-                case "--clientId":
-                    if (idx + 1 < args.length) {
-                        clientId = args[++idx];
-                    }
-                    break;
-                case "-e":
-                case "--endpoint":
-                    if (idx + 1 < args.length) {
-                        endpoint = args[++idx];
-                    }
-                    break;
-                case "-p":
-                case "--port":
-                    if (idx + 1 < args.length) {
-                        port = Integer.parseInt(args[++idx]);
-                    }
-                    break;
-                case "-r":
-                case "--rootca":
-                    if (idx + 1 < args.length) {
-                        rootCaPath = args[++idx];
-                    }
-                    break;
-                case "-c":
-                case "--cert":
-                    if (idx + 1 < args.length) {
-                        certPath = args[++idx];
-                    }
-                    break;
-                case "-k":
-                case "--key":
-                    if (idx + 1 < args.length) {
-                        keyPath = args[++idx];
-                    }
-                    break;
-                case "-t":
-                case "--topic":
-                    if (idx + 1 < args.length) {
-                        topic = args[++idx];
-                    }
-                    break;
-                case "-m":
-                case "--message":
-                    if (idx + 1 < args.length) {
-                        message = args[++idx];
-                    }
-                    break;
-                case "-n":
-                case "--count":
-                    if (idx + 1 < args.length) {
-                        messagesToPublish = Integer.parseInt(args[++idx]);
-                    }
-                    break;
-                case "-w":
-                case "--websockets":
-                    useWebsockets = true;
-                    break;
-                case "--x509":
-                    useX509Credentials = true;
-                    useWebsockets = true;
-                    break;
-                case "--x509rolealias":
-                    if (idx + 1 < args.length) {
-                        x509RoleAlias = args[++idx];
-                    }
-                    break;
-                case "--x509endpoint":
-                    if (idx + 1 < args.length) {
-                        x509Endpoint = args[++idx];
-                    }
-                    break;
-                case "--x509thing":
-                    if (idx + 1 < args.length) {
-                        x509Thing = args[++idx];
-                    }
-                    break;
-                case "--x509cert":
-                    if (idx + 1 < args.length) {
-                        x509CertPath = args[++idx];
-                    }
-                    break;
-                case "--x509key":
-                    if (idx + 1 < args.length) {
-                        x509KeyPath = args[++idx];
-                    }
-                    break;
-                case "--x509rootca":
-                    if (idx + 1 < args.length) {
-                        x509RootCaPath = args[++idx];
-                    }
-                    break;
-                case "--proxyhost":
-                    if (idx + 1 < args.length) {
-                        proxyHost = args[++idx];
-                    }
-                    break;
-                case "--proxyport":
-                    if (idx + 1 < args.length) {
-                        proxyPort = Integer.parseInt(args[++idx]);
-                    }
-                    break;
-                case "--region":
-                    if (idx + 1 < args.length) {
-                        region = args[++idx];
-                    }
-                    break;
-                default:
-                    System.out.println("Unrecognized argument: " + args[idx]);
-            }
-        }
-    }
+    static CommandLineUtils cmdUtils;
 
     static void onRejectedError(RejectedError error) {
         System.out.println("Request rejected: " + error.code.toString() + ": " + error.message);
@@ -220,22 +78,69 @@ public class PubSub {
 
     public static void main(String[] args) {
 
-        parseCommandLine(args);
-        if (showHelp || endpoint == null) {
-            printUsage();
-            onApplicationFailure(null);
-            return;
+        cmdUtils = new CommandLineUtils();
+        cmdUtils.registerProgramName("PubSub");
+        cmdUtils.addCommonMQTTCommands();
+        cmdUtils.registerCommand("client_id", "<int>", "Client id to use (optional, default='test-*').");
+        cmdUtils.registerCommand("port", "<int>", "Port to connect to on the endpoint (optional, default='8883').");
+        cmdUtils.registerCommand("topic", "<str>", "Topic to subscribe/publish to (optional, default='test/topic').");
+        cmdUtils.registerCommand("message", "<str>", "Message to publish (optional, default='Hello World').");
+        cmdUtils.registerCommand("count", "<int>", "Number of messages to publish (optional, default='10').");
+        cmdUtils.registerCommand("use_websocket", "", "Use websockets (optional).");
+        cmdUtils.registerCommand("x509", "", "Use the x509 credentials provider while using websockets (optional).");
+        cmdUtils.registerCommand("x509_role_alias", "<str>", "Role alias to use with the x509 credentials provider (required for x509).");
+        cmdUtils.registerCommand("x509_endpoint", "<str>", "Endpoint to fetch x509 credentials from (required for x509).");
+        cmdUtils.registerCommand("x509_thing", "<str>", "Thing name to fetch x509 credentials on behalf of (required for x509).");
+        cmdUtils.registerCommand("x509_cert", "<path>", "Path to the IoT thing certificate used in fetching x509 credentials (required for x509).");
+        cmdUtils.registerCommand("x509_key", "<path>", "Path to the IoT thing private key used in fetching x509 credentials (required for x509).");
+        cmdUtils.registerCommand("x509_ca_file", "<path>", "Path to the root certificate used in fetching x509 credentials (required for x509).");
+        cmdUtils.registerCommand("proxy_host", "<str>", "Websocket proxy host to use (optional, required if --proxy_port is set).");
+        cmdUtils.registerCommand("proxy_port", "<int>", "Websocket proxy port to use (optional, required if --proxy_host is set).");
+        cmdUtils.registerCommand("region", "<str>", "AWS IoT service region (optional, default='us-east-1').");
+
+        cmdUtils.registerCommand("help", "", "Prints this message");
+        cmdUtils.sendArguments(args);
+
+        if (cmdUtils.hasCommand("help")) {
+            cmdUtils.printHelp();
+            System.exit(1);
         }
 
-        if (!useWebsockets) {
+        endpoint = cmdUtils.getCommandRequired("endpoint", "");
+        clientId = cmdUtils.getCommandOrDefault("client_id", clientId);
+        port = Integer.parseInt(cmdUtils.getCommandOrDefault("port", String.valueOf(port)));
+        rootCaPath = cmdUtils.getCommandOrDefault("root_ca", rootCaPath);
+        certPath = cmdUtils.getCommandOrDefault("cert", certPath);
+        keyPath = cmdUtils.getCommandOrDefault("key", keyPath);
+        topic = cmdUtils.getCommandOrDefault("topic", topic);
+        message = cmdUtils.getCommandOrDefault("message", message);
+        messagesToPublish = Integer.parseInt(cmdUtils.getCommandOrDefault("count", String.valueOf(messagesToPublish)));
+        useWebsockets = cmdUtils.hasCommand("use_websocket");
+        useX509Credentials = cmdUtils.hasCommand("x509");
+        if (useX509Credentials) {
+            useWebsockets = true;
+        }
+        x509RoleAlias = cmdUtils.getCommandOrDefault("x509_role_alias", x509RoleAlias);
+        x509Endpoint = cmdUtils.getCommandOrDefault("x509_endpoint", x509Endpoint);
+        x509Thing = cmdUtils.getCommandOrDefault("x509_thing", x509Thing);
+        x509CertPath = cmdUtils.getCommandOrDefault("x509_cert", x509CertPath);
+        x509KeyPath = cmdUtils.getCommandOrDefault("x509_key", x509KeyPath);
+        x509RootCaPath = cmdUtils.getCommandOrDefault("x509_ca_file", x509RootCaPath);
+        proxyHost = cmdUtils.getCommandOrDefault("proxy_host", proxyHost);
+        proxyPort = Integer.parseInt(cmdUtils.getCommandOrDefault("proxy_port", String.valueOf(proxyPort)));
+        region = cmdUtils.getCommandOrDefault("region", region);
+
+        if (useWebsockets == false) {
             if (certPath == null || keyPath == null) {
-                printUsage();
+                cmdUtils.printHelp();
+                System.out.println("--cert and --key required if not using --use_websocket.");
                 onApplicationFailure(null);
                 return;
             }
         } else if (useX509Credentials) {
             if (x509RoleAlias == null || x509Endpoint == null || x509Thing == null || x509CertPath == null || x509KeyPath == null) {
-                printUsage();
+                cmdUtils.printHelp();
+                System.out.println("--x509_role_alias, --x509_endpoint, --x509_thing, --x509_cert, and --x509_key required if using x509.");
                 onApplicationFailure(null);
                 return;
             }

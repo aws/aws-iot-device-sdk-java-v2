@@ -33,6 +33,8 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import utils.commandlineutils.CommandLineUtils;
+
 public class FleetProvisioningSample {
     static String clientId = "test-" + UUID.randomUUID().toString();
     static String rootCaPath;
@@ -42,7 +44,6 @@ public class FleetProvisioningSample {
     static String templateName;
     static String templateParameters;
     static String csrPath;
-    static boolean showHelp = false;
     static int port = 8883;
 
     static CompletableFuture<Void> gotResponse;
@@ -52,86 +53,7 @@ public class FleetProvisioningSample {
     static CreateCertificateFromCsrResponse createCertificateFromCsrResponse;
     static RegisterThingResponse registerThingResponse;
 
-    static void printUsage() {
-        System.out.println(
-                "Usage:\n"+
-                "  --help        This message\n"+
-                "  --clientId    Client ID to use when connecting (optional)\n"+
-                "  -e|--endpoint AWS IoT service endpoint hostname\n"+
-                "  -p|--port     Port to connect to on the endpoint\n"+
-                "  -r|--rootca   Path to the root certificate\n"+
-                "  -c|--cert     Path to the IoT thing certificate\n"+
-                "  -k|--key      Path to the IoT thing private key\n"+
-                "  -t|--templateName      Provisioning template name\n"+
-                "  -tp|--templateParameters     Provisioning template parameters\n"+
-                "  -cr|--csr      Path to the CSR"
-        );
-    }
-
-    static void parseCommandLine(String[] args) {
-        for (int idx = 0; idx < args.length; ++idx) {
-            switch (args[idx]) {
-                case "--help":
-                    showHelp = true;
-                    break;
-                case "--clientId":
-                    if (idx + 1 < args.length) {
-                        clientId = args[++idx];
-                    }
-                    break;
-                case "-e":
-                case "--endpoint":
-                    if (idx + 1 < args.length) {
-                        endpoint = args[++idx];
-                    }
-                    break;
-                case "-p":
-                case "--port":
-                    if (idx + 1 < args.length) {
-                        port = Integer.parseInt(args[++idx]);
-                    }
-                    break;
-                case "-r":
-                case "--rootca":
-                    if (idx + 1 < args.length) {
-                        rootCaPath = args[++idx];
-                    }
-                    break;
-                case "-c":
-                case "--cert":
-                    if (idx + 1 < args.length) {
-                        certPath = args[++idx];
-                    }
-                    break;
-                case "-k":
-                case "--key":
-                    if (idx + 1 < args.length) {
-                        keyPath = args[++idx];
-                    }
-                    break;
-                case "-t":
-                case "--templateName":
-                    if (idx + 1 < args.length) {
-                        templateName = args[++idx];
-                    }
-                    break;
-                case "-tp":
-                case "--templateParameters":
-                    if (idx + 1 < args.length) {
-                        templateParameters = args[++idx];
-                    }
-                    break;
-                case "-cr":
-                case "--csr":
-                    if (idx + 1 < args.length) {
-                        csrPath = args[++idx];
-                    }
-                    break;
-                default:
-                    System.out.println("Unrecognized argument: " + args[idx]);
-            }
-        }
-    }
+    static CommandLineUtils cmdUtils;
 
     static void onRejectedKeys(ErrorResponse response) {
         System.out.println("CreateKeysAndCertificate Request rejected, errorCode: " + response.errorCode +
@@ -197,11 +119,32 @@ public class FleetProvisioningSample {
     }
 
     public static void main(String[] args) {
-        parseCommandLine(args);
-        if (showHelp || endpoint == null || rootCaPath == null || certPath == null || keyPath == null || templateName == null || templateParameters == null) {
-            printUsage();
-            return;
+
+        cmdUtils = new CommandLineUtils();
+        cmdUtils.registerProgramName("FleetProvisioningSample");
+        cmdUtils.addCommonMQTTCommands();
+        cmdUtils.registerCommand("client_id", "<int>", "Client id to use (optional, default='test-*').");
+        cmdUtils.registerCommand("port", "<int>", "Port to connect to on the endpoint (optional, default='8883').");
+        cmdUtils.registerCommand("template_name", "<str>", "Provisioning template name.");
+        cmdUtils.registerCommand("template_parameters", "<json>", "Provisioning template parameters.");
+        cmdUtils.registerCommand("csr", "<path>", "Path to the CSR file (optional).");
+        cmdUtils.registerCommand("help", "", "Prints this message");
+        cmdUtils.sendArguments(args);
+
+        if (cmdUtils.hasCommand("help")) {
+            cmdUtils.printHelp();
+            System.exit(1);
         }
+
+        clientId = cmdUtils.getCommandOrDefault("client_id", clientId);
+        endpoint = cmdUtils.getCommandRequired("endpoint", "");
+        port = Integer.parseInt(cmdUtils.getCommandOrDefault("port", String.valueOf(port)));
+        rootCaPath = cmdUtils.getCommandRequired("root_ca", "");
+        certPath = cmdUtils.getCommandRequired("cert", "");
+        keyPath = cmdUtils.getCommandRequired("key", "");
+        templateName = cmdUtils.getCommandRequired("template_name", "");
+        templateParameters = cmdUtils.getCommandRequired("template_parameters", "");
+        csrPath = cmdUtils.getCommandOrDefault("csr", csrPath);
 
         MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
             @Override
