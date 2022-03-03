@@ -50,8 +50,12 @@ public class InvalidArgumentsError extends GreengrassCoreIPCError implements Eve
     return null;
   }
 
-  public InvalidArgumentsError setMessage(final String message) {
+  public void setMessage(final String message) {
     this.message = Optional.ofNullable(message);
+  }
+
+  public InvalidArgumentsError withMessage(final String message) {
+    setMessage(message);
     return this;
   }
 

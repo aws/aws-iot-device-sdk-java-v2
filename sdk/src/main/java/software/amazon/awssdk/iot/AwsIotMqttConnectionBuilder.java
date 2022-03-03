@@ -489,7 +489,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     public MqttClientConnection build() {
         // Validate
         if (bootstrap == null) {
-            throw new MqttException("client bootstrap must be non-null");
+            bootstrap = ClientBootstrap.getOrCreateStaticDefault();
         }
 
         // Lazy create

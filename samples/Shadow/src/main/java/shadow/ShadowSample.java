@@ -8,9 +8,6 @@ package shadow;
 import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.crt.CrtResource;
 import software.amazon.awssdk.crt.CrtRuntimeException;
-import software.amazon.awssdk.crt.io.ClientBootstrap;
-import software.amazon.awssdk.crt.io.EventLoopGroup;
-import software.amazon.awssdk.crt.io.HostResolver;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnectionEvents;
 import software.amazon.awssdk.crt.mqtt.QualityOfService;
@@ -144,13 +141,6 @@ public class ShadowSample {
         UpdateShadowRequest request = new UpdateShadowRequest();
         request.thingName = thingName;
         request.state = new ShadowState();
-        
-        request.state.reported = new HashMap<String, Object>() {{
-           put(SHADOW_PROPERTY, value);
-        }};
-        request.state.desired = new HashMap<String, Object>() {{
-            put(SHADOW_PROPERTY, value);
-        }};
 
         if (value.compareToIgnoreCase("clear_shadow") == 0) {
             request.state.desiredIsNullable = true;
@@ -169,9 +159,18 @@ public class ShadowSample {
 
             // We will only clear desired, so we need to pass an empty HashMap for reported
             request.state.reported = new HashMap<String, Object>() {{}};
-             request.state.desired = new HashMap<String, Object>() {{
+            request.state.desired = new HashMap<String, Object>() {{
                  put(SHADOW_PROPERTY, null);
              }};
+        }
+        else
+        {
+            request.state.reported = new HashMap<String, Object>() {{
+                put(SHADOW_PROPERTY, value);
+            }};
+            request.state.desired = new HashMap<String, Object>() {{
+                put(SHADOW_PROPERTY, value);
+            }};
         }
 
         // Publish the request
@@ -221,9 +220,7 @@ public class ShadowSample {
             }
         };
 
-        try(EventLoopGroup eventLoopGroup = new EventLoopGroup(1);
-            HostResolver resolver = new HostResolver(eventLoopGroup);
-            ClientBootstrap clientBootstrap = new ClientBootstrap(eventLoopGroup, resolver);
+        try(
             AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(certPath, keyPath)) {
 
             if (rootCaPath != null) {
@@ -233,8 +230,7 @@ public class ShadowSample {
             builder.withClientId(clientId)
                     .withEndpoint(endpoint)
                     .withCleanSession(true)
-                    .withConnectionEventCallbacks(callbacks)
-                    .withBootstrap(clientBootstrap);
+                    .withConnectionEventCallbacks(callbacks);
 
             try(MqttClientConnection connection = builder.build()) {
                 shadow = new IotShadowClient(connection);
@@ -313,6 +309,7 @@ public class ShadowSample {
                     changeShadowValue(newValue).get();
                     gotResponse.get();
                 }
+                scanner.close();
 
                 CompletableFuture<Void> disconnected = connection.disconnect();
                 disconnected.get();

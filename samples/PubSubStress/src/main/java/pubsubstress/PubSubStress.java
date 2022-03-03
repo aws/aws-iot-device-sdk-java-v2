@@ -8,9 +8,6 @@ package pubsubstress;
 import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.crt.CrtResource;
 import software.amazon.awssdk.crt.http.HttpProxyOptions;
-import software.amazon.awssdk.crt.io.ClientBootstrap;
-import software.amazon.awssdk.crt.io.EventLoopGroup;
-import software.amazon.awssdk.crt.io.HostResolver;
 import software.amazon.awssdk.crt.Log;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnectionEvents;
@@ -252,15 +249,12 @@ public class PubSubStress {
         while(iteration < testIterations) {
             System.out.println(String.format("Starting iteration %d", iteration));
 
-            try (EventLoopGroup eventLoopGroup = new EventLoopGroup(eventLoopThreadCount);
-                HostResolver resolver = new HostResolver(eventLoopGroup);
-                ClientBootstrap clientBootstrap = new ClientBootstrap(eventLoopGroup, resolver);
+            try (
                 AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(certPath, keyPath)) {
 
                 builder.withCertificateAuthorityFromPath(null, rootCaPath)
                     .withEndpoint(endpoint)
                     .withCleanSession(true)
-                    .withBootstrap(clientBootstrap)
                     .withProtocolOperationTimeoutMs(10000);
 
                 if (proxyHost != null && proxyPort > 0) {

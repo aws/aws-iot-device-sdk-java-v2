@@ -39,8 +39,12 @@ public class ValidateAuthorizationTokenRequest implements EventStreamJsonMessage
     return null;
   }
 
-  public ValidateAuthorizationTokenRequest setToken(final String token) {
+  public void setToken(final String token) {
     this.token = Optional.ofNullable(token);
+  }
+
+  public ValidateAuthorizationTokenRequest withToken(final String token) {
+    setToken(token);
     return this;
   }
 
