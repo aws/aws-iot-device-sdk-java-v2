@@ -56,12 +56,7 @@ public class BasicDiscovery {
         cmdUtils.registerCommand("proxy_port", "<int>", "Websocket proxy port to use (optional, required if --proxy_host is set).");
         cmdUtils.registerCommand("help", "", "Prints this message");
         cmdUtils.sendArguments(args);
-
-        if (cmdUtils.hasCommand("verbosity")) {
-            cmdUtils.startLogging();
-        } else {
-            Log.initLoggingFromSystemProperties();
-        }
+        Log.initLoggingFromSystemProperties();
 
         if (cmdUtils.hasCommand("help")) {
             cmdUtils.printHelp();

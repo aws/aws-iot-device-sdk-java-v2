@@ -8,6 +8,7 @@ package identity;
 import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.crt.CrtResource;
 import software.amazon.awssdk.crt.CrtRuntimeException;
+import software.amazon.awssdk.crt.Log;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnectionEvents;
 import software.amazon.awssdk.crt.mqtt.QualityOfService;
@@ -130,7 +131,7 @@ public class FleetProvisioningSample {
         cmdUtils.registerCommand("csr", "<path>", "Path to the CSR file (optional).");
         cmdUtils.registerCommand("help", "", "Prints this message");
         cmdUtils.sendArguments(args);
-        cmdUtils.startLogging();
+        Log.initLoggingFromSystemProperties();
 
         if (cmdUtils.hasCommand("help")) {
             cmdUtils.printHelp();

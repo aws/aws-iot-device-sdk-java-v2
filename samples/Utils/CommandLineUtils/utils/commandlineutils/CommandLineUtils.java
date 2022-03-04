@@ -107,25 +107,6 @@ public class CommandLineUtils {
         registerCommand("verbosity", "<str>", "The amount of detail in the logging output of the sample." +
                         " Options: 'fatal', 'error', 'warn', 'info', 'debug', 'trace' or 'none' (optional, default='none').");
     }
-
-    public void startLogging() {
-        String logLevel = getCommandOrDefault("verbosity", "none");
-        if (logLevel == "trace") {
-            Log.initLoggingToStdout(LogLevel.Trace);
-        } else if (logLevel == "debug") {
-            Log.initLoggingToStdout(LogLevel.Debug);
-        } else if (logLevel == "info") {
-            Log.initLoggingToStdout(LogLevel.Info);
-        } else if (logLevel == "warn") {
-            Log.initLoggingToStdout(LogLevel.Warn);
-        } else if (logLevel == "error") {
-            Log.initLoggingToStdout(LogLevel.Error);
-        } else if (logLevel == "fatal") {
-            Log.initLoggingToStdout(LogLevel.Fatal);
-        } else {
-            Log.initLoggingToStdout(LogLevel.None);
-        }
-    }
 }
 
 class CommandLineOption {

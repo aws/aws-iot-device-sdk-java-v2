@@ -17,6 +17,28 @@ Note that all samples will show their options by passing in `--help`. For exampl
 mvn compile exec:java -pl samples/BasicPubSub -Dexec.mainClass=pubsub.PubSub -Dexec.args='--help'
 ```
 
+### Note
+
+To enable logging in the samples, you will need to set the following system properties when running the samples:
+
+```sh
+-Daws.crt.debugnative=true
+-Daws.crt.log.destination=File
+-Daws.crt.log.level=Trace
+-Daws.crt.log.filename=<path and filename>
+```
+
+* `aws.crt.debugnative`: Whether to debug native (C/C++) code. Can be either `true` or `false`.
+* `aws.crt.log.destination`: Where the logs are outputted to. Can be `File`, `Stdout` or `Stderr`. Defaults to `Stderr`.
+* `aws.crt.log.level`: The level of logging shown. Can be `Trace`, `Debug`, `Info`, `Warn`, `Error`, `Fatal`, or `None`. Defaults to `Warn`.
+* `aws.crt.log.filename`: The path to save the log file. Only needed if `aws.crt.log.destination` is set to `File`.
+
+For example, to run `BasicPubSub` with logging you could use the following:
+
+```sh
+mvn compile exec:java -pl samples/BasicPubSub -Daws.crt.debugnative=true -Daws.crt.log.level=Debug -Daws.crt.log.destionation=Stdout -Dexec.mainClass=pubsub.PubSub -Dexec.args='--endpoint <endpoint> --cert <path to cert> --key <path to key> --ca_file <path to ca file>'
+```
+
 ## BasicPubSub
 
 This sample demonstrates connecting to IoT Core, subscribing to a topic, and publishing to that topic.

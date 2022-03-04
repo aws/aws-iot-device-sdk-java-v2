@@ -215,7 +215,7 @@ public class PubSubStress {
         cmdUtils.registerCommand("region", "<str>", "Websocket signing region to use (optional, default='us-east-1').");
         cmdUtils.registerCommand("help", "", "Prints this message");
         cmdUtils.sendArguments(args);
-        cmdUtils.startLogging();
+        Log.initLoggingFromSystemProperties();
 
         if (cmdUtils.hasCommand("help")) {
             cmdUtils.printHelp();
