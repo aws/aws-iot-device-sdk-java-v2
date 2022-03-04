@@ -131,7 +131,6 @@ public class FleetProvisioningSample {
         cmdUtils.registerCommand("csr", "<path>", "Path to the CSR file (optional).");
         cmdUtils.registerCommand("help", "", "Prints this message");
         cmdUtils.sendArguments(args);
-        Log.initLoggingFromSystemProperties();
 
         if (cmdUtils.hasCommand("help")) {
             cmdUtils.printHelp();

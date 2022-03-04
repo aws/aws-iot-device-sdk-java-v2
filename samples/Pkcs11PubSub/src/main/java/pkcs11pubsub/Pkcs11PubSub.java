@@ -73,7 +73,6 @@ public class Pkcs11PubSub {
         cmdUtils.registerCommand("count", "<int>", "Number of messages to publish (optional, default='10').");
         cmdUtils.registerCommand("help", "", "Prints this message");
         cmdUtils.sendArguments(args);
-        Log.initLoggingFromSystemProperties();
 
         if (cmdUtils.hasCommand("help")) {
             cmdUtils.printHelp();

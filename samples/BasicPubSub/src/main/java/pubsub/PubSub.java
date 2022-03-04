@@ -101,7 +101,6 @@ public class PubSub {
 
         cmdUtils.registerCommand("help", "", "Prints this message");
         cmdUtils.sendArguments(args);
-        Log.initLoggingFromSystemProperties();
 
         if (cmdUtils.hasCommand("help")) {
             cmdUtils.printHelp();
