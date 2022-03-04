@@ -25,7 +25,7 @@ source: `samples/BasicPubSub`
 
 To Run:
 ```sh
-mvn compile exec:java -pl samples/BasicPubSub -Dexec.mainClass=pubsub.PubSub -Dexec.args='--endpoint <xxxx-ats.iot.xxxx.amazonaws.com> --cert <certificate.pem.crt> --key <private.pem.key> --rootca <AmazonRootCA1.pem>'
+mvn compile exec:java -pl samples/BasicPubSub -Dexec.mainClass=pubsub.PubSub -Dexec.args='--endpoint <xxxx-ats.iot.xxxx.amazonaws.com> --cert <certificate.pem.crt> --key <private.pem.key> --ca_file <AmazonRootCA1.pem>'
 ```
 
 The sample can connect to IoT Core in several ways:
@@ -33,10 +33,10 @@ The sample can connect to IoT Core in several ways:
 1)  To connect directly with the MQTT protocol, using a certificate and private key for mutual TLS,
     you must pass `--cert` and `--key`.
 2)  To connect with MQTT over websockets, using your AWS credentials for authentication,
-    you must pass `--websockets` and `--region`.
+    you must pass `--use_websocket` and `--region`.
 3)  To connect with MQTT over websockets, using the
     [X.509 credentials provider](https://docs.aws.amazon.com/iot/latest/developerguide/authorizing-direct-aws.html)
-    for authentication, you must pass `--websockets`, `--region`, `--x509`, `--x509rolealias`, `--x509endpoint`, `--x509thing`, `--x509cert`, and `--x509key`.
+    for authentication, you must pass `--use_websocket`, `--region`, `--x509`, `--x509_role_alias`, `--x509_endpoint`, `--x509_thing`, `--x509_cert`, and `--x509_key`.
 
 ## Pkcs11PubSub
 
@@ -88,7 +88,7 @@ To run this sample using [SoftHSM2](https://www.opendnssec.org/softhsm/) as the 
 
 5)  Now you can run the sample:
     ```sh
-    mvn compile exec:java -pl samples/Pkcs11PubSub -Dexec.mainClass=pkcs11pubsub.Pkcs11PubSub -Dexec.args='--endpoint <xxxx-ats.iot.xxxx.amazonaws.com> --cert <certificate.pem.crt> --rootca <AmazonRootCA1.pem> --pkcs11Lib <path/to/libsofthsm2.so> --pin <user-pin> --tokenLabel <token-label> --keyLabel <key-label>'
+    mvn compile exec:java -pl samples/Pkcs11PubSub -Dexec.mainClass=pkcs11pubsub.Pkcs11PubSub -Dexec.args='--endpoint <xxxx-ats.iot.xxxx.amazonaws.com> --cert <certificate.pem.crt> --ca_file <AmazonRootCA1.pem> --pkcs11_lib <path/to/libsofthsm2.so> --pin <user-pin> --token_label <token-label> --key_label <key-label>'
     ```
 
 ## Shadow
@@ -116,7 +116,7 @@ Source: `samples/Shadow`
 To Run:
 
 ``` sh
-mvn compile exec:java -pl samples/Shadow -Dexec.mainClass=shadow.ShadowSample -Dexec.args='--endpoint <endpoint> --rootca /path/to/AmazonRootCA1.pem --cert <cert path> --key <key path> --thingName <thing name>'
+mvn compile exec:java -pl samples/Shadow -Dexec.mainClass=shadow.ShadowSample -Dexec.args='--endpoint <endpoint> --ca_file /path/to/AmazonRootCA1.pem --cert <cert path> --key <key path> --thing_name <thing name>'
 ```
 
 Your Thing's
@@ -192,7 +192,7 @@ Source: `samples/Jobs`
 To Run:
 
 ``` sh
-mvn compile exec:java -pl samples/Jobs -Dexec.mainClass=jobs.JobsSample -Dexec.args='--endpoint <endpoint> --rootca /path/to/AmazonRootCA1.pem --cert <cert path> --key <key path> --thingName <thing name>'
+mvn compile exec:java -pl samples/Jobs -Dexec.mainClass=jobs.JobsSample -Dexec.args='--endpoint <endpoint> --ca_file /path/to/AmazonRootCA1.pem --cert <cert path> --key <key path> --thing_name <thing name>'
 ```
 
 Your Thing's
@@ -268,15 +268,15 @@ cd ~/samples/Identity
 Run the sample using CreateKeysAndCertificate:
 
 ``` sh
-mvn compile exec:java -pl samples/Identity -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint <endpoint> --rootca <root ca path>
---cert <cert path> --key <private key path> --templateName <templatename> --templateParameters <templateParams>"
+mvn compile exec:java -pl samples/Identity -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint <endpoint> --ca_file <root ca path>
+--cert <cert path> --key <private key path> --template_name <templatename> --template_parameters <templateParams>"
 ```
 
 Run the sample using CreateCertificateFromCsr:
 
 ``` sh
-mvn compile exec:java -pl samples/Identity -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint <endpoint> --rootca <root ca path>
---cert <cert path> --key <private key path> --templateName <templatename> --templateParameters <templateParams> --csr <csr path>"
+mvn compile exec:java -pl samples/Identity -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint <endpoint> --ca_file <root ca path>
+--cert <cert path> --key <private key path> --template_name <templatename> --template_parameters <templateParams> --csr <csr path>"
 ```
 
 Your Thing's
@@ -390,8 +390,8 @@ to perform the actual provisioning. If you are not using the temporary provision
 and `--key` appropriately:
 
 ``` sh
-mvn compile exec:java -pl samples/Identity -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint [your endpoint]-ats.iot.[region].amazonaws.com --rootca [pathToRootCA]
---cert /tmp/provision.cert.pem --key /tmp/provision.private.key --templateName [TemplateName] --templateParameters {\"SerialNumber\":\"1\",\"DeviceLocation\":\"Seattle\"}"
+mvn compile exec:java -pl samples/Identity -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint [your endpoint]-ats.iot.[region].amazonaws.com --ca_file [pathToRootCA]
+--cert /tmp/provision.cert.pem --key /tmp/provision.private.key --template_name [TemplateName] --template_parameters {\"SerialNumber\":\"1\",\"DeviceLocation\":\"Seattle\"}"
 ```
 
 Notice that we provided substitution values for the two parameters in the template body, `DeviceLocation` and `SerialNumber`.
@@ -424,8 +424,8 @@ aws iot create-provisioning-claim \
 Finally, supply the certificate signing request while invoking the provisioning sample. As with the previous workflow, if
 using a permanent certificate set, replace the paths specified in the `--cert` and `--key` arguments:
 ``` sh
-mvn compile exec:java -pl samples/Identity -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint [your endpoint]-ats.iot.[region].amazonaws.com --rootca [pathToRootCA]
---cert /tmp/provision.cert.pem --key /tmp/provision.private.key --templateName [TemplateName] --templateParameters {\"SerialNumber\":\"1\",\"DeviceLocation\":\"Seattle\"}  --csr /tmp/deviceCert.csr"
+mvn compile exec:java -pl samples/Identity -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint [your endpoint]-ats.iot.[region].amazonaws.com --ca_file [pathToRootCA]
+--cert /tmp/provision.cert.pem --key /tmp/provision.private.key --template_name [TemplateName] --template_parameters {\"SerialNumber\":\"1\",\"DeviceLocation\":\"Seattle\"}  --csr /tmp/deviceCert.csr"
 ```
 
 ## Greengrass Discovery

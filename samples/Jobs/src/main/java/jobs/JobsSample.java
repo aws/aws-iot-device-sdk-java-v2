@@ -99,6 +99,7 @@ public class JobsSample {
         cmdUtils.registerCommand("port", "<int>", "Port to connect to on the endpoint (optional, default='8883').");
         cmdUtils.registerCommand("help", "", "Prints this message");
         cmdUtils.sendArguments(args);
+        cmdUtils.startLogging();
 
         if (cmdUtils.hasCommand("help")) {
             cmdUtils.printHelp();

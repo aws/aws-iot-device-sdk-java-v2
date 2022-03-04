@@ -192,6 +192,7 @@ public class ShadowSample {
         cmdUtils.registerCommand("client_id", "<int>", "Client id to use (optional, default='test-*')");
         cmdUtils.registerCommand("help", "", "Prints this message");
         cmdUtils.sendArguments(args);
+        cmdUtils.startLogging();
 
         thingName = cmdUtils.getCommandRequired("thing_name", "");
         endpoint = cmdUtils.getCommandRequired("endpoint", "");
