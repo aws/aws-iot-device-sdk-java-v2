@@ -34,8 +34,8 @@ DATestConfig = json.load(f)
 f.close()
 
 # create an temporary certificate/key file path
-certificate_path = 'certificate.pem.crt'
-key_path = 'private.pem.key'
+certificate_path = os.path.join(os.getcwd(), 'certificate.pem.crt')
+key_path = os.path.join(os.getcwd(), 'private.pem.key')
 
 # load environment variables requried for testing
 shadowProperty = os.environ['DA_SHADOW_PROPERTY']
@@ -187,20 +187,15 @@ for test_name in DATestConfig['tests']:
             # Start to run the test sample after the status turns into RUNNING
             elif (test_result_responds['status'] == 'RUNNING' and 
             test_result_responds['testResult']['groups'][0]['tests'][0]['status'] == 'RUNNING'):
+                working_dir = os.getcwd()
                 exe_path = os.path.join("deviceadvisor/tests/",DATestConfig['test_exe_path'][test_name])
-                # result = subprocess.run(exe_path, timeout = 60*5)
-                # output, err = proc.communicate()
-                # print(output)
+                os.chdir(exe_path)
+                print(os.getcwd())
+                result = subprocess.run(['mvn', 'clean','compile', 'exec:java', '-Dexec.mainClass='+DATestConfig['test_exe_path'][test_name]
+                        + '.' + DATestConfig['test_exe_path'][test_name]], timeout = 60*5, shell = True)
                 # mvn compile exec:java -pl deviceadvisor/tests/MQTTConnect -Dexec.mainClass=MQTTConnect.MQTTConnect
-                proc = subprocess.Popen(
-                    ['mvn', 'compile', 'exec:java', '-pl', exe_path, '-Dexec.mainClass='+DATestConfig['test_exe_path'][test_name]
-                        + '.' + DATestConfig['test_exe_path'][test_name]], 
-                        stdout=subprocess.PIPE,
-                        shell=True
-                        )
-                stdout_value = proc.communicate()[0]
-                print ('stdout:', repr(stdout_value))
-
+                # mvn exec:java -Dexec.mainClass="com.example.Main" 
+                os.chdir(working_dir)
             # If the test finalizing or store the test result
             elif (test_result_responds['status'] != 'RUNNING'):
                 test_result[test_name] = test_result_responds['status']
