@@ -120,6 +120,9 @@ except:
     print("[Device Advisor]Error: Failed to attach certificate.")
     exit(-1)
 
+##############################################
+# make sure sdk get installed
+subprocess.run("mvn clean install")
 
 ##############################################
 # Run device advisor
@@ -191,8 +194,10 @@ for test_name in DATestConfig['tests']:
                 exe_path = os.path.join("deviceadvisor/tests/",DATestConfig['test_exe_path'][test_name])
                 os.chdir(exe_path)
                 print(os.getcwd())
-                result = subprocess.run(['mvn clean compile exec:java -Dexec.mainClass='+DATestConfig['test_exe_path'][test_name]
-                        + '.' + DATestConfig['test_exe_path'][test_name]], shell = True)
+                run_cmd = 'mvn clean compile exec:java -Dexec.mainClass='+DATestConfig['test_exe_path'][test_name]
+                        + '.' + DATestConfig['test_exe_path'][test_name]
+                print("run_cmd:" + run_cmd)
+                result = subprocess.run(run_cmd, shell = True)
                 # mvn compile exec:java -pl deviceadvisor/tests/MQTTConnect -Dexec.mainClass=MQTTConnect.MQTTConnect
                 # mvn exec:java -Dexec.mainClass="com.example.Main" 
                 os.chdir(working_dir)
