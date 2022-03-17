@@ -112,5 +112,5 @@ jobs:
         run: |
           java -version
           mvn -B test
-          python3 -m pip install boto3
-          python3 deviceadvisor/script/run.py
+          aws s3 cp s3://aws-crt-test-stuff/ci/${{ env.BUILDER_VERSION }}/linux-container-ci.sh ./linux-container-ci.sh && chmod a+x ./linux-container-ci.sh
+          ./linux-container-ci.sh ${{ env.BUILDER_VERSION }} aws-crt-al2-x64 build build -p ${{ env.PACKAGE_NAME }}

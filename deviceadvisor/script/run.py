@@ -122,6 +122,7 @@ except:
 
 ##############################################
 # make sure sdk get installed
+print("[Device Advisor]Info: Start to build sdk...")
 subprocess.run("mvn clean install", shell = True)
 
 ##############################################
