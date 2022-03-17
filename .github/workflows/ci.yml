@@ -46,6 +46,7 @@ jobs:
   windows:
     runs-on: windows-latest
     strategy:
+      fail-fast: false
       matrix:
         version:
           - 8
@@ -66,6 +67,7 @@ jobs:
   osx:
     runs-on: macos-latest
     strategy:
+      fail-fast: false
       matrix:
         version:
           - 8
