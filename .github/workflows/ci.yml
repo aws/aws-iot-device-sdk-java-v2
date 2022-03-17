@@ -53,6 +53,8 @@ jobs:
           - 11
           - 17
     steps:
+    - name: Checkout Sources
+        uses: actions/checkout@v2
     - name: Setup Java
         uses: actions/setup-java@v2
         with:
@@ -74,6 +76,8 @@ jobs:
           - 11
           - 17
     steps:
+    - name: Checkout Sources
+        uses: actions/checkout@v2
     - name: Setup Java
         uses: actions/setup-java@v2
         with:
