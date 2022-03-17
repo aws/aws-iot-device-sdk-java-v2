@@ -57,10 +57,10 @@ jobs:
       uses: actions/checkout@v2
     - name: Setup Java
       uses: actions/setup-java@v2
-        with:
-          distribution: temurin
-          java-version: ${{ matrix.version }}
-          cache: maven
+      with:
+        distribution: temurin
+        java-version: ${{ matrix.version }}
+        cache: maven
     - name: Build ${{ env.PACKAGE_NAME }} + consumers
       run: |
         python -c "from urllib.request import urlretrieve; urlretrieve('${{ env.BUILDER_HOST }}/${{ env.BUILDER_SOURCE }}/${{ env.BUILDER_VERSION }}/builder.pyz?run=${{ env.RUN }}', 'builder.pyz')"
@@ -80,10 +80,10 @@ jobs:
       uses: actions/checkout@v2
     - name: Setup Java
       uses: actions/setup-java@v2
-        with:
-          distribution: temurin
-          java-version: ${{ matrix.version }}
-          cache: maven
+      with:
+        distribution: temurin
+        java-version: ${{ matrix.version }}
+        cache: maven
     - name: Build ${{ env.PACKAGE_NAME }} + consumers
       run: |
         python3 -c "from urllib.request import urlretrieve; urlretrieve('${{ env.BUILDER_HOST }}/${{ env.BUILDER_SOURCE }}/${{ env.BUILDER_VERSION }}/builder.pyz?run=${{ env.RUN }}', 'builder')"
