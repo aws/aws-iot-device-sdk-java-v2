@@ -122,7 +122,7 @@ except:
 
 ##############################################
 # make sure sdk get installed
-subprocess.run("mvn clean install")
+subprocess.run("mvn clean install", shell = True)
 
 ##############################################
 # Run device advisor
