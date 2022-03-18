@@ -65,7 +65,8 @@ public class ShadowUpdate {
 
             builder.withClientId(clientId)
                     .withEndpoint(DATestUtils.endpoint)
-                    .withCleanSession(true);
+                    .withCleanSession(true)
+                    .withProtocolOperationTimeoutMs(60000);
 
             try(MqttClientConnection connection = builder.build()) {
                 shadow = new IotShadowClient(connection);

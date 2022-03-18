@@ -37,19 +37,7 @@ jobs:
           - opensuse-leap
           - rhel8-x64
           #- manylinux2014-x86 until we find 32-bit linux binaries we can use
-        version:
-          - 8
-          - 11
-          - 17
     steps:
-    - name: Checkout Sources
-      uses: actions/checkout@v2
-    - name: Setup Java
-      uses: actions/setup-java@v2
-      with:
-        distribution: temurin
-        java-version: ${{ matrix.version }}
-        cache: maven
     - name: Build ${{ env.PACKAGE_NAME }}
       run: |
         aws s3 cp s3://aws-crt-test-stuff/ci/${{ env.BUILDER_VERSION }}/linux-container-ci.sh ./linux-container-ci.sh && chmod a+x ./linux-container-ci.sh
@@ -124,3 +112,5 @@ jobs:
         run: |
           java -version
           mvn -B test
+          aws s3 cp s3://aws-crt-test-stuff/ci/${{ env.BUILDER_VERSION }}/linux-container-ci.sh ./linux-container-ci.sh && chmod a+x ./linux-container-ci.sh
+          ./linux-container-ci.sh ${{ env.BUILDER_VERSION }} aws-crt-al2-x64 build build -p ${{ env.PACKAGE_NAME }}
