@@ -65,6 +65,7 @@ public class ShadowUpdate {
 
             builder.withClientId(clientId)
                     .withEndpoint(DATestUtils.endpoint)
+                    .withPort((short)port)
                     .withCleanSession(true)
                     .withProtocolOperationTimeoutMs(60000);
 
