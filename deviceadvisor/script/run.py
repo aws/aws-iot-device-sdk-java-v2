@@ -197,7 +197,7 @@ for test_name in DATestConfig['tests']:
                 print(os.getcwd())
                 run_cmd = 'mvn clean compile exec:java -Dexec.mainClass='+DATestConfig['test_exe_path'][test_name] + '.' + DATestConfig['test_exe_path'][test_name]
                 print("run_cmd:" + run_cmd)
-                result = subprocess.run(run_cmd, shell = True)
+                result = subprocess.run(run_cmd, shell = True, timeout = 60 * 5)
                 # mvn compile exec:java -pl deviceadvisor/tests/MQTTConnect -Dexec.mainClass=MQTTConnect.MQTTConnect
                 # mvn exec:java -Dexec.mainClass="com.example.Main" 
                 os.chdir(working_dir)
