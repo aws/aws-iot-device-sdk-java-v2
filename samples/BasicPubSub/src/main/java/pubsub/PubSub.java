@@ -81,6 +81,8 @@ public class PubSub {
         cmdUtils = new CommandLineUtils();
         cmdUtils.registerProgramName("PubSub");
         cmdUtils.addCommonMQTTCommands();
+        cmdUtils.registerCommand("key", "<path>", "Path to your key in PEM format.");
+        cmdUtils.registerCommand("cert", "<path>", "Path to your client certificate in PEM format.");
         cmdUtils.registerCommand("client_id", "<int>", "Client id to use (optional, default='test-*').");
         cmdUtils.registerCommand("port", "<int>", "Port to connect to on the endpoint (optional, default='8883').");
         cmdUtils.registerCommand("topic", "<str>", "Topic to subscribe/publish to (optional, default='test/topic').");
@@ -166,7 +168,7 @@ public class PubSub {
             if (rootCaPath != null) {
                 builder.withCertificateAuthorityFromPath(null, rootCaPath);
             }
-            
+
             builder.withConnectionEventCallbacks(callbacks)
                     .withClientId(clientId)
                     .withEndpoint(endpoint)
@@ -234,7 +236,7 @@ public class PubSub {
                     published.get();
                     Thread.sleep(1000);
                 }
-                
+
                 countDownLatch.await();
 
                 CompletableFuture<Void> disconnected = connection.disconnect();

@@ -39,7 +39,17 @@ public class CommandLineUtils {
     }
 
     public void sendArguments(String[] arguments) {
+        // Automatically register the help command
+        registerCommand(m_cmd_help, "", "Prints this message");
+
         commandArguments = Arrays.asList(arguments);
+
+        // Automatically check for help and print if present
+        if (hasCommand(m_cmd_help))
+        {
+            printHelp();
+            System.exit(-1);
+        }
     }
 
     public boolean hasCommand(String command) {
@@ -98,11 +108,68 @@ public class CommandLineUtils {
     }
 
     public void addCommonMQTTCommands() {
-        registerCommand("endpoint", "<str>", "The endpoint of the mqtt server, not including a port.");
-        registerCommand("key", "<path>", "Path to your key in PEM format.");
-        registerCommand("cert", "<path>", "Path to your client certificate in PEM format.");
-        registerCommand("ca_file", "<path>", "Path to AmazonRootCA1.pem (optional, system trust store used by default).");
+        registerCommand(m_cmd_endpoint, "<str>", "The endpoint of the mqtt server, not including a port.");
+        registerCommand(m_cmd_ca_file, "<path>", "Path to AmazonRootCA1.pem (optional, system trust store used by default).");
     }
+
+    public void addCommonProxyCommands() {
+        registerCommand(m_cmd_proxy_host, "<str>", "Websocket proxy host to use (optional, required if --proxy_port is set).");
+        registerCommand(m_cmd_proxy_port, "<int>", "Websocket proxy port to use (optional, default=8080, required if --proxy_host is set).");
+    }
+
+    public void addCommonX509Commands()
+    {
+        registerCommand(
+            m_cmd_x509_role, "<str>", "Role alias to use with the x509 credentials provider (required for x509)");
+        registerCommand(m_cmd_x509_endpoint, "<str>", "Endpoint to fetch x509 credentials from (required for x509)");
+        registerCommand(
+            m_cmd_x509_thing_name, "<str>", "Thing name to fetch x509 credentials on behalf of (required for x509)");
+        registerCommand(
+            m_cmd_x509_cert_file,
+            "<path>",
+            "Path to the IoT thing certificate used in fetching x509 credentials (required for x509)");
+        registerCommand(
+            m_cmd_x509_key_file,
+            "<path>",
+            "Path to the IoT thing private key used in fetching x509 credentials (required for x509)");
+        registerCommand(
+            m_cmd_x509_ca_file,
+            "<path>",
+            "Path to the root certificate used in fetching x509 credentials (required for x509)");
+    }
+
+    public void AddCommonTopicMessageCommands()
+    {
+        registerCommand(
+            m_cmd_messsage, "<str>", "The message to send in the payload (optional, default='Hello world!')");
+        registerCommand(m_cmd_topic, "<str>", "Topic to publish, subscribe to. (optional, default='test/topic')");
+    }
+
+    // TODO - add connection builder functions here!!!
+
+    // Constants for commonly used/needed commands
+    private static final String m_cmd_endpoint = "endpoint";
+    private static final String m_cmd_ca_file = "ca_file";
+    private static final String m_cmd_cert_file = "cert";
+    private static final String m_cmd_key_file = "key";
+    private static final String m_cmd_proxy_host = "proxy_host";
+    private static final String m_cmd_proxy_port = "proxy_port";
+    private static final String m_cmd_signing_region = "signing_region";
+    private static final String m_cmd_x509_endpoint = "x509_endpoint";
+    private static final String m_cmd_x509_role = "x509_role_alias";
+    private static final String m_cmd_x509_thing_name = "x509_thing_name";
+    private static final String m_cmd_x509_cert_file = "x509_cert";
+    private static final String m_cmd_x509_key_file = "x509_key";
+    private static final String m_cmd_x509_ca_file = "x509_ca_file";
+    private static final String m_cmd_pkcs11_lib = "pkcs11_lib";
+    private static final String m_cmd_pkcs11_cert = "cert";
+    private static final String m_cmd_pkcs11_pin = "pkcs11_pin";
+    private static final String m_cmd_pkcs11_token = "token_label";
+    private static final String m_cmd_pkcs11_slot = "slot_id";
+    private static final String m_cmd_pkcs11_key = "key_label";
+    private static final String m_cmd_messsage = "message";
+    private static final String m_cmd_topic = "topic";
+    private static final String m_cmd_help = "help";
 }
 
 class CommandLineOption {

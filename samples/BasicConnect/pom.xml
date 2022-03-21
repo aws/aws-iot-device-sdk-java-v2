@@ -2,11 +2,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>software.amazon.awssdk.iotdevicesdk</groupId>
-    <artifactId>Pkcs11PubSub</artifactId>
+    <artifactId>BasicConnect</artifactId>
     <packaging>jar</packaging>
     <version>1.0-SNAPSHOT</version>
     <name>${project.groupId}:${project.artifactId}</name>
-    <description>Sample for connecting to AWS IoT Core with private key stored on PKCS#11 device</description>
+    <description>Java bindings for the AWS IoT Core Service</description>
     <url>https://github.com/awslabs/aws-iot-device-sdk-java-v2</url>
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
