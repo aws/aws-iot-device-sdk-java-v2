@@ -46,19 +46,22 @@ public class MQTTConnect {
             throw new RuntimeException("Failed to initialize environment variables.");
         }
 
+        System.out.print("print test"); 
         try(AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(DATestUtils.certificatePath, DATestUtils.keyPath)) {
-
+            System.out.print("builded settings"); 
             builder.withClientId(clientId)
                 .withEndpoint(DATestUtils.endpoint)
                 .withPort((short)port)
                 .withCleanSession(true)
+                .withPingTimeoutMs(60000)
                 .withProtocolOperationTimeoutMs(60000);
-
             try(MqttClientConnection connection = builder.build()) {
-
+                System.out.print("builded connection"); 
                 CompletableFuture<Boolean> connected = connection.connect();
                 try {
                     boolean sessionPresent = connected.get();
+                    System.out.print("start java test... running....");
+                    System.out.print("endpoint:" + DATestUtils.endpoint);
                 } catch (Exception ex) {
                     throw new RuntimeException("Exception occurred during connect", ex);
                 }
@@ -67,9 +70,11 @@ public class MQTTConnect {
                 disconnected.get();
             }
         } catch (CrtRuntimeException | InterruptedException | ExecutionException ex) {
-            
+            System.out.print("failed: " + ex.getMessage());
         }
 
         CrtResource.waitForNoResources();
+
+        System.exit(0);
     }
 }

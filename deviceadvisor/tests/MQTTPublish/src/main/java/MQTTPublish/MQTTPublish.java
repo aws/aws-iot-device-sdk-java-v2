@@ -58,6 +58,7 @@ public class MQTTPublish {
                 .withEndpoint(DATestUtils.endpoint)
                 .withPort((short)port)
                 .withCleanSession(true)
+                .withPingTimeoutMs(60000)
                 .withProtocolOperationTimeoutMs(60000);
 
             try(MqttClientConnection connection = builder.build()) {
@@ -69,7 +70,7 @@ public class MQTTPublish {
                     throw new RuntimeException("Exception occurred during connect", ex);
                 }
 
-                CompletableFuture<Integer> published = connection.publish(new MqttMessage(DATestUtils.topic, message.getBytes(), QualityOfService.AT_LEAST_ONCE, false));
+                CompletableFuture<Integer> published = connection.publish(new MqttMessage(DATestUtils.topic, message.getBytes(), QualityOfService.AT_MOST_ONCE, false));
                 published.get();
                 Thread.sleep(1000);
 
@@ -79,7 +80,7 @@ public class MQTTPublish {
         } catch (CrtRuntimeException | InterruptedException | ExecutionException ex) {
             onApplicationFailure(ex);
         }
-
-        CrtResource.waitForNoResources();
+        
+        System.exit(0);
     }
 }

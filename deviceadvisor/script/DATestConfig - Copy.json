@@ -1,0 +1,19 @@
+{
+    "tests" :["MQTT Connect", "MQTT Publish", "MQTT Subscribe", "Shadow Publish", "Shadow Update"],
+    "test_suite_ids" :
+    {
+        "MQTT Connect" : "c77nbzmo9o7j",
+        "MQTT Publish" : "guv3q06ln6hx",
+        "MQTT Subscribe" : "iqq13pp7xdgu",
+        "Shadow Publish" : "t93vz3zuxc8a",
+        "Shadow Update" : "daosd9ywr4kh"
+    },
+    "test_exe_path" :
+    {
+        "MQTT Connect" : "MQTTConnect",
+        "MQTT Publish" : "MQTTPublish",
+        "MQTT Subscribe" : "MQTTSubscribe",
+        "Shadow Publish" : "ShadowUpdate",
+        "Shadow Update" : "ShadowUpdate"
+    }
+}
