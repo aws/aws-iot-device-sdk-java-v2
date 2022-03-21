@@ -41,6 +41,11 @@ key_path = os.path.join(os.getcwd(), 'private.pem.key')
 shadowProperty = os.environ['DA_SHADOW_PROPERTY']
 shadowDefault = os.environ['DA_SHADOW_VALUE_DEFAULT']
 
+##############################################
+# make sure sdk get installed
+print("[Device Advisor]Info: Start to build sdk...")
+subprocess.run("mvn clean install", shell = True)
+
 # test result
 test_result = {}
 for test_name in DATestConfig['tests']:
@@ -121,11 +126,6 @@ for test_name in DATestConfig['tests']:
         exit(-1)
 
     ##############################################
-    # make sure sdk get installed
-    print("[Device Advisor]Info: Start to build sdk...")
-    subprocess.run("mvn clean install", shell = True)
-
-    ##############################################
     # Run device advisor
 
     try:
@@ -197,7 +197,7 @@ for test_name in DATestConfig['tests']:
                 print(os.getcwd())
                 run_cmd = 'mvn clean compile exec:java -Dexec.mainClass='+DATestConfig['test_exe_path'][test_name] + '.' + DATestConfig['test_exe_path'][test_name]
                 print("run_cmd:" + run_cmd)
-                result = subprocess.run(run_cmd, shell = True)
+                result = subprocess.run(run_cmd, shell = True, timeout= 60*2)
                 # mvn compile exec:java -pl deviceadvisor/tests/MQTTConnect -Dexec.mainClass=MQTTConnect.MQTTConnect
                 # mvn exec:java -Dexec.mainClass="com.example.Main" 
                 os.chdir(working_dir)
