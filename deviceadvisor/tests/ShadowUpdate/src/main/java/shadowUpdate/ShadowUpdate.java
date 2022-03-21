@@ -46,11 +46,7 @@ public class ShadowUpdate {
 
 
         // Publish the request
-        return shadow.PublishUpdateShadow(request, QualityOfService.AT_MOST_ONCE).thenRun(() -> {
-        }).exceptionally((ex) -> {
-            System.exit(3);
-            return null;
-        });
+        return shadow.PublishUpdateShadow(request, QualityOfService.AT_MOST_ONCE);
     }
 
     public static void main(String[] args) {
@@ -88,7 +84,7 @@ public class ShadowUpdate {
                 disconnected.get();
             }
         } catch (CrtRuntimeException | InterruptedException | ExecutionException ex) {
-
+            throw new RuntimeException("Builder Connection Failed.", ex);
         }        
         
         System.exit(0);
