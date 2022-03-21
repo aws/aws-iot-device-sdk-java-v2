@@ -30,5 +30,10 @@
                 "openjdk-8-jdk-headless"
             ]
         }
-    }
+    },
+    "variants" : {
+        "skip_test": {
+            "!test_steps": []
+        }
+      }
 }

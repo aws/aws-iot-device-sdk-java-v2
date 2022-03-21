@@ -53,6 +53,7 @@ public class MQTTSubscribe {
                 .withEndpoint(DATestUtils.endpoint)
                 .withPort((short)port)
                 .withCleanSession(true)
+                .withPingTimeoutMs(60000)
                 .withProtocolOperationTimeoutMs(60000);
 
             try(MqttClientConnection connection = builder.build()) {
