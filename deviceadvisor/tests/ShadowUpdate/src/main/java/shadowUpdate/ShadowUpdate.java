@@ -46,7 +46,7 @@ public class ShadowUpdate {
 
 
         // Publish the request
-        return shadow.PublishUpdateShadow(request, QualityOfService.AT_LEAST_ONCE).thenRun(() -> {
+        return shadow.PublishUpdateShadow(request, QualityOfService.AT_MOST_ONCE).thenRun(() -> {
         }).exceptionally((ex) -> {
             System.exit(3);
             return null;
