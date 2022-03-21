@@ -65,7 +65,7 @@ public class MQTTSubscribe {
                     throw new RuntimeException("Exception occurred during connect", ex);
                 }
 
-                CompletableFuture<Integer> subscribed = connection.subscribe(DATestUtils.topic, QualityOfService.AT_LEAST_ONCE, (message) -> {
+                CompletableFuture<Integer> subscribed = connection.subscribe(DATestUtils.topic, QualityOfService.AT_MOST_ONCE, (message) -> {
                 });
 
                 subscribed.get();
