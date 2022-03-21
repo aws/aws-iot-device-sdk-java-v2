@@ -89,7 +89,8 @@ public class ShadowUpdate {
             }
         } catch (CrtRuntimeException | InterruptedException | ExecutionException ex) {
 
-        }
-        CrtResource.waitForNoResources();
+        }        
+        
+        System.exit(0);
     }
 }

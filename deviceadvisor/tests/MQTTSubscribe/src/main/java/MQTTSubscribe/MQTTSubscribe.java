@@ -77,6 +77,6 @@ public class MQTTSubscribe {
             onApplicationFailure(ex);
         }
 
-        CrtResource.waitForNoResources();
+        System.exit(0);
     }
 }

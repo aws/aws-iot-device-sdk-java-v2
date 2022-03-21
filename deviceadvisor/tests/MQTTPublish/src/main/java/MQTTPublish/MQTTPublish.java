@@ -80,7 +80,7 @@ public class MQTTPublish {
         } catch (CrtRuntimeException | InterruptedException | ExecutionException ex) {
             onApplicationFailure(ex);
         }
-
-        CrtResource.waitForNoResources();
+        
+        System.exit(0);
     }
 }

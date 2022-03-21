@@ -74,5 +74,7 @@ public class MQTTConnect {
         }
 
         CrtResource.waitForNoResources();
+
+        System.exit(0);
     }
 }
