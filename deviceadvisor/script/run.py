@@ -206,8 +206,7 @@ for test_name in DATestConfig['tests']:
                 test_result[test_name] = test_result_responds['status']
                 break
     except Exception as e:
-        print("[Device Advisor]Error: Failed to test: "+ test_name + e)
-        exit(-1)
+        print("[Device Advisor]Error: Failed to test: "+ test_name)
 
 ##############################################
 # print result and cleanup things
