@@ -31,8 +31,6 @@ public class MQTTPublish {
     static String message = "Hello World!";
     static int port = 8883;
 
-    static String region = "us-east-1";
-
     /*
      * When called during a CI run, throw an exception that will escape and fail the exec:java task
      * When called otherwise, print what went wrong (if anything) and just continue (return from main)
