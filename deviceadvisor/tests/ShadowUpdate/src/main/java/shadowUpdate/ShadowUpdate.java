@@ -28,9 +28,8 @@ public class ShadowUpdate {
 
     static MqttClientConnection connection;
     static IotShadowClient shadow;
-    static CompletableFuture<Void> gotResponse;
 
-    static CompletableFuture<Void> changeShadowValue() {
+    static CompletableFuture<Integer> changeShadowValue() {
         // build a request to let the service know our current value and desired value, and that we only want
         // to update if the version matches the version we know about
         UpdateShadowRequest request = new UpdateShadowRequest();
@@ -75,10 +74,7 @@ public class ShadowUpdate {
                     throw new RuntimeException("Exception occurred during connect", ex);
                 }
 
-
-                gotResponse = new CompletableFuture<>();
                 changeShadowValue().get();
-                gotResponse.get();
 
                 CompletableFuture<Void> disconnected = connection.disconnect();
                 disconnected.get();
