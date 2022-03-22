@@ -36,15 +36,9 @@ import java.util.concurrent.ExecutionException;
 import utils.commandlineutils.CommandLineUtils;
 
 public class FleetProvisioningSample {
-    static String clientId = "test-" + UUID.randomUUID().toString();
-    static String rootCaPath;
-    static String certPath;
-    static String keyPath;
-    static String endpoint;
     static String templateName;
     static String templateParameters;
     static String csrPath;
-    static int port = 8883;
 
     static CompletableFuture<Void> gotResponse;
     static IotIdentityClient iotIdentityClient;
@@ -123,25 +117,15 @@ public class FleetProvisioningSample {
         cmdUtils = new CommandLineUtils();
         cmdUtils.registerProgramName("FleetProvisioningSample");
         cmdUtils.addCommonMQTTCommands();
+        cmdUtils.registerCommand("key", "<path>", "Path to your key in PEM format.");
+        cmdUtils.registerCommand("cert", "<path>", "Path to your client certificate in PEM format.");
         cmdUtils.registerCommand("client_id", "<int>", "Client id to use (optional, default='test-*').");
         cmdUtils.registerCommand("port", "<int>", "Port to connect to on the endpoint (optional, default='8883').");
         cmdUtils.registerCommand("template_name", "<str>", "Provisioning template name.");
         cmdUtils.registerCommand("template_parameters", "<json>", "Provisioning template parameters.");
         cmdUtils.registerCommand("csr", "<path>", "Path to the CSR file (optional).");
-        cmdUtils.registerCommand("help", "", "Prints this message");
         cmdUtils.sendArguments(args);
 
-        if (cmdUtils.hasCommand("help")) {
-            cmdUtils.printHelp();
-            System.exit(1);
-        }
-
-        clientId = cmdUtils.getCommandOrDefault("client_id", clientId);
-        endpoint = cmdUtils.getCommandRequired("endpoint", "");
-        port = Integer.parseInt(cmdUtils.getCommandOrDefault("port", String.valueOf(port)));
-        rootCaPath = cmdUtils.getCommandRequired("root_ca", "");
-        certPath = cmdUtils.getCommandRequired("cert", "");
-        keyPath = cmdUtils.getCommandRequired("key", "");
         templateName = cmdUtils.getCommandRequired("template_name", "");
         templateParameters = cmdUtils.getCommandRequired("template_parameters", "");
         csrPath = cmdUtils.getCommandOrDefault("csr", csrPath);
@@ -160,39 +144,31 @@ public class FleetProvisioningSample {
             }
         };
 
-        try (
-            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(certPath, keyPath)) {
+        try {
 
-            builder.withCertificateAuthorityFromPath(null, rootCaPath)
-                    .withEndpoint(endpoint)
-                    .withClientId(clientId)
-                    .withCleanSession(true)
-                    .withConnectionEventCallbacks(callbacks);
+            MqttClientConnection connection = cmdUtils.buildMQTTConnection(callbacks);
+            iotIdentityClient = new IotIdentityClient(connection);
 
-            try(MqttClientConnection connection = builder.build()) {
-                iotIdentityClient = new IotIdentityClient(connection);
-
-                CompletableFuture<Boolean> connected = connection.connect();
-                try {
-                    boolean sessionPresent = connected.get();
-                    System.out.println("Connected to " + (!sessionPresent ? "new" : "existing") + " session!");
-                } catch (Exception ex) {
-                    throw new RuntimeException("Exception occurred during connect", ex);
-                }
-
-                try {
-                    if (csrPath == null) {
-                        createKeysAndCertificateWorkflow();
-                    } else {
-                        createCertificateFromCsrWorkflow();
-                    }
-                } catch (Exception e) {
-                    throw new RuntimeException("Exception occurred during connect", e);
-                }
-
-                CompletableFuture<Void> disconnected = connection.disconnect();
-                disconnected.get();
+            CompletableFuture<Boolean> connected = connection.connect();
+            try {
+                boolean sessionPresent = connected.get();
+                System.out.println("Connected to " + (!sessionPresent ? "new" : "existing") + " session!");
+            } catch (Exception ex) {
+                throw new RuntimeException("Exception occurred during connect", ex);
             }
+
+            try {
+                if (csrPath == null) {
+                    createKeysAndCertificateWorkflow();
+                } else {
+                    createCertificateFromCsrWorkflow();
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Exception occurred during connect", e);
+            }
+
+            CompletableFuture<Void> disconnected = connection.disconnect();
+            disconnected.get();
         } catch (CrtRuntimeException | InterruptedException | ExecutionException ex) {
             System.out.println("Exception encountered: " + ex.toString());
         }

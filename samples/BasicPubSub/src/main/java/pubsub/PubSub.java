@@ -36,27 +36,9 @@ public class PubSub {
     static String ciPropValue = System.getProperty("aws.crt.ci");
     static boolean isCI = ciPropValue != null && Boolean.valueOf(ciPropValue);
 
-    static String clientId = "test-" + UUID.randomUUID().toString();
-    static String rootCaPath;
-    static String certPath;
-    static String keyPath;
-    static String endpoint;
     static String topic = "test/topic";
     static String message = "Hello World!";
     static int    messagesToPublish = 10;
-    static int port = 8883;
-
-    static String proxyHost;
-    static int proxyPort;
-    static String region = "us-east-1";
-    static boolean useWebsockets = false;
-    static boolean useX509Credentials = false;
-    static String x509RoleAlias;
-    static String x509Endpoint;
-    static String x509Thing;
-    static String x509CertPath;
-    static String x509KeyPath;
-    static String x509RootCaPath;
 
     static CommandLineUtils cmdUtils;
 
@@ -89,8 +71,6 @@ public class PubSub {
         cmdUtils.registerCommand("count", "<int>", "Number of messages to publish (optional, default='10').");
         cmdUtils.sendArguments(args);
 
-        certPath = cmdUtils.getCommandOrDefault("cert", certPath);
-        keyPath = cmdUtils.getCommandOrDefault("key", keyPath);
         topic = cmdUtils.getCommandOrDefault("topic", topic);
         message = cmdUtils.getCommandOrDefault("message", message);
         messagesToPublish = Integer.parseInt(cmdUtils.getCommandOrDefault("count", String.valueOf(messagesToPublish)));
