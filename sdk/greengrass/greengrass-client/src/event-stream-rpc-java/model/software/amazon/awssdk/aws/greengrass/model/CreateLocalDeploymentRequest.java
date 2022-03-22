@@ -83,8 +83,12 @@ public class CreateLocalDeploymentRequest implements EventStreamJsonMessage {
     return null;
   }
 
-  public CreateLocalDeploymentRequest setGroupName(final String groupName) {
+  public void setGroupName(final String groupName) {
     this.groupName = Optional.ofNullable(groupName);
+  }
+
+  public CreateLocalDeploymentRequest withGroupName(final String groupName) {
+    setGroupName(groupName);
     return this;
   }
 
@@ -95,9 +99,13 @@ public class CreateLocalDeploymentRequest implements EventStreamJsonMessage {
     return null;
   }
 
-  public CreateLocalDeploymentRequest setRootComponentVersionsToAdd(
-      final Map<String, String> rootComponentVersionsToAdd) {
+  public void setRootComponentVersionsToAdd(final Map<String, String> rootComponentVersionsToAdd) {
     this.rootComponentVersionsToAdd = Optional.ofNullable(rootComponentVersionsToAdd);
+  }
+
+  public CreateLocalDeploymentRequest withRootComponentVersionsToAdd(
+      final Map<String, String> rootComponentVersionsToAdd) {
+    setRootComponentVersionsToAdd(rootComponentVersionsToAdd);
     return this;
   }
 
@@ -108,9 +116,13 @@ public class CreateLocalDeploymentRequest implements EventStreamJsonMessage {
     return null;
   }
 
-  public CreateLocalDeploymentRequest setRootComponentsToRemove(
-      final List<String> rootComponentsToRemove) {
+  public void setRootComponentsToRemove(final List<String> rootComponentsToRemove) {
     this.rootComponentsToRemove = Optional.ofNullable(rootComponentsToRemove);
+  }
+
+  public CreateLocalDeploymentRequest withRootComponentsToRemove(
+      final List<String> rootComponentsToRemove) {
+    setRootComponentsToRemove(rootComponentsToRemove);
     return this;
   }
 
@@ -121,9 +133,14 @@ public class CreateLocalDeploymentRequest implements EventStreamJsonMessage {
     return null;
   }
 
-  public CreateLocalDeploymentRequest setComponentToConfiguration(
+  public void setComponentToConfiguration(
       final Map<String, Map<String, Object>> componentToConfiguration) {
     this.componentToConfiguration = Optional.ofNullable(componentToConfiguration);
+  }
+
+  public CreateLocalDeploymentRequest withComponentToConfiguration(
+      final Map<String, Map<String, Object>> componentToConfiguration) {
+    setComponentToConfiguration(componentToConfiguration);
     return this;
   }
 
@@ -134,9 +151,13 @@ public class CreateLocalDeploymentRequest implements EventStreamJsonMessage {
     return null;
   }
 
-  public CreateLocalDeploymentRequest setComponentToRunWithInfo(
-      final Map<String, RunWithInfo> componentToRunWithInfo) {
+  public void setComponentToRunWithInfo(final Map<String, RunWithInfo> componentToRunWithInfo) {
     this.componentToRunWithInfo = Optional.ofNullable(componentToRunWithInfo);
+  }
+
+  public CreateLocalDeploymentRequest withComponentToRunWithInfo(
+      final Map<String, RunWithInfo> componentToRunWithInfo) {
+    setComponentToRunWithInfo(componentToRunWithInfo);
     return this;
   }
 
@@ -147,8 +168,12 @@ public class CreateLocalDeploymentRequest implements EventStreamJsonMessage {
     return null;
   }
 
-  public CreateLocalDeploymentRequest setRecipeDirectoryPath(final String recipeDirectoryPath) {
+  public void setRecipeDirectoryPath(final String recipeDirectoryPath) {
     this.recipeDirectoryPath = Optional.ofNullable(recipeDirectoryPath);
+  }
+
+  public CreateLocalDeploymentRequest withRecipeDirectoryPath(final String recipeDirectoryPath) {
+    setRecipeDirectoryPath(recipeDirectoryPath);
     return this;
   }
 
@@ -159,9 +184,13 @@ public class CreateLocalDeploymentRequest implements EventStreamJsonMessage {
     return null;
   }
 
-  public CreateLocalDeploymentRequest setArtifactsDirectoryPath(
-      final String artifactsDirectoryPath) {
+  public void setArtifactsDirectoryPath(final String artifactsDirectoryPath) {
     this.artifactsDirectoryPath = Optional.ofNullable(artifactsDirectoryPath);
+  }
+
+  public CreateLocalDeploymentRequest withArtifactsDirectoryPath(
+      final String artifactsDirectoryPath) {
+    setArtifactsDirectoryPath(artifactsDirectoryPath);
     return this;
   }
 

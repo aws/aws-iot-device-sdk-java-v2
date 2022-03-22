@@ -8,9 +8,6 @@ package shadow;
 import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.crt.CrtResource;
 import software.amazon.awssdk.crt.CrtRuntimeException;
-import software.amazon.awssdk.crt.io.ClientBootstrap;
-import software.amazon.awssdk.crt.io.EventLoopGroup;
-import software.amazon.awssdk.crt.io.HostResolver;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnectionEvents;
 import software.amazon.awssdk.crt.mqtt.QualityOfService;
@@ -33,6 +30,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.Scanner;
 import java.util.UUID;
 
+import utils.commandlineutils.CommandLineUtils;
+
 public class ShadowSample {
     static String clientId = "test-" + UUID.randomUUID().toString();
     static String thingName;
@@ -40,7 +39,6 @@ public class ShadowSample {
     static String certPath;
     static String keyPath;
     static String endpoint;
-    static boolean showHelp = false;
     static int port = 8883;
 
     final static String SHADOW_PROPERTY = "color";
@@ -51,67 +49,7 @@ public class ShadowSample {
     static String localValue = null;
     static CompletableFuture<Void> gotResponse;
 
-    static void printUsage() {
-        System.out.println(
-                "Usage:\n"+
-                "  --help        This message\n"+
-                "  --thingName   The name of the IoT thing\n"+
-                "  --clientId    The Client ID to use when connecting\n"+
-                "  -e|--endpoint AWS IoT service endpoint hostname\n"+
-                "  -r|--rootca   Path to the root certificate\n"+
-                "  -c|--cert     Path to the IoT thing certificate\n"+
-                "  -k|--key      Path to the IoT thing private key\n"+
-                "  -p|--port     Port to use (optional)"
-        );
-    }
-
-    static void parseCommandLine(String[] args) {
-        for (int idx = 0; idx < args.length; ++idx) {
-            switch (args[idx]) {
-                case "--help":
-                    showHelp = true;
-                    break;
-                case "--clientId":
-                    clientId = args[++idx];
-                    break;
-                case "--thingName":
-                    thingName = args[++idx];
-                    break;
-                case "-e":
-                case "--endpoint":
-                    if (idx + 1 < args.length) {
-                        endpoint = args[++idx];
-                    }
-                    break;
-                case "-r":
-                case "--rootca":
-                    if (idx + 1 < args.length) {
-                        rootCaPath = args[++idx];
-                    }
-                    break;
-                case "-c":
-                case "--cert":
-                    if (idx + 1 < args.length) {
-                        certPath = args[++idx];
-                    }
-                    break;
-                case "-k":
-                case "--key":
-                    if (idx + 1 < args.length) {
-                        keyPath = args[++idx];
-                    }
-                    break;
-                case "-p":
-                case "--port":
-                    if (idx +1 < args.length) {
-                        port = Integer.parseInt(args[++idx]);
-                    }
-                    break;
-                default:
-                    System.out.println("Unrecognized argument: " + args[idx]);
-            }
-        }
-    }
+    static CommandLineUtils cmdUtils;
 
     static void onGetShadowAccepted(GetShadowResponse response) {
         System.out.println("Received initial shadow state");
@@ -159,8 +97,23 @@ public class ShadowSample {
     }
 
     static void onUpdateShadowAccepted(UpdateShadowResponse response) {
-        String value = response.state.reported.get(SHADOW_PROPERTY).toString();
-        System.out.println("Shadow updated, value is " + value);
+        if (response.state.reported != null) {
+            if (response.state.reported.containsKey(SHADOW_PROPERTY)) {
+                String value = response.state.reported.get(SHADOW_PROPERTY).toString();
+                System.out.println("Shadow updated, value is " + value);
+            }
+            else {
+                System.out.println("Shadow updated, value is Null");
+            }
+        }
+        else {
+            if (response.state.reportedIsNullable == true) {
+                System.out.println("Shadow updated, reported and desired is null");
+            }
+            else {
+                System.out.println("Shadow update, data cleared");
+            }
+        }
         gotResponse.complete(null);
     }
 
@@ -170,11 +123,13 @@ public class ShadowSample {
     }
 
     static CompletableFuture<Void> changeShadowValue(String value) {
-        if (localValue.equals(value)) {
-            System.out.println("Local value is already " + value);
-            CompletableFuture<Void> result = new CompletableFuture<>();
-            result.complete(null);
-            return result;
+        if (localValue != null) {
+            if (localValue.equals(value)) {
+                System.out.println("Local value is already " + value);
+                CompletableFuture<Void> result = new CompletableFuture<>();
+                result.complete(null);
+                return result;
+            }
         }
 
         System.out.println("Changed local value to " + value);
@@ -186,12 +141,37 @@ public class ShadowSample {
         UpdateShadowRequest request = new UpdateShadowRequest();
         request.thingName = thingName;
         request.state = new ShadowState();
-        request.state.reported = new HashMap<String, Object>() {{
-           put(SHADOW_PROPERTY, value);
-        }};
-        request.state.desired = new HashMap<String, Object>() {{
-            put(SHADOW_PROPERTY, value);
-        }};
+
+        if (value.compareToIgnoreCase("clear_shadow") == 0) {
+            request.state.desiredIsNullable = true;
+            request.state.reportedIsNullable = true;
+            request.state.desired = null;
+            request.state.reported = null;
+        }
+        else if (value.compareToIgnoreCase("null") == 0) {
+            // A bit of a hack - we have to set reportedNullIsValid OR desiredNullIsValid
+            // so the JSON formatter will allow null , otherwise null will always be
+            // be converted to "null"
+            // As long as we're passing a Hashmap that is NOT assigned to null, it will not
+            // clear the data - so we pass an empty HashMap to avoid clearing data we want to keep
+            request.state.desiredIsNullable = true;
+            request.state.reportedIsNullable = false;
+
+            // We will only clear desired, so we need to pass an empty HashMap for reported
+            request.state.reported = new HashMap<String, Object>() {{}};
+            request.state.desired = new HashMap<String, Object>() {{
+                 put(SHADOW_PROPERTY, null);
+             }};
+        }
+        else
+        {
+            request.state.reported = new HashMap<String, Object>() {{
+                put(SHADOW_PROPERTY, value);
+            }};
+            request.state.desired = new HashMap<String, Object>() {{
+                put(SHADOW_PROPERTY, value);
+            }};
+        }
 
         // Publish the request
         return shadow.PublishUpdateShadow(request, QualityOfService.AT_LEAST_ONCE).thenRun(() -> {
@@ -204,10 +184,26 @@ public class ShadowSample {
     }
 
     public static void main(String[] args) {
-        parseCommandLine(args);
-        if (thingName == null || endpoint == null || certPath == null || keyPath == null || clientId == null) {
-            printUsage();
-            return;
+        cmdUtils = new CommandLineUtils();
+        cmdUtils.registerProgramName("ShadowSample");
+        cmdUtils.addCommonMQTTCommands();
+        cmdUtils.registerCommand("port", "<int>", "Port to use (optional, default='8883').");
+        cmdUtils.registerCommand("thing_name", "<str>", "The name of the IoT thing.");
+        cmdUtils.registerCommand("client_id", "<int>", "Client id to use (optional, default='test-*')");
+        cmdUtils.registerCommand("help", "", "Prints this message");
+        cmdUtils.sendArguments(args);
+
+        thingName = cmdUtils.getCommandRequired("thing_name", "");
+        endpoint = cmdUtils.getCommandRequired("endpoint", "");
+        certPath = cmdUtils.getCommandRequired("cert", "");
+        keyPath = cmdUtils.getCommandRequired("key", "");
+        rootCaPath = cmdUtils.getCommandOrDefault("root_ca", rootCaPath);
+        clientId = cmdUtils.getCommandOrDefault("client_id", clientId);
+        port = Integer.parseInt(cmdUtils.getCommandOrDefault("port", String.valueOf(port)));
+
+        if (cmdUtils.hasCommand("help")) {
+            cmdUtils.printHelp();
+            System.exit(1);
         }
 
         MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
@@ -224,9 +220,7 @@ public class ShadowSample {
             }
         };
 
-        try(EventLoopGroup eventLoopGroup = new EventLoopGroup(1);
-            HostResolver resolver = new HostResolver(eventLoopGroup);
-            ClientBootstrap clientBootstrap = new ClientBootstrap(eventLoopGroup, resolver);
+        try(
             AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(certPath, keyPath)) {
 
             if (rootCaPath != null) {
@@ -236,8 +230,7 @@ public class ShadowSample {
             builder.withClientId(clientId)
                     .withEndpoint(endpoint)
                     .withCleanSession(true)
-                    .withConnectionEventCallbacks(callbacks)
-                    .withBootstrap(clientBootstrap);
+                    .withConnectionEventCallbacks(callbacks);
 
             try(MqttClientConnection connection = builder.build()) {
                 shadow = new IotShadowClient(connection);
@@ -316,6 +309,7 @@ public class ShadowSample {
                     changeShadowValue(newValue).get();
                     gotResponse.get();
                 }
+                scanner.close();
 
                 CompletableFuture<Void> disconnected = connection.disconnect();
                 disconnected.get();

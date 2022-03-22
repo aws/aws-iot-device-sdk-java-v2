@@ -29,14 +29,15 @@ to Java by the [aws-crt-java](https://github.com/awslabs/aws-crt-java) package.
 
 ### Minimum Requirements
 
-* Java 8 or above
+* Java 8 or above ([Java Download](https://www.java.com/en/download/))
 
 * Set JAVA_HOME first ([Installing JDK and Set JAVA_HOME](https://docs.oracle.com/cd/E19182-01/821-0917/inst_jdk_javahome_t/index.html))
 
 ### Requirements to build the AWS CRT locally
-
 * CMake 3.1+
 * Clang 3.9+ or GCC 4.4+ or MSVC 2015+
+
+[Install Prerequest](https://github.com/aws/aws-iot-device-sdk-cpp-v2/blob/main/PREREQUISITES.md)
 
 ### Consuming IoT Device SDK from Maven
 

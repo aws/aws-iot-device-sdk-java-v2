@@ -40,8 +40,12 @@ public class ListComponentsResponse implements EventStreamJsonMessage {
     return null;
   }
 
-  public ListComponentsResponse setComponents(final List<ComponentDetails> components) {
+  public void setComponents(final List<ComponentDetails> components) {
     this.components = Optional.ofNullable(components);
+  }
+
+  public ListComponentsResponse withComponents(final List<ComponentDetails> components) {
+    setComponents(components);
     return this;
   }
 

@@ -39,8 +39,12 @@ public class ResumeComponentRequest implements EventStreamJsonMessage {
     return null;
   }
 
-  public ResumeComponentRequest setComponentName(final String componentName) {
+  public void setComponentName(final String componentName) {
     this.componentName = Optional.ofNullable(componentName);
+  }
+
+  public ResumeComponentRequest withComponentName(final String componentName) {
+    setComponentName(componentName);
     return this;
   }
 

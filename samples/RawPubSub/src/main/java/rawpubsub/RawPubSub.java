@@ -9,8 +9,6 @@ import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.crt.CrtResource;
 import software.amazon.awssdk.crt.CrtRuntimeException;
 import software.amazon.awssdk.crt.io.ClientBootstrap;
-import software.amazon.awssdk.crt.io.EventLoopGroup;
-import software.amazon.awssdk.crt.io.HostResolver;
 import software.amazon.awssdk.crt.io.TlsContext;
 import software.amazon.awssdk.crt.io.TlsContextOptions;
 import software.amazon.awssdk.crt.mqtt.*;
@@ -22,6 +20,8 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
+
+import utils.commandlineutils.CommandLineUtils;
 
 public class RawPubSub {
     static String clientId = "test-" + UUID.randomUUID().toString();
@@ -39,110 +39,44 @@ public class RawPubSub {
     static String protocolName = "x-amzn-mqtt-ca";
     static List<String> authParams;
 
-    static void printUsage() {
-        System.out.println(
-                "Usage:\n"+
-                "  --help        This message\n"+
-                "  --clientId    Client ID to use when connecting (optional)\n"+
-                "  -e|--endpoint AWS IoT service endpoint hostname\n"+
-                "  -r|--rootca   Path to the root certificate (optional)\n"+
-                "  -c|--cert     Path to the IoT thing certificate\n"+
-                "  -k|--key      Path to the IoT thing private key\n"+
-                "  -t|--topic    Topic to subscribe/publish to (optional)\n"+
-                "  -m|--message  Message to publish (optional)\n"+
-                "  -n|--count    Number of messages to publish (optional)"+
-                "  -u|--username Username to use as part of the connection/authentication process\n"+
-                "  --password    Password to use as part of the connection/authentication process\n"+
-                "  --protocol    (optional) ALPN protocol to use; defaults to x-amzn-mqtt-ca\n"+
-                "  --auth_params (optional) Comma delimited list of auth parameters. For websockets these will be set as headers.  For raw mqtt these will be appended to user_name.\n"
-        );
-    }
-
-    static void parseCommandLine(String[] args) {
-        for (int idx = 0; idx < args.length; ++idx) {
-            switch (args[idx]) {
-                case "--help":
-                    showHelp = true;
-                    break;
-                case "--clientId":
-                    if (idx + 1 < args.length) {
-                        clientId = args[++idx];
-                    }
-                    break;
-                case "-e":
-                case "--endpoint":
-                    if (idx + 1 < args.length) {
-                        endpoint = args[++idx];
-                    }
-                    break;
-                case "-r":
-                case "--rootca":
-                    if (idx + 1 < args.length) {
-                        rootCaPath = args[++idx];
-                    }
-                    break;
-                case "-c":
-                case "--cert":
-                    if (idx + 1 < args.length) {
-                        certPath = args[++idx];
-                    }
-                    break;
-                case "-k":
-                case "--key":
-                    if (idx + 1 < args.length) {
-                        keyPath = args[++idx];
-                    }
-                    break;
-                case "-t":
-                case "--topic":
-                    if (idx + 1 < args.length) {
-                        topic = args[++idx];
-                    }
-                    break;
-                case "-m":
-                case "--message":
-                    if (idx + 1 < args.length) {
-                        message = args[++idx];
-                    }
-                    break;
-                case "-n":
-                case "--count":
-                    if (idx + 1 < args.length) {
-                        messagesToPublish = Integer.parseInt(args[++idx]);
-                    }
-                    break;
-                case "-u":
-                case "--username":
-                    if (idx + 1 < args.length) {
-                        userName = args[++idx];
-                    }
-                    break;
-                case "--password":
-                    if (idx + 1 < args.length) {
-                        password = args[++idx];
-                    }
-                    break;
-                case "--protocol":
-                    if (idx + 1 < args.length) {
-                        protocolName = args[++idx];
-                    }
-                    break;
-                case "--auth_params":
-                    if (idx + 1 < args.length) {
-                        authParams = Arrays.asList(args[++idx].split("\\s*,\\s*"));
-                    }
-                    break;
-                default:
-                    System.out.println("Unrecognized argument: " + args[idx]);
-            }
-        }
-    }
+    static CommandLineUtils cmdUtils;
 
     public static void main(String[] args) {
-        parseCommandLine(args);
-        if (showHelp || endpoint == null) {
-            printUsage();
-            return;
+
+        cmdUtils = new CommandLineUtils();
+        cmdUtils.registerProgramName("RawPubSub");
+        cmdUtils.addCommonMQTTCommands();
+        cmdUtils.registerCommand("topic", "<str>", "Topic to subscribe/publish to (optional, default='test/topic').");
+        cmdUtils.registerCommand("message", "<str>", "Message to publish (optional, default='Hello World').");
+        cmdUtils.registerCommand("count", "<int>", "Number of messages to publish (optional, default='10').");
+        cmdUtils.registerCommand("username", "<str>", "Username to use as part of the connection/authentication process.");
+        cmdUtils.registerCommand("password", "<str>", "Password to use as part of the connection/authentication process.");
+        cmdUtils.registerCommand("protocol", "<str>", "ALPN protocol to use (optional, default='x-amzn-mqtt-ca').");
+        cmdUtils.registerCommand("auth_params", "<comma delimited list>",
+                "Comma delimited list of auth parameters. For websockets these will be set as headers. " +
+                "For raw mqtt these will be appended to user_name. (optional)");
+        cmdUtils.registerCommand("client_id", "<int>", "Client id to use (optional, default='test-*')");
+        cmdUtils.registerCommand("help", "", "Prints this message");
+        cmdUtils.sendArguments(args);
+
+        if (cmdUtils.hasCommand("help")) {
+            cmdUtils.printHelp();
+            System.exit(1);
+        }
+
+        clientId = cmdUtils.getCommandOrDefault("client_id", clientId);
+        endpoint = cmdUtils.getCommandRequired("endpoint", "");
+        rootCaPath = cmdUtils.getCommandOrDefault("root_ca", rootCaPath);
+        certPath = cmdUtils.getCommandRequired("cert", "");
+        keyPath = cmdUtils.getCommandRequired("key", "");
+        topic = cmdUtils.getCommandOrDefault("topic", topic);
+        message = cmdUtils.getCommandOrDefault("message", message);
+        messagesToPublish = Integer.parseInt(cmdUtils.getCommandOrDefault("count", String.valueOf(messagesToPublish)));
+        userName = cmdUtils.getCommandRequired("username", "");
+        password = cmdUtils.getCommandRequired("password", "");
+        protocolName = cmdUtils.getCommandOrDefault("protocol", protocolName);
+        if (cmdUtils.hasCommand("auth_params")) {
+            authParams = Arrays.asList(cmdUtils.getCommand("auth_params").split("\\s*,\\s*"));
         }
 
         MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
@@ -176,9 +110,7 @@ public class RawPubSub {
             }
         }
 
-        try(EventLoopGroup eventLoopGroup = new EventLoopGroup(1);
-            HostResolver resolver = new HostResolver(eventLoopGroup);
-            ClientBootstrap clientBootstrap = new ClientBootstrap(eventLoopGroup, resolver);
+        try(
             TlsContextOptions tlsContextOptions = TlsContextOptions.createWithMtlsFromPath(certPath, keyPath)) {
 
             if (rootCaPath != null) {
@@ -192,7 +124,7 @@ public class RawPubSub {
             }
 
             try(TlsContext tlsContext = new TlsContext(tlsContextOptions);
-                MqttClient client = new MqttClient(clientBootstrap, tlsContext);
+                MqttClient client = new MqttClient(tlsContext);
                 MqttConnectionConfig config = new MqttConnectionConfig()) {
 
                 config.setMqttClient(client);

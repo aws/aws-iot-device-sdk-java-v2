@@ -20,10 +20,12 @@ public class UpdateNamedShadowSubscriptionRequest {
      */
     public String thingName;
 
+
     /**
      * Name of the shadow to listen to UpdateNamedShadow responses for.
      *
      */
     public String shadowName;
+
 
 }

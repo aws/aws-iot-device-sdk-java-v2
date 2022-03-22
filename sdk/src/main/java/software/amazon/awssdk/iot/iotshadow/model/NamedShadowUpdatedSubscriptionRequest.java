@@ -20,10 +20,12 @@ public class NamedShadowUpdatedSubscriptionRequest {
      */
     public String shadowName;
 
+
     /**
      * Name of the AWS IoT thing to get NamedShadowUpdated events for.
      *
      */
     public String thingName;
+
 
 }

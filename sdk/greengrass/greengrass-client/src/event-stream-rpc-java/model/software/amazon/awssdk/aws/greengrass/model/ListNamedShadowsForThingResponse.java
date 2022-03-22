@@ -55,8 +55,12 @@ public class ListNamedShadowsForThingResponse implements EventStreamJsonMessage 
     return null;
   }
 
-  public ListNamedShadowsForThingResponse setResults(final List<String> results) {
+  public void setResults(final List<String> results) {
     this.results = Optional.ofNullable(results);
+  }
+
+  public ListNamedShadowsForThingResponse withResults(final List<String> results) {
+    setResults(results);
     return this;
   }
 
@@ -67,8 +71,12 @@ public class ListNamedShadowsForThingResponse implements EventStreamJsonMessage 
     return null;
   }
 
-  public ListNamedShadowsForThingResponse setTimestamp(final Instant timestamp) {
+  public void setTimestamp(final Instant timestamp) {
     this.timestamp = Optional.ofNullable(timestamp);
+  }
+
+  public ListNamedShadowsForThingResponse withTimestamp(final Instant timestamp) {
+    setTimestamp(timestamp);
     return this;
   }
 
@@ -79,8 +87,12 @@ public class ListNamedShadowsForThingResponse implements EventStreamJsonMessage 
     return null;
   }
 
-  public ListNamedShadowsForThingResponse setNextToken(final String nextToken) {
+  public void setNextToken(final String nextToken) {
     this.nextToken = Optional.ofNullable(nextToken);
+  }
+
+  public ListNamedShadowsForThingResponse withNextToken(final String nextToken) {
+    setNextToken(nextToken);
     return this;
   }
 

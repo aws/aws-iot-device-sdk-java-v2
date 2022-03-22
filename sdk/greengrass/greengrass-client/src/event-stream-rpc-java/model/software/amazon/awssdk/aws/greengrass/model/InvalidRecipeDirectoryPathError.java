@@ -50,8 +50,12 @@ public class InvalidRecipeDirectoryPathError extends GreengrassCoreIPCError impl
     return null;
   }
 
-  public InvalidRecipeDirectoryPathError setMessage(final String message) {
+  public void setMessage(final String message) {
     this.message = Optional.ofNullable(message);
+  }
+
+  public InvalidRecipeDirectoryPathError withMessage(final String message) {
+    setMessage(message);
     return this;
   }
 
