@@ -152,7 +152,7 @@ To run this sample with a basic certificate from AWS IoT Core:
 4) Now you can run the sample:
 
     ```sh
-    mvn compile exec:java -pl samples/WindowsCertPubSub -Dexec.mainClass=windowscertpubsub.WindowsCertPubSub -Dexec.args='--endpoint xxxx-ats.iot.xxxx.amazonaws.com --cert CurrentUser\MY\A11F8A9B5DF5B98BA3508FBCA575D09570E0D2C6 --rootca AmazonRootCA1.pem'
+    mvn compile exec:java -pl samples/WindowsCertPubSub "-Dexec.mainClass=windowscertpubsub.WindowsCertPubSub" "-Dexec.args=--endpoint xxxx-ats.iot.xxxx.amazonaws.com --cert CurrentUser\MY\A11F8A9B5DF5B98BA3508FBCA575D09570E0D2C6 --rootca AmazonRootCA1.pem"
     ```
 
 
