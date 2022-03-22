@@ -1,7 +1,10 @@
 # Sample apps for the AWS IoT Device SDK for Java v2
 
 * [BasicPubSub](#basicpubsub)
-* [Pkcs11PubSub](#pkcs11pubsub)
+* [Basic Connect](#basicconnect)
+* [Websocket Connect](#websocketconnect)
+* [Pkcs11 Connect](#pkcs11connect)
+* [Raw Connect](#rawconnect)
 * [Shadow](#shadow)
 * [Jobs](#jobs)
 * [fleet provisioning](#fleet-provisioning)
@@ -10,7 +13,6 @@
 **Additional sample apps not described below:**
 
 * [PubSubStress](https://github.com/aws/aws-iot-device-sdk-java-v2/tree/main/samples/PubSubStress)
-* [RawPubSub](https://github.com/aws/aws-iot-device-sdk-java-v2/tree/main/samples/RawPubSub)
 
 Note that all samples will show their options by passing in `--help`. For example:
 ```sh
@@ -19,33 +21,136 @@ mvn compile exec:java -pl samples/BasicPubSub -Dexec.mainClass=pubsub.PubSub -De
 
 ## BasicPubSub
 
-This sample demonstrates connecting to IoT Core, subscribing to a topic, and publishing to that topic.
+This sample uses the
+[Message Broker](https://docs.aws.amazon.com/iot/latest/developerguide/iot-message-broker.html)
+for AWS IoT to send and receive messages through an MQTT connection.
+On startup, the device connects to the server, subscribes to a topic, and begins publishing messages to that topic. The device should receive those same messages back from the message broker, since it is subscribed to that same topic. Status updates are continually printed to the console.
 
 source: `samples/BasicPubSub`
 
-To Run:
+<details>
+<summary>(see sample policy)</summary>
+<pre>
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iot:Publish",
+        "iot:Receive"
+      ],
+      "Resource": [
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/test/topic"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iot:Subscribe"
+      ],
+      "Resource": [
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topicfilter/test/topic"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iot:Connect"
+      ],
+      "Resource": [
+        "arn:aws:iot:<b>region</b>:<b>account</b>:client/test-*"
+      ]
+    }
+  ]
+}
+</pre>
+</details>
+
+To Run this sample, use the following command:
 ```sh
-mvn compile exec:java -pl samples/BasicPubSub -Dexec.mainClass=pubsub.PubSub -Dexec.args='--endpoint <xxxx-ats.iot.xxxx.amazonaws.com> --cert <certificate.pem.crt> --key <private.pem.key> --rootca <AmazonRootCA1.pem>'
+mvn compile exec:java -pl samples/BasicPubSub -Dexec.mainClass=pubsub.PubSub -Dexec.args='--endpoint <xxxx-ats.iot.xxxx.amazonaws.com> --cert <certificate.pem.crt> --key <private.pem.key> --ca_file <AmazonRootCA1.pem>'
 ```
 
-The sample can connect to IoT Core in several ways:
+## Basic Connect
 
-1)  To connect directly with the MQTT protocol, using a certificate and private key for mutual TLS,
-    you must pass `--cert` and `--key`.
-2)  To connect with MQTT over websockets, using your AWS credentials for authentication,
-    you must pass `--websockets` and `--region`.
-3)  To connect with MQTT over websockets, using the
-    [X.509 credentials provider](https://docs.aws.amazon.com/iot/latest/developerguide/authorizing-direct-aws.html)
-    for authentication, you must pass `--websockets`, `--region`, `--x509`, `--x509rolealias`, `--x509endpoint`, `--x509thing`, `--x509cert`, and `--x509key`.
+This sample makes an MQTT connection using a certificate and key file. On startup, the device connects to the server using the certificate and key files, and then disconnects. This sample is for reference on connecting via certificate and key files.
 
-## Pkcs11PubSub
+Source: `samples/BasicConnect`
 
-This sample shows connecting to IoT Core using mutual TLS,
-with the private key stored on a PKCS#11 compatible smart card or Hardware Security Module (HSM)
+Your Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-policies.html) must provide privileges for this sample to connect.
 
-Currently, TLS integration with PKCS#11 is only available on Unix devices.
+<details>
+<summary>(see sample policy)</summary>
+<pre>
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iot:Connect"
+      ],
+      "Resource": [
+        "arn:aws:iot:<b>region</b>:<b>account</b>:client/test-*"
+      ]
+    }
+  ]
+}
+</pre>
+</details>
 
-source: `samples/Pkcs11PubSub`
+To run the basic connect sample use the following command:
+
+```sh
+mvn compile exec:java -pl samples/BasicConnect -Dexec.mainClass=basicconnect.BasicConnect -Dexec.args='--endpoint <endpoint> --cert <path to certificate> --key <path to private key> --ca_file <path to root CA>'
+```
+
+## Websocket Connect
+
+This sample makes an MQTT connection via websockets and then disconnects. On startup, the device connects to the server via websockets and then disconnects. This sample is for reference on connecting via websockets.
+
+Source: `samples/WebsocketConnect`
+
+Your Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-policies.html) must provide privileges for this sample to connect.
+
+<details>
+<summary>(see sample policy)</summary>
+<pre>
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iot:Connect"
+      ],
+      "Resource": [
+        "arn:aws:iot:<b>region</b>:<b>account</b>:client/test-*"
+      ]
+    }
+  ]
+}
+</pre>
+</details>
+
+To run the websocket connect use the following command:
+
+```sh
+mvn compile exec:java -pl samples/WebsocketConnect -Dexec.mainClass=websocketconnect.WebsocketConnect -Dexec.args='--endpoint <endpoint> --cert <path to certificate> --key <path to private key> --ca_file <path to root CA>'
+```
+
+Note that using Websockets will attempt to fetch the AWS credentials from your enviornment variables or local files.
+See the [authorizing direct AWS](https://docs.aws.amazon.com/iot/latest/developerguide/authorizing-direct-aws.html) page for documentation on how to get the AWS credentials, which then you can set to the `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS`, and `AWS_SESSION_TOKEN` environment variables.
+
+## PKCS#11 Connect
+
+This sample is similar to the [Basic Connect](#basic-connect),
+but the private key for mutual TLS is stored on a PKCS#11 compatible smart card or Hardware Security Module (HSM)
+
+WARNING: Unix only. Currently, TLS integration with PKCS#11 is only available on Unix devices.
+
+source: `samples/Pkcs11Connect`
 
 To run this sample using [SoftHSM2](https://www.opendnssec.org/softhsm/) as the PKCS#11 device:
 
@@ -88,8 +193,30 @@ To run this sample using [SoftHSM2](https://www.opendnssec.org/softhsm/) as the 
 
 5)  Now you can run the sample:
     ```sh
-    mvn compile exec:java -pl samples/Pkcs11PubSub -Dexec.mainClass=pkcs11pubsub.Pkcs11PubSub -Dexec.args='--endpoint <xxxx-ats.iot.xxxx.amazonaws.com> --cert <certificate.pem.crt> --rootca <AmazonRootCA1.pem> --pkcs11Lib <path/to/libsofthsm2.so> --pin <user-pin> --tokenLabel <token-label> --keyLabel <key-label>'
+    mvn compile exec:java -pl samples/Pkcs11Connect -Dexec.mainClass=pkcs11connect.Pkcs11Connect -Dexec.args='--endpoint <xxxx-ats.iot.xxxx.amazonaws.com> --cert <certificate.pem.crt> --ca_file <AmazonRootCA1.pem> --pkcs11_lib <path/to/libsofthsm2.so> --pin <user-pin> --token_label <token-label> --key_label <key-label>'
     ```
+
+Your Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-policies.html) must provide privileges for this sample to connect.
+
+<details>
+<summary>(see sample policy)</summary>
+<pre>
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iot:Connect"
+      ],
+      "Resource": [
+        "arn:aws:iot:<b>region</b>:<b>account</b>:client/test-*"
+      ]
+    }
+  ]
+}
+</pre>
+</details>
 
 ## Shadow
 
@@ -116,7 +243,7 @@ Source: `samples/Shadow`
 To Run:
 
 ``` sh
-mvn compile exec:java -pl samples/Shadow -Dexec.mainClass=shadow.ShadowSample -Dexec.args='--endpoint <endpoint> --rootca /path/to/AmazonRootCA1.pem --cert <cert path> --key <key path> --thingName <thing name>'
+mvn compile exec:java -pl samples/Shadow -Dexec.mainClass=shadow.ShadowSample -Dexec.args='--endpoint <endpoint> --ca_file /path/to/AmazonRootCA1.pem --cert <cert path> --key <key path> --thing_name <thing name>'
 ```
 
 Your Thing's
@@ -192,7 +319,7 @@ Source: `samples/Jobs`
 To Run:
 
 ``` sh
-mvn compile exec:java -pl samples/Jobs -Dexec.mainClass=jobs.JobsSample -Dexec.args='--endpoint <endpoint> --rootca /path/to/AmazonRootCA1.pem --cert <cert path> --key <key path> --thingName <thing name>'
+mvn compile exec:java -pl samples/Jobs -Dexec.mainClass=jobs.JobsSample -Dexec.args='--endpoint <endpoint> --ca_file /path/to/AmazonRootCA1.pem --cert <cert path> --key <key path> --thing_name <thing name>'
 ```
 
 Your Thing's
@@ -268,15 +395,15 @@ cd ~/samples/Identity
 Run the sample using CreateKeysAndCertificate:
 
 ``` sh
-mvn compile exec:java -pl samples/Identity -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint <endpoint> --rootca <root ca path>
---cert <cert path> --key <private key path> --templateName <templatename> --templateParameters <templateParams>"
+mvn compile exec:java -pl samples/Identity -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint <endpoint> --ca_file <root ca path>
+--cert <cert path> --key <private key path> --template_name <templatename> --template_parameters <templateParams>"
 ```
 
 Run the sample using CreateCertificateFromCsr:
 
 ``` sh
-mvn compile exec:java -pl samples/Identity -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint <endpoint> --rootca <root ca path>
---cert <cert path> --key <private key path> --templateName <templatename> --templateParameters <templateParams> --csr <csr path>"
+mvn compile exec:java -pl samples/Identity -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint <endpoint> --ca_file <root ca path>
+--cert <cert path> --key <private key path> --template_name <templatename> --template_parameters <templateParams> --csr <csr path>"
 ```
 
 Your Thing's
@@ -390,8 +517,8 @@ to perform the actual provisioning. If you are not using the temporary provision
 and `--key` appropriately:
 
 ``` sh
-mvn compile exec:java -pl samples/Identity -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint [your endpoint]-ats.iot.[region].amazonaws.com --rootca [pathToRootCA]
---cert /tmp/provision.cert.pem --key /tmp/provision.private.key --templateName [TemplateName] --templateParameters {\"SerialNumber\":\"1\",\"DeviceLocation\":\"Seattle\"}"
+mvn compile exec:java -pl samples/Identity -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint [your endpoint]-ats.iot.[region].amazonaws.com --ca_file [pathToRootCA]
+--cert /tmp/provision.cert.pem --key /tmp/provision.private.key --template_name [TemplateName] --template_parameters {\"SerialNumber\":\"1\",\"DeviceLocation\":\"Seattle\"}"
 ```
 
 Notice that we provided substitution values for the two parameters in the template body, `DeviceLocation` and `SerialNumber`.
@@ -424,8 +551,8 @@ aws iot create-provisioning-claim \
 Finally, supply the certificate signing request while invoking the provisioning sample. As with the previous workflow, if
 using a permanent certificate set, replace the paths specified in the `--cert` and `--key` arguments:
 ``` sh
-mvn compile exec:java -pl samples/Identity -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint [your endpoint]-ats.iot.[region].amazonaws.com --rootca [pathToRootCA]
---cert /tmp/provision.cert.pem --key /tmp/provision.private.key --templateName [TemplateName] --templateParameters {\"SerialNumber\":\"1\",\"DeviceLocation\":\"Seattle\"}  --csr /tmp/deviceCert.csr"
+mvn compile exec:java -pl samples/Identity -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint [your endpoint]-ats.iot.[region].amazonaws.com --ca_file [pathToRootCA]
+--cert /tmp/provision.cert.pem --key /tmp/provision.private.key --template_name [TemplateName] --template_parameters {\"SerialNumber\":\"1\",\"DeviceLocation\":\"Seattle\"}  --csr /tmp/deviceCert.csr"
 ```
 
 ## Greengrass Discovery
