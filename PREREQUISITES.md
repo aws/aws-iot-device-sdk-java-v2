@@ -15,9 +15,6 @@ Run the following command to set the JAVA_PATH
 export JAVA_HOME=<jdk_install_path>
 ```
 
-### Linux
-1. run following command to set 
-
 ## CMake 3.1+
 1. Download CMake3.1+ for your platform: https://cmake.org/download/
 

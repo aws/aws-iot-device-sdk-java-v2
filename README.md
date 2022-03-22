@@ -31,7 +31,7 @@ to Java by the [aws-crt-java](https://github.com/awslabs/aws-crt-java) package.
 
 * Java 8 or above ([Download and Install Java](https://www.java.com/en/download/help/download_options.html))
 
-* Install JDK [Install JDK](https://docs.oracle.com/en/java/javase/18/install/overview-jdk-installation.html#GUID-8677A77F-231A-40F7-98B9-1FD0B48C346A)
+* [Install JDK](https://docs.oracle.com/en/java/javase/18/install/overview-jdk-installation.html#GUID-8677A77F-231A-40F7-98B9-1FD0B48C346A)
 
 * [Set JAVA_HOME](./PREREQUISITES.md/##SetJAVA_HOME)
 
