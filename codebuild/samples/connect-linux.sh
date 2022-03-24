@@ -20,6 +20,6 @@ pushd $CODEBUILD_SRC_DIR/samples/WebsocketConnect
 mvn compile
 
 echo "Websocket Connect test"
-mvn exec:java -Dexec.mainClass="websocketconnect.WebsocketConnect" -Daws.crt.ci="True" -Dexec.arguments="--endpoint,$ENDPOINT,--use_websocket,--region,us-east-1,--port,443"
+mvn exec:java -Dexec.mainClass="websocketconnect.WebsocketConnect" -Daws.crt.ci="True" -Dexec.arguments="--endpoint,$ENDPOINT,--signing_region,us-east-1,--port,443"
 
 popd
