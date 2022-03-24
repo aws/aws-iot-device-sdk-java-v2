@@ -1,11 +1,11 @@
 # Sample apps for the AWS IoT Device SDK for Java v2
 
 * [BasicPubSub](#basicpubsub)
-* [Basic Connect](#basicconnect)
-* [Websocket Connect](#websocketconnect)
-* [Pkcs11 Connect](#pkcs11connect)
-* [Raw Connect](#rawconnect)
-* [WindowsCertPubSub](#windowscertpubsub)
+* [Basic Connect](#basic-connect)
+* [Websocket Connect](#websocket-connect)
+* [Pkcs11 Connect](#pkcs11-connect)
+* [Raw Connect](#raw-connect)
+* [WindowsCert Connect](#windowscert-connect)
 * [Shadow](#shadow)
 * [Jobs](#jobs)
 * [fleet provisioning](#fleet-provisioning)
@@ -219,7 +219,7 @@ Your Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-
 </pre>
 </details>
 
-## WindowsCertPubSub
+## WindowsCert Connect
 
 WARNING: Windows only
 
@@ -237,7 +237,7 @@ If your certificate and private key are in a
 [TPM](https://docs.microsoft.com/en-us/windows/security/information-protection/tpm/trusted-platform-module-overview),
 you would use them by passing their certificate store path.
 
-source: `samples/WindowsCertPubSub`
+source: `samples/WindowsCertConnect`
 
 To run this sample with a basic certificate from AWS IoT Core:
 
@@ -279,9 +279,30 @@ To run this sample with a basic certificate from AWS IoT Core:
 4) Now you can run the sample:
 
     ```sh
-    mvn compile exec:java -pl samples/WindowsCertPubSub "-Dexec.mainClass=windowscertpubsub.WindowsCertPubSub" "-Dexec.args=--endpoint xxxx-ats.iot.xxxx.amazonaws.com --cert CurrentUser\MY\A11F8A9B5DF5B98BA3508FBCA575D09570E0D2C6 --rootca AmazonRootCA1.pem"
+    mvn compile exec:java -pl samples/WindowsCertConnect "-Dexec.mainClass=windowscertconnect.WindowsCertConnect" "-Dexec.args=--endpoint xxxx-ats.iot.xxxx.amazonaws.com --cert CurrentUser\MY\A11F8A9B5DF5B98BA3508FBCA575D09570E0D2C6 --ca_file AmazonRootCA1.pem"
     ```
 
+Your Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-policies.html) must provide privileges for this sample to connect.
+
+<details>
+<summary>(see sample policy)</summary>
+<pre>
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iot:Connect"
+      ],
+      "Resource": [
+        "arn:aws:iot:<b>region</b>:<b>account</b>:client/test-*"
+      ]
+    }
+  ]
+}
+</pre>
+</details>
 
 ## Shadow
 

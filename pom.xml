@@ -17,7 +17,7 @@
         <module>samples/Greengrass</module>
         <module>samples/Jobs</module>
         <module>samples/PubSubStress</module>
-        <module>samples/WindowsCertPubSub</module>
+        <module>samples/WindowsCertConnect</module>
         <module>samples/Shadow</module>
         <module>samples/Identity</module>
     </modules>
