@@ -338,7 +338,7 @@ public class EventStreamRPCConnection implements AutoCloseable {
          * result in closing the connection. AccessDeniedException is such an example
          *
          * @param t Exception
-         * @returns true if the connection should be terminated as a result of handling the error
+         * @return true if the connection should be terminated as a result of handling the error
          */
         boolean onError(Throwable t);
 
