@@ -115,16 +115,18 @@ public class Pkcs11Connect {
                 pkcs11Options.withPrivateKeyObjectLabel(pkcs11KeyLabel);
             }
 
-            try (
-                    AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder
-                            .newMtlsPkcs11Builder(pkcs11Options)) {
+            try (AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder
+                    .newMtlsPkcs11Builder(pkcs11Options)) {
 
                 if (CaPath != null) {
                     builder.withCertificateAuthorityFromPath(null, CaPath);
                 }
 
-                builder.withConnectionEventCallbacks(callbacks).withClientId(clientId)
-                        .withEndpoint(endpoint).withPort((short) port).withCleanSession(true)
+                builder.withConnectionEventCallbacks(callbacks)
+                        .withClientId(clientId)
+                        .withEndpoint(endpoint)
+                        .withPort((short) port)
+                        .withCleanSession(true)
                         .withProtocolOperationTimeoutMs(60000);
 
                 try (MqttClientConnection connection = builder.build()) {

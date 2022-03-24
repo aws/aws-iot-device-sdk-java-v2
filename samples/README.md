@@ -5,6 +5,7 @@
 * [Websocket Connect](#websocketconnect)
 * [Pkcs11 Connect](#pkcs11connect)
 * [Raw Connect](#rawconnect)
+* [WindowsCertPubSub](#windowscertpubsub)
 * [Shadow](#shadow)
 * [Jobs](#jobs)
 * [fleet provisioning](#fleet-provisioning)
@@ -217,6 +218,70 @@ Your Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-
 }
 </pre>
 </details>
+
+## WindowsCertPubSub
+
+WARNING: Windows only
+
+This sample shows connecting to IoT Core using mutual TLS,
+but your certificate and private key are in a
+[Windows certificate store](https://docs.microsoft.com/en-us/windows-hardware/drivers/install/certificate-stores),
+rather than simply being files on disk.
+
+To run this sample you need the path to your certificate in the store,
+which will look something like:
+"CurrentUser\MY\A11F8A9B5DF5B98BA3508FBCA575D09570E0D2C6"
+(where "CurrentUser\MY" is the store and "A11F8A9B5DF5B98BA3508FBCA575D09570E0D2C6" is the certificate's thumbprint)
+
+If your certificate and private key are in a
+[TPM](https://docs.microsoft.com/en-us/windows/security/information-protection/tpm/trusted-platform-module-overview),
+you would use them by passing their certificate store path.
+
+source: `samples/WindowsCertPubSub`
+
+To run this sample with a basic certificate from AWS IoT Core:
+
+1)  Create an IoT Thing with a certificate and key if you haven't already.
+
+2)  Combine the certificate and private key into a single .pfx file.
+
+    You will be prompted for a password while creating this file. Remember it for the next step.
+
+    If you have OpenSSL installed:
+    ```powershell
+    openssl pkcs12 -in certificate.pem.crt -inkey private.pem.key -out certificate.pfx
+    ```
+
+    Otherwise use [CertUtil](https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/certutil).
+    ```powershell
+    certutil -mergePFX certificate.pem.crt,private.pem.key certificate.pfx
+    ```
+
+3)  Add the .pfx file to a Windows certificate store using PowerShell's
+    [Import-PfxCertificate](https://docs.microsoft.com/en-us/powershell/module/pki/import-pfxcertificate)
+
+    In this example we're adding it to "CurrentUser\My"
+
+    ```powershell
+    $mypwd = Get-Credential -UserName 'Enter password below' -Message 'Enter password below'
+    Import-PfxCertificate -FilePath certificate.pfx -CertStoreLocation Cert:\CurrentUser\My -Password $mypwd.Password
+    ```
+
+    Note the certificate thumbprint that is printed out:
+    ```
+    Thumbprint                                Subject
+    ----------                                -------
+    A11F8A9B5DF5B98BA3508FBCA575D09570E0D2C6  CN=AWS IoT Certificate
+    ```
+
+    So this certificate's path would be: "CurrentUser\MY\A11F8A9B5DF5B98BA3508FBCA575D09570E0D2C6"
+
+4) Now you can run the sample:
+
+    ```sh
+    mvn compile exec:java -pl samples/WindowsCertPubSub "-Dexec.mainClass=windowscertpubsub.WindowsCertPubSub" "-Dexec.args=--endpoint xxxx-ats.iot.xxxx.amazonaws.com --cert CurrentUser\MY\A11F8A9B5DF5B98BA3508FBCA575D09570E0D2C6 --rootca AmazonRootCA1.pem"
+    ```
+
 
 ## Shadow
 
