@@ -131,16 +131,18 @@ public class Pkcs11PubSub {
                 pkcs11Options.withPrivateKeyObjectLabel(pkcs11KeyLabel);
             }
 
-            try (
-                    AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder
-                            .newMtlsPkcs11Builder(pkcs11Options)) {
+            try (AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder
+                    .newMtlsPkcs11Builder(pkcs11Options)) {
 
                 if (rootCaPath != null) {
                     builder.withCertificateAuthorityFromPath(null, rootCaPath);
                 }
 
-                builder.withConnectionEventCallbacks(callbacks).withClientId(clientId)
-                        .withEndpoint(endpoint).withPort((short) port).withCleanSession(true)
+                builder.withConnectionEventCallbacks(callbacks)
+                        .withClientId(clientId)
+                        .withEndpoint(endpoint)
+                        .withPort((short) port)
+                        .withCleanSession(true)
                         .withProtocolOperationTimeoutMs(60000);
 
                 try (MqttClientConnection connection = builder.build()) {
