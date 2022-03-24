@@ -7,6 +7,7 @@ package utils.commandlineutils;
 
 import java.util.*;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.CompletableFuture;
 
 import software.amazon.awssdk.crt.*;
 import software.amazon.awssdk.crt.io.*;
@@ -148,7 +149,7 @@ public class CommandLineUtils {
 
     public void addCommonTopicMessageCommands()
     {
-        registerCommand(m_cmd_messsage, "<str>", "The message to send in the payload (optional, default='Hello world!')");
+        registerCommand(m_cmd_message, "<str>", "The message to send in the payload (optional, default='Hello world!')");
         registerCommand(m_cmd_topic, "<str>", "Topic to publish, subscribe to. (optional, default='test/topic')");
     }
 
@@ -312,6 +313,28 @@ public class CommandLineUtils {
         }
     }
 
+    public void sampleConnectAndDisconnect(MqttClientConnection connection) throws CrtRuntimeException, InterruptedException, ExecutionException
+    {
+        try {
+            // Connect and disconnect
+            CompletableFuture<Boolean> connected = connection.connect();
+            try {
+                boolean sessionPresent = connected.get();
+                System.out.println("Connected to " + (!sessionPresent ? "new" : "existing") + " session!");
+            } catch (Exception ex) {
+                throw new RuntimeException("Exception occurred during connect", ex);
+            }
+            System.out.println("Disconnecting...");
+            CompletableFuture<Void> disconnected = connection.disconnect();
+            disconnected.get();
+            System.out.println("Disconnected.");
+
+        }
+        catch (CrtRuntimeException | InterruptedException | ExecutionException ex) {
+            throw ex;
+        }
+    }
+
     // Constants for commonly used/needed commands
     private static final String m_cmd_endpoint = "endpoint";
     private static final String m_cmd_ca_file = "ca_file";
@@ -328,11 +351,11 @@ public class CommandLineUtils {
     private static final String m_cmd_x509_ca_file = "x509_ca_file";
     private static final String m_cmd_pkcs11_lib = "pkcs11_lib";
     private static final String m_cmd_pkcs11_cert = "cert";
-    private static final String m_cmd_pkcs11_pin = "pkcs11_pin";
+    private static final String m_cmd_pkcs11_pin = "ppin";
     private static final String m_cmd_pkcs11_token = "token_label";
     private static final String m_cmd_pkcs11_slot = "slot_id";
     private static final String m_cmd_pkcs11_key = "key_label";
-    private static final String m_cmd_messsage = "message";
+    private static final String m_cmd_message = "message";
     private static final String m_cmd_topic = "topic";
     private static final String m_cmd_help = "help";
 }

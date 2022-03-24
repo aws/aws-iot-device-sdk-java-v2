@@ -124,18 +124,9 @@ public class RawConnect {
 
                 try (MqttClientConnection connection = new MqttClientConnection(config)) {
 
-                    CompletableFuture<Boolean> connected = connection.connect();
-                    try {
-                        boolean sessionPresent = connected.get();
-                        System.out.println("Connected to " + (!sessionPresent ? "new" : "existing") + " session!");
-                    } catch (Exception ex) {
-                        throw new RuntimeException("Exception occurred during connect", ex);
-                    }
-
-                    System.out.println("Disconnecting...");
-                    CompletableFuture<Void> disconnected = connection.disconnect();
-                    disconnected.get();
-                    System.out.println("Disconnected.");
+                    // Connect and disconnect using the connection we created
+                    // (see sampleConnectAndDisconnect for implementation)
+                    cmdUtils.sampleConnectAndDisconnect(connection);
                 }
             }
         } catch (CrtRuntimeException | InterruptedException | ExecutionException ex) {
