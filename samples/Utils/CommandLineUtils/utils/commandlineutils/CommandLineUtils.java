@@ -15,6 +15,8 @@ import software.amazon.awssdk.crt.mqtt.*;
 import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
 import software.amazon.awssdk.crt.http.HttpProxyOptions;
 import software.amazon.awssdk.crt.auth.credentials.X509CredentialsProvider;
+import software.amazon.awssdk.crt.Log;
+import software.amazon.awssdk.crt.Log.LogLevel;
 
 public class CommandLineUtils {
     private String programName;
@@ -119,6 +121,8 @@ public class CommandLineUtils {
     public void addCommonMQTTCommands() {
         registerCommand(m_cmd_endpoint, "<str>", "The endpoint of the mqtt server, not including a port.");
         registerCommand(m_cmd_ca_file, "<path>", "Path to AmazonRootCA1.pem (optional, system trust store used by default).");
+        registerCommand("verbosity", "<str>", "The amount of detail in the logging output of the sample." +
+                        " Options: 'fatal', 'error', 'warn', 'info', 'debug', 'trace' or 'none' (optional, default='none').");
     }
 
     public void addCommonProxyCommands() {
