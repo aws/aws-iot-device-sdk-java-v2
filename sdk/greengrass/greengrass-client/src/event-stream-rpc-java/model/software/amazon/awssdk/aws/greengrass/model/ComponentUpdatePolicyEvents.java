@@ -39,13 +39,17 @@ public class ComponentUpdatePolicyEvents implements EventStreamJsonMessage {
     return null;
   }
 
-  public ComponentUpdatePolicyEvents setPreUpdateEvent(
-      final PreComponentUpdateEvent preUpdateEvent) {
+  public void setPreUpdateEvent(final PreComponentUpdateEvent preUpdateEvent) {
     if (setUnionMember != null) {
       setUnionMember.nullify(this);
     }
     this.preUpdateEvent = Optional.of(preUpdateEvent);
     this.setUnionMember = UnionMember.PRE_UPDATE_EVENT;
+  }
+
+  public ComponentUpdatePolicyEvents withPreUpdateEvent(
+      final PreComponentUpdateEvent preUpdateEvent) {
+    setPreUpdateEvent(preUpdateEvent);
     return this;
   }
 
@@ -56,13 +60,17 @@ public class ComponentUpdatePolicyEvents implements EventStreamJsonMessage {
     return null;
   }
 
-  public ComponentUpdatePolicyEvents setPostUpdateEvent(
-      final PostComponentUpdateEvent postUpdateEvent) {
+  public void setPostUpdateEvent(final PostComponentUpdateEvent postUpdateEvent) {
     if (setUnionMember != null) {
       setUnionMember.nullify(this);
     }
     this.postUpdateEvent = Optional.of(postUpdateEvent);
     this.setUnionMember = UnionMember.POST_UPDATE_EVENT;
+  }
+
+  public ComponentUpdatePolicyEvents withPostUpdateEvent(
+      final PostComponentUpdateEvent postUpdateEvent) {
+    setPostUpdateEvent(postUpdateEvent);
     return this;
   }
 

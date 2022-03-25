@@ -1,19 +1,35 @@
 package software.amazon.awssdk.eventstreamrpc;
 
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+import com.google.gson.TypeAdapter;
+import com.google.gson.TypeAdapterFactory;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
-import software.amazon.awssdk.eventstreamrpc.model.*;
+import software.amazon.awssdk.eventstreamrpc.model.AccessDeniedException;
+import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
 import software.amazon.awssdk.eventstreamrpc.model.UnsupportedOperationException;
+import software.amazon.awssdk.eventstreamrpc.model.ValidationException;
 
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Implementers of this service model are expected to likely be singletons. There
@@ -36,6 +52,7 @@ public abstract class EventStreamRPCServiceModel {
         builder.registerTypeAdapterFactory(OptionalTypeAdapter.FACTORY);
         builder.registerTypeAdapter(byte[].class, new Base64BlobSerializerDeserializer());
         builder.registerTypeAdapter(Instant.class, new InstantSerializerDeserializer());
+        builder.excludeFieldsWithoutExposeAnnotation();
         GSON = builder.create();
     }
 

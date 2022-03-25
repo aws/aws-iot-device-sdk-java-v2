@@ -27,6 +27,8 @@ import java.util.concurrent.ExecutionException;
 
 import static software.amazon.awssdk.iot.discovery.DiscoveryClient.TLS_EXT_ALPN;
 
+import utils.commandlineutils.CommandLineUtils;
+
 public class BasicDiscovery {
     static String thingName;
     static String rootCaPath;
@@ -35,118 +37,65 @@ public class BasicDiscovery {
     static String region = "us-east-1";
     static String topic = "test/topic";
     static String mode = "both";
-    static boolean showHelp = false;
 
     static String proxyHost;
     static int proxyPort;
 
-    static void printUsage() {
-        System.out.println(
-                "Usage:\n"+
-                "  --help        This message\n" +
-                "  --thing_name  Thing name to use\n" +
-                "  -r|--region   AWS IoT service region\n" +
-                "  -a|--rootca   Path to the root certificate\n" +
-                "  -c|--cert     Path to the IoT thing certificate\n" +
-                "  -k|--key      Path to the IoT thing private key\n" +
-                "  -t|--topic    Topic to subscribe/publish to (optional)\n" +
-                "  -m|--mode  Message to publish (optional)\n" +
-                "  --proxyhost   Websocket proxy host to use\n" +
-                "  --proxyport   Websocket proxy port to use\n");
-    }
-
-    static void parseCommandLine(String[] args) {
-        for (int idx = 0; idx < args.length; ++idx) {
-            switch (args[idx]) {
-                case "--help":
-                    showHelp = true;
-                    break;
-                case "--thingName":
-                    if (idx + 1 < args.length) {
-                        thingName = args[++idx];
-                    }
-                    break;
-                case "-r":
-                case "--region":
-                    if (idx + 1 < args.length) {
-                        region = args[++idx];
-                    }
-                    break;
-                case "-a":
-                case "--rootca":
-                    if (idx + 1 < args.length) {
-                        rootCaPath = args[++idx];
-                        final File rootCaFile = new File(rootCaPath);
-                        if (!rootCaFile.isFile()) {
-                            throw new RuntimeException("Cannot load root CA from path: " + rootCaFile.getAbsolutePath());
-                        }
-                        rootCaPath = rootCaFile.getAbsolutePath();
-                    }
-                    break;
-                case "-c":
-                case "--cert":
-                    if (idx + 1 < args.length) {
-                        certPath = args[++idx];
-                        final File certFile = new File(certPath);
-                        if (!certFile.isFile()) {
-                            throw new RuntimeException("Cannot load certificate from path: " + certFile.getAbsolutePath());
-                        }
-                        certPath = certFile.getAbsolutePath();
-                    }
-                    break;
-                case "-k":
-                case "--key":
-                    if (idx + 1 < args.length) {
-                        keyPath = args[++idx];
-                        final File keyFile = new File(keyPath);
-                        if (!keyFile.isFile()) {
-                            throw new RuntimeException("Cannot load private key from path: " + keyFile.getAbsolutePath());
-                        }
-                        keyPath = keyFile.getAbsolutePath();
-                    }
-                    break;
-                case "-t":
-                case "--topic":
-                    if (idx + 1 < args.length) {
-                        topic = args[++idx];
-                    }
-                    break;
-                case "-m":
-                case "--mode":
-                    if (idx + 1 < args.length) {
-                        mode = args[++idx];
-                    }
-                    break;
-                case "--proxyhost":
-                    if (idx + 1 < args.length) {
-                        proxyHost = args[++idx];
-                    }
-                    break;
-                case "--proxyport":
-                    if (idx + 1 < args.length) {
-                        proxyPort = Integer.parseInt(args[++idx]);
-                    }
-                    break;
-                default:
-                    System.out.println("Unrecognized argument: " + args[idx]);
-            }
-        }
-    }
+    static CommandLineUtils cmdUtils;
 
     public static void main(String[] args) {
         Log.initLoggingFromSystemProperties();
 
-        parseCommandLine(args);
-        if (showHelp || thingName == null ||
-            certPath == null || keyPath == null) {
-            printUsage();
-            return;
+        cmdUtils = new CommandLineUtils();
+        cmdUtils.registerProgramName("BasicDiscovery");
+        cmdUtils.addCommonMQTTCommands();
+        cmdUtils.removeCommand("endpoint");
+        cmdUtils.registerCommand("thing_name", "<str>", "The name of the IoT thing.");
+        cmdUtils.registerCommand("region", "<str>", "AWS IoT service region (optional, default='us-east-1').");
+        cmdUtils.registerCommand("topic", "<str>", "Topic to subscribe/publish to (optional, default='test/topic').");
+        cmdUtils.registerCommand("mode", "<str>", "Mode options: 'both', 'publish', or 'subscribe' (optional, default='both').");
+        cmdUtils.registerCommand("proxy_host", "<str>", "Websocket proxy host to use (optional, required if --proxy_port is set).");
+        cmdUtils.registerCommand("proxy_port", "<int>", "Websocket proxy port to use (optional, required if --proxy_host is set).");
+        cmdUtils.registerCommand("help", "", "Prints this message");
+        cmdUtils.sendArguments(args);
+
+        if (cmdUtils.hasCommand("help")) {
+            cmdUtils.printHelp();
+            System.exit(1);
         }
 
-        try(final EventLoopGroup eventLoopGroup = new EventLoopGroup(1);
-                final HostResolver resolver = new HostResolver(eventLoopGroup);
-                final ClientBootstrap clientBootstrap = new ClientBootstrap(eventLoopGroup, resolver);
-                final TlsContextOptions tlsCtxOptions = TlsContextOptions.createWithMtlsFromPath(certPath, keyPath)) {
+        thingName = cmdUtils.getCommandRequired("thing_name", "");
+        region = cmdUtils.getCommandOrDefault("region", region);
+        rootCaPath = cmdUtils.getCommandOrDefault("ca_file", rootCaPath);
+        certPath = cmdUtils.getCommandRequired("cert", "");
+        keyPath = cmdUtils.getCommandRequired("key", "");
+        topic = cmdUtils.getCommandOrDefault("topic", topic);
+        mode = cmdUtils.getCommandOrDefault("mode", mode);
+        proxyHost = cmdUtils.getCommandOrDefault("proxy_host", proxyHost);
+        proxyPort = Integer.parseInt(cmdUtils.getCommandOrDefault("proxy_port", String.valueOf(proxyPort)));
+
+        // ---- Verify file loads ----
+        // Get the absolute CA file path
+        final File rootCaFile = new File(rootCaPath);
+        if (!rootCaFile.isFile()) {
+            throw new RuntimeException("Cannot load root CA from path: " + rootCaFile.getAbsolutePath());
+        }
+        rootCaPath = rootCaFile.getAbsolutePath();
+
+        final File certFile = new File(certPath);
+        if (!certFile.isFile()) {
+            throw new RuntimeException("Cannot load certificate from path: " + certFile.getAbsolutePath());
+        }
+        certPath = certFile.getAbsolutePath();
+
+        final File keyFile = new File(keyPath);
+        if (!keyFile.isFile()) {
+            throw new RuntimeException("Cannot load private key from path: " + keyFile.getAbsolutePath());
+        }
+        keyPath = keyFile.getAbsolutePath();
+        // ----------------------------
+
+        try(final TlsContextOptions tlsCtxOptions = TlsContextOptions.createWithMtlsFromPath(certPath, keyPath)) {
             if(TlsContextOptions.isAlpnSupported()) {
                 tlsCtxOptions.withAlpnList(TLS_EXT_ALPN);
             }
@@ -161,10 +110,10 @@ public class BasicDiscovery {
             }
 
             try(final DiscoveryClientConfig discoveryClientConfig =
-                        new DiscoveryClientConfig(clientBootstrap, tlsCtxOptions,
+                        new DiscoveryClientConfig(tlsCtxOptions,
                         new SocketOptions(), region, 1, proxyOptions);
                 final DiscoveryClient discoveryClient = new DiscoveryClient(discoveryClientConfig);
-                final MqttClientConnection connection = getClientFromDiscovery(discoveryClient, clientBootstrap)) {
+                final MqttClientConnection connection = getClientFromDiscovery(discoveryClient)) {
 
                 if ("subscribe".equals(mode) || "both".equals(mode)) {
                     final CompletableFuture<Integer> subFuture = connection.subscribe(topic, QualityOfService.AT_MOST_ONCE, message -> {
@@ -204,8 +153,8 @@ public class BasicDiscovery {
         System.out.println("Complete!");
     }
 
-    private static MqttClientConnection getClientFromDiscovery(final DiscoveryClient discoveryClient,
-                                                               final ClientBootstrap bootstrap) throws ExecutionException, InterruptedException {
+    private static MqttClientConnection getClientFromDiscovery(final DiscoveryClient discoveryClient
+                                                               ) throws ExecutionException, InterruptedException {
         final CompletableFuture<DiscoverResponse> futureResponse = discoveryClient.discover(thingName);
         final DiscoverResponse response = futureResponse.get();
         if(response.getGGGroups() != null) {
@@ -225,7 +174,6 @@ public class BasicDiscovery {
                             .withClientId(thingName)
                             .withPort(port.shortValue())
                             .withEndpoint(dnsOrIp)
-                            .withBootstrap(bootstrap)
                             .withConnectionEventCallbacks(new MqttClientConnectionEvents() {
                                 @Override
                                 public void onConnectionInterrupted(int errorCode) {

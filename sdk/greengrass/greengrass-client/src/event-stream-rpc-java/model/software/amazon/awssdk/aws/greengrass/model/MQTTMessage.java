@@ -47,8 +47,12 @@ public class MQTTMessage implements EventStreamJsonMessage {
     return null;
   }
 
-  public MQTTMessage setTopicName(final String topicName) {
+  public void setTopicName(final String topicName) {
     this.topicName = Optional.ofNullable(topicName);
+  }
+
+  public MQTTMessage withTopicName(final String topicName) {
+    setTopicName(topicName);
     return this;
   }
 
@@ -59,8 +63,12 @@ public class MQTTMessage implements EventStreamJsonMessage {
     return null;
   }
 
-  public MQTTMessage setPayload(final byte[] payload) {
+  public void setPayload(final byte[] payload) {
     this.payload = Optional.ofNullable(payload);
+  }
+
+  public MQTTMessage withPayload(final byte[] payload) {
+    setPayload(payload);
     return this;
   }
 

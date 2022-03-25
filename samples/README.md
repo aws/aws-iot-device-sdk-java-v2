@@ -2,6 +2,7 @@
 
 * [BasicPubSub](#basicpubsub)
 * [Pkcs11PubSub](#pkcs11pubsub)
+* [WindowsCertPubSub](#windowscertpubsub)
 * [Shadow](#shadow)
 * [Jobs](#jobs)
 * [fleet provisioning](#fleet-provisioning)
@@ -14,7 +15,7 @@
 
 Note that all samples will show their options by passing in `--help`. For example:
 ```sh
-mvn exec:java -pl samples/BasicPubSub -Dexec.mainClass=pubsub.PubSub -Dexec.args='--help'
+mvn compile exec:java -pl samples/BasicPubSub -Dexec.mainClass=pubsub.PubSub -Dexec.args='--help'
 ```
 
 ## BasicPubSub
@@ -25,7 +26,7 @@ source: `samples/BasicPubSub`
 
 To Run:
 ```sh
-mvn exec:java -pl samples/BasicPubSub -Dexec.mainClass=pubsub.PubSub -Dexec.args='--endpoint <xxxx-ats.iot.xxxx.amazonaws.com> --cert <certificate.pem.crt> --key <private.pem.key> --rootca <AmazonRootCA1.pem>'
+mvn compile exec:java -pl samples/BasicPubSub -Dexec.mainClass=pubsub.PubSub -Dexec.args='--endpoint <xxxx-ats.iot.xxxx.amazonaws.com> --cert <certificate.pem.crt> --key <private.pem.key> --rootca <AmazonRootCA1.pem>'
 ```
 
 The sample can connect to IoT Core in several ways:
@@ -88,8 +89,72 @@ To run this sample using [SoftHSM2](https://www.opendnssec.org/softhsm/) as the 
 
 5)  Now you can run the sample:
     ```sh
-    mvn exec:java -pl samples/Pkcs11PubSub -Dexec.mainClass=pkcs11pubsub.Pkcs11PubSub -Dexec.args='--endpoint <xxxx-ats.iot.xxxx.amazonaws.com> --cert <certificate.pem.crt> --rootca <AmazonRootCA1.pem> --pkcs11Lib <path/to/libsofthsm2.so> --pin <user-pin> --tokenLabel <token-label> --keyLabel <key-label>'
+    mvn compile exec:java -pl samples/Pkcs11PubSub -Dexec.mainClass=pkcs11pubsub.Pkcs11PubSub -Dexec.args='--endpoint <xxxx-ats.iot.xxxx.amazonaws.com> --cert <certificate.pem.crt> --rootca <AmazonRootCA1.pem> --pkcs11Lib <path/to/libsofthsm2.so> --pin <user-pin> --tokenLabel <token-label> --keyLabel <key-label>'
     ```
+
+## WindowsCertPubSub
+
+WARNING: Windows only
+
+This sample shows connecting to IoT Core using mutual TLS,
+but your certificate and private key are in a
+[Windows certificate store](https://docs.microsoft.com/en-us/windows-hardware/drivers/install/certificate-stores),
+rather than simply being files on disk.
+
+To run this sample you need the path to your certificate in the store,
+which will look something like:
+"CurrentUser\MY\A11F8A9B5DF5B98BA3508FBCA575D09570E0D2C6"
+(where "CurrentUser\MY" is the store and "A11F8A9B5DF5B98BA3508FBCA575D09570E0D2C6" is the certificate's thumbprint)
+
+If your certificate and private key are in a
+[TPM](https://docs.microsoft.com/en-us/windows/security/information-protection/tpm/trusted-platform-module-overview),
+you would use them by passing their certificate store path.
+
+source: `samples/WindowsCertPubSub`
+
+To run this sample with a basic certificate from AWS IoT Core:
+
+1)  Create an IoT Thing with a certificate and key if you haven't already.
+
+2)  Combine the certificate and private key into a single .pfx file.
+
+    You will be prompted for a password while creating this file. Remember it for the next step.
+
+    If you have OpenSSL installed:
+    ```powershell
+    openssl pkcs12 -in certificate.pem.crt -inkey private.pem.key -out certificate.pfx
+    ```
+
+    Otherwise use [CertUtil](https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/certutil).
+    ```powershell
+    certutil -mergePFX certificate.pem.crt,private.pem.key certificate.pfx
+    ```
+
+3)  Add the .pfx file to a Windows certificate store using PowerShell's
+    [Import-PfxCertificate](https://docs.microsoft.com/en-us/powershell/module/pki/import-pfxcertificate)
+
+    In this example we're adding it to "CurrentUser\My"
+
+    ```powershell
+    $mypwd = Get-Credential -UserName 'Enter password below' -Message 'Enter password below'
+    Import-PfxCertificate -FilePath certificate.pfx -CertStoreLocation Cert:\CurrentUser\My -Password $mypwd.Password
+    ```
+
+    Note the certificate thumbprint that is printed out:
+    ```
+    Thumbprint                                Subject
+    ----------                                -------
+    A11F8A9B5DF5B98BA3508FBCA575D09570E0D2C6  CN=AWS IoT Certificate
+    ```
+
+    So this certificate's path would be: "CurrentUser\MY\A11F8A9B5DF5B98BA3508FBCA575D09570E0D2C6"
+
+4) Now you can run the sample:
+
+    ```sh
+    mvn compile exec:java -pl samples/WindowsCertPubSub "-Dexec.mainClass=windowscertpubsub.WindowsCertPubSub" "-Dexec.args=--endpoint xxxx-ats.iot.xxxx.amazonaws.com --cert CurrentUser\MY\A11F8A9B5DF5B98BA3508FBCA575D09570E0D2C6 --rootca AmazonRootCA1.pem"
+    ```
+
 
 ## Shadow
 
@@ -116,7 +181,7 @@ Source: `samples/Shadow`
 To Run:
 
 ``` sh
-mvn exec:java -pl samples/Shadow -Dexec.mainClass=shadow.ShadowSample -Dexec.args='--endpoint <endpoint> --rootca /path/to/AmazonRootCA1.pem --cert <cert path> --key <key path> --thingName <thing name>'
+mvn compile exec:java -pl samples/Shadow -Dexec.mainClass=shadow.ShadowSample -Dexec.args='--endpoint <endpoint> --rootca /path/to/AmazonRootCA1.pem --cert <cert path> --key <key path> --thingName <thing name>'
 ```
 
 Your Thing's
@@ -192,7 +257,7 @@ Source: `samples/Jobs`
 To Run:
 
 ``` sh
-mvn exec:java -pl samples/Jobs -Dexec.mainClass=jobs.JobsSample -Dexec.args='--endpoint <endpoint> --rootca /path/to/AmazonRootCA1.pem --cert <cert path> --key <key path> --thingName <thing name>'
+mvn compile exec:java -pl samples/Jobs -Dexec.mainClass=jobs.JobsSample -Dexec.args='--endpoint <endpoint> --rootca /path/to/AmazonRootCA1.pem --cert <cert path> --key <key path> --thingName <thing name>'
 ```
 
 Your Thing's
@@ -268,14 +333,14 @@ cd ~/samples/Identity
 Run the sample using CreateKeysAndCertificate:
 
 ``` sh
-mvn exec:java -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint <endpoint> --rootca <root ca path>
+mvn compile exec:java -pl samples/Identity -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint <endpoint> --rootca <root ca path>
 --cert <cert path> --key <private key path> --templateName <templatename> --templateParameters <templateParams>"
 ```
 
 Run the sample using CreateCertificateFromCsr:
 
 ``` sh
-mvn exec:java -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint <endpoint> --rootca <root ca path>
+mvn compile exec:java -pl samples/Identity -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint <endpoint> --rootca <root ca path>
 --cert <cert path> --key <private key path> --templateName <templatename> --templateParameters <templateParams> --csr <csr path>"
 ```
 
@@ -390,7 +455,7 @@ to perform the actual provisioning. If you are not using the temporary provision
 and `--key` appropriately:
 
 ``` sh
-mvn exec:java -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint [your endpoint]-ats.iot.[region].amazonaws.com --rootca [pathToRootCA]
+mvn compile exec:java -pl samples/Identity -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint [your endpoint]-ats.iot.[region].amazonaws.com --rootca [pathToRootCA]
 --cert /tmp/provision.cert.pem --key /tmp/provision.private.key --templateName [TemplateName] --templateParameters {\"SerialNumber\":\"1\",\"DeviceLocation\":\"Seattle\"}"
 ```
 
@@ -424,7 +489,7 @@ aws iot create-provisioning-claim \
 Finally, supply the certificate signing request while invoking the provisioning sample. As with the previous workflow, if
 using a permanent certificate set, replace the paths specified in the `--cert` and `--key` arguments:
 ``` sh
-mvn exec:java -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint [your endpoint]-ats.iot.[region].amazonaws.com --rootca [pathToRootCA]
+mvn compile exec:java -pl samples/Identity -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint [your endpoint]-ats.iot.[region].amazonaws.com --rootca [pathToRootCA]
 --cert /tmp/provision.cert.pem --key /tmp/provision.private.key --templateName [TemplateName] --templateParameters {\"SerialNumber\":\"1\",\"DeviceLocation\":\"Seattle\"}  --csr /tmp/deviceCert.csr"
 ```
 

@@ -20,10 +20,12 @@ public class GetNamedShadowSubscriptionRequest {
      */
     public String thingName;
 
+
     /**
      * Name of the shadow to subscribe to GetNamedShadow responses for.
      *
      */
     public String shadowName;
+
 
 }

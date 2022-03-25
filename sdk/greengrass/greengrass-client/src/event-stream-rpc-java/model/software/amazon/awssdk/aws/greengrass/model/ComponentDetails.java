@@ -1,13 +1,11 @@
 package software.amazon.awssdk.aws.greengrass.model;
 
 import com.google.gson.annotations.Expose;
-import java.lang.Object;
-import java.lang.Override;
-import java.lang.String;
+import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
+
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
 
 public class ComponentDetails implements EventStreamJsonMessage {
   public static final String APPLICATION_MODEL_TYPE = "aws.greengrass#ComponentDetails";
@@ -61,8 +59,12 @@ public class ComponentDetails implements EventStreamJsonMessage {
     return null;
   }
 
-  public ComponentDetails setComponentName(final String componentName) {
+  public void setComponentName(final String componentName) {
     this.componentName = Optional.ofNullable(componentName);
+  }
+
+  public ComponentDetails withComponentName(final String componentName) {
+    setComponentName(componentName);
     return this;
   }
 
@@ -73,8 +75,12 @@ public class ComponentDetails implements EventStreamJsonMessage {
     return null;
   }
 
-  public ComponentDetails setVersion(final String version) {
+  public void setVersion(final String version) {
     this.version = Optional.ofNullable(version);
+  }
+
+  public ComponentDetails withVersion(final String version) {
+    setVersion(version);
     return this;
   }
 
@@ -92,12 +98,21 @@ public class ComponentDetails implements EventStreamJsonMessage {
     return null;
   }
 
+  public void setState(final String state) {
+    this.state = Optional.ofNullable(state);
+  }
+
+  public ComponentDetails withState(final String state) {
+    setState(state);
+    return this;
+  }
+
   public void setState(final LifecycleState state) {
     this.state = Optional.ofNullable(state.getValue());
   }
 
-  public ComponentDetails setState(final String state) {
-    this.state = Optional.ofNullable(state);
+  public ComponentDetails withState(final LifecycleState state) {
+    setState(state);
     return this;
   }
 
@@ -108,8 +123,12 @@ public class ComponentDetails implements EventStreamJsonMessage {
     return null;
   }
 
-  public ComponentDetails setConfiguration(final Map<String, Object> configuration) {
+  public void setConfiguration(final Map<String, Object> configuration) {
     this.configuration = Optional.ofNullable(configuration);
+  }
+
+  public ComponentDetails withConfiguration(final Map<String, Object> configuration) {
+    setConfiguration(configuration);
     return this;
   }
 

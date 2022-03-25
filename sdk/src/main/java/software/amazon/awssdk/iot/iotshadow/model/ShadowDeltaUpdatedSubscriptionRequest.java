@@ -20,4 +20,5 @@ public class ShadowDeltaUpdatedSubscriptionRequest {
      */
     public String thingName;
 
+
 }

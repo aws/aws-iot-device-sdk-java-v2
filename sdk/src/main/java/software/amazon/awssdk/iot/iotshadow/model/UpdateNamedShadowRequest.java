@@ -21,11 +21,13 @@ public class UpdateNamedShadowRequest {
      */
     public String shadowName;
 
+
     /**
      * Optional. A client token used to correlate requests and responses. Enter an arbitrary value here and it is reflected in the response.
      *
      */
     public String clientToken;
+
 
     /**
      * Aws IoT thing to update a named shadow of.
@@ -33,16 +35,19 @@ public class UpdateNamedShadowRequest {
      */
     public String thingName;
 
+
     /**
      * Requested changes to shadow state.  Updates affect only the fields specified.
      *
      */
     public ShadowState state;
 
+
     /**
      * (Optional) The Device Shadow service applies the update only if the specified version matches the latest version.
      *
      */
     public Integer version;
+
 
 }

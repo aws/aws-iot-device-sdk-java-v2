@@ -1,24 +1,5 @@
 package software.amazon.awssdk.aws.greengrass;
 
-import java.io.IOException;
-import java.lang.AutoCloseable;
-import java.lang.Boolean;
-import java.lang.Exception;
-import java.lang.InterruptedException;
-import java.lang.Override;
-import java.lang.Runnable;
-import java.lang.RuntimeException;
-import java.lang.String;
-import java.lang.Throwable;
-import java.lang.Void;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.function.Consumer;
-import java.util.function.Function;
 import software.amazon.awssdk.aws.greengrass.model.ComponentUpdatePolicyEvents;
 import software.amazon.awssdk.aws.greengrass.model.ConfigurationUpdateEvents;
 import software.amazon.awssdk.aws.greengrass.model.CreateDebugPasswordRequest;
@@ -83,10 +64,21 @@ import software.amazon.awssdk.aws.greengrass.model.ValidateConfigurationUpdateEv
 import software.amazon.awssdk.crt.io.ClientBootstrap;
 import software.amazon.awssdk.crt.io.EventLoopGroup;
 import software.amazon.awssdk.crt.io.SocketOptions;
+import software.amazon.awssdk.crt.io.SocketOptions.SocketDomain;
 import software.amazon.awssdk.eventstreamrpc.EventStreamRPCConnection;
 import software.amazon.awssdk.eventstreamrpc.EventStreamRPCConnectionConfig;
 import software.amazon.awssdk.eventstreamrpc.GreengrassConnectMessageSupplier;
 import software.amazon.awssdk.eventstreamrpc.StreamResponseHandler;
+
+import java.io.IOException;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * V2 Client for Greengrass.
@@ -102,7 +94,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
   protected EventStreamRPCConnection connection;
 
   GreengrassCoreIPCClientV2(GreengrassCoreIPC client, EventStreamRPCConnection connection,
-      Executor executor) {
+                            Executor executor) {
     this.client = client;
     this.connection = connection;
     this.executor = executor;
@@ -619,8 +611,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
       final SubscribeToComponentUpdatesRequest request,
       Consumer<ComponentUpdatePolicyEvents> onStreamEvent,
       Optional<Function<Throwable, Boolean>> onStreamError, Optional<Runnable> onStreamClosed) {
-    SubscribeToComponentUpdatesResponseHandler r = client.subscribeToComponentUpdates(request, Optional.of(getStreamingResponseHandler(onStreamEvent, onStreamError, onStreamClosed)));
-    return new StreamingResponse<>(r.getResponse(), r);
+    return this.subscribeToComponentUpdatesAsync(request, getStreamingResponseHandler(onStreamEvent, onStreamError, onStreamClosed));
   }
 
   /**
@@ -703,8 +694,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
       final SubscribeToConfigurationUpdateRequest request,
       Consumer<ConfigurationUpdateEvents> onStreamEvent,
       Optional<Function<Throwable, Boolean>> onStreamError, Optional<Runnable> onStreamClosed) {
-    SubscribeToConfigurationUpdateResponseHandler r = client.subscribeToConfigurationUpdate(request, Optional.of(getStreamingResponseHandler(onStreamEvent, onStreamError, onStreamClosed)));
-    return new StreamingResponse<>(r.getResponse(), r);
+    return this.subscribeToConfigurationUpdateAsync(request, getStreamingResponseHandler(onStreamEvent, onStreamError, onStreamClosed));
   }
 
   /**
@@ -786,8 +776,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
   public StreamingResponse<CompletableFuture<SubscribeToIoTCoreResponse>, SubscribeToIoTCoreResponseHandler> subscribeToIoTCoreAsync(
       final SubscribeToIoTCoreRequest request, Consumer<IoTCoreMessage> onStreamEvent,
       Optional<Function<Throwable, Boolean>> onStreamError, Optional<Runnable> onStreamClosed) {
-    SubscribeToIoTCoreResponseHandler r = client.subscribeToIoTCore(request, Optional.of(getStreamingResponseHandler(onStreamEvent, onStreamError, onStreamClosed)));
-    return new StreamingResponse<>(r.getResponse(), r);
+    return this.subscribeToIoTCoreAsync(request, getStreamingResponseHandler(onStreamEvent, onStreamError, onStreamClosed));
   }
 
   /**
@@ -868,8 +857,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
   public StreamingResponse<CompletableFuture<SubscribeToTopicResponse>, SubscribeToTopicResponseHandler> subscribeToTopicAsync(
       final SubscribeToTopicRequest request, Consumer<SubscriptionResponseMessage> onStreamEvent,
       Optional<Function<Throwable, Boolean>> onStreamError, Optional<Runnable> onStreamClosed) {
-    SubscribeToTopicResponseHandler r = client.subscribeToTopic(request, Optional.of(getStreamingResponseHandler(onStreamEvent, onStreamError, onStreamClosed)));
-    return new StreamingResponse<>(r.getResponse(), r);
+    return this.subscribeToTopicAsync(request, getStreamingResponseHandler(onStreamEvent, onStreamError, onStreamClosed));
   }
 
   /**
@@ -951,8 +939,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
       final SubscribeToValidateConfigurationUpdatesRequest request,
       Consumer<ValidateConfigurationUpdateEvents> onStreamEvent,
       Optional<Function<Throwable, Boolean>> onStreamError, Optional<Runnable> onStreamClosed) {
-    SubscribeToValidateConfigurationUpdatesResponseHandler r = client.subscribeToValidateConfigurationUpdates(request, Optional.of(getStreamingResponseHandler(onStreamEvent, onStreamError, onStreamClosed)));
-    return new StreamingResponse<>(r.getResponse(), r);
+    return this.subscribeToValidateConfigurationUpdatesAsync(request, getStreamingResponseHandler(onStreamEvent, onStreamError, onStreamClosed));
   }
 
   /**
@@ -1202,11 +1189,13 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
 
     protected EventStreamRPCConnection connection = null;
 
+    protected SocketDomain socketDomain = SocketDomain.LOCAL;
+
     public GreengrassCoreIPCClientV2 build() throws IOException {
       if (client == null) {
         SocketOptions socketOptions = new SocketOptions();
         socketOptions.connectTimeoutMs = 3000;
-        socketOptions.domain = SocketOptions.SocketDomain.LOCAL;
+        socketOptions.domain = this.socketDomain;
         socketOptions.type = SocketOptions.SocketType.STREAM;
         String ipcServerSocketPath = this.socketPath;
         String authToken = this.authToken;
@@ -1254,6 +1243,11 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
 
     public Builder withSocketPath(String socketPath) {
       this.socketPath = socketPath;
+      return this;
+    }
+
+    public Builder withSocketDomain(SocketDomain domain) {
+      this.socketDomain = domain;
       return this;
     }
 

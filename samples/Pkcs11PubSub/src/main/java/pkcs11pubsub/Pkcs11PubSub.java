@@ -16,6 +16,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 
+import utils.commandlineutils.CommandLineUtils;
+
 public class Pkcs11PubSub {
 
     // When run normally, we want to exit nicely even if something goes wrong
@@ -36,110 +38,9 @@ public class Pkcs11PubSub {
     static String topic = "test/topic";
     static String message = "Hello World!";
     static int messagesToPublish = 10;
-    static boolean showHelp = false;
     static int port = 8883;
 
-    static void printUsage() {
-        System.out.println("Usage:\n"
-                + "  --help            This message\n"
-                + "  --clientId        Client ID to use when connecting (optional)\n"
-                + "  -e|--endpoint     AWS IoT service endpoint hostname\n"
-                + "  -p|--port         Port to connect to on the endpoint (optional)\n"
-                + "  -r|--rootca       Path to the root certificate (optional)\n"
-                + "  -c|--cert         Path to the IoT thing certificate\n"
-                + "  --pkcs11Lib       Path to PKCS#11 library\n"
-                + "  --pin             User PIN for logging into PKCS#11 token\n"
-                + "  --tokenLabel      Label of PKCS#11 token to use (optional)\n"
-                + "  --slotId          Slot ID containing PKCS#11 token to use (optional)\n"
-                + "  --keyLabel        Label of private key on the PKCS#11 token (optional)"
-                + "  -t|--topic        Topic to subscribe/publish to (optional)\n"
-                + "  -m|--message      Message to publish (optional)\n"
-                + "  -n|--count        Number of messages to publish (optional)\n");
-    }
-
-    static void parseCommandLine(String[] args) {
-        for (int idx = 0; idx < args.length; ++idx) {
-            switch (args[idx]) {
-            case "--help":
-                showHelp = true;
-                break;
-            case "--clientId":
-                if (idx + 1 < args.length) {
-                    clientId = args[++idx];
-                }
-                break;
-            case "-e":
-            case "--endpoint":
-                if (idx + 1 < args.length) {
-                    endpoint = args[++idx];
-                }
-                break;
-            case "-p":
-            case "--port":
-                if (idx + 1 < args.length) {
-                    port = Integer.parseInt(args[++idx]);
-                }
-                break;
-            case "-r":
-            case "--rootca":
-                if (idx + 1 < args.length) {
-                    rootCaPath = args[++idx];
-                }
-                break;
-            case "-c":
-            case "--cert":
-                if (idx + 1 < args.length) {
-                    certPath = args[++idx];
-                }
-                break;
-            case "--pkcs11Lib":
-                if (idx + 1 < args.length) {
-                    pkcs11LibPath = args[++idx];
-                }
-                break;
-            case "--pin":
-                if (idx + 1 < args.length) {
-                    pkcs11UserPin = args[++idx];
-                }
-                break;
-            case "--tokenLabel":
-                if (idx + 1 < args.length) {
-                    pkcs11TokenLabel = args[++idx];
-                }
-                break;
-            case "--slotId":
-                if (idx + 1 < args.length) {
-                    pkcs11SlotId = Long.parseLong(args[++idx]);
-                }
-                break;
-            case "--keyLabel":
-                if (idx + 1 < args.length) {
-                    pkcs11KeyLabel = args[++idx];
-                }
-                break;
-            case "-t":
-            case "--topic":
-                if (idx + 1 < args.length) {
-                    topic = args[++idx];
-                }
-                break;
-            case "-m":
-            case "--message":
-                if (idx + 1 < args.length) {
-                    message = args[++idx];
-                }
-                break;
-            case "-n":
-            case "--count":
-                if (idx + 1 < args.length) {
-                    messagesToPublish = Integer.parseInt(args[++idx]);
-                }
-                break;
-            default:
-                System.out.println("Unrecognized argument: " + args[idx]);
-            }
-        }
-    }
+    static CommandLineUtils cmdUtils;
 
     /*
      * When called during a CI run, throw an exception that will escape and fail the
@@ -156,12 +57,39 @@ public class Pkcs11PubSub {
 
     public static void main(String[] args) {
 
-        parseCommandLine(args);
-        if (showHelp || endpoint == null || certPath == null || pkcs11LibPath == null || pkcs11UserPin == null) {
-            printUsage();
-            onApplicationFailure(null);
-            return;
+        cmdUtils = new CommandLineUtils();
+        cmdUtils.registerProgramName("Pkcs11PubSub");
+        cmdUtils.addCommonMQTTCommands();
+        cmdUtils.removeCommand("key");
+        cmdUtils.registerCommand("client_id", "<int>", "Client id to use (optional, default='test-*').");
+        cmdUtils.registerCommand("port", "<int>", "Port to connect to on the endpoint (optional, default='8883').");
+        cmdUtils.registerCommand("pkcs11_lib", "<path>", "Path to PKCS#11 library.");
+        cmdUtils.registerCommand("pin", "<int>", "User PIN for logging into PKCS#11 token.");
+        cmdUtils.registerCommand("token_label", "<str>", "Label of PKCS#11 token to use (optional).");
+        cmdUtils.registerCommand("slot_id", "<int>", "Slot ID containing PKCS#11 token to use (optional).");
+        cmdUtils.registerCommand("key_label", "<str>", "Label of private key on the PKCS#11 token (optional).");
+        cmdUtils.registerCommand("topic", "<str>", "Topic to subscribe/publish to (optional, default='test/topic').");
+        cmdUtils.registerCommand("message", "<str>", "Message to publish (optional, default='Hello World').");
+        cmdUtils.registerCommand("count", "<int>", "Number of messages to publish (optional, default='10').");
+        cmdUtils.registerCommand("help", "", "Prints this message");
+        cmdUtils.sendArguments(args);
+
+        if (cmdUtils.hasCommand("help")) {
+            cmdUtils.printHelp();
+            System.exit(1);
         }
+
+        endpoint = cmdUtils.getCommandRequired("endpoint", "");
+        certPath = cmdUtils.getCommandRequired("cert", "");
+        rootCaPath = cmdUtils.getCommandOrDefault("root_ca", rootCaPath);
+        clientId = cmdUtils.getCommandOrDefault("client_id", clientId);
+        port = Integer.parseInt(cmdUtils.getCommandOrDefault("port", String.valueOf(port)));
+        pkcs11LibPath = cmdUtils.getCommandRequired("pkcs11_lib", "");
+        pkcs11UserPin = cmdUtils.getCommandRequired("pin", "");
+        pkcs11TokenLabel = cmdUtils.getCommandOrDefault("key_label", pkcs11TokenLabel);
+        topic = cmdUtils.getCommandOrDefault("topic", topic);
+        message = cmdUtils.getCommandOrDefault("message", message);
+        messagesToPublish = Integer.parseInt(cmdUtils.getCommandOrDefault("count", String.valueOf(messagesToPublish)));
 
         MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
             @Override
@@ -203,18 +131,18 @@ public class Pkcs11PubSub {
                 pkcs11Options.withPrivateKeyObjectLabel(pkcs11KeyLabel);
             }
 
-            try (EventLoopGroup eventLoopGroup = new EventLoopGroup(1);
-                    HostResolver resolver = new HostResolver(eventLoopGroup);
-                    ClientBootstrap clientBootstrap = new ClientBootstrap(eventLoopGroup, resolver);
-                    AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder
-                            .newMtlsPkcs11Builder(pkcs11Options)) {
+            try (AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder
+                    .newMtlsPkcs11Builder(pkcs11Options)) {
 
                 if (rootCaPath != null) {
                     builder.withCertificateAuthorityFromPath(null, rootCaPath);
                 }
 
-                builder.withBootstrap(clientBootstrap).withConnectionEventCallbacks(callbacks).withClientId(clientId)
-                        .withEndpoint(endpoint).withPort((short) port).withCleanSession(true)
+                builder.withConnectionEventCallbacks(callbacks)
+                        .withClientId(clientId)
+                        .withEndpoint(endpoint)
+                        .withPort((short) port)
+                        .withCleanSession(true)
                         .withProtocolOperationTimeoutMs(60000);
 
                 try (MqttClientConnection connection = builder.build()) {

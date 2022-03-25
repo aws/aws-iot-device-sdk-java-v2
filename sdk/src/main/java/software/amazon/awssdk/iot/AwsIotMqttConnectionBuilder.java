@@ -129,11 +129,31 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     /**
      * Create a new builder with mTLS, using a PKCS#11 library for private key operations.
      *
+     * NOTE: Unix only
+     *
      * @param pkcs11Options PKCS#11 options
      * @return {@link AwsIotMqttConnectionBuilder}
      */
     public static AwsIotMqttConnectionBuilder newMtlsPkcs11Builder(TlsContextPkcs11Options pkcs11Options) {
         try (TlsContextOptions tlsContextOptions = TlsContextOptions.createWithMtlsPkcs11(pkcs11Options)) {
+            return new AwsIotMqttConnectionBuilder(tlsContextOptions);
+        }
+    }
+
+    /**
+     * Create a new builder with mTLS, using a certificate in a Windows certificate store.
+     *
+     * NOTE: Windows only
+     *
+     * @param certificatePath Path to certificate in a Windows certificate store.
+     *                        The path must use backslashes and end with the
+     *                        certificate's thumbprint. Example:
+     *                        {@code CurrentUser\MY\A11F8A9B5DF5B98BA3508FBCA575D09570E0D2C6}
+     * @return {@link AwsIotMqttConnectionBuilder}
+     */
+    public static AwsIotMqttConnectionBuilder newMtlsWindowsCertStorePathBuilder(String certificatePath) {
+        try (TlsContextOptions tlsContextOptions = TlsContextOptions
+                .createWithMtlsWindowsCertStorePath(certificatePath)) {
             return new AwsIotMqttConnectionBuilder(tlsContextOptions);
         }
     }
@@ -489,7 +509,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     public MqttClientConnection build() {
         // Validate
         if (bootstrap == null) {
-            throw new MqttException("client bootstrap must be non-null");
+            bootstrap = ClientBootstrap.getOrCreateStaticDefault();
         }
 
         // Lazy create
