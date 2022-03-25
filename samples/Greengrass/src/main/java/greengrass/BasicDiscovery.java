@@ -44,8 +44,6 @@ public class BasicDiscovery {
     static CommandLineUtils cmdUtils;
 
     public static void main(String[] args) {
-        Log.initLoggingFromSystemProperties();
-
         cmdUtils = new CommandLineUtils();
         cmdUtils.registerProgramName("BasicDiscovery");
         cmdUtils.addCommonMQTTCommands();
