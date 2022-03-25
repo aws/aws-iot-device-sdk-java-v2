@@ -37,7 +37,6 @@ android {
         sourceCompatibility = 1.8
         targetCompatibility = 1.8
     }
-//    ndkVersion '21.0.6113669'
     ndkVersion '23.1.7779620'
 }
 
@@ -49,6 +48,8 @@ repositories {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(":iotdevicesdk")
+    implementation 'software.amazon.awssdk.crt:aws-crt-android:0.15.11'
+
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.core:core:1.2.0'
