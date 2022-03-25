@@ -42,7 +42,7 @@
     <dependency>
       <groupId>software.amazon.awssdk.crt</groupId>
       <artifactId>aws-crt</artifactId>
-      <version>0.15.23</version>
+      <version>0.16.0</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -169,7 +169,7 @@
               <packages>software.amazon.awssdk.eventstream*</packages>
             </group>
           </groups>
-          <excludePackageNames>pubsub:greengrass:identity:jobs:pubsubstress:rawpubsub:pkcs11pubsub:shadow</excludePackageNames>
+          <excludePackageNames>pubsub:greengrass:identity:jobs:pubsubstress:rawpubsub:pkcs11pubsub:windowscertpubsub:shadow</excludePackageNames>
           <header>AWS IoT Device SDK Java V2 API Reference</header>
           <bottom>Copyright © 2021. All rights reserved.</bottom>
           <links>
