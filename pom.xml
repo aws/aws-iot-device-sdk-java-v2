@@ -14,6 +14,7 @@
         <module>samples/PubSubStress</module>
         <module>samples/RawPubSub</module>
         <module>samples/Pkcs11PubSub</module>
+        <module>samples/WindowsCertPubSub</module>
         <module>samples/Shadow</module>
         <module>samples/Identity</module>
     </modules>
