@@ -29,14 +29,17 @@ to Java by the [aws-crt-java](https://github.com/awslabs/aws-crt-java) package.
 
 ### Minimum Requirements
 
-* Java 8 or above
+* Java 8 or above ([Download and Install Java](https://www.java.com/en/download/help/download_options.html))
 
-* Set JAVA_HOME first
+* [Install JDK](https://docs.oracle.com/en/java/javase/18/install/overview-jdk-installation.html#GUID-8677A77F-231A-40F7-98B9-1FD0B48C346A)
+
+* [Set JAVA_HOME](./PREREQUISITES.md/##SetJAVA_HOME)
 
 ### Requirements to build the AWS CRT locally
-
 * CMake 3.1+
 * Clang 3.9+ or GCC 4.4+ or MSVC 2015+
+
+[Install Prerequest](./PREREQUISITES.md)
 
 ### Consuming IoT Device SDK from Maven
 
@@ -54,6 +57,8 @@ Look up the latest SDK version here: https://github.com/aws/aws-iot-device-sdk-j
 
 ### Build IoT Device SDK from source
 
+[Install Maven and Set PATH](https://maven.apache.org/install.html)
+
 ``` sh
 git clone https://github.com/awslabs/aws-iot-device-sdk-java-v2.git
 # update the version of the CRT being used
@@ -67,7 +72,7 @@ mvn clean install
 # NOTE: use the latest version of the CRT here
 
 
-git clone --branch v0.15.8 https://github.com/awslabs/aws-crt-java.git
+git clone --branch v0.15.8 --recurse-submodules https://github.com/awslabs/aws-crt-java.git
 
 git clone https://github.com/awslabs/aws-iot-device-sdk-java-v2.git
 cd aws-crt-java
