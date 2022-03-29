@@ -92,6 +92,7 @@ source: `samples/BasicPubSub`
 
 To Run this sample, use the following command:
 ```sh
+# Windows Platform: Windows command prompt does not support single quote, please use double quote.
 mvn compile exec:java -pl samples/BasicPubSub -Dexec.mainClass=pubsub.PubSub -Dexec.args='--endpoint <xxxx-ats.iot.xxxx.amazonaws.com> --cert <certificate.pem.crt> --key <private.pem.key> --ca_file <AmazonRootCA1.pem>'
 ```
 
