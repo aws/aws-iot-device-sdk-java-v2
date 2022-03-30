@@ -60,8 +60,8 @@ body:
   - type: input
     id: compiler-version
     attributes:
-      label: Compiler and Version used
-      description: gcc --version / Visual Studio / clang --version
+      label: JDK Version used
+      description: Output of `java -version`
     validations:
       required: true
 
