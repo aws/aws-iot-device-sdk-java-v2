@@ -93,16 +93,13 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
 
   protected EventStreamRPCConnection connection;
 
-  protected EventLoopGroup eventLoopGroup;
-  protected ClientBootstrap clientBootstrap;
-
   GreengrassCoreIPCClientV2(GreengrassCoreIPC client, EventStreamRPCConnection connection,
-                            Executor executor, EventLoopGroup elg, ClientBootstrap bootstrap) {
+                            Executor executor) {
     this.client = client;
     this.connection = connection;
     this.executor = executor;
-    this.eventLoopGroup = elg;
-    this.clientBootstrap = bootstrap;
+    this.connection.config.getClientBootstrap().addRef();
+    this.connection.config.getEventLoopGroup().addRef();
   }
 
   @Override
@@ -112,15 +109,8 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
     }
     if (connection != null) {
       connection.close();
-    }
-
-    if (clientBootstrap != null) {
-      clientBootstrap.close();
-      clientBootstrap = null;
-    }
-    if (eventLoopGroup != null) {
-      eventLoopGroup.close();
-      eventLoopGroup = null;
+      this.connection.config.getClientBootstrap().decRef();
+      this.connection.config.getEventLoopGroup().decRef();
     }
   }
 
@@ -1205,25 +1195,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
 
     protected SocketDomain socketDomain = SocketDomain.LOCAL;
 
-    protected EventLoopGroup eventLoopGroup;
-    protected ClientBootstrap clientBootstrap;
-
     public GreengrassCoreIPCClientV2 build() throws IOException {
-      if (this.eventLoopGroup == null) {
-        try {
-          this.eventLoopGroup = new EventLoopGroup(1);
-        } catch (Exception e) {
-          throw e;
-        }
-      }
-      if (this.clientBootstrap == null) {
-        try {
-          this.clientBootstrap = new ClientBootstrap(this.eventLoopGroup, null);
-        } catch (Exception e) {
-          throw e;
-        }
-      }
-
       if (client == null) {
         SocketOptions socketOptions = new SocketOptions();
         socketOptions.connectTimeoutMs = 3000;
@@ -1231,12 +1203,12 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
         socketOptions.type = SocketOptions.SocketType.STREAM;
         String ipcServerSocketPath = this.socketPath;
         String authToken = this.authToken;
-        try {
-          final EventStreamRPCConnectionConfig config = new EventStreamRPCConnectionConfig(
-            this.clientBootstrap, this.eventLoopGroup, socketOptions, null, ipcServerSocketPath, this.port, GreengrassConnectMessageSupplier.connectMessageSupplier(authToken));
-          connection = new EventStreamRPCConnection(config);
+        try (EventLoopGroup elGroup = new EventLoopGroup(1);
+        ClientBootstrap clientBootstrap = new ClientBootstrap(elGroup, null)) {
+          final EventStreamRPCConnectionConfig config = new EventStreamRPCConnectionConfig(clientBootstrap, elGroup, socketOptions, null, ipcServerSocketPath, this.port, GreengrassConnectMessageSupplier.connectMessageSupplier(authToken));
+          this.connection = new EventStreamRPCConnection(config);
           CompletableFuture<Void> connected = new CompletableFuture<>();
-          connection.connect(new EventStreamRPCConnection.LifecycleHandler() {
+          this.connection.connect(new EventStreamRPCConnection.LifecycleHandler() {
             @Override public void onConnect() {
               connected.complete(null);
             }
@@ -1251,16 +1223,16 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
             connected.get();
           }
           catch (ExecutionException | InterruptedException e) {
-            connection.close();
+            this.connection.close();
             throw new IOException(e);
           }
-          this.client = new GreengrassCoreIPCClient(connection);
-        } finally {}
+          this.client = new GreengrassCoreIPCClient(this.connection);
+        }
       }
       if (this.useExecutor && this.executor == null) {
         this.executor = Executors.newCachedThreadPool();
       }
-      return new GreengrassCoreIPCClientV2(this.client, this.connection, this.executor, this.eventLoopGroup, this.clientBootstrap);
+      return new GreengrassCoreIPCClientV2(this.client, this.connection, this.executor);
     }
 
     public Builder withClient(GreengrassCoreIPC client) {

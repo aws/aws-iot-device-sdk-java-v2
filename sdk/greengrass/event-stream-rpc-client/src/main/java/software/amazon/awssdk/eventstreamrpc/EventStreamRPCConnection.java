@@ -22,12 +22,12 @@ public class EventStreamRPCConnection implements AutoCloseable {
             CONNECTED,
             CLOSING
         };
-        
+
         Phase connectionPhase;
         ClientConnection connection;
         Throwable closeReason;
         boolean onConnectCalled;
-        
+
         protected ConnectionState(Phase phase, ClientConnection connection) {
             this.connectionPhase = phase;
             this.connection = connection;
@@ -38,7 +38,7 @@ public class EventStreamRPCConnection implements AutoCloseable {
 
     private static final Logger LOGGER = Logger.getLogger(EventStreamRPCConnection.class.getName());
 
-    private final EventStreamRPCConnectionConfig config;
+    public final EventStreamRPCConnectionConfig config;
     protected ConnectionState connectionState;
 
     public EventStreamRPCConnection(final EventStreamRPCConnectionConfig config) {
@@ -56,7 +56,7 @@ public class EventStreamRPCConnection implements AutoCloseable {
 
     /**
      * Connects to the event stream RPC server asynchronously
-     * 
+     *
      * @return
      */
     public CompletableFuture<Void> connect(final LifecycleHandler lifecycleHandler) {
@@ -137,7 +137,7 @@ public class EventStreamRPCConnection implements AutoCloseable {
                                     LOGGER.warning("AccessDenied to event stream RPC server");
                                     connectionState.connectionPhase = ConnectionState.Phase.CLOSING;
                                     connectionState.connection.closeConnection(0);
-                                    
+
                                     final AccessDeniedException ade = new AccessDeniedException("Connection access denied to event stream RPC server");
                                     if (!initialConnectFuture.isDone()) {
                                         initialConnectFuture.completeExceptionally(ade);
@@ -160,7 +160,7 @@ public class EventStreamRPCConnection implements AutoCloseable {
                             disconnect();
                         } else if (MessageType.ProtocolError.equals(messageType) || MessageType.ServerError.equals(messageType)) {
                             LOGGER.severe("Received " + messageType.name() + ": " + CRT.awsErrorName(CRT.awsLastError()));
-                            connectionState.closeReason = EventStreamError.create(headers, payload, messageType);                            
+                            connectionState.closeReason = EventStreamError.create(headers, payload, messageType);
                             doOnError(lifecycleHandler, connectionState.closeReason);
                             disconnect();
                         } else {
