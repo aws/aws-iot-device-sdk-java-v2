@@ -79,16 +79,4 @@ public class ShadowStateTest {
         String expected_json = "{\"desired\":{\"ThingTwo\":\"Bob\",\"ThingOne\":10.0},\"reported\":null}";
         assertEquals(state_json, expected_json);
     }
-
-    /*
-    @Test
-    public void TestNullReceiveThroughJson()
-    {
-        ShadowState state = shadowGson.fromJson("{\"desired\":null, \"reported\":{\"hat\":\"fancy\"}}", ShadowState.class);
-        String state_json = shadowGson.toJson(state);
-        String expected_json = "{\"desired\":null,\"reported\":{\"hat\":\"fancy\"}}";
-        assertEquals(state_json, expected_json);
-    }
-    */
-
 }
