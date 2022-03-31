@@ -39,8 +39,12 @@ public class SubscribeToTopicRequest implements EventStreamJsonMessage {
     return null;
   }
 
-  public SubscribeToTopicRequest setTopic(final String topic) {
+  public void setTopic(final String topic) {
     this.topic = Optional.ofNullable(topic);
+  }
+
+  public SubscribeToTopicRequest withTopic(final String topic) {
+    setTopic(topic);
     return this;
   }
 

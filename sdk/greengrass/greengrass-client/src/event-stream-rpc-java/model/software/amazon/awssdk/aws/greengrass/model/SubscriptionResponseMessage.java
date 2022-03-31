@@ -39,12 +39,16 @@ public class SubscriptionResponseMessage implements EventStreamJsonMessage {
     return null;
   }
 
-  public SubscriptionResponseMessage setJsonMessage(final JsonMessage jsonMessage) {
+  public void setJsonMessage(final JsonMessage jsonMessage) {
     if (setUnionMember != null) {
       setUnionMember.nullify(this);
     }
     this.jsonMessage = Optional.of(jsonMessage);
     this.setUnionMember = UnionMember.JSON_MESSAGE;
+  }
+
+  public SubscriptionResponseMessage withJsonMessage(final JsonMessage jsonMessage) {
+    setJsonMessage(jsonMessage);
     return this;
   }
 
@@ -55,12 +59,16 @@ public class SubscriptionResponseMessage implements EventStreamJsonMessage {
     return null;
   }
 
-  public SubscriptionResponseMessage setBinaryMessage(final BinaryMessage binaryMessage) {
+  public void setBinaryMessage(final BinaryMessage binaryMessage) {
     if (setUnionMember != null) {
       setUnionMember.nullify(this);
     }
     this.binaryMessage = Optional.of(binaryMessage);
     this.setUnionMember = UnionMember.BINARY_MESSAGE;
+  }
+
+  public SubscriptionResponseMessage withBinaryMessage(final BinaryMessage binaryMessage) {
+    setBinaryMessage(binaryMessage);
     return this;
   }
 

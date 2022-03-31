@@ -20,10 +20,12 @@ public class NamedShadowDeltaUpdatedSubscriptionRequest {
      */
     public String thingName;
 
+
     /**
      * Name of the shadow to get ShadowDelta events for.
      *
      */
     public String shadowName;
+
 
 }

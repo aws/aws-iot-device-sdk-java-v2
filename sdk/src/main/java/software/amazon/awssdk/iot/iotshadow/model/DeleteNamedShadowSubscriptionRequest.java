@@ -20,10 +20,12 @@ public class DeleteNamedShadowSubscriptionRequest {
      */
     public String thingName;
 
+
     /**
      * Name of the shadow to subscribe to DeleteNamedShadow operations for.
      *
      */
     public String shadowName;
+
 
 }

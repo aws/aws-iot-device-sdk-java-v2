@@ -8,9 +8,6 @@ package pubsubstress;
 import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.crt.CrtResource;
 import software.amazon.awssdk.crt.http.HttpProxyOptions;
-import software.amazon.awssdk.crt.io.ClientBootstrap;
-import software.amazon.awssdk.crt.io.EventLoopGroup;
-import software.amazon.awssdk.crt.io.HostResolver;
 import software.amazon.awssdk.crt.Log;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnectionEvents;
@@ -23,6 +20,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+
+import utils.commandlineutils.CommandLineUtils;
 
 public class PubSubStress {
     private static final int PROGRESS_OP_COUNT = 100;
@@ -49,120 +48,7 @@ public class PubSubStress {
     private static List<String> validClientIds = new ArrayList<>();
     private static List<String> validTopics = new ArrayList<>();
 
-    static void printUsage() {
-        System.out.println(
-                "Usage:\n"+
-                "  --help        This message\n"+
-                "  --clientId    Client ID to use when connecting (optional)\n"+
-                "  -e|--endpoint AWS IoT service endpoint hostname\n"+
-                "  -r|--rootca   Path to the root certificate\n"+
-                "  -c|--cert     Path to the IoT thing certificate\n"+
-                "  -k|--key      Path to the IoT thing private key\n"+
-                "  -t|--topic    Topic to subscribe/publish to (optional)\n"+
-                "  -m|--message  Message to publish (optional)\n"+
-                "  -n|--count    Number of messages to publish (optional)\n"+
-                "  --connections Number of connections to make (optional)\n"+
-                "  --threads     Number of IO threads to use (optional)\n" +
-                "  -i|--iterations Number of times to repeat the basic stress test logic (optional)\n" +
-                "  -w|--websockets Use websockets\n" +
-                "  --proxyhost   Websocket proxy host to use\n" +
-                "  --proxyport   Websocket proxy port to use\n" +
-                "  --region      Websocket signing region to use\n"
-        );
-    }
-
-    static void parseCommandLine(String[] args) {
-        for (int idx = 0; idx < args.length; ++idx) {
-            switch (args[idx]) {
-                case "--help":
-                    showHelp = true;
-                    break;
-                case "--clientId":
-                    if (idx + 1 < args.length) {
-                        clientId = args[++idx];
-                    }
-                    break;
-                case "-e":
-                case "--endpoint":
-                    if (idx + 1 < args.length) {
-                        endpoint = args[++idx];
-                    }
-                    break;
-                case "-r":
-                case "--rootca":
-                    if (idx + 1 < args.length) {
-                        rootCaPath = args[++idx];
-                    }
-                    break;
-                case "-c":
-                case "--cert":
-                    if (idx + 1 < args.length) {
-                        certPath = args[++idx];
-                    }
-                    break;
-                case "-k":
-                case "--key":
-                    if (idx + 1 < args.length) {
-                        keyPath = args[++idx];
-                    }
-                    break;
-                case "-t":
-                case "--topic":
-                    if (idx + 1 < args.length) {
-                        topic = args[++idx];
-                    }
-                    break;
-                case "-m":
-                case "--message":
-                    if (idx + 1 < args.length) {
-                        message = args[++idx];
-                    }
-                    break;
-                case "-n":
-                case "--count":
-                    if (idx + 1 < args.length) {
-                        messagesToPublish = Integer.parseInt(args[++idx]);
-                    }
-                    break;
-                case "--connections":
-                    if (idx + 1 < args.length) {
-                        connectionCount = Integer.parseInt(args[++idx]);
-                    }
-                    break;
-                case "--threads":
-                    if (idx + 1 < args.length) {
-                        eventLoopThreadCount = Integer.parseInt(args[++idx]);
-                    }
-                    break;
-                case "-i":
-                case "--iterations":
-                    if (idx + 1 < args.length) {
-                        testIterations = Integer.parseInt(args[++idx]);
-                    }
-                    break;
-                case "-w":
-                    useWebsockets = true;
-                    break;
-                case "--proxyhost":
-                    if (idx + 1 < args.length) {
-                        proxyHost = args[++idx];
-                    }
-                    break;
-                case "--proxyport":
-                    if (idx + 1 < args.length) {
-                        proxyPort = Integer.parseInt(args[++idx]);
-                    }
-                    break;
-                case "--region":
-                    if (idx + 1 < args.length) {
-                        region = args[++idx];
-                    }
-                    break;
-                default:
-                    System.out.println("Unrecognized argument: " + args[idx]);
-            }
-        }
-    }
+    static CommandLineUtils cmdUtils;
 
     static void onRejectedError(RejectedError error) {
         System.out.println("Request rejected: " + error.code.toString() + ": " + error.message);
@@ -312,16 +198,50 @@ public class PubSubStress {
     }
 
     public static void main(String[] args) {
-        parseCommandLine(args);
-        if (showHelp || endpoint == null) {
-            printUsage();
-            return;
+
+        cmdUtils = new CommandLineUtils();
+        cmdUtils.registerProgramName("PubSubStress");
+        cmdUtils.addCommonMQTTCommands();
+        cmdUtils.registerCommand("client_id", "<int>", "Client id to use (optional, default='test-*')");
+        cmdUtils.registerCommand("topic", "<str>", "Topic to subscribe/publish to (optional, default='test/topic').");
+        cmdUtils.registerCommand("message", "<str>", "Message to publish (optional, default='Hello World').");
+        cmdUtils.registerCommand("count", "<int>", "Number of messages to publish (optional, default='10').");
+        cmdUtils.registerCommand("connections", "<int>", "Number of connections to make (optional, default='1000').");
+        cmdUtils.registerCommand("threads", "<int>", "Number of IO threads to use (optional, default='1').");
+        cmdUtils.registerCommand("iterations", "<int>", "Number of times to repeat the basic stress test logic (optional, default='1').");
+        cmdUtils.registerCommand("use_websockets", "", "Use websockets (optional).");
+        cmdUtils.registerCommand("proxy_host", "<str>", "Websocket proxy host to use (optional, required for websockets).");
+        cmdUtils.registerCommand("proxy_port", "<int>", "Websocket proxy port to use (optional, required for websockets).");
+        cmdUtils.registerCommand("region", "<str>", "Websocket signing region to use (optional, default='us-east-1').");
+        cmdUtils.registerCommand("help", "", "Prints this message");
+        cmdUtils.sendArguments(args);
+
+        if (cmdUtils.hasCommand("help")) {
+            cmdUtils.printHelp();
+            System.exit(1);
         }
+
+        endpoint = cmdUtils.getCommandRequired("endpoint", "");
+        rootCaPath = cmdUtils.getCommandOrDefault("root_ca", rootCaPath);
+        certPath = cmdUtils.getCommandOrDefault("cert", certPath);
+        keyPath = cmdUtils.getCommandOrDefault("key", keyPath);
+        clientId = cmdUtils.getCommandOrDefault("client_id", clientId);
+        topic = cmdUtils.getCommandOrDefault("topic", topic);
+        message = cmdUtils.getCommandOrDefault("message", message);
+        messagesToPublish = Integer.parseInt(cmdUtils.getCommandOrDefault("count", String.valueOf(messagesToPublish)));
+        connectionCount = Integer.parseInt(cmdUtils.getCommandOrDefault("connections", String.valueOf(connectionCount)));
+        eventLoopThreadCount = Integer.parseInt(cmdUtils.getCommandOrDefault("threads", String.valueOf(eventLoopThreadCount)));
+        testIterations = Integer.parseInt(cmdUtils.getCommandOrDefault("iterations", String.valueOf(testIterations)));
+        useWebsockets = cmdUtils.hasCommand("use_websockets");
+        proxyHost = cmdUtils.getCommandOrDefault("proxy_host", proxyHost);
+        proxyPort = Integer.parseInt(cmdUtils.getCommandOrDefault("proxy_port", String.valueOf(proxyPort)));
+        region = cmdUtils.getCommandOrDefault("region", region);
 
         if (!useWebsockets) {
             if (certPath == null || keyPath == null) {
-                printUsage();
-                return;
+                cmdUtils.printHelp();
+                System.out.println("--cert and --key required if not using websockets.");
+                System.exit(-1);
             }
         }
 
@@ -329,15 +249,12 @@ public class PubSubStress {
         while(iteration < testIterations) {
             System.out.println(String.format("Starting iteration %d", iteration));
 
-            try (EventLoopGroup eventLoopGroup = new EventLoopGroup(eventLoopThreadCount);
-                HostResolver resolver = new HostResolver(eventLoopGroup);
-                ClientBootstrap clientBootstrap = new ClientBootstrap(eventLoopGroup, resolver);
+            try (
                 AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(certPath, keyPath)) {
 
                 builder.withCertificateAuthorityFromPath(null, rootCaPath)
                     .withEndpoint(endpoint)
                     .withCleanSession(true)
-                    .withBootstrap(clientBootstrap)
                     .withProtocolOperationTimeoutMs(10000);
 
                 if (proxyHost != null && proxyPort > 0) {

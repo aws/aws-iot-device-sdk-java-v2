@@ -47,8 +47,12 @@ public class SubscribeToConfigurationUpdateRequest implements EventStreamJsonMes
     return null;
   }
 
-  public SubscribeToConfigurationUpdateRequest setComponentName(final String componentName) {
+  public void setComponentName(final String componentName) {
     this.componentName = Optional.ofNullable(componentName);
+  }
+
+  public SubscribeToConfigurationUpdateRequest withComponentName(final String componentName) {
+    setComponentName(componentName);
     return this;
   }
 
@@ -59,8 +63,12 @@ public class SubscribeToConfigurationUpdateRequest implements EventStreamJsonMes
     return null;
   }
 
-  public SubscribeToConfigurationUpdateRequest setKeyPath(final List<String> keyPath) {
+  public void setKeyPath(final List<String> keyPath) {
     this.keyPath = Optional.ofNullable(keyPath);
+  }
+
+  public SubscribeToConfigurationUpdateRequest withKeyPath(final List<String> keyPath) {
+    setKeyPath(keyPath);
     return this;
   }
 

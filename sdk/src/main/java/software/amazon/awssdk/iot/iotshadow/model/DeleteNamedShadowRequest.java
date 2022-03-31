@@ -20,16 +20,19 @@ public class DeleteNamedShadowRequest {
      */
     public String clientToken;
 
+
     /**
      * Name of the shadow to delete.
      *
      */
     public String shadowName;
 
+
     /**
      * AWS IoT thing to delete a named shadow from.
      *
      */
     public String thingName;
+
 
 }
