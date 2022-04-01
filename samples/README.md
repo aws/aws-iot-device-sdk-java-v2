@@ -93,7 +93,7 @@ source: `samples/BasicPubSub`
 To Run this sample, use the following command:
 ```sh
 # Windows Platform: Windows command prompt does not support single quote, please use double quote.
-mvn compile exec:java -pl samples/BasicPubSub -Dexec.mainClass=pubsub.PubSub -Dexec.args='--endpoint <xxxx-ats.iot.xxxx.amazonaws.com> --cert <certificate.pem.crt> --key <private.pem.key> --ca_file <AmazonRootCA1.pem>'
+mvn compile exec:java -pl samples/BasicPubSub -Dexec.mainClass=pubsub.PubSub -Dexec.args='--endpoint <endpoint> --cert <path to certificate> --key <path to private key> --ca_file <path to root CA>'
 ```
 
 ## Basic Connect
@@ -217,7 +217,7 @@ To run this sample using [SoftHSM2](https://www.opendnssec.org/softhsm/) as the 
 
 5)  Now you can run the sample:
     ```sh
-    mvn compile exec:java -pl samples/Pkcs11Connect -Dexec.mainClass=pkcs11connect.Pkcs11Connect -Dexec.args='--endpoint <xxxx-ats.iot.xxxx.amazonaws.com> --cert <certificate.pem.crt> --ca_file <AmazonRootCA1.pem> --pkcs11_lib <path/to/libsofthsm2.so> --pin <user-pin> --token_label <token-label> --key_label <key-label>'
+    mvn compile exec:java -pl samples/Pkcs11Connect -Dexec.mainClass=pkcs11connect.Pkcs11Connect -Dexec.args='--endpoint <endpoint> --cert <path to certificate> --ca_file <path to root CA> --pkcs11_lib <path to PKCS11 lib> --pin <user-pin> --token_label <token-label> --key_label <key-label>'
     ```
 
 Your Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-policies.html) must provide privileges for this sample to connect.
@@ -302,7 +302,7 @@ To run this sample with a basic certificate from AWS IoT Core:
 4) Now you can run the sample:
 
     ```sh
-    mvn compile exec:java -pl samples/WindowsCertConnect "-Dexec.mainClass=windowscertconnect.WindowsCertConnect" "-Dexec.args=--endpoint xxxx-ats.iot.xxxx.amazonaws.com --cert CurrentUser\MY\A11F8A9B5DF5B98BA3508FBCA575D09570E0D2C6 --ca_file AmazonRootCA1.pem"
+    mvn compile exec:java -pl samples/WindowsCertConnect "-Dexec.mainClass=windowscertconnect.WindowsCertConnect" "-Dexec.args=--endpoint <endpoint> --cert <path to certificate> --ca_file <path to root CA>"
     ```
 
 Your Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-policies.html) must provide privileges for this sample to connect.
@@ -352,7 +352,7 @@ Source: `samples/Shadow`
 To Run:
 
 ``` sh
-mvn compile exec:java -pl samples/Shadow -Dexec.mainClass=shadow.ShadowSample -Dexec.args='--endpoint <endpoint> --ca_file /path/to/AmazonRootCA1.pem --cert <cert path> --key <key path> --thing_name <thing name>'
+mvn compile exec:java -pl samples/Shadow -Dexec.mainClass=shadow.ShadowSample -Dexec.args='--endpoint <endpoint> --ca_file <path to root CA> --cert <path to certificate> --key <path to private key> --thing_name <thing name>'
 ```
 
 Your Thing's
@@ -428,7 +428,7 @@ Source: `samples/Jobs`
 To Run:
 
 ``` sh
-mvn compile exec:java -pl samples/Jobs -Dexec.mainClass=jobs.JobsSample -Dexec.args='--endpoint <endpoint> --ca_file /path/to/AmazonRootCA1.pem --cert <cert path> --key <key path> --thing_name <thing name>'
+mvn compile exec:java -pl samples/Jobs -Dexec.mainClass=jobs.JobsSample -Dexec.args='--endpoint <endpoint> --ca_file <path to root CA> --cert <path to certificate> --key <path to private key> --thing_name <thing name>'
 ```
 
 Your Thing's
@@ -504,15 +504,15 @@ cd ~/samples/Identity
 Run the sample using CreateKeysAndCertificate:
 
 ``` sh
-mvn compile exec:java -pl samples/Identity -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint <endpoint> --ca_file <root ca path>
---cert <cert path> --key <private key path> --template_name <templatename> --template_parameters <templateParams>"
+mvn compile exec:java -pl samples/Identity -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint <endpoint> --ca_file <path to root CA>
+--cert <path to certificate> --key <path to private key> --template_name <template name> --template_parameters <template params>"
 ```
 
 Run the sample using CreateCertificateFromCsr:
 
 ``` sh
-mvn compile exec:java -pl samples/Identity -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint <endpoint> --ca_file <root ca path>
---cert <cert path> --key <private key path> --template_name <templatename> --template_parameters <templateParams> --csr <csr path>"
+mvn compile exec:java -pl samples/Identity -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint <endpoint> --ca_file <path to root CA>
+--cert <path to certificate> --key <path to private key> --template_name <template name> --template_parameters <template params> --csr <path to csr file>"
 ```
 
 Your Thing's
@@ -626,8 +626,8 @@ to perform the actual provisioning. If you are not using the temporary provision
 and `--key` appropriately:
 
 ``` sh
-mvn compile exec:java -pl samples/Identity -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint [your endpoint]-ats.iot.[region].amazonaws.com --ca_file [pathToRootCA]
---cert /tmp/provision.cert.pem --key /tmp/provision.private.key --template_name [TemplateName] --template_parameters {\"SerialNumber\":\"1\",\"DeviceLocation\":\"Seattle\"}"
+mvn compile exec:java -pl samples/Identity -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint <endpoint> --ca_file <path to root CA>
+--cert <path to certificate> --key <path to private key> --template_name <template name> --template_parameters {\"SerialNumber\":\"1\",\"DeviceLocation\":\"Seattle\"}"
 ```
 
 Notice that we provided substitution values for the two parameters in the template body, `DeviceLocation` and `SerialNumber`.
@@ -660,8 +660,8 @@ aws iot create-provisioning-claim \
 Finally, supply the certificate signing request while invoking the provisioning sample. As with the previous workflow, if
 using a permanent certificate set, replace the paths specified in the `--cert` and `--key` arguments:
 ``` sh
-mvn compile exec:java -pl samples/Identity -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint [your endpoint]-ats.iot.[region].amazonaws.com --ca_file [pathToRootCA]
---cert /tmp/provision.cert.pem --key /tmp/provision.private.key --template_name [TemplateName] --template_parameters {\"SerialNumber\":\"1\",\"DeviceLocation\":\"Seattle\"}  --csr /tmp/deviceCert.csr"
+mvn compile exec:java -pl samples/Identity -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint <endpoint> --ca_file <path to root CA>
+--cert <path to certificate> --key <path to private key> --template_name <template name> --template_parameters {\"SerialNumber\":\"1\",\"DeviceLocation\":\"Seattle\"}  --csr <path to csr file>"
 ```
 
 ## Greengrass Discovery
