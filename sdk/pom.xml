@@ -119,6 +119,8 @@
                 <source>greengrass/event-stream-rpc-server/src/main/java</source>
                 <source>greengrass/event-stream-rpc-server/src/test/java</source>
                 <source>greengrass/greengrass-client/src/test/java</source>
+                <!-- IOT tests -->
+                <source>tests/iot</source>
               </sources>
             </configuration>
           </execution>
