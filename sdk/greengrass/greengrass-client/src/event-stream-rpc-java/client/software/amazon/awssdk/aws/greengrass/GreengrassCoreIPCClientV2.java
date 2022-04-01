@@ -80,6 +80,8 @@ import java.util.concurrent.Future;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import java.util.logging.Logger;
+
 /**
  * V2 Client for Greengrass.
  * !! Developer Preview !! - This class is currently in developer preview.
@@ -87,6 +89,9 @@ import java.util.function.Function;
  * Please report any issues or make suggestions in https://github.com/aws/aws-iot-device-sdk-java-v2/issues
  */
 public class GreengrassCoreIPCClientV2 implements AutoCloseable {
+
+  private static final Logger LOGGER = Logger.getLogger(GreengrassCoreIPCClientV2.class.getName());
+
   protected GreengrassCoreIPC client;
 
   protected Executor executor;
@@ -98,19 +103,26 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
     this.client = client;
     this.connection = connection;
     this.executor = executor;
-    this.connection.config.getClientBootstrap().addRef();
-    this.connection.config.getEventLoopGroup().addRef();
   }
 
   @Override
   public void close() throws Exception {
-    if (client instanceof AutoCloseable) {
-      ((AutoCloseable) client).close();
-    }
-    if (connection != null) {
-      connection.close();
-      this.connection.config.getClientBootstrap().decRef();
-      this.connection.config.getEventLoopGroup().decRef();
+    try {
+      if (client instanceof AutoCloseable) {
+        LOGGER.info(">>>> About to close Client using AutoClosable...");
+        ((AutoCloseable) client).close();
+        LOGGER.info(">>>> Client closed!");
+      }
+      if (connection != null) {
+        LOGGER.info(">>>> About to close connection using close function...");
+        connection.close();
+        LOGGER.info(">>>> Connection closed!");
+      }
+      LOGGER.info(">>>> Close function in GreengrassCoreIPCClientV2 finished successfully!");
+    } catch (Exception e) {
+      LOGGER.severe(">>>> Exception occured!");
+      LOGGER.severe(">>>> Exception string: " + e.toString());
+      LOGGER.severe(">>>> Exception message: " + e.getMessage());
     }
   }
 
