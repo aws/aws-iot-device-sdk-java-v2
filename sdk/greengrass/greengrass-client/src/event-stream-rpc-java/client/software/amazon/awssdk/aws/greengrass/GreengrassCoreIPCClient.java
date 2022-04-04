@@ -40,7 +40,7 @@ import software.amazon.awssdk.eventstreamrpc.EventStreamRPCConnection;
 import software.amazon.awssdk.eventstreamrpc.StreamResponseHandler;
 import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
 
-public class GreengrassCoreIPCClient extends EventStreamRPCClient implements GreengrassCoreIPC {
+public class GreengrassCoreIPCClient extends EventStreamRPCClient implements GreengrassCoreIPC, AutoCloseable {
   public GreengrassCoreIPCClient(final EventStreamRPCConnection connection) {
     super(connection);
   }
@@ -253,5 +253,10 @@ public class GreengrassCoreIPCClient extends EventStreamRPCClient implements Gre
       final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler) {
     final ValidateAuthorizationTokenOperationContext operationContext = GreengrassCoreIPCServiceModel.getValidateAuthorizationTokenModelContext();
     return new ValidateAuthorizationTokenResponseHandler(doOperationInvoke(operationContext, request, streamResponseHandler));
+  }
+
+  @Override
+  public void close() {
+    // Nothing to do here currently.
   }
 }
