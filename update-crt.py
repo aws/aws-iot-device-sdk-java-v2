@@ -6,9 +6,10 @@ import re
 
 VERSION_PATTERN = '\d+\.\d+\.\d+'
 
-# Get new version
-parser = argparse.ArgumentParser(description="Update files that contain aws-crt-java version number.")
+parser = argparse.ArgumentParser(
+    description="Update files containing hard-coded aws-crt-java version numbers.")
 parser.add_argument('version', help='aws-crt-java version. i.e. "0.1.2"')
+
 args = parser.parse_args()
 if re.fullmatch(VERSION_PATTERN, args.version) is None:
     exit(f'Invalid version: "{args.version}". Version must look like "0.1.2"')
@@ -16,7 +17,13 @@ if re.fullmatch(VERSION_PATTERN, args.version) is None:
 os.chdir(os.path.dirname(__file__))
 
 
-def update_file(filepath, *, preceded_by, followed_by):
+def update(filepath, *, preceded_by, followed_by):
+    """
+    Args:
+        filepath: File containing hard-coded CRT version numbers.
+        preceded_by: Regex pattern for text preceding the CRT version number.
+        followed_by: Regex pattern for text following the CRT version number.
+    """
     with open(filepath, 'r+') as f:
         txt_old = f.read()
 
@@ -33,18 +40,18 @@ def update_file(filepath, *, preceded_by, followed_by):
         f.truncate()
 
 
-update_file(filepath='sdk/pom.xml',
-            preceded_by=r'<artifactId>aws-crt</artifactId>\s*<version>',
-            followed_by=r'</version>')
+update(filepath='sdk/pom.xml',
+       preceded_by=r'<artifactId>aws-crt</artifactId>\s*<version>',
+       followed_by=r'</version>')
 
-update_file(filepath='README.md',
-            preceded_by=r'--branch v',
-            followed_by=r' .*aws-crt-java.git')
+update(filepath='README.md',
+       preceded_by=r'--branch v',
+       followed_by=r' .*aws-crt-java.git')
 
-update_file(filepath='README.md',
-            preceded_by=r"implementation 'software.amazon.awssdk.crt:android:",
-            followed_by=r"'")
+update(filepath='README.md',
+       preceded_by=r"implementation 'software.amazon.awssdk.crt:android:",
+       followed_by=r"'")
 
-update_file(filepath='android/iotdevicesdk/build.gradle',
-            preceded_by=r"api 'software.amazon.awssdk.crt:aws-crt-android:",
-            followed_by=r"'")
+update(filepath='android/iotdevicesdk/build.gradle',
+       preceded_by=r"api 'software.amazon.awssdk.crt:aws-crt-android:",
+       followed_by=r"'")
