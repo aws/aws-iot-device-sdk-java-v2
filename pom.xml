@@ -9,11 +9,15 @@
     <modules>
         <module>sdk</module>
         <module>samples/BasicPubSub</module>
+        <module>samples/BasicConnect</module>
+        <module>samples/WebsocketConnect</module>
+        <module>samples/X509CredentialsProviderConnect</module>
+        <module>samples/RawConnect</module>
+        <module>samples/Pkcs11Connect</module>
         <module>samples/Greengrass</module>
         <module>samples/Jobs</module>
         <module>samples/PubSubStress</module>
-        <module>samples/RawPubSub</module>
-        <module>samples/Pkcs11PubSub</module>
+        <module>samples/WindowsCertConnect</module>
         <module>samples/Shadow</module>
         <module>samples/Identity</module>
     </modules>

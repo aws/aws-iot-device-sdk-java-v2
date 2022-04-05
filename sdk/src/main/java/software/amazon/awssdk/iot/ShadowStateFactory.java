@@ -25,36 +25,30 @@ public class ShadowStateFactory implements TypeAdapterFactory {
 
         return new TypeAdapter<T>() {
             public void write(JsonWriter out, T shadowValue) throws IOException {
-                // Are null values allowed?
+                // Are null values present? If so, we need to process this differently
                 ShadowState shadow = (ShadowState)shadowValue;
                 if (shadow.desiredIsNullable == true || shadow.reportedIsNullable == true) {
                     out.setSerializeNulls(true);
-                }
-                // If a property is null but null is not valid for it, then just send an empty HashMap
-                if (shadow.desired == null && shadow.desiredIsNullable == false) {
-                    shadow.desired = new HashMap<String, Object>();
-                }
-                if (shadow.reported == null && shadow.reportedIsNullable == false) {
-                    shadow.reported = new HashMap<String, Object>();
-                }
-                delegate.write(out, shadowValue);
-                if (shadow.desiredIsNullable == true || shadow.reportedIsNullable == true) {
+
+                    // If a property is null but null is not valid for it, then just send an empty HashMap
+                    if (shadow.desired == null && shadow.desiredIsNullable == false) {
+                        shadow.desired = new HashMap<String, Object>();
+                    }
+                    if (shadow.reported == null && shadow.reportedIsNullable == false) {
+                        shadow.reported = new HashMap<String, Object>();
+                    }
+
+                    delegate.write(out, shadowValue);
                     out.setSerializeNulls(false);
+                }
+                else
+                {
+                    delegate.write(out, shadowValue);
                 }
             }
             public T read(JsonReader in) throws IOException {
+
                 T returnType = delegate.read(in);
-
-                // Set <Name>IsNullable if the field we get is null
-                ShadowState shadow = (ShadowState)returnType;
-                if (shadow.desired == null) {
-                    shadow.desiredIsNullable = true;
-                }
-                if (shadow.reported == null) {
-                    shadow.reportedIsNullable = true;
-                }
-                returnType = (T)shadow;
-
                 return returnType;
             }
         };
