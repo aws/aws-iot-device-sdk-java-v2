@@ -110,29 +110,16 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
     try {
 
       if (client instanceof AutoCloseable) {
-        LOGGER.info(">>>> About to close Client using AutoClosable...");
         ((AutoCloseable) client).close();
-        LOGGER.info(">>>> Client closed!");
       }
-      LOGGER.info(">>>> Client about to be set to NULL");
       client = null;
-      LOGGER.info(">>>> Client is set to NULL");
-
 
       if (connection != null) {
-        LOGGER.info(">>>> About to close connection using close function...");
         connection.close();
-        LOGGER.info(">>>> Connection closed!");
       }
-      LOGGER.info(">>>> Connection about to be set to NULL");
       connection = null;
-      LOGGER.info(">>>> Connection is set to NULL");
-
-      LOGGER.info(">>>> Close function in GreengrassCoreIPCClientV2 finished successfully!");
     } catch (Exception e) {
-      LOGGER.severe(">>>> Exception occured!");
-      LOGGER.severe(">>>> Exception string: " + e.toString());
-      LOGGER.severe(">>>> Exception message: " + e.getMessage());
+      // Do nothing!
     }
   }
 
