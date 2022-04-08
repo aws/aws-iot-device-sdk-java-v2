@@ -75,8 +75,10 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -109,15 +111,44 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
   public void close() throws Exception {
     try {
 
-      if (client instanceof AutoCloseable) {
-        ((AutoCloseable) client).close();
+      if (executor instanceof ExecutorService) {
+        LOGGER.info(">>>> Shutting down executor...");
+        ExecutorService service = (ExecutorService)executor;
+        service.shutdown();
+        LOGGER.info(">>>> Executor Shutdown. Awaiting termination...");
+        try {
+          boolean terminated = service.awaitTermination(2, TimeUnit.SECONDS);
+          if (terminated) {
+            LOGGER.info(">>>> Termination of Executor successful");
+          } else {
+            LOGGER.info(">>>> Termination of Executor unsuccessful");
+          }
+        } catch (InterruptedException e) {
+          LOGGER.info(">>>> Termination of Executor for GreengrassCoreIPC interrupted!");
+        }
       }
+      else {
+        LOGGER.info(">>>> Executor is not a service - cannot shutdown...");
+      }
+
+      if (client instanceof AutoCloseable) {
+        LOGGER.info(">>>> About to close Client using AutoClosable...");
+        ((AutoCloseable) client).close();
+        LOGGER.info(">>>> Client Closed!");
+      }
+      LOGGER.info(">>>> Client about to be set to null...");
       client = null;
+      LOGGER.info(">>>> Client is null!");
 
       if (connection != null) {
+        LOGGER.info(">>>> About to close connection using close function...");
         connection.close();
+        LOGGER.info(">>>> Connection closed!");
       }
+      LOGGER.info(">>>> Connection about to be set to null...");
       connection = null;
+      LOGGER.info(">>>> Connection is null!");
+
     } catch (Exception e) {
       // Do nothing!
     }
