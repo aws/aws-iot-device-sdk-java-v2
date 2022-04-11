@@ -72,7 +72,7 @@ mvn clean install
 # NOTE: use the latest version of the CRT here
 
 
-git clone --branch v0.16.0 --recurse-submodules https://github.com/awslabs/aws-crt-java.git
+git clone --branch v0.16.3 --recurse-submodules https://github.com/awslabs/aws-crt-java.git
 git clone https://github.com/awslabs/aws-iot-device-sdk-java-v2.git
 cd aws-crt-java
 mvn install -Dmaven.test.skip=true
@@ -86,7 +86,7 @@ Supports API 26 or newer.
 NOTE: The shadow sample does not currently complete on android due to its dependence on stdin keyboard input.
 
 ``` sh
-git clone --branch v0.16.0 --recurse-submodules https://github.com/awslabs/aws-crt-java.git
+git clone --branch v0.16.3 --recurse-submodules https://github.com/awslabs/aws-crt-java.git
 git clone https://github.com/awslabs/aws-iot-device-sdk-java-v2.git
 cd aws-crt-java/android
 ./gradlew connectedCheck # optional, will run the unit tests on any connected devices/emulators
@@ -107,7 +107,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'software.amazon.awssdk.crt:android:0.16.0'
+    implementation 'software.amazon.awssdk.crt:android:0.16.3'
 }
 ```
 #### Caution
