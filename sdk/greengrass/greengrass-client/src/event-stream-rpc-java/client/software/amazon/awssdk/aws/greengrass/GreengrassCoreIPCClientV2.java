@@ -131,6 +131,16 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
         LOGGER.info(">>>> Executor is not a service - cannot shutdown...");
       }
 
+      if (connection != null) {
+        LOGGER.info(">>>> About to disconnect and close connection using close function...");
+        connection.disconnect();
+        connection.close();
+        LOGGER.info(">>>> Connection closed!");
+      }
+      LOGGER.info(">>>> Connection about to be set to null...");
+      connection = null;
+      LOGGER.info(">>>> Connection is null!");
+
       if (client instanceof AutoCloseable) {
         LOGGER.info(">>>> About to close Client using AutoClosable...");
         ((AutoCloseable) client).close();
@@ -139,15 +149,6 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
       LOGGER.info(">>>> Client about to be set to null...");
       client = null;
       LOGGER.info(">>>> Client is null!");
-
-      if (connection != null) {
-        LOGGER.info(">>>> About to close connection using close function...");
-        connection.close();
-        LOGGER.info(">>>> Connection closed!");
-      }
-      LOGGER.info(">>>> Connection about to be set to null...");
-      connection = null;
-      LOGGER.info(">>>> Connection is null!");
 
     } catch (Exception e) {
       // Do nothing!
