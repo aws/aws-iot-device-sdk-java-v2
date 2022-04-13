@@ -223,6 +223,20 @@ public class EventStreamRPCConnection implements AutoCloseable {
                 connectionState.closeReason = new software.amazon.awssdk.eventstreamrpc.EventStreamClosedException("Event stream closed by client");
             }
         }
+
+        /* // Might be something to try? Seems to cause crashes when compiling though...
+        synchronized (this.config) {
+            try {
+                System.out.println(">>>> Closing ClientBootstrap....");
+                this.config.getClientBootstrap().close();
+                System.out.println(">>>> Closing EventLoopGroup....");
+                this.config.getEventLoopGroup().close();
+                System.out.println(">>>> ClientBootstrap and EventLoopGroup closed!");
+            } catch (Exception e) {
+                System.out.println(">>>> Exception occurred closing ClientBootstrap and EventLoopGroup: " + e.getMessage());
+            }
+        }
+        */
     }
 
     private void doOnConnect(LifecycleHandler lifecycleHandler) {

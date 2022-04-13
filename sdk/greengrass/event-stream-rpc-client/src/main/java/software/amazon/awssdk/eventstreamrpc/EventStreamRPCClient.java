@@ -16,13 +16,26 @@ import java.util.logging.Logger;
  */
 public class EventStreamRPCClient {
     private static final Logger LOGGER = Logger.getLogger(EventStreamRPCClient.class.getName());
-    private final EventStreamRPCConnection connection;
+    private EventStreamRPCConnection connection;
 
     public EventStreamRPCClient(EventStreamRPCConnection connection) {
         if (connection == null) {
             throw new IllegalArgumentException("Cannot create eventstream RPC client with null connection");
         }
         this.connection = connection;
+    }
+
+    public void clearConnection() {
+        if (connection.connectionState.connectionPhase == EventStreamRPCConnection.ConnectionState.Phase.CLOSING ||
+            connection.connectionState.connectionPhase == EventStreamRPCConnection.ConnectionState.Phase.DISCONNECTED)
+        {
+            this.connection = null;
+            System.out.println(">>>> Connection is set to NULL");
+        }
+        else
+        {
+            System.out.println(">>>> Connection has not disconnected yet, so we cannot set to NULL...");
+        }
     }
 
     /**
@@ -130,7 +143,7 @@ public class EventStreamRPCClient {
                     }
                 }
             }
-            
+
             @Override
             protected void onContinuationClosed() {
                 super.onContinuationClosed();
@@ -154,10 +167,8 @@ public class EventStreamRPCClient {
         return response;
     }
 
-    
-
     /**
-     * Sends an empty close message on the open stream. 
+     * Sends an empty close message on the open stream.
      * @param continuation continuation to send the close message on
      * @return CompletableFuture indicating flush of the close message.
      */

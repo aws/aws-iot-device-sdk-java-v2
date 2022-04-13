@@ -141,6 +141,12 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
       connection = null;
       LOGGER.info(">>>> Connection is null!");
 
+      LOGGER.info(">>>> Checking if client is GreengrassCoreIPCClient...");
+      if (client instanceof GreengrassCoreIPCClient) {
+        LOGGER.info(">>>> Telling Client to clear connection reference so it can be garbage collected...");
+        ((GreengrassCoreIPCClient)client).clearConnection();
+        LOGGER.info(">>>> Client connection cleared!");
+      }
       if (client instanceof AutoCloseable) {
         LOGGER.info(">>>> About to close Client using AutoClosable...");
         ((AutoCloseable) client).close();
