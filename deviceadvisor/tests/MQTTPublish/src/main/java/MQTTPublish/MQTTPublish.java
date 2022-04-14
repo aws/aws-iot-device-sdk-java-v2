@@ -31,8 +31,6 @@ public class MQTTPublish {
     static String message = "Hello World!";
     static int port = 8883;
 
-    static String region = "us-east-1";
-
     /*
      * When called during a CI run, throw an exception that will escape and fail the exec:java task
      * When called otherwise, print what went wrong (if anything) and just continue (return from main)
@@ -58,6 +56,7 @@ public class MQTTPublish {
                 .withEndpoint(DATestUtils.endpoint)
                 .withPort((short)port)
                 .withCleanSession(true)
+                .withPingTimeoutMs(60000)
                 .withProtocolOperationTimeoutMs(60000);
 
             try(MqttClientConnection connection = builder.build()) {
@@ -69,7 +68,7 @@ public class MQTTPublish {
                     throw new RuntimeException("Exception occurred during connect", ex);
                 }
 
-                CompletableFuture<Integer> published = connection.publish(new MqttMessage(DATestUtils.topic, message.getBytes(), QualityOfService.AT_LEAST_ONCE, false));
+                CompletableFuture<Integer> published = connection.publish(new MqttMessage(DATestUtils.topic, message.getBytes(), QualityOfService.AT_MOST_ONCE, false));
                 published.get();
                 Thread.sleep(1000);
 
@@ -79,7 +78,7 @@ public class MQTTPublish {
         } catch (CrtRuntimeException | InterruptedException | ExecutionException ex) {
             onApplicationFailure(ex);
         }
-
-        CrtResource.waitForNoResources();
+        
+        System.exit(0);
     }
 }
