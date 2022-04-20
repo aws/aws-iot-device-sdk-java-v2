@@ -161,7 +161,7 @@ Your Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-
 To run the websocket connect use the following command:
 
 ```sh
-mvn compile exec:java -pl samples/WebsocketConnect -Dexec.mainClass=websocketconnect.WebsocketConnect -Dexec.args='--endpoint <endpoint> --cert <path to certificate> --key <path to private key> --ca_file <path to root CA>'
+mvn compile exec:java -pl samples/WebsocketConnect -Dexec.mainClass=websocketconnect.WebsocketConnect -Dexec.args='--endpoint <endpoint> --signing_region <signing region> --ca_file <path to root CA>'
 ```
 
 Note that using Websockets will attempt to fetch the AWS credentials from your enviornment variables or local files.
