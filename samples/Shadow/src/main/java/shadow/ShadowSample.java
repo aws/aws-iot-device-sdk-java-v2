@@ -84,6 +84,9 @@ public class ShadowSample {
         if (response.state != null && response.state.containsKey(SHADOW_PROPERTY)) {
             String value = response.state.get(SHADOW_PROPERTY).toString();
             System.out.println("  Delta wants to change value to '" + value + "'. Changing local value...");
+            if (!response.clientToken.isEmpty()) {
+                System.out.print("  ClientToken: " + response.clientToken + "\n");
+            }
             changeShadowValue(value);
         } else {
             System.out.println("  Delta did not report a change in " + SHADOW_PROPERTY);
