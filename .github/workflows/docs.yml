@@ -18,6 +18,7 @@ jobs:
 
       - name: Update docs branch
         run: |
+          mvn install -Dmaven.test.skip
           ./make-docs.py
 
       - name: Commit
