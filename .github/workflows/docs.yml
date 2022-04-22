@@ -18,6 +18,9 @@ jobs:
 
       - name: Update docs branch
         run: |
+          java --version
+          export JAVA_HOME=$JAVA_HOME_11_X64
+          java --version
           ./make-docs.py
 
       - name: Commit
