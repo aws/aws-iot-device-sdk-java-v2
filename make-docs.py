@@ -2,7 +2,7 @@
 import os
 import shutil
 
-if os.system('mvn clean javadoc:javadoc') != 0:
+if os.system('mvn clean javadoc:javadoc --projects sdk') != 0:
     exit(1)
 
 if os.path.exists('docs'):
