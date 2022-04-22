@@ -4,6 +4,7 @@ on:
   push:
     branches-ignore:
       - 'main'
+      - 'docs'
 
 env:
   BUILDER_VERSION: v0.9.14
@@ -111,3 +112,14 @@ jobs:
         run: |
           java -version
           mvn -B test
+
+  # check that docs can still build
+  check-docs:
+    runs-on: ubuntu-20.04 # latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Check docs
+        run: |
+          ./make-docs.py
