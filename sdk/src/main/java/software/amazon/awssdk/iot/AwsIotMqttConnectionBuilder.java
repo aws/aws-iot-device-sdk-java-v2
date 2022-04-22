@@ -602,7 +602,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
             }
             // Is the user trying to connect using a custom authorizer?
             if (isUsingCustomAuthorizer == true) {
-                if (config.getPort() != 433) {
+                if (config.getPort() != 443) {
                     Log.log(LogLevel.Warn, LogSubject.MqttClient,"Attempting to connect to authorizer with unsupported port. Port is not 443...");
                 }
 
