@@ -506,6 +506,24 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     }
 
     /**
+     * A helper function to add parameters to the username in the withCustomAuthorizer function
+     */
+    private String addUsernameParameter(String inputString, String parameterValue, String parameterPreText, Boolean addedQuery) {
+        String return_string = inputString;
+        if (addedQuery == false) {
+            return_string += "?";
+        } else {
+            return_string += "&";
+        }
+
+        if (parameterValue.contains(parameterPreText)) {
+            return return_string + parameterValue;
+        } else {
+            return return_string + parameterPreText + parameterValue;
+        }
+    }
+
+    /**
      * Configures the MQTT connection so it can use a custom authorizer.
      * This function will modify the username, port, and TLS options.
      *
@@ -535,31 +553,12 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
         }
 
         if (authorizerName != null) {
-            if (username_added_query == false) {
-                username_string += "?";
-                username_added_query = true;
-            } else {
-                username_string += "&";
-            }
-            if (authorizerName.contains("x-amz-customauthorizer-name=")) {
-                username_string += authorizerName;
-            } else {
-                username_string += "x-amz-customauthorizer-name=" + authorizerName;
-            }
+            username_string = addUsernameParameter(username_string, authorizerName, "x-amz-customauthorizer-name=", username_added_query);
+            username_added_query = true;
         }
-
         if (signature != null) {
-            if (username_added_query == false) {
-                username_string += "?";
-                username_added_query = true;
-            } else {
-                username_string += "&";
-            }
-            if (signature.contains("x-amz-customauthorizer-signature=")) {
-                username_string += signature;
-            } else {
-                username_string += "x-amz-customauthorizer-signature=" + signature;
-            }
+            username_string = addUsernameParameter(username_string, signature, "x-amz-customauthorizer-signature=", username_added_query);
+            username_added_query = true;
         }
 
         config.setUsername(username_string);
