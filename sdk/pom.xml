@@ -171,12 +171,8 @@
               <packages>software.amazon.awssdk.eventstream*</packages>
             </group>
           </groups>
-          <excludePackageNames>pubsub:greengrass:identity:jobs:pubsubstress:rawpubsub:pkcs11pubsub:windowscertpubsub:shadow</excludePackageNames>
           <header>AWS IoT Device SDK Java V2 API Reference</header>
           <bottom>Copyright © 2021. All rights reserved.</bottom>
-          <links>
-            <link>https://github.com/aws/aws-iot-device-sdk-java-v2</link>
-          </links>
         </configuration>
       </plugin>
     </plugins>
