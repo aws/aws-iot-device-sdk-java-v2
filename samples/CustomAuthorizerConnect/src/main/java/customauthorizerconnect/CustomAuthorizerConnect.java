@@ -57,7 +57,6 @@ public class CustomAuthorizerConnect {
         cmdUtils.registerCommand("auth_name", "<str>", "Name of custom authorizer (optional, default=null).");
         cmdUtils.registerCommand("auth_signature", "<str>", "Signature passed when connecting to custom authorizer (optional, default=null).");
         cmdUtils.registerCommand("auth_password", "<str>", "Password for connecting to custom authorizer (optional, default=null).");
-
         cmdUtils.sendArguments(args);
 
         MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
