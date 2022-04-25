@@ -14,6 +14,7 @@
         <module>samples/X509CredentialsProviderConnect</module>
         <module>samples/RawConnect</module>
         <module>samples/Pkcs11Connect</module>
+        <module>samples/CustomAuthorizerConnect</module>
         <module>samples/Greengrass</module>
         <module>samples/Jobs</module>
         <module>samples/PubSubStress</module>

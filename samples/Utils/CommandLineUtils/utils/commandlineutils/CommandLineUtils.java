@@ -257,10 +257,30 @@ public class CommandLineUtils {
 
             AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(
                 getCommandRequired(m_cmd_cert_file, ""), getCommandRequired(m_cmd_key_file, ""));
-
             buildConnectionSetupCAFileDefaults(builder);
             buildConnectionSetupConnectionDefaults(builder, callbacks);
             buildConnectionSetupProxyDefaults(builder);
+            return builder.build();
+        }
+        catch (CrtRuntimeException ex) {
+            return null;
+        }
+    }
+
+    public MqttClientConnection buildDirectMQTTConnectionWithCustomAuthorizer(MqttClientConnectionEvents callbacks)
+    {
+        try {
+            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(
+                getCommandRequired(m_cmd_cert_file, ""), getCommandRequired(m_cmd_key_file, ""));
+            buildConnectionSetupCAFileDefaults(builder);
+            buildConnectionSetupConnectionDefaults(builder, callbacks);
+            buildConnectionSetupProxyDefaults(builder);
+
+            builder.withCustomAuthorizer(
+                getCommandOrDefault(m_cmd_custom_auth_username, null),
+                getCommandOrDefault(m_cmd_custom_auth_name, null),
+                getCommandOrDefault(m_cmd_custom_auth_signature, null),
+                getCommandOrDefault(m_cmd_custom_auth_password, null));
             return builder.build();
         }
         catch (CrtRuntimeException ex) {
@@ -310,6 +330,10 @@ public class CommandLineUtils {
             {
                 return buildWebsocketMQTTConnection(callbacks);
             }
+        }
+        else if (hasCommand(m_cmd_custom_auth_name))
+        {
+            return buildDirectMQTTConnectionWithCustomAuthorizer(callbacks);
         }
         else
         {
@@ -362,6 +386,10 @@ public class CommandLineUtils {
     private static final String m_cmd_message = "message";
     private static final String m_cmd_topic = "topic";
     private static final String m_cmd_help = "help";
+    private static final String m_cmd_custom_auth_username = "auth_username";
+    private static final String m_cmd_custom_auth_name = "auth_name";
+    private static final String m_cmd_custom_auth_signature = "auth_signature";
+    private static final String m_cmd_custom_auth_password = "auth_password";
 }
 
 class CommandLineOption {
