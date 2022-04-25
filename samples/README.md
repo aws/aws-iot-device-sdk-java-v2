@@ -6,7 +6,7 @@
 * [Pkcs11 Connect](#pkcs11-connect)
 * [Raw Connect](#raw-connect)
 * [WindowsCert Connect](#windowscert-connect)
-* [CustomAuthorizer Connect]()
+* [CustomAuthorizer Connect](#custom-authorizer-connect)
 * [Shadow](#shadow)
 * [Jobs](#jobs)
 * [fleet provisioning](#fleet-provisioning)
@@ -328,7 +328,7 @@ Your Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-
 </pre>
 </details>
 
-## Websocket Connect
+## Custom Authorizer Connect
 
 This sample makes an MQTT connection and connects through a [Custom Authorizer](https://docs.aws.amazon.com/iot/latest/developerguide/custom-authentication.html). On startup, the device connects to the server via websockets and then disconnects. This sample is for reference on connecting using a custom authorizer.
 
