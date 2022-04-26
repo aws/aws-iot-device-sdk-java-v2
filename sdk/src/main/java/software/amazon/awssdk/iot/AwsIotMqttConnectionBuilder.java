@@ -562,6 +562,8 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
         }
 
         config.setUsername(username_string);
+        System.out.println(">>>>> Username is: " + username_string);
+
         if (password != null) {
             config.setPassword(password);
         }

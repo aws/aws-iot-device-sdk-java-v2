@@ -275,13 +275,11 @@ public class CommandLineUtils {
             buildConnectionSetupCAFileDefaults(builder);
             buildConnectionSetupConnectionDefaults(builder, callbacks);
 
-            /* TMP - disable custom auth part
             builder.withCustomAuthorizer(
                 getCommandOrDefault(m_cmd_custom_auth_username, null),
                 getCommandOrDefault(m_cmd_custom_auth_name, null),
                 getCommandOrDefault(m_cmd_custom_auth_signature, null),
                 getCommandOrDefault(m_cmd_custom_auth_password, null));
-            */
 
             return builder.build();
         }
