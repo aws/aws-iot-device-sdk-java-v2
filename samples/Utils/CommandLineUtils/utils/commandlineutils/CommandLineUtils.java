@@ -356,7 +356,6 @@ public class CommandLineUtils {
             CompletableFuture<Void> disconnected = connection.disconnect();
             disconnected.get();
             System.out.println("Disconnected.");
-
         }
         catch (CrtRuntimeException | InterruptedException | ExecutionException ex) {
             throw ex;
