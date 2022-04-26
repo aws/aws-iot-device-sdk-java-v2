@@ -14,5 +14,5 @@ mvn install -DskipTests=true
 cert=$(aws secretsmanager get-secret-value --secret-id "unit-test/certificate" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$cert" > /tmp/certificate.pem
 key=$(aws secretsmanager get-secret-value --secret-id "unit-test/privatekey" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$key" > /tmp/privatekey.pem
 
-cafile=$(aws secretsmanager get-secret-value --secret-id "unit-test/ca" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$cafile" > /tmp/rootca.pem
+cafile=$(aws secretsmanager get-secret-value --secret-id "unit-test/ca-file" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$cafile" > /tmp/rootca.pem
 
