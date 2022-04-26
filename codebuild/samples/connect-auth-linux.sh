@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Currently dies in CI every time despite working perfectly fine locally - not sure why.
+# TODO - fix/revisit this!
+
 set -e
 
 env
