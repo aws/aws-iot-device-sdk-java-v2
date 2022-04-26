@@ -14,6 +14,7 @@ import software.amazon.awssdk.crt.mqtt.MqttClientConnectionEvents;
 import software.amazon.awssdk.iot.iotjobs.model.RejectedError;
 
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 import utils.commandlineutils.CommandLineUtils;
 
@@ -77,6 +78,9 @@ public class CustomAuthorizerConnect {
             {
                 onApplicationFailure(new RuntimeException("MQTT connection creation (through custom authorizer) failed!"));
             }
+
+            // TEST - add a small delay
+            TimeUnit.SECONDS.sleep(1);
 
             // Connect and disconnect using the connection we created
             // (see sampleConnectAndDisconnect for implementation)
