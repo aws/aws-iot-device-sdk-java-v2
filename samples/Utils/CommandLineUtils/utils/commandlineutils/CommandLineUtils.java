@@ -274,13 +274,15 @@ public class CommandLineUtils {
                 getCommandRequired(m_cmd_cert_file, ""), getCommandRequired(m_cmd_key_file, ""));
             buildConnectionSetupCAFileDefaults(builder);
             buildConnectionSetupConnectionDefaults(builder, callbacks);
-            buildConnectionSetupProxyDefaults(builder);
 
+            /* TMP - disable custom auth part
             builder.withCustomAuthorizer(
                 getCommandOrDefault(m_cmd_custom_auth_username, null),
                 getCommandOrDefault(m_cmd_custom_auth_name, null),
                 getCommandOrDefault(m_cmd_custom_auth_signature, null),
                 getCommandOrDefault(m_cmd_custom_auth_password, null));
+            */
+
             return builder.build();
         }
         catch (CrtRuntimeException ex) {
