@@ -39,7 +39,6 @@ public class CustomAuthorizerConnect {
     }
 
     public static void main(String[] args) {
-
         cmdUtils = new CommandLineUtils();
         cmdUtils.registerProgramName("CustomAuthorizerConnect");
         cmdUtils.addCommonMQTTCommands();
