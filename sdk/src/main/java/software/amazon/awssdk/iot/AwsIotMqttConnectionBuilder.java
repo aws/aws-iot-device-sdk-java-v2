@@ -562,7 +562,6 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
         }
 
         config.setUsername(username_string);
-        System.out.println(">>>>> Username is: " + username_string);
 
         if (password != null) {
             config.setPassword(password);
@@ -649,6 +648,11 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
                 queryStringConcatenation = "&";
             }
             connectionConfig.setUsername(String.format("%s%sSDK=JavaV2&Version=%s", usernameOrEmpty, queryStringConcatenation, new PackageInfo().version.toString()));
+
+            System.out.println(">>>> Username full: " + connectionConfig.getUsername());
+            System.out.println(">>>> ALPN list: " + tlsOptions.alpnList.toString());
+            System.out.println(">>>> Port:" + String.valueOf(connectionConfig.getPort()));
+            System.out.println(">>>> Endpoint: " + connectionConfig.getEndpoint() + "\n");
 
             if (connectionConfig.getUseWebsockets() && connectionConfig.getWebsocketHandshakeTransform() == null) {
                 if (websocketCredentialsProvider == null) {
