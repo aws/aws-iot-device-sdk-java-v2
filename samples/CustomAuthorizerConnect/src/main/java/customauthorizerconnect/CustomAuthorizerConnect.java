@@ -24,12 +24,7 @@ public class CustomAuthorizerConnect {
     // exec:java task to return a non-zero exit code
     static String ciPropValue = System.getProperty("aws.crt.ci");
     static boolean isCI = ciPropValue != null && Boolean.valueOf(ciPropValue);
-
     static CommandLineUtils cmdUtils;
-
-    static void onRejectedError(RejectedError error) {
-        System.out.println("Request rejected: " + error.code.toString() + ": " + error.message);
-    }
 
     /*
      * When called during a CI run, throw an exception that will escape and fail the exec:java task
