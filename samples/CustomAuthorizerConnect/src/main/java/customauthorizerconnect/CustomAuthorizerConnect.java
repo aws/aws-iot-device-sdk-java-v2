@@ -52,7 +52,6 @@ public class CustomAuthorizerConnect {
         cmdUtils.registerCommand("key", "<path>", "Path to your key in PEM format.");
         cmdUtils.registerCommand("cert", "<path>", "Path to your client certificate in PEM format.");
         cmdUtils.registerCommand("client_id", "<int>", "Client id to use (optional, default='test-*').");
-        cmdUtils.registerCommand("port", "<int>", "Port to connect to on the endpoint (optional, default='8883').");
         cmdUtils.registerCommand("auth_username", "<str>", "Username for connecting to custom authorizer (optional, default=null).");
         cmdUtils.registerCommand("auth_name", "<str>", "Name of custom authorizer (optional, default=null).");
         cmdUtils.registerCommand("auth_signature", "<str>", "Signature passed when connecting to custom authorizer (optional, default=null).");
@@ -75,7 +74,7 @@ public class CustomAuthorizerConnect {
 
         try {
 
-            // Create a connection using a certificate and key, but route through a custom authorizer.
+            // Create a connection using a certificate and key, but through a custom authorizer.
             // Note: The data for the connection is gotten from cmdUtils.
             // (see buildDirectMQTTConnectionWithCustomAuthorizer for implementation)
             MqttClientConnection connection = cmdUtils.buildDirectMQTTConnectionWithCustomAuthorizer(callbacks);
