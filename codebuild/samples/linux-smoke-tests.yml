@@ -15,10 +15,7 @@ phases:
       - $CODEBUILD_SRC_DIR/codebuild/samples/setup-linux.sh
       - $CODEBUILD_SRC_DIR/codebuild/samples/pubsub-linux.sh
       - $CODEBUILD_SRC_DIR/codebuild/samples/connect-linux.sh
-
-      # Currently dies in CI every time despite working perfectly fine locally - not sure why.
-      # TODO - fix/revisit this!
-      #- $CODEBUILD_SRC_DIR/codebuild/samples/connect-auth-linux.sh
+      - $CODEBUILD_SRC_DIR/codebuild/samples/connect-auth-linux.sh
   post_build:
     commands:
       - echo Build completed on `date`

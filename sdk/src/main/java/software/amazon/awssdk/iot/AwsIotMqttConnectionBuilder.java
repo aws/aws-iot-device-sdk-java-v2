@@ -508,9 +508,9 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     /**
      * A helper function to add parameters to the username in the withCustomAuthorizer function
      */
-    private String addUsernameParameter(String inputString, String parameterValue, String parameterPreText, Boolean addedQuery) {
+    private String addUsernameParameter(String inputString, String parameterValue, String parameterPreText, Boolean addedStringToUsername) {
         String return_string = inputString;
-        if (addedQuery == false) {
+        if (addedStringToUsername == false) {
             return_string += "?";
         } else {
             return_string += "&";
@@ -541,27 +541,26 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      */
     public AwsIotMqttConnectionBuilder withCustomAuthorizer(String username, String authorizerName, String signature, String password) {
         isUsingCustomAuthorizer = true;
-        String username_string = "";
-        Boolean username_added_query = false;
+        String usernameString = "";
+        Boolean addedStringToUsername = false;
 
         if (username == null) {
             if (config.getUsername() != null) {
-                username_string += config.getUsername();
+                usernameString += config.getUsername();
             }
         } else {
-            username_string += username;
+            usernameString += username;
         }
 
         if (authorizerName != null) {
-            username_string = addUsernameParameter(username_string, authorizerName, "x-amz-customauthorizer-name=", username_added_query);
-            username_added_query = true;
+            usernameString = addUsernameParameter(usernameString, authorizerName, "x-amz-customauthorizer-name=", addedStringToUsername);
+            addedStringToUsername = true;
         }
         if (signature != null) {
-            username_string = addUsernameParameter(username_string, signature, "x-amz-customauthorizer-signature=", username_added_query);
-            username_added_query = true;
+            usernameString = addUsernameParameter(usernameString, signature, "x-amz-customauthorizer-signature=", addedStringToUsername);
         }
 
-        config.setUsername(username_string);
+        config.setUsername(usernameString);
 
         if (password != null) {
             config.setPassword(password);
