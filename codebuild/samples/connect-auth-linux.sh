@@ -11,6 +11,6 @@ ENDPOINT=$(aws secretsmanager get-secret-value --secret-id "unit-test/endpoint" 
 mvn compile
 
 echo "Mqtt Connect with Custom Authorizer test"
-mvn exec:java -Dexec.mainClass="customauthorizerconnect.CustomAuthorizerConnect" -Daws.crt.ci="True" -Dexec.arguments="--endpoint,$ENDPOINT,--cert,/tmp/certificate.pem,--key,/tmp/privatekey.pem,--ca_file,/tmp/rootca.pem,--auth_name,TestSDKAuthorizer,--auth_username,V2SDK" -Daws.crt.debugnative=true -Daws.crt.log.level=Trace, -Daws.crt.log.destination=Stdout
+mvn exec:java -Dexec.mainClass="customauthorizerconnect.CustomAuthorizerConnect" -Daws.crt.ci="True" -Daws.crt.debugnative="True" -Daws.crt.log.level="Trace" -Daws.crt.log.destination="Stdout" -Dexec.arguments="--endpoint,$ENDPOINT,--cert,/tmp/certificate.pem,--key,/tmp/privatekey.pem,--ca_file,/tmp/rootca.pem,--auth_name,TestSDKAuthorizer,--auth_username,V2SDK"
 
 popd
