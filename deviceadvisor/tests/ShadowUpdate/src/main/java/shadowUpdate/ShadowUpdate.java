@@ -28,9 +28,8 @@ public class ShadowUpdate {
 
     static MqttClientConnection connection;
     static IotShadowClient shadow;
-    static CompletableFuture<Void> gotResponse;
 
-    static CompletableFuture<Void> changeShadowValue() {
+    static CompletableFuture<Integer> changeShadowValue() {
         // build a request to let the service know our current value and desired value, and that we only want
         // to update if the version matches the version we know about
         UpdateShadowRequest request = new UpdateShadowRequest();
@@ -46,11 +45,7 @@ public class ShadowUpdate {
 
 
         // Publish the request
-        return shadow.PublishUpdateShadow(request, QualityOfService.AT_LEAST_ONCE).thenRun(() -> {
-        }).exceptionally((ex) -> {
-            System.exit(3);
-            return null;
-        });
+        return shadow.PublishUpdateShadow(request, QualityOfService.AT_MOST_ONCE);
     }
 
     public static void main(String[] args) {
@@ -65,7 +60,9 @@ public class ShadowUpdate {
 
             builder.withClientId(clientId)
                     .withEndpoint(DATestUtils.endpoint)
-                    .withCleanSession(true);
+                    .withPort((short)port)
+                    .withCleanSession(true)
+                    .withProtocolOperationTimeoutMs(60000);
 
             try(MqttClientConnection connection = builder.build()) {
                 shadow = new IotShadowClient(connection);
@@ -77,17 +74,15 @@ public class ShadowUpdate {
                     throw new RuntimeException("Exception occurred during connect", ex);
                 }
 
-
-                gotResponse = new CompletableFuture<>();
                 changeShadowValue().get();
-                gotResponse.get();
 
                 CompletableFuture<Void> disconnected = connection.disconnect();
                 disconnected.get();
             }
         } catch (CrtRuntimeException | InterruptedException | ExecutionException ex) {
-
-        }
-        CrtResource.waitForNoResources();
+            throw new RuntimeException("Builder Connection Failed.", ex);
+        }        
+        
+        System.exit(0);
     }
 }

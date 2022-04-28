@@ -47,15 +47,13 @@ public class MQTTConnect {
         }
 
         try(AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(DATestUtils.certificatePath, DATestUtils.keyPath)) {
-
             builder.withClientId(clientId)
                 .withEndpoint(DATestUtils.endpoint)
                 .withPort((short)port)
                 .withCleanSession(true)
+                .withPingTimeoutMs(60000)
                 .withProtocolOperationTimeoutMs(60000);
-
             try(MqttClientConnection connection = builder.build()) {
-
                 CompletableFuture<Boolean> connected = connection.connect();
                 try {
                     boolean sessionPresent = connected.get();
@@ -67,9 +65,9 @@ public class MQTTConnect {
                 disconnected.get();
             }
         } catch (CrtRuntimeException | InterruptedException | ExecutionException ex) {
-            
+            System.out.print("failed: " + ex.getMessage());
         }
 
-        CrtResource.waitForNoResources();
+        System.exit(0);
     }
 }

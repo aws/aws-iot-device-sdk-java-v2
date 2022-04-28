@@ -17,6 +17,13 @@ import software.amazon.awssdk.iot.Timestamp;
 public class ShadowDeltaUpdatedEvent {
 
     /**
+     * An opaque token used to correlate requests and responses.  Present only if a client token was used in the request.
+     *
+     */
+    public String clientToken;
+
+
+    /**
      * The current version of the document for the device's shadow.
      *
      */

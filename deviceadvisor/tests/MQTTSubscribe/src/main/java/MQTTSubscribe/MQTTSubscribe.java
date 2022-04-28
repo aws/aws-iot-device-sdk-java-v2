@@ -53,6 +53,7 @@ public class MQTTSubscribe {
                 .withEndpoint(DATestUtils.endpoint)
                 .withPort((short)port)
                 .withCleanSession(true)
+                .withPingTimeoutMs(60000)
                 .withProtocolOperationTimeoutMs(60000);
 
             try(MqttClientConnection connection = builder.build()) {
@@ -64,7 +65,7 @@ public class MQTTSubscribe {
                     throw new RuntimeException("Exception occurred during connect", ex);
                 }
 
-                CompletableFuture<Integer> subscribed = connection.subscribe(DATestUtils.topic, QualityOfService.AT_LEAST_ONCE, (message) -> {
+                CompletableFuture<Integer> subscribed = connection.subscribe(DATestUtils.topic, QualityOfService.AT_MOST_ONCE, (message) -> {
                 });
 
                 subscribed.get();
@@ -76,6 +77,6 @@ public class MQTTSubscribe {
             onApplicationFailure(ex);
         }
 
-        CrtResource.waitForNoResources();
+        System.exit(0);
     }
 }

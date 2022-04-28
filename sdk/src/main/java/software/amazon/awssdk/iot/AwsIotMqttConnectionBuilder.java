@@ -516,6 +516,14 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
         // This does mean that once you call build() once, modifying the tls context options or client bootstrap
         // has no affect on subsequently-created connections.
         synchronized(this) {
+            // Is this going to a custom authorizer at the correct (443) port? If so change the alpnList to "mqtt".
+            if (config.getUsername() != null) {
+                if (config.getUsername().contains("x-amz-customauthorizer-name") && config.getPort() == 443) {
+                    tlsOptions.alpnList.clear();
+                    tlsOptions.alpnList.add("mqtt");
+                }
+            }
+
             if (tlsOptions != null && (tlsContext == null || resetLazilyCreatedResources)) {
                 try (ClientTlsContext clientTlsContext = new ClientTlsContext(tlsOptions)) {
                     swapReferenceTo(tlsContext, clientTlsContext);
@@ -542,7 +550,11 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
             if (connectionConfig.getUsername() != null) {
                 usernameOrEmpty = connectionConfig.getUsername();
             }
-            connectionConfig.setUsername(String.format("%s?SDK=JavaV2&Version=%s", usernameOrEmpty, new PackageInfo().version.toString()));
+            String queryStringConcatenation = "?";
+            if (usernameOrEmpty.contains("?")) {
+                queryStringConcatenation = "&";
+            }
+            connectionConfig.setUsername(String.format("%s%sSDK=JavaV2&Version=%s", usernameOrEmpty, queryStringConcatenation, new PackageInfo().version.toString()));
 
             if (connectionConfig.getUseWebsockets() && connectionConfig.getWebsocketHandshakeTransform() == null) {
                 if (websocketCredentialsProvider == null) {

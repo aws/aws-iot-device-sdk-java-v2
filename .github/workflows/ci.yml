@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches:
-      - '*'
-      - '!main'
+    branches-ignore:
+      - 'main'
+      - 'docs'
 
 env:
   BUILDER_VERSION: v0.9.14
@@ -12,9 +12,17 @@ env:
   BUILDER_HOST: https://d19elf31gohf1l.cloudfront.net
   PACKAGE_NAME: aws-iot-device-sdk-java-v2
   RUN: ${{ github.run_id }}-${{ github.run_number }}
-  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+  # TEMP AWS KEY FOR TESTING
+  # AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  # AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  # AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_DATEST_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_DATEST_SECRET_ACCESS_KEY }}
+  AWS_DEFAULT_REGION: us-east-1
+  DA_TOPIC: test/da
+  DA_SHADOW_PROPERTY: datest
+  DA_SHADOW_VALUE_SET: ON
+  DA_SHADOW_VALUE_DEFAULT: OFF
 
 jobs:
   linux-compat:
@@ -37,7 +45,22 @@ jobs:
 
   windows:
     runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        version:
+          - 8
+          - 11
+          - 17
     steps:
+    - name: Checkout Sources
+      uses: actions/checkout@v2
+    - name: Setup Java
+      uses: actions/setup-java@v2
+      with:
+        distribution: temurin
+        java-version: ${{ matrix.version }}
+        cache: maven
     - name: Build ${{ env.PACKAGE_NAME }} + consumers
       run: |
         python -c "from urllib.request import urlretrieve; urlretrieve('${{ env.BUILDER_HOST }}/${{ env.BUILDER_SOURCE }}/${{ env.BUILDER_VERSION }}/builder.pyz?run=${{ env.RUN }}', 'builder.pyz')"
@@ -45,7 +68,22 @@ jobs:
 
   osx:
     runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        version:
+          - 8
+          - 11
+          - 17
     steps:
+    - name: Checkout Sources
+      uses: actions/checkout@v2
+    - name: Setup Java
+      uses: actions/setup-java@v2
+      with:
+        distribution: temurin
+        java-version: ${{ matrix.version }}
+        cache: maven
     - name: Build ${{ env.PACKAGE_NAME }} + consumers
       run: |
         python3 -c "from urllib.request import urlretrieve; urlretrieve('${{ env.BUILDER_HOST }}/${{ env.BUILDER_SOURCE }}/${{ env.BUILDER_VERSION }}/builder.pyz?run=${{ env.RUN }}', 'builder')"
@@ -74,3 +112,15 @@ jobs:
         run: |
           java -version
           mvn -B test
+
+  # check that docs can still build
+  check-docs:
+    runs-on: ubuntu-20.04 # latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Check docs
+        run: |
+          mvn install -Dmaven.test.skip
+          ./make-docs.py
