@@ -330,7 +330,7 @@ Your Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-
 
 ## Custom Authorizer Connect
 
-This sample makes an MQTT connection and connects through a [Custom Authorizer](https://docs.aws.amazon.com/iot/latest/developerguide/custom-authentication.html). On startup, the device connects to the server via websockets and then disconnects. This sample is for reference on connecting using a custom authorizer.
+This sample makes an MQTT connection and connects through a [Custom Authorizer](https://docs.aws.amazon.com/iot/latest/developerguide/custom-authentication.html). On startup, the device connects to the server and then disconnects. This sample is for reference on connecting using a custom authorizer.
 
 Source: `samples/CustomAuthorizerConnect`
 
@@ -359,7 +359,7 @@ Your Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-
 To run the custom authorizer connect use the following command:
 
 ```sh
-mvn compile exec:java -pl samples/CustomAuthorizerConnect -Dexec.mainClass=customauthorizerconnect.CustomAuthorizerConnect -Dexec.args='--endpoint <endpoint> --cert <path to certificate> --key <path to private key> --ca_file <path to root CA> --auth_name <custom authorizer name>'
+mvn compile exec:java -pl samples/CustomAuthorizerConnect -Dexec.mainClass=customauthorizerconnect.CustomAuthorizerConnect -Dexec.args='--endpoint <endpoint> --ca_file <path to root CA> --auth_name <custom authorizer name>'
 ```
 
 You will need to setup your Custom Authorizer so that the lambda function returns a policy document. See [this page on the documentation](https://docs.aws.amazon.com/iot/latest/developerguide/config-custom-auth.html) for more details and example return result.

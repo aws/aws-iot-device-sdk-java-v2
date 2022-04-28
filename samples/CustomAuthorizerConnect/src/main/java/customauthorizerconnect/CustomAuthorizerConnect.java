@@ -42,9 +42,6 @@ public class CustomAuthorizerConnect {
         cmdUtils = new CommandLineUtils();
         cmdUtils.registerProgramName("CustomAuthorizerConnect");
         cmdUtils.addCommonMQTTCommands();
-        cmdUtils.addCommonProxyCommands();
-        cmdUtils.registerCommand("key", "<path>", "Path to your key in PEM format.");
-        cmdUtils.registerCommand("cert", "<path>", "Path to your client certificate in PEM format.");
         cmdUtils.registerCommand("client_id", "<int>", "Client id to use (optional, default='test-*').");
         cmdUtils.registerCommand("auth_username", "<str>", "Username for connecting to custom authorizer (optional, default=null).");
         cmdUtils.registerCommand("auth_name", "<str>", "Name of custom authorizer (optional, default=null).");

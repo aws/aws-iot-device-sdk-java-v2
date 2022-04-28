@@ -604,7 +604,6 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
                 if (config.getPort() != 443) {
                     Log.log(LogLevel.Warn, LogSubject.MqttClient,"Attempting to connect to authorizer with unsupported port. Port is not 443...");
                 }
-
                 if (tlsOptions.alpnList.size() == 1) {
                     if (tlsOptions.alpnList.get(0) != "mqtt") {
                         tlsOptions.alpnList.clear();

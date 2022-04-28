@@ -8,6 +8,7 @@ package utils.commandlineutils;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.CompletableFuture;
+import java.io.UnsupportedEncodingException;
 
 import software.amazon.awssdk.crt.*;
 import software.amazon.awssdk.crt.io.*;
@@ -270,20 +271,17 @@ public class CommandLineUtils {
     public MqttClientConnection buildDirectMQTTConnectionWithCustomAuthorizer(MqttClientConnectionEvents callbacks)
     {
         try {
-            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(
-                getCommandRequired(m_cmd_cert_file, ""), getCommandRequired(m_cmd_key_file, ""));
+            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newDefaultBuilder();
             buildConnectionSetupCAFileDefaults(builder);
             buildConnectionSetupConnectionDefaults(builder, callbacks);
-
             builder.withCustomAuthorizer(
                 getCommandOrDefault(m_cmd_custom_auth_username, null),
                 getCommandOrDefault(m_cmd_custom_auth_name, null),
                 getCommandOrDefault(m_cmd_custom_auth_signature, null),
                 getCommandOrDefault(m_cmd_custom_auth_password, null));
-
             return builder.build();
         }
-        catch (CrtRuntimeException ex) {
+        catch (CrtRuntimeException | UnsupportedEncodingException ex) {
             return null;
         }
     }
