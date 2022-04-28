@@ -157,7 +157,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
       LOGGER.info(">>>> Client is null!");
 
     } catch (Exception e) {
-      // Do nothing!
+      // Do nothing! (test bump)
     }
   }
 
