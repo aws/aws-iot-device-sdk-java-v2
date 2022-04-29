@@ -73,6 +73,7 @@ public class CustomAuthorizerConnect {
             {
                 onApplicationFailure(new RuntimeException("MQTT connection creation (through custom authorizer) failed!"));
             }
+
             // Connect and disconnect using the connection we created
             // (see sampleConnectAndDisconnect for implementation)
             cmdUtils.sampleConnectAndDisconnect(connection);
