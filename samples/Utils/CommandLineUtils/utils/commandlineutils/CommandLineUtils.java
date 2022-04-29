@@ -8,6 +8,7 @@ package utils.commandlineutils;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.CompletableFuture;
+import java.io.UnsupportedEncodingException;
 
 import software.amazon.awssdk.crt.*;
 import software.amazon.awssdk.crt.io.*;
@@ -257,13 +258,30 @@ public class CommandLineUtils {
 
             AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(
                 getCommandRequired(m_cmd_cert_file, ""), getCommandRequired(m_cmd_key_file, ""));
-
             buildConnectionSetupCAFileDefaults(builder);
             buildConnectionSetupConnectionDefaults(builder, callbacks);
             buildConnectionSetupProxyDefaults(builder);
             return builder.build();
         }
         catch (CrtRuntimeException ex) {
+            return null;
+        }
+    }
+
+    public MqttClientConnection buildDirectMQTTConnectionWithCustomAuthorizer(MqttClientConnectionEvents callbacks)
+    {
+        try {
+            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newDefaultBuilder();
+            buildConnectionSetupCAFileDefaults(builder);
+            buildConnectionSetupConnectionDefaults(builder, callbacks);
+            builder.withCustomAuthorizer(
+                getCommandOrDefault(m_cmd_custom_auth_username, null),
+                getCommandOrDefault(m_cmd_custom_auth_authorizer_name, null),
+                getCommandOrDefault(m_cmd_custom_auth_authorizer_signature, null),
+                getCommandOrDefault(m_cmd_custom_auth_password, null));
+            return builder.build();
+        }
+        catch (CrtRuntimeException | UnsupportedEncodingException ex) {
             return null;
         }
     }
@@ -311,6 +329,10 @@ public class CommandLineUtils {
                 return buildWebsocketMQTTConnection(callbacks);
             }
         }
+        else if (hasCommand(m_cmd_custom_auth_authorizer_name))
+        {
+            return buildDirectMQTTConnectionWithCustomAuthorizer(callbacks);
+        }
         else
         {
             return buildDirectMQTTConnection(callbacks);
@@ -332,7 +354,6 @@ public class CommandLineUtils {
             CompletableFuture<Void> disconnected = connection.disconnect();
             disconnected.get();
             System.out.println("Disconnected.");
-
         }
         catch (CrtRuntimeException | InterruptedException | ExecutionException ex) {
             throw ex;
@@ -362,6 +383,10 @@ public class CommandLineUtils {
     private static final String m_cmd_message = "message";
     private static final String m_cmd_topic = "topic";
     private static final String m_cmd_help = "help";
+    private static final String m_cmd_custom_auth_username = "custom_auth_username";
+    private static final String m_cmd_custom_auth_authorizer_name = "custom_auth_authorizer_name";
+    private static final String m_cmd_custom_auth_authorizer_signature = "custom_auth_authorizer_signature";
+    private static final String m_cmd_custom_auth_password = "custom_auth_password";
 }
 
 class CommandLineOption {

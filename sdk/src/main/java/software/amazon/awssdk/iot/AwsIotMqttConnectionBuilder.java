@@ -11,6 +11,9 @@ import java.io.UnsupportedEncodingException;
 import java.util.function.Consumer;
 
 import software.amazon.awssdk.crt.CrtResource;
+import software.amazon.awssdk.crt.Log;
+import software.amazon.awssdk.crt.Log.LogLevel;
+import software.amazon.awssdk.crt.Log.LogSubject;
 import software.amazon.awssdk.crt.auth.credentials.CredentialsProvider;
 import software.amazon.awssdk.crt.auth.credentials.DefaultChainCredentialsProvider;
 import software.amazon.awssdk.crt.auth.signing.AwsSigningConfig;
@@ -50,6 +53,8 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     private ClientBootstrap bootstrap;
 
     private boolean resetLazilyCreatedResources = true;
+    // Used to detect if we need to set the ALPN list for custom authorizer
+    private boolean isUsingCustomAuthorizer = false;
 
     private void resetDefaultPort() {
         if (TlsContextOptions.isAlpnSupported()) {
@@ -501,6 +506,73 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     }
 
     /**
+     * A helper function to add parameters to the username in the withCustomAuthorizer function
+     */
+    private String addUsernameParameter(String inputString, String parameterValue, String parameterPreText, Boolean addedStringToUsername) {
+        String return_string = inputString;
+        if (addedStringToUsername == false) {
+            return_string += "?";
+        } else {
+            return_string += "&";
+        }
+
+        if (parameterValue.contains(parameterPreText)) {
+            return return_string + parameterValue;
+        } else {
+            return return_string + parameterPreText + parameterValue;
+        }
+    }
+
+    /**
+     * Configures the MQTT connection so it can use a custom authorizer.
+     * This function will modify the username, port, and TLS options.
+     *
+     * Note: All arguments are optional and can have "null" as valid input.
+     * See the description for each argument for information on what happens if null is passed.
+     * @param username The username to use with the custom authorizer. If null is passed, it will check to
+     *                 see if a username has already been set (via withUsername function). If no username is set then
+     *                 no username will be passed with the MQTT connection.
+     * @param authorizerName The name of the custom authorizer. If null is passed, then 'x-amz-customauthorizer-name'
+     *                       will not be added with the MQTT connection.
+     * @param authorizerSignature The signature of the custom authorizer. If null is passed, then 'x-amz-customauthorizer-signature'
+     *                  will not be added with the MQTT connection.
+     * @param password The password to use with the custom authorizer. If null is passed, then no password will be set.
+     * @return
+     */
+    public AwsIotMqttConnectionBuilder withCustomAuthorizer(String username, String authorizerName, String authorizerSignature, String password) {
+        isUsingCustomAuthorizer = true;
+        String usernameString = "";
+        Boolean addedStringToUsername = false;
+
+        if (username == null) {
+            if (config.getUsername() != null) {
+                usernameString += config.getUsername();
+            }
+        } else {
+            usernameString += username;
+        }
+
+        if (authorizerName != null) {
+            usernameString = addUsernameParameter(usernameString, authorizerName, "x-amz-customauthorizer-name=", addedStringToUsername);
+            addedStringToUsername = true;
+        }
+        if (authorizerSignature != null) {
+            usernameString = addUsernameParameter(usernameString, authorizerSignature, "x-amz-customauthorizer-signature=", addedStringToUsername);
+        }
+
+        config.setUsername(usernameString);
+
+        if (password != null) {
+            config.setPassword(password);
+        }
+        config.setPort(443);
+        tlsOptions.alpnList.clear();
+        tlsOptions.alpnList.add("mqtt");
+
+        return this;
+    }
+
+    /**
      * Builds a new mqtt connection from the configuration stored in the builder.  Because some objects are created
      * lazily, certain properties should not be modified after this is first invoked (tls options, bootstrap).
      *
@@ -516,9 +588,28 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
         // This does mean that once you call build() once, modifying the tls context options or client bootstrap
         // has no affect on subsequently-created connections.
         synchronized(this) {
-            // Is this going to a custom authorizer at the correct (443) port? If so change the alpnList to "mqtt".
-            if (config.getUsername() != null) {
-                if (config.getUsername().contains("x-amz-customauthorizer-name") && config.getPort() == 443) {
+
+            // Check to see if a custom authorizer is being used but not through the builder.
+            if (isUsingCustomAuthorizer == false) {
+                if (config.getUsername() != null) {
+                    if (config.getUsername().contains("x-amz-customauthorizer-name=") ||
+                        config.getUsername().contains("x-amz-customauthorizer-signature="))
+                    {
+                        isUsingCustomAuthorizer = true;
+                    }
+                }
+            }
+            // Is the user trying to connect using a custom authorizer?
+            if (isUsingCustomAuthorizer == true) {
+                if (config.getPort() != 443) {
+                    Log.log(LogLevel.Warn, LogSubject.MqttClient,"Attempting to connect to authorizer with unsupported port. Port is not 443...");
+                }
+                if (tlsOptions.alpnList.size() == 1) {
+                    if (tlsOptions.alpnList.get(0) != "mqtt") {
+                        tlsOptions.alpnList.clear();
+                        tlsOptions.alpnList.add("mqtt");
+                    }
+                } else {
                     tlsOptions.alpnList.clear();
                     tlsOptions.alpnList.add("mqtt");
                 }
