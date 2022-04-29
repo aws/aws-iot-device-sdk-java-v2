@@ -385,7 +385,7 @@ public class CommandLineUtils {
     private static final String m_cmd_help = "help";
     private static final String m_cmd_custom_auth_username = "custom_auth_username";
     private static final String m_cmd_custom_auth_authorizer_name = "custom_auth_authorizer_name";
-    private static final String m_cmd_custom_auth_authorizer_signature = "custom_auth_authorier_signature";
+    private static final String m_cmd_custom_auth_authorizer_signature = "custom_auth_authorizer_signature";
     private static final String m_cmd_custom_auth_password = "custom_auth_password";
 }
 
