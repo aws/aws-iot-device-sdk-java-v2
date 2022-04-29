@@ -276,8 +276,8 @@ public class CommandLineUtils {
             buildConnectionSetupConnectionDefaults(builder, callbacks);
             builder.withCustomAuthorizer(
                 getCommandOrDefault(m_cmd_custom_auth_username, null),
-                getCommandOrDefault(m_cmd_custom_auth_name, null),
-                getCommandOrDefault(m_cmd_custom_auth_signature, null),
+                getCommandOrDefault(m_cmd_custom_auth_authorizer_name, null),
+                getCommandOrDefault(m_cmd_custom_auth_authorizer_signature, null),
                 getCommandOrDefault(m_cmd_custom_auth_password, null));
             return builder.build();
         }
@@ -329,7 +329,7 @@ public class CommandLineUtils {
                 return buildWebsocketMQTTConnection(callbacks);
             }
         }
-        else if (hasCommand(m_cmd_custom_auth_name))
+        else if (hasCommand(m_cmd_custom_auth_authorizer_name))
         {
             return buildDirectMQTTConnectionWithCustomAuthorizer(callbacks);
         }
@@ -383,10 +383,10 @@ public class CommandLineUtils {
     private static final String m_cmd_message = "message";
     private static final String m_cmd_topic = "topic";
     private static final String m_cmd_help = "help";
-    private static final String m_cmd_custom_auth_username = "auth_username";
-    private static final String m_cmd_custom_auth_name = "auth_name";
-    private static final String m_cmd_custom_auth_signature = "auth_signature";
-    private static final String m_cmd_custom_auth_password = "auth_password";
+    private static final String m_cmd_custom_auth_username = "custom_auth_username";
+    private static final String m_cmd_custom_auth_authorizer_name = "custom_auth_authorizer_name";
+    private static final String m_cmd_custom_auth_authorizer_signature = "custom_auth_authorier_signature";
+    private static final String m_cmd_custom_auth_password = "custom_auth_password";
 }
 
 class CommandLineOption {

@@ -534,12 +534,12 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      *                 no username will be passed with the MQTT connection.
      * @param authorizerName The name of the custom authorizer. If null is passed, then 'x-amz-customauthorizer-name'
      *                       will not be added with the MQTT connection.
-     * @param signature The signature of the custom authorizer. If null is passed, then 'x-amz-customauthorizer-signature'
+     * @param authorizerSignature The signature of the custom authorizer. If null is passed, then 'x-amz-customauthorizer-signature'
      *                  will not be added with the MQTT connection.
      * @param password The password to use with the custom authorizer. If null is passed, then no password will be set.
      * @return
      */
-    public AwsIotMqttConnectionBuilder withCustomAuthorizer(String username, String authorizerName, String signature, String password) {
+    public AwsIotMqttConnectionBuilder withCustomAuthorizer(String username, String authorizerName, String authorizerSignature, String password) {
         isUsingCustomAuthorizer = true;
         String usernameString = "";
         Boolean addedStringToUsername = false;
@@ -556,8 +556,8 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
             usernameString = addUsernameParameter(usernameString, authorizerName, "x-amz-customauthorizer-name=", addedStringToUsername);
             addedStringToUsername = true;
         }
-        if (signature != null) {
-            usernameString = addUsernameParameter(usernameString, signature, "x-amz-customauthorizer-signature=", addedStringToUsername);
+        if (authorizerSignature != null) {
+            usernameString = addUsernameParameter(usernameString, authorizerSignature, "x-amz-customauthorizer-signature=", addedStringToUsername);
         }
 
         config.setUsername(usernameString);
