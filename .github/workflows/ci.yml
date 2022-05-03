@@ -110,7 +110,7 @@ jobs:
       - name: Build ${{ env.PACKAGE_NAME }} + consumers
         run: |
           java -version
-          mvn -B test
+          mvn -B test -Daws.crt.debugnative=true
 
   # check that docs can still build
   check-docs:

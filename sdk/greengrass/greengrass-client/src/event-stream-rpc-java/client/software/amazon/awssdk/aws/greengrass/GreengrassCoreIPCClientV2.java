@@ -1193,14 +1193,16 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
 
     public GreengrassCoreIPCClientV2 build() throws IOException {
       if (client == null) {
-        SocketOptions socketOptions = new SocketOptions();
-        socketOptions.connectTimeoutMs = 3000;
-        socketOptions.domain = this.socketDomain;
-        socketOptions.type = SocketOptions.SocketType.STREAM;
         String ipcServerSocketPath = this.socketPath;
         String authToken = this.authToken;
         try (EventLoopGroup elGroup = new EventLoopGroup(1);
-        ClientBootstrap clientBootstrap = new ClientBootstrap(elGroup, null)) {
+             ClientBootstrap clientBootstrap = new ClientBootstrap(elGroup, null);
+             SocketOptions socketOptions = new SocketOptions()) {
+
+          socketOptions.connectTimeoutMs = 3000;
+          socketOptions.domain = this.socketDomain;
+          socketOptions.type = SocketOptions.SocketType.STREAM;
+
           final EventStreamRPCConnectionConfig config = new EventStreamRPCConnectionConfig(clientBootstrap, elGroup, socketOptions, null, ipcServerSocketPath, this.port, GreengrassConnectMessageSupplier.connectMessageSupplier(authToken));
           connection = new EventStreamRPCConnection(config);
           CompletableFuture<Void> connected = new CompletableFuture<>();
