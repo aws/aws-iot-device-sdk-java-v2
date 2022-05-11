@@ -1,0 +1,31 @@
+language: android
+dist: trusty
+android:
+  components:
+    - tools
+    - platform-tools
+    - build-tools-30.0.3
+    - android-30
+    - extra-google-google_play_services
+    - extra-google-m2repository
+    - extra-android-m2repository
+
+env:
+  global:
+    # CLOUDSMITH_API_KEY
+    - secure: YJf2fSHc8EvIGoHqV6tmJawepaGpHCJkok9Mb5SLp+j7rjcsIOzBUicucJkfkcOVXg00S1pTu4ohlvsc003TCfTlwKmgFjy13LX5TrQcTmJXMBG761L7jgvplRDtFOey3RzlXQzHYsbKIRIh2ATAkH5vaWosXOLGQoDqf0F34Jyp7EusrhGZ5+lgXaSfE7tmAbGU1aVdzZgcQDAYGKE9N/HdphOD9XByleDz90V3htAblxO4Ct/EGKCVC7FB+xyxf0hLlsdClIkwb8KZceFAgzohuKkOKnfR3q77yRXoz1Sqg+/10LpMnmlUZF1vu/6/RAoCFzm/TUef746Aqm4IsFW6pEi7mIWfi9YyBKnNjmVHVC+LHJqzIIWQ1wGcLpdRANR35D/DLWcIvOO4bicQ8TN4rDqjg+IkbIUfTciPeiI49GEnMxmyA6KXlXnL/KwPkS+aK1sSXLTIoQSFkcwfK4paoEkWCsySADkpLOJLt8yFIq6bcEFZzYFxfZVmEQ2COvZjh0+agDojFly4rmE5VWkiG/gbVQM4B8NUS6yaOKka7DnhJaosu2rQcxkHFJPHHBalGAWhmTfOPueaXynq9tq73ECSpm8kNz5Z+u7vclooOUIgZAO96H6E+c/m+tZ7/TQj49ZYcYRGkXeJE00t3CV+c4wjZd5jhVigH6eeIC0=
+
+before_install:
+  - yes | sdkmanager "build-tools;30.0.3"
+
+jobs:
+  include:
+    - stage: build
+      if: type = api
+      script:
+        - wget https://github.com/sormuras/bach/raw/master/install-jdk.sh
+        - chmod +x ./install-jdk.sh
+        - export JAVA_HOME=$HOME/oraclejdk11
+        - ./install-jdk.sh -F 11 -L BCL --target $JAVA_HOME
+        - cd android
+        - ./gradlew publish

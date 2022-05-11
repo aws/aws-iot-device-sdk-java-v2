@@ -136,8 +136,7 @@ afterEvaluate {
                 artifactId = 'aws-iot-device-sdk-android'
                 version = android.defaultConfig.versionName
             }
-
-
+            
             debug(MavenPublication) {
                 from components.debug
 
@@ -145,16 +144,16 @@ afterEvaluate {
                 artifactId = 'aws-iot-device-sdk-android'
                 version = android.defaultConfig.versionName + '-SNAPSHOT'
             }
-
         }
         repositories {
-            maven {
-                def snapshotRepo = "https://aws.oss.sonatype.org/content/repositories/snapshots"
-                def releaseRepo = "https://aws.oss.sonatype.org/"
-                url = version.endsWith('SNAPSHOT') ? snapshotRepo : releaseRepo
-            }
-            mavenLocal()
-
+		    maven {
+		        name = "cloudsmith"
+		        url = "https://maven.cloudsmith.io/proglove/pgconnect-alpha/"
+		        credentials {
+		            username = "proglove-bot-user-aws-iot-sdk2"
+		            password = System.getenv('CLOUDSMITH_API_KEY')
+		        }
+		    }
         }
     }
 }
