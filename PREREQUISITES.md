@@ -10,7 +10,7 @@ You can install the Java Developer Kit (JDK) 8+ by following the instructions on
 
 ## Set JAVA_HOME
 
-How you set `JAVA_HOME` varies from platform to platform. Below are the instructions for Windows, MacOS, and Linux:
+Below are instructions on how you can set `JAVA_HOME`, which varies from depending on whether you are on Windows or are on MacOS/Linux:
 
 ### Windows
 1. Open "Edit the system environment variable"
@@ -222,7 +222,7 @@ Go to the Oracle website [download page for Linux](https://docs.oracle.com/en/ja
 
 ### Linux JAVA_HOME
 
-Below are the steps to set `JAVA_HOME` for MacOS:
+Below are the steps to set `JAVA_HOME` for Linux:
 
 ``` sh
 # (example: "/usr/lib64/jvm/jdk-10.jdk/jre/bin/java")
