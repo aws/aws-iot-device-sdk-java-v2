@@ -288,4 +288,3 @@ Or using the command line:
 2. Run `sudo pacman -S cmake` to install Cmake
 3. After CMake has installed, close the terminal and reopen it
 4. Type `cmake --version` to confirm CMake is installed.
-
