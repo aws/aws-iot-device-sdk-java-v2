@@ -32,6 +32,7 @@ public class RpcServer implements AutoCloseable {
     private ServerTlsContext tlsContext;
     private ServerListener listener;
     private AtomicBoolean serverRunning;
+    private int boundPort = -1;
 
     public RpcServer(EventLoopGroup eventLoopGroup, SocketOptions socketOptions, TlsContextOptions tlsContextOptions, String hostname, int port, EventStreamRPCServiceHandler serviceHandler) {
         this.eventLoopGroup = eventLoopGroup;
@@ -72,7 +73,19 @@ public class RpcServer implements AutoCloseable {
                     LOGGER.info("Server connection closed code [" + CRT.awsErrorString(errorCode) + "]: " + serverConnection.getResourceLogDescription());
                 }
             });
+
+        boundPort = listener.getBoundPort();
+
         LOGGER.info("IpcServer started...");
+    }
+
+    /**
+     * Get port bound to.
+     *
+     * @return port number that service is bound to.
+     */
+    public int getBoundPort() {
+        return boundPort;
     }
 
     /**
