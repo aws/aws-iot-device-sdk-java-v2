@@ -74,11 +74,7 @@ public class RpcServer implements AutoCloseable {
                 }
             });
 
-        if (port == 0 && (socketOptions.domain == SocketOptions.SocketDomain.IPv4 || socketOptions.domain == SocketOptions.SocketDomain.IPv6)) {
-            boundPort = listener.getBoundPort();
-        } else {
-            boundPort = port;
-        }
+        boundPort = listener.getBoundPort();
 
         LOGGER.info("IpcServer started...");
     }
@@ -86,7 +82,7 @@ public class RpcServer implements AutoCloseable {
     /**
      * Get port bound to.
      *
-     * @return port number where actually service bound. Return -1 on errors
+     * @return port number that service is bound to.
      */
     public int getBoundPort() {
         return boundPort;
