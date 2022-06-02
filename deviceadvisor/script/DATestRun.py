@@ -35,6 +35,7 @@ def process_logs(log_group, log_stream, thing_name):
     f.close()
     s3.Bucket(os.environ['DA_S3_NAME']).upload_file(log_file, log_file)
     os.remove(log_file)
+    print("[Device Advisor] Device Advisor Log file uploaded to "+ log_file)
 
 # Sleep for a random time 
 def sleep_with_backoff(base, max):
@@ -237,7 +238,6 @@ for test_name in DATestConfig['tests']:
                     stream_string = re.search('stream=(.*)', log_url)
                     log_stream = stream_string.group(1)
                     process_logs(log_group, log_stream, thing_name)
-                    print("[Device Advisor] Issues on test " + test_name + ". Please check out the logs at "+thing_name+".log on S3.")
                 delete_thing_with_certi(thing_name, certificate_id ,certificate_arn )
                 break
     except Exception as e:
