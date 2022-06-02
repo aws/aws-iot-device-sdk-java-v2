@@ -6,6 +6,9 @@ import org.junit.jupiter.api.Test;
 
 import software.amazon.awssdk.awstest.EchoTestRPCServiceModel;
 import software.amazon.awssdk.awstest.model.*;
+import software.amazon.awssdk.crt.eventstream.Header;
+import software.amazon.awssdk.crt.eventstream.MessageType;
+import software.amazon.awssdk.eventstreamrpc.model.EventStreamError;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
@@ -163,5 +166,13 @@ public class ObjectModelTests {
         //verifies that the null deserialized back
         Assertions.assertTrue(deserialized.getDocumentMessage().containsKey("null"));
         Assertions.assertFalse(deserialized.getDocumentMessage().containsKey("nullNotPresent"));
+    }
+
+    @Test
+    void testBadJsonDeserialize() {
+        List<Header> headers = new ArrayList<>();
+        byte[] badJsonPayload = "{\"derp\":\"value\"; }".getBytes(StandardCharsets.UTF_8);
+        EventStreamError errorMessage = EventStreamError.create(headers, badJsonPayload, MessageType.ProtocolError);
+        Assertions.assertNotNull(errorMessage);
     }
 }
