@@ -1,7 +1,9 @@
 package software.amazon.awssdk.eventstreamrpc;
 
-import software.amazon.awssdk.crt.io.*;
-import software.amazon.awssdk.eventstreamrpc.MessageAmendInfo;
+import software.amazon.awssdk.crt.io.ClientBootstrap;
+import software.amazon.awssdk.crt.io.ClientTlsContext;
+import software.amazon.awssdk.crt.io.EventLoopGroup;
+import software.amazon.awssdk.crt.io.SocketOptions;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;

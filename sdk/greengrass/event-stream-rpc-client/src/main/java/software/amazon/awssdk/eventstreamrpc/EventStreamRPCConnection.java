@@ -1,17 +1,23 @@
 package software.amazon.awssdk.eventstreamrpc;
 
+import software.amazon.awssdk.crt.CRT;
+import software.amazon.awssdk.crt.CrtRuntimeException;
+import software.amazon.awssdk.crt.eventstream.ClientConnection;
+import software.amazon.awssdk.crt.eventstream.ClientConnectionContinuation;
+import software.amazon.awssdk.crt.eventstream.ClientConnectionContinuationHandler;
+import software.amazon.awssdk.crt.eventstream.ClientConnectionHandler;
+import software.amazon.awssdk.crt.eventstream.Header;
+import software.amazon.awssdk.crt.eventstream.MessageFlags;
+import software.amazon.awssdk.crt.eventstream.MessageType;
+import software.amazon.awssdk.eventstreamrpc.model.AccessDeniedException;
+import software.amazon.awssdk.eventstreamrpc.model.EventStreamError;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-
-import software.amazon.awssdk.crt.CRT;
-import software.amazon.awssdk.crt.CrtRuntimeException;
-import software.amazon.awssdk.crt.eventstream.*;
-import software.amazon.awssdk.eventstreamrpc.model.AccessDeniedException;
-import software.amazon.awssdk.eventstreamrpc.model.EventStreamError;
 
 public class EventStreamRPCConnection implements AutoCloseable {
     protected static class ConnectionState {
@@ -82,7 +88,7 @@ public class EventStreamRPCConnection implements AutoCloseable {
                                 connectionState.connectionPhase = ConnectionState.Phase.DISCONNECTED;
                                 initialConnectFuture.completeExceptionally(new CrtRuntimeException(errorCode, CRT.awsErrorName(errorCode)));
                             } else if (connectionState.connectionPhase == ConnectionState.Phase.CLOSING) {
-                                connectionState.closeReason = new software.amazon.awssdk.eventstreamrpc.EventStreamClosedException("Event stream closed by client");
+                                connectionState.closeReason = new EventStreamClosedException("Event stream closed by client");
                                 disconnect();
                             } else {
                                 connectionState.connectionPhase = ConnectionState.Phase.WAITING_CONNACK;
@@ -94,7 +100,7 @@ public class EventStreamRPCConnection implements AutoCloseable {
                                                     return;
                                                 }
                                                 if (connectionState.connectionPhase == ConnectionState.Phase.CLOSING) {
-                                                    connectionState.closeReason = new software.amazon.awssdk.eventstreamrpc.EventStreamClosedException("Event stream closed by client");
+                                                    connectionState.closeReason = new EventStreamClosedException("Event stream closed by client");
                                                 } else {
                                                     try {
                                                         final List<Header> headers = new ArrayList<>(messageAmendInfo.getHeaders().size() + 1);
@@ -205,7 +211,7 @@ public class EventStreamRPCConnection implements AutoCloseable {
             if (connectionState.connectionPhase == ConnectionState.Phase.CONNECTED) {
                 return connectionState.connection.newStream(continuationHandler);
             } else {
-                throw new software.amazon.awssdk.eventstreamrpc.EventStreamClosedException("EventStream connection is not open!");
+                throw new EventStreamClosedException("EventStream connection is not open!");
             }
         }
     }
@@ -220,7 +226,7 @@ public class EventStreamRPCConnection implements AutoCloseable {
                 connectionState.connection.closeConnection(0);
             }
             if (connectionState.closeReason == null) {
-                connectionState.closeReason = new software.amazon.awssdk.eventstreamrpc.EventStreamClosedException("Event stream closed by client");
+                connectionState.closeReason = new EventStreamClosedException("Event stream closed by client");
             }
         }
     }
@@ -270,7 +276,7 @@ public class EventStreamRPCConnection implements AutoCloseable {
         ClientConnection connection;
         synchronized (connectionState) {
             if (connectionState.connectionPhase != ConnectionState.Phase.CONNECTED) {
-                throw new software.amazon.awssdk.eventstreamrpc.EventStreamClosedException("EventStream connection not established");
+                throw new EventStreamClosedException("EventStream connection not established");
             }
             connection = connectionState.connection;
             if (pingData.isPresent()) {
@@ -292,7 +298,7 @@ public class EventStreamRPCConnection implements AutoCloseable {
         ClientConnection connection;
         synchronized (connectionState) {
             if (connectionState.connectionPhase != ConnectionState.Phase.CONNECTED) {
-                throw new software.amazon.awssdk.eventstreamrpc.EventStreamClosedException("EventStream connection not established");
+                throw new EventStreamClosedException("EventStream connection not established");
             }
             connection = connectionState.connection;
             if (pingResponseData.isPresent()) {
@@ -338,7 +344,7 @@ public class EventStreamRPCConnection implements AutoCloseable {
          * result in closing the connection. AccessDeniedException is such an example
          *
          * @param t Exception
-         * @return true if the connection should be terminated as a result of handling the error
+         * @returns true if the connection should be terminated as a result of handling the error
          */
         boolean onError(Throwable t);
 
