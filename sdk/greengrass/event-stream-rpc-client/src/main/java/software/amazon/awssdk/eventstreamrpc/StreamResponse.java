@@ -1,6 +1,5 @@
 package software.amazon.awssdk.eventstreamrpc;
 
-import software.amazon.awssdk.eventstreamrpc.StreamEventPublisher;
 import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
 
 import java.util.concurrent.CompletableFuture;

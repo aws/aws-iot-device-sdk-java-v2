@@ -47,6 +47,15 @@ public class ObjectModelTests {
     }
 
     @Test
+    void testEnumGetter() {
+        MessageData data = new MessageData();
+        for(FruitEnum value:FruitEnum.values()) {
+            data.setEnumMessage(value);
+            FruitEnum enumGet = data.getEnumMessage();
+        }
+    }
+
+    @Test
     void testEmptyObjectIsNotNullAndIsEmpty() {
         final EchoMessageRequest requestObject = new EchoMessageRequest();
         final JSONObject jsonObject = new JSONObject(new String(EchoTestRPCServiceModel.getInstance().toJson(requestObject), StandardCharsets.UTF_8));
@@ -93,13 +102,13 @@ public class ObjectModelTests {
         pair.setKey(null);
         pair.setValue(null);
     }
-    
+
     @Test
     void testInstantSerialization() {
         final MessageData data = new MessageData();
         final Instant someInstant = Instant.ofEpochSecond(1606173648);
         data.setTimeMessage(someInstant);
-        
+
         final JSONObject jsonObject = new JSONObject(EchoTestRPCServiceModel.getInstance().toJsonString(data));
         final MessageData dataDeserialized = EchoTestRPCServiceModel.getInstance().fromJson(MessageData.class,
                 jsonObject.toString().getBytes(StandardCharsets.UTF_8));
@@ -145,7 +154,7 @@ public class ObjectModelTests {
                 .fromJson(MessageData.class, obj.toString().getBytes(StandardCharsets.UTF_8));
         Assertions.assertTrue(data.equals(deserialized));
     }
-    
+
     @Test
     void testDocumentNullSerialize() {
         final MessageData data = new MessageData();
@@ -157,15 +166,32 @@ public class ObjectModelTests {
         docPart.put("null", null);
         docPart.put("nullStringValueLiteral", "null");
         data.setDocumentMessage(docPart);
-        
+
         final JSONObject obj = new JSONObject(EchoTestRPCServiceModel.getInstance().toJsonString(data));
         final MessageData deserialized = EchoTestRPCServiceModel.getInstance()
                 .fromJson(MessageData.class, obj.toString().getBytes(StandardCharsets.UTF_8));
-        
+
         Assertions.assertTrue(data.equals(deserialized));
         //verifies that the null deserialized back
         Assertions.assertTrue(deserialized.getDocumentMessage().containsKey("null"));
         Assertions.assertFalse(deserialized.getDocumentMessage().containsKey("nullNotPresent"));
+    }
+
+    @Test
+    void testDocumentNullDeserialize() {
+        final EchoMessageRequest data = new EchoMessageRequest();
+        Map<String, Product> sTV = new HashMap<String, Product>();
+        Product p = new Product();
+        p.setPrice(1);
+        // leaving product's name as null for previously found issue
+        sTV.put("A", p);
+        MessageData m = new MessageData();
+        data.setMessage(m);
+        m.setStringToValue(sTV);
+
+        final JSONObject obj = new JSONObject(EchoTestRPCServiceModel.getInstance().toJsonString(data));
+        final EchoMessageRequest deserialized = EchoTestRPCServiceModel.getInstance()
+                .fromJson(EchoMessageRequest.class, obj.toString().getBytes(StandardCharsets.UTF_8));
     }
 
     @Test
