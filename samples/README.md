@@ -91,6 +91,8 @@ source: `samples/BasicPubSub`
 </pre>
 </details>
 
+*Note: This sample uses a `client_id` set to `test-<numbers>` by default. Make sure your policy allows `test-*` to connect or use `--cliend_id <client ID here>` to send the client ID your policy supports.*
+
 To Run this sample, use the following command:
 ```sh
 # Windows Platform: Windows command prompt does not support single quote, please use double quote.
@@ -125,6 +127,8 @@ Your Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-
 </pre>
 </details>
 
+*Note: This sample uses a `client_id` set to `test-<numbers>` by default. Make sure your policy allows `test-*` to connect or use `--cliend_id <client ID here>` to send the client ID your policy supports.*
+
 To run the basic connect sample use the following command:
 
 ```sh
@@ -158,6 +162,8 @@ Your Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-
 }
 </pre>
 </details>
+
+*Note: This sample uses a `client_id` set to `test-<numbers>` by default. Make sure your policy allows `test-*` to connect or use `--cliend_id <client ID here>` to send the client ID your policy supports.*
 
 To run the websocket connect use the following command:
 
@@ -242,6 +248,8 @@ Your Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-
 }
 </pre>
 </details>
+
+*Note: This sample uses a `client_id` set to `test-<numbers>` by default. Make sure your policy allows `test-*` to connect or use `--cliend_id <client ID here>` to send the client ID your policy supports.*
 
 ## WindowsCert Connect
 
@@ -328,6 +336,8 @@ Your Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-
 </pre>
 </details>
 
+*Note: This sample uses a `client_id` set to `test-<numbers>` by default. Make sure your policy allows `test-*` to connect or use `--cliend_id <client ID here>` to send the client ID your policy supports.*
+
 ## Custom Authorizer Connect
 
 This sample makes an MQTT connection and connects through a [Custom Authorizer](https://docs.aws.amazon.com/iot/latest/developerguide/custom-authentication.html). On startup, the device connects to the server and then disconnects. This sample is for reference on connecting using a custom authorizer.
@@ -355,6 +365,8 @@ Your Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-
 }
 </pre>
 </details>
+
+*Note: This sample uses a `client_id` set to `test-<numbers>` by default. Make sure your policy allows `test-*` to connect or use `--cliend_id <client ID here>` to send the client ID your policy supports.*
 
 To run the custom authorizer connect use the following command:
 
@@ -449,6 +461,8 @@ and receive.
 </pre>
 </details>
 
+*Note: This sample uses a `client_id` set to `test-<numbers>` by default. Make sure your policy allows `test-*` to connect or use `--cliend_id <client ID here>` to send the client ID your policy supports.*
+
 ## Jobs
 
 This sample uses the AWS IoT
@@ -525,6 +539,8 @@ and receive.
 </pre>
 </details>
 
+*Note: This sample uses a `client_id` set to `test-<numbers>` by default. Make sure your policy allows `test-*` to connect or use `--cliend_id <client ID here>` to send the client ID your policy supports.*
+
 ## Fleet provisioning
 
 This sample uses the AWS IoT
@@ -598,6 +614,8 @@ and receive.
 }
 </pre>
 </details>
+
+*Note: This sample uses a `client_id` set to `test-<numbers>` by default. Make sure your policy allows `test-*` to connect or use `--cliend_id <client ID here>` to send the client ID your policy supports.*
 
 ### Fleet Provisioning Detailed Instructions
 
