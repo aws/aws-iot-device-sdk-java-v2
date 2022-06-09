@@ -82,9 +82,6 @@ import java.util.function.Function;
 
 /**
  * V2 Client for Greengrass.
- * !! Developer Preview !! - This class is currently in developer preview.
- * The interface is not guaranteed to be stable yet.
- * Please report any issues or make suggestions in https://github.com/aws/aws-iot-device-sdk-java-v2/issues
  */
 public class GreengrassCoreIPCClientV2 implements AutoCloseable {
   protected GreengrassCoreIPC client;

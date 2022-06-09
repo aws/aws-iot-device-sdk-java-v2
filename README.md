@@ -20,10 +20,11 @@ to Java by the [aws-crt-java](https://github.com/awslabs/aws-crt-java) package.
 *__Jump To:__*
 
 * [Installation](#Installation)
-* [Mac-Only TLS Behavior](#Mac-Only-TLS-Behavior)
 * [Samples](samples)
 * [Getting Help](#Getting-Help)
+* [FAQ](./documents/FAQ.md)
 * [Giving Feedback and Contributions](#Giving-Feedback-and-Contributions)
+
 
 ## Installation
 
@@ -33,14 +34,14 @@ to Java by the [aws-crt-java](https://github.com/awslabs/aws-crt-java) package.
 * Java JDK 8+ ([Download and Install JDK](https://docs.oracle.com/en/java/javase/18/install/overview-jdk-installation.html#GUID-8677A77F-231A-40F7-98B9-1FD0B48C346A))
   * [Set JAVA_HOME](./PREREQUISITES.md/##SetJAVA_HOME)
 
-[Step-by-step instructions](./PREREQUISITES.md)
+[Step-by-step instructions](./documents/PREREQUISITES.md)
 
 ### Requirements to build the AWS CRT locally
 * C++ 11 or higher
    * Clang 3.9+ or GCC 4.4+ or MSVC 2015+
 * CMake 3.1+
 
-[Step-by-step instructions](./PREREQUISITES.md)
+[Step-by-step instructions](./documents/PREREQUISITES.md)
 
 ### Consuming IoT Device SDK from Maven
 
@@ -79,8 +80,8 @@ mvn clean install
 mkdir sdk-workspace
 cd sdk-workspace
 # Clone the CRT repository
-#     (Use the latest version of the CRT here instead of "v0.16.4")
-git clone --branch v0.16.12 --recurse-submodules https://github.com/awslabs/aws-crt-java.git
+#     (Use the latest version of the CRT here instead of "v0.16.14")
+git clone --branch v0.16.14 --recurse-submodules https://github.com/awslabs/aws-crt-java.git
 cd aws-crt-java
 # Compile and install the CRT
 mvn install -Dmaven.test.skip=true
@@ -101,8 +102,8 @@ NOTE: The shadow sample does not currently complete on android due to its depend
 mkdir sdk-workspace
 cd sdk-workspace
 # Clone the CRT repository
-#     (Use the latest version of the CRT here instead of "v0.16.4")
-git clone --branch v0.16.12 --recurse-submodules https://github.com/awslabs/aws-crt-java.git
+#     (Use the latest version of the CRT here instead of "v0.16.14")
+git clone --branch v0.16.14 --recurse-submodules https://github.com/awslabs/aws-crt-java.git
 # Compile and install the CRT for Android
 cd aws-crt-java/android
 ./gradlew connectedCheck # optional, will run the unit tests on any connected devices/emulators
@@ -126,7 +127,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'software.amazon.awssdk.crt:android:0.16.12'
+    implementation 'software.amazon.awssdk.crt:android:0.16.14'
 }
 ```
 
@@ -135,15 +136,6 @@ Look up the latest CRT version here: https://github.com/awslabs/aws-crt-java/rel
 
 #### Caution
 You will need to override and provide a ROOT_CERTIFICATE manually from one of the following [certificates](https://www.amazontrust.com/repository/). For overriding default trust store you can use following [method](https://github.com/aws/aws-iot-device-sdk-java-v2/blob/ed802dce740895bcd3b0b91de30ec49407e34a87/sdk/src/main/java/software/amazon/awssdk/iot/AwsIotMqttConnectionBuilder.java#L151-L160). It's a [known problem](https://github.com/aws/aws-iot-device-sdk-java-v2/issues/157).
-
-
-## Mac-Only TLS Behavior
-
-Please note that on Mac, once a private key is used with a certificate, that certificate-key pair is imported into the Mac Keychain.  All subsequent uses of that certificate will use the stored private key and ignore anything passed in programmatically.  When a stored private key from the Keychain is used, the following will be logged at the "info" log level:
-
-```
-static: certificate has an existing certificate-key pair that was previously imported into the Keychain.  Using key from Keychain instead of the one provided.
-```
 
 ## Samples
 
@@ -155,6 +147,7 @@ The best way to interact with our team is through GitHub. You can [open an issue
 
 Please make sure to check out our resources too before opening an issue:
 
+* Our [FAQ](./documents/FAQ.md)
 * Our [Developer Guide](https://docs.aws.amazon.com/iot/latest/developerguide/what-is-aws-iot.html) ([source](https://github.com/awsdocs/aws-iot-docs))
 * Check for similar [Issues](https://github.com/aws/aws-iot-device-sdk-java-v2/issues)
 * [AWS IoT Core Documentation](https://docs.aws.amazon.com/iot/)
@@ -169,10 +162,12 @@ is provided by code that been generated from a model of the service.
 
 We need your help in making this SDK great. Please participate in the community and contribute to this effort by submitting issues, participating in discussion forums and submitting pull requests through the following channels.
 
-* [Contributions Guidelines](CONTRIBUTING.md)
+* [Contributions Guidelines](./documents/CONTRIBUTING.md)
 * Articulate your feature request or upvote existing ones on our [Issues](https://github.com/aws/aws-iot-device-sdk-java-v2/issues?q=is%3Aissue+is%3Aopen+label%3Afeature-request) page.
-* Submit [Issues](https://github.com/aws/aws-iot-device-sdk-java-v2/issues)
+* Create discussion questions [here](https://github.com/aws/aws-iot-device-sdk-java-v2/discussions)
+* Find a bug open an [issue](https://github.com/aws/aws-iot-device-sdk-java-v2/issues)
 
 ## License
 
 This library is licensed under the Apache 2.0 License.
+

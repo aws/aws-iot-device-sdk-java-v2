@@ -50,10 +50,48 @@ public abstract class EventStreamRPCServiceModel {
         GsonBuilder builder = new GsonBuilder();
         builder.registerTypeAdapterFactory(new ForceNullsForMapTypeAdapterFactory());
         builder.registerTypeAdapterFactory(OptionalTypeAdapter.FACTORY);
+        builder.registerTypeAdapterFactory(EventStreamPostFromJsonTypeAdapter.FACTORY);
         builder.registerTypeAdapter(byte[].class, new Base64BlobSerializerDeserializer());
         builder.registerTypeAdapter(Instant.class, new InstantSerializerDeserializer());
         builder.excludeFieldsWithoutExposeAnnotation();
         GSON = builder.create();
+    }
+
+    // Type adapter to automatically call "postFromJson" on all instances of EventStreamJsonMessage we construct
+    private static class EventStreamPostFromJsonTypeAdapter<E extends EventStreamJsonMessage> extends TypeAdapter<E> {
+        public static final TypeAdapterFactory FACTORY = new TypeAdapterFactory() {
+            @Override
+            public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+                if (EventStreamJsonMessage.class.isAssignableFrom(type.getRawType())) {
+                    final TypeAdapter<?> delegate = gson.getDelegateAdapter(this, type);
+                    return new EventStreamPostFromJsonTypeAdapter(delegate);
+                }
+
+                return null;
+            }
+        };
+
+        private final TypeAdapter<E> adapter;
+
+        public EventStreamPostFromJsonTypeAdapter(TypeAdapter<E> adapter) {
+            this.adapter = adapter;
+        }
+
+        @Override
+        public void write(JsonWriter out, E value) throws IOException {
+            adapter.write(out, value);
+        }
+
+        @Override
+        public E read(JsonReader in) throws IOException {
+            E obj = adapter.read(in);
+            if (obj != null) {
+                // Call postFromJson to finalize the deserialization. Especially important for unions to have their
+                // member get set correctly.
+                obj.postFromJson();
+            }
+            return obj;
+        }
     }
 
     private static class ForceNullsForMapTypeAdapterFactory implements TypeAdapterFactory {
@@ -273,16 +311,12 @@ public abstract class EventStreamRPCServiceModel {
         if (!clazz.isPresent()) {
             throw new UnmappedDataException(applicationModelType);
         }
-        final EventStreamJsonMessage msg = fromJson(clazz.get(), payload);
-        msg.postFromJson();
-        return msg;
+        return fromJson(clazz.get(), payload);
     }
 
     public <T extends EventStreamJsonMessage> T fromJson(final Class<T> clazz, byte[] payload) {
         try {
-            final T obj = getGson().fromJson(new String(payload, StandardCharsets.UTF_8), clazz);
-            obj.postFromJson();
-            return obj;
+            return getGson().fromJson(new String(payload, StandardCharsets.UTF_8), clazz);
         } catch (Exception e) {
             throw new DeserializationException(payload, e);
         }

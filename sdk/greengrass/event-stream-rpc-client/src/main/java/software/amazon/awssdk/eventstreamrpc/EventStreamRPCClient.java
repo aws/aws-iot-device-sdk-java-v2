@@ -1,6 +1,11 @@
 package software.amazon.awssdk.eventstreamrpc;
 
-import software.amazon.awssdk.crt.eventstream.*;
+import software.amazon.awssdk.crt.eventstream.ClientConnectionContinuation;
+import software.amazon.awssdk.crt.eventstream.ClientConnectionContinuationHandler;
+import software.amazon.awssdk.crt.eventstream.Header;
+import software.amazon.awssdk.crt.eventstream.HeaderType;
+import software.amazon.awssdk.crt.eventstream.MessageFlags;
+import software.amazon.awssdk.crt.eventstream.MessageType;
 import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
 import software.amazon.awssdk.eventstreamrpc.model.EventStreamOperationError;
 
