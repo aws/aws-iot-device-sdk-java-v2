@@ -91,7 +91,7 @@ source: `samples/BasicPubSub`
 </pre>
 </details>
 
-<sub>*Note: This sample uses a `client_id` set to `test-<numbers>` by default. Make sure your policy allows `test-*` to connect or use `--cliend_id <client ID here>` to send the client ID your policy supports.*</sub>
+<sub>*Make sure your policy allows a client ID of `test-*` to connect or use `--cliend_id <client ID here>` to send the client ID your policy supports.*</sub>
 
 To Run this sample, use the following command:
 ```sh
@@ -127,7 +127,7 @@ Your Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-
 </pre>
 </details>
 
-<sub>*Note: This sample uses a `client_id` set to `test-<numbers>` by default. Make sure your policy allows `test-*` to connect or use `--cliend_id <client ID here>` to send the client ID your policy supports.*</sub>
+<sub>*Make sure your policy allows a client ID of `test-*` to connect or use `--cliend_id <client ID here>` to send the client ID your policy supports.*</sub>
 
 To run the basic connect sample use the following command:
 
@@ -163,7 +163,7 @@ Your Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-
 </pre>
 </details>
 
-<sub>*Note: This sample uses a `client_id` set to `test-<numbers>` by default. Make sure your policy allows `test-*` to connect or use `--cliend_id <client ID here>` to send the client ID your policy supports.*</sub>
+<sub>*Make sure your policy allows a client ID of `test-*` to connect or use `--cliend_id <client ID here>` to send the client ID your policy supports.*</sub>
 
 To run the websocket connect use the following command:
 
@@ -249,7 +249,7 @@ Your Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-
 </pre>
 </details>
 
-<sub>*Note: This sample uses a `client_id` set to `test-<numbers>` by default. Make sure your policy allows `test-*` to connect or use `--cliend_id <client ID here>` to send the client ID your policy supports.*</sub>
+<sub>*Make sure your policy allows a client ID of `test-*` to connect or use `--cliend_id <client ID here>` to send the client ID your policy supports.*</sub>
 
 ## WindowsCert Connect
 
@@ -336,7 +336,7 @@ Your Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-
 </pre>
 </details>
 
-<sub>*Note: This sample uses a `client_id` set to `test-<numbers>` by default. Make sure your policy allows `test-*` to connect or use `--cliend_id <client ID here>` to send the client ID your policy supports.*</sub>
+<sub>*Make sure your policy allows a client ID of `test-*` to connect or use `--cliend_id <client ID here>` to send the client ID your policy supports.*</sub>
 
 ## Custom Authorizer Connect
 
@@ -366,7 +366,7 @@ Your Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-
 </pre>
 </details>
 
-<sub>*Note: This sample uses a `client_id` set to `test-<numbers>` by default. Make sure your policy allows `test-*` to connect or use `--cliend_id <client ID here>` to send the client ID your policy supports.*</sub>
+<sub>*Make sure your policy allows a client ID of `test-*` to connect or use `--cliend_id <client ID here>` to send the client ID your policy supports.*</sub>
 
 To run the custom authorizer connect use the following command:
 
@@ -461,7 +461,7 @@ and receive.
 </pre>
 </details>
 
-<sub>*Note: This sample uses a `client_id` set to `test-<numbers>` by default. Make sure your policy allows `test-*` to connect or use `--cliend_id <client ID here>` to send the client ID your policy supports.*</sub>
+<sub>*Make sure your policy allows a client ID of `test-*` to connect or use `--cliend_id <client ID here>` to send the client ID your policy supports.*</sub>
 
 ## Jobs
 
@@ -539,7 +539,7 @@ and receive.
 </pre>
 </details>
 
-<sub>*Note: This sample uses a `client_id` set to `test-<numbers>` by default. Make sure your policy allows `test-*` to connect or use `--cliend_id <client ID here>` to send the client ID your policy supports.*</sub>
+<sub>*Make sure your policy allows a client ID of `test-*` to connect or use `--cliend_id <client ID here>` to send the client ID your policy supports.*</sub>
 
 ## Fleet provisioning
 
@@ -615,7 +615,7 @@ and receive.
 </pre>
 </details>
 
-<sub>*Note: This sample uses a `client_id` set to `test-<numbers>` by default. Make sure your policy allows `test-*` to connect or use `--cliend_id <client ID here>` to send the client ID your policy supports.*</sub>
+<sub>*Make sure your policy allows a client ID of `test-*` to connect or use `--cliend_id <client ID here>` to send the client ID your policy supports.*</sub>
 
 ### Fleet Provisioning Detailed Instructions
 
