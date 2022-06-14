@@ -209,8 +209,11 @@ public class GreengrassV2ClientTest {
 
         System.out.println(">>>> About to send third (async) subscribe");
 
+        System.out.println(">>>>>>>> About to assert to receivedMessage");
         assertEquals("message", receivedMessage.get());
+        System.out.println(">>>>>>>> About to close stream in subRespAsync");
         subRespAsync.getHandler().closeStream().get();
+        System.out.println(">>>>>>>> About to close subscription");
         subscriptionClosed.get(1, TimeUnit.SECONDS);
 
         System.out.println(">>>> Finished third (async) subscribe");
