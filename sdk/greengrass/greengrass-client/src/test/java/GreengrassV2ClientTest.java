@@ -166,11 +166,15 @@ public class GreengrassV2ClientTest {
 
             @Override
             public boolean onStreamError(Throwable error) {
+                finalReceivedMessage1.completeExceptionally(
+                    new RuntimeException("Stream error detected"));
                 return false;
             }
 
             @Override
             public void onStreamClosed() {
+                finalReceivedMessage1.completeExceptionally(
+                    new RuntimeException("Stream closed unexpectedly"));
             }
         });
 
@@ -199,11 +203,15 @@ public class GreengrassV2ClientTest {
 
                     @Override
                     public boolean onStreamError(Throwable error) {
+                        finalReceivedMessage2.completeExceptionally(
+                            new RuntimeException("Stream error detected"));
                         return false;
                     }
 
                     @Override
                     public void onStreamClosed() {
+                        finalReceivedMessage2.completeExceptionally(
+                            new RuntimeException("Stream closed unexpectedly"));
                     }
                 });
 
