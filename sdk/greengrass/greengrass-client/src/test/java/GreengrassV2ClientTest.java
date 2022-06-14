@@ -115,13 +115,20 @@ public class GreengrassV2ClientTest {
 
     @Test
     public void testV2Client() throws InterruptedException, ExecutionException, TimeoutException {
+
+        System.out.println(">>>> About to make async tokens");
+
         assertEquals(authenticationRequest.getAuthToken(), "myAuthToken");
         CreateLocalDeploymentResponse depResp = client.createLocalDeployment(new CreateLocalDeploymentRequest());
         assertEquals("deployment", depResp.getDeploymentId());
 
+        System.out.println(">>>> About to make async deployment");
+
         CompletableFuture<CreateLocalDeploymentResponse> asyncDepResp =
                 client.createLocalDeploymentAsync(new CreateLocalDeploymentRequest());
         assertEquals("deployment", asyncDepResp.get().getDeploymentId());
+
+        System.out.println(">>>> Finished async deployment");
 
         CompletableFuture<String> receivedMessage = new CompletableFuture<>();
         CompletableFuture<String> finalReceivedMessage = receivedMessage;
@@ -135,9 +142,13 @@ public class GreengrassV2ClientTest {
                     finalReceivedMessage.complete(new String(x.getBinaryMessage().getMessage()));
                 }, Optional.empty(), Optional.empty());
 
+        System.out.println(">>>> About to send first (non-async) subscribe");
+
         assertEquals("message", receivedMessage.get());
         subResp.getHandler().closeStream().get();
         subscriptionClosed.get(1, TimeUnit.SECONDS);
+
+        System.out.println(">>>> Finished first (non-async) subscribe");
 
         subscriptionClosed = new CompletableFuture<>();
         receivedMessage = new CompletableFuture<>();
@@ -163,9 +174,13 @@ public class GreengrassV2ClientTest {
             }
         });
 
+        System.out.println(">>>> About to send second (non-async) subscribe");
+
         assertEquals("message", receivedMessage.get());
         subResp.getHandler().closeStream().get();
         subscriptionClosed.get(1, TimeUnit.SECONDS);
+
+        System.out.println(">>>> Finished second (non-async) subscribe");
 
         subscriptionClosed = new CompletableFuture<>();
         receivedMessage = new CompletableFuture<>();
@@ -192,9 +207,13 @@ public class GreengrassV2ClientTest {
                     }
                 });
 
+        System.out.println(">>>> About to send third (async) subscribe");
+
         assertEquals("message", receivedMessage.get());
         subRespAsync.getHandler().closeStream().get();
         subscriptionClosed.get(1, TimeUnit.SECONDS);
+
+        System.out.println(">>>> Finished third (async) subscribe");
 
         subscriptionClosed = new CompletableFuture<>();
         receivedMessage = new CompletableFuture<>();
@@ -207,8 +226,12 @@ public class GreengrassV2ClientTest {
             finalReceivedMessage3.complete(new String(x.getBinaryMessage().getMessage()));
         }, Optional.empty(), Optional.empty());
 
+        System.out.println(">>>> About to send fourth (async) subscribe");
+
         assertEquals("message", receivedMessage.get());
         subRespAsync.getHandler().closeStream().get();
         subscriptionClosed.get(1, TimeUnit.SECONDS);
+
+        System.out.println(">>>> Finished fourth (async) subscribe");
     }
 }
