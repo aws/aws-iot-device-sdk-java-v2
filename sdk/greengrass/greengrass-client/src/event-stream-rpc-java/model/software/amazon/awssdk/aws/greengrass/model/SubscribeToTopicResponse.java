@@ -1,6 +1,7 @@
 package software.amazon.awssdk.aws.greengrass.model;
 
 import com.google.gson.annotations.Expose;
+import java.lang.Deprecated;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
@@ -22,16 +23,21 @@ public class SubscribeToTopicResponse implements EventStreamJsonMessage {
     };
   }
 
+  /**
+   * @deprecated No longer used
+   */
   @Expose(
       serialize = true,
       deserialize = true
   )
+  @Deprecated
   private Optional<String> topicName;
 
   public SubscribeToTopicResponse() {
     this.topicName = Optional.empty();
   }
 
+  @Deprecated
   public String getTopicName() {
     if (topicName.isPresent()) {
       return topicName.get();
@@ -39,10 +45,12 @@ public class SubscribeToTopicResponse implements EventStreamJsonMessage {
     return null;
   }
 
+  @Deprecated
   public void setTopicName(final String topicName) {
     this.topicName = Optional.ofNullable(topicName);
   }
 
+  @Deprecated
   public SubscribeToTopicResponse withTopicName(final String topicName) {
     setTopicName(topicName);
     return this;

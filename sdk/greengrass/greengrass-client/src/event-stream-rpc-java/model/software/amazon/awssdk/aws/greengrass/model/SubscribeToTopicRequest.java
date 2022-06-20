@@ -28,8 +28,15 @@ public class SubscribeToTopicRequest implements EventStreamJsonMessage {
   )
   private Optional<String> topic;
 
+  @Expose(
+      serialize = true,
+      deserialize = true
+  )
+  private Optional<String> receiveMode;
+
   public SubscribeToTopicRequest() {
     this.topic = Optional.empty();
+    this.receiveMode = Optional.empty();
   }
 
   public String getTopic() {
@@ -48,6 +55,38 @@ public class SubscribeToTopicRequest implements EventStreamJsonMessage {
     return this;
   }
 
+  public ReceiveMode getReceiveMode() {
+    if (receiveMode.isPresent()) {
+      return ReceiveMode.get(receiveMode.get());
+    }
+    return null;
+  }
+
+  public String getReceiveModeAsString() {
+    if (receiveMode.isPresent()) {
+      return receiveMode.get();
+    }
+    return null;
+  }
+
+  public void setReceiveMode(final String receiveMode) {
+    this.receiveMode = Optional.ofNullable(receiveMode);
+  }
+
+  public SubscribeToTopicRequest withReceiveMode(final String receiveMode) {
+    setReceiveMode(receiveMode);
+    return this;
+  }
+
+  public void setReceiveMode(final ReceiveMode receiveMode) {
+    this.receiveMode = Optional.ofNullable(receiveMode.getValue());
+  }
+
+  public SubscribeToTopicRequest withReceiveMode(final ReceiveMode receiveMode) {
+    setReceiveMode(receiveMode);
+    return this;
+  }
+
   @Override
   public String getApplicationModelType() {
     return APPLICATION_MODEL_TYPE;
@@ -61,11 +100,12 @@ public class SubscribeToTopicRequest implements EventStreamJsonMessage {
     final SubscribeToTopicRequest other = (SubscribeToTopicRequest)rhs;
     boolean isEquals = true;
     isEquals = isEquals && this.topic.equals(other.topic);
+    isEquals = isEquals && this.receiveMode.equals(other.receiveMode);
     return isEquals;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(topic);
+    return Objects.hash(topic, receiveMode);
   }
 }

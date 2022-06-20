@@ -29,8 +29,15 @@ public class JsonMessage implements EventStreamJsonMessage {
   )
   private Optional<Map<String, Object>> message;
 
+  @Expose(
+      serialize = true,
+      deserialize = true
+  )
+  private Optional<MessageContext> context;
+
   public JsonMessage() {
     this.message = Optional.empty();
+    this.context = Optional.empty();
   }
 
   public Map<String, Object> getMessage() {
@@ -49,6 +56,31 @@ public class JsonMessage implements EventStreamJsonMessage {
     return this;
   }
 
+  /**
+   * The context is ignored if used in PublishMessage.
+   */
+  public MessageContext getContext() {
+    if (context.isPresent()) {
+      return context.get();
+    }
+    return null;
+  }
+
+  /**
+   * The context is ignored if used in PublishMessage.
+   */
+  public void setContext(final MessageContext context) {
+    this.context = Optional.ofNullable(context);
+  }
+
+  /**
+   * The context is ignored if used in PublishMessage.
+   */
+  public JsonMessage withContext(final MessageContext context) {
+    setContext(context);
+    return this;
+  }
+
   @Override
   public String getApplicationModelType() {
     return APPLICATION_MODEL_TYPE;
@@ -62,11 +94,12 @@ public class JsonMessage implements EventStreamJsonMessage {
     final JsonMessage other = (JsonMessage)rhs;
     boolean isEquals = true;
     isEquals = isEquals && this.message.equals(other.message);
+    isEquals = isEquals && this.context.equals(other.context);
     return isEquals;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(message);
+    return Objects.hash(message, context);
   }
 }
