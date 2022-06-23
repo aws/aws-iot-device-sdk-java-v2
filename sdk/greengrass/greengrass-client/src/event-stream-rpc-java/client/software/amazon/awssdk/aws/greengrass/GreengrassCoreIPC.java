@@ -1,12 +1,15 @@
 package software.amazon.awssdk.aws.greengrass;
 
 import java.util.Optional;
+import software.amazon.awssdk.aws.greengrass.model.AuthorizeClientDeviceActionRequest;
+import software.amazon.awssdk.aws.greengrass.model.CertificateUpdateEvent;
 import software.amazon.awssdk.aws.greengrass.model.ComponentUpdatePolicyEvents;
 import software.amazon.awssdk.aws.greengrass.model.ConfigurationUpdateEvents;
 import software.amazon.awssdk.aws.greengrass.model.CreateDebugPasswordRequest;
 import software.amazon.awssdk.aws.greengrass.model.CreateLocalDeploymentRequest;
 import software.amazon.awssdk.aws.greengrass.model.DeferComponentUpdateRequest;
 import software.amazon.awssdk.aws.greengrass.model.DeleteThingShadowRequest;
+import software.amazon.awssdk.aws.greengrass.model.GetClientDeviceAuthTokenRequest;
 import software.amazon.awssdk.aws.greengrass.model.GetComponentDetailsRequest;
 import software.amazon.awssdk.aws.greengrass.model.GetConfigurationRequest;
 import software.amazon.awssdk.aws.greengrass.model.GetLocalDeploymentStatusRequest;
@@ -23,6 +26,7 @@ import software.amazon.awssdk.aws.greengrass.model.RestartComponentRequest;
 import software.amazon.awssdk.aws.greengrass.model.ResumeComponentRequest;
 import software.amazon.awssdk.aws.greengrass.model.SendConfigurationValidityReportRequest;
 import software.amazon.awssdk.aws.greengrass.model.StopComponentRequest;
+import software.amazon.awssdk.aws.greengrass.model.SubscribeToCertificateUpdatesRequest;
 import software.amazon.awssdk.aws.greengrass.model.SubscribeToComponentUpdatesRequest;
 import software.amazon.awssdk.aws.greengrass.model.SubscribeToConfigurationUpdateRequest;
 import software.amazon.awssdk.aws.greengrass.model.SubscribeToIoTCoreRequest;
@@ -34,10 +38,15 @@ import software.amazon.awssdk.aws.greengrass.model.UpdateStateRequest;
 import software.amazon.awssdk.aws.greengrass.model.UpdateThingShadowRequest;
 import software.amazon.awssdk.aws.greengrass.model.ValidateAuthorizationTokenRequest;
 import software.amazon.awssdk.aws.greengrass.model.ValidateConfigurationUpdateEvents;
+import software.amazon.awssdk.aws.greengrass.model.VerifyClientDeviceIdentityRequest;
 import software.amazon.awssdk.eventstreamrpc.StreamResponseHandler;
 import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
 
 public interface GreengrassCoreIPC {
+  AuthorizeClientDeviceActionResponseHandler authorizeClientDeviceAction(
+      final AuthorizeClientDeviceActionRequest request,
+      final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler);
+
   CreateDebugPasswordResponseHandler createDebugPassword(final CreateDebugPasswordRequest request,
       final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler);
 
@@ -50,6 +59,10 @@ public interface GreengrassCoreIPC {
       final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler);
 
   DeleteThingShadowResponseHandler deleteThingShadow(final DeleteThingShadowRequest request,
+      final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler);
+
+  GetClientDeviceAuthTokenResponseHandler getClientDeviceAuthToken(
+      final GetClientDeviceAuthTokenRequest request,
       final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler);
 
   GetComponentDetailsResponseHandler getComponentDetails(final GetComponentDetailsRequest request,
@@ -101,6 +114,10 @@ public interface GreengrassCoreIPC {
   StopComponentResponseHandler stopComponent(final StopComponentRequest request,
       final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler);
 
+  SubscribeToCertificateUpdatesResponseHandler subscribeToCertificateUpdates(
+      final SubscribeToCertificateUpdatesRequest request,
+      final Optional<StreamResponseHandler<CertificateUpdateEvent>> streamResponseHandler);
+
   SubscribeToComponentUpdatesResponseHandler subscribeToComponentUpdates(
       final SubscribeToComponentUpdatesRequest request,
       final Optional<StreamResponseHandler<ComponentUpdatePolicyEvents>> streamResponseHandler);
@@ -130,5 +147,9 @@ public interface GreengrassCoreIPC {
 
   ValidateAuthorizationTokenResponseHandler validateAuthorizationToken(
       final ValidateAuthorizationTokenRequest request,
+      final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler);
+
+  VerifyClientDeviceIdentityResponseHandler verifyClientDeviceIdentity(
+      final VerifyClientDeviceIdentityRequest request,
       final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler);
 }
