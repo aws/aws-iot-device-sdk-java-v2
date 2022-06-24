@@ -1,5 +1,27 @@
 package software.amazon.awssdk.aws.greengrass;
 
+import java.io.IOException;
+import java.lang.AutoCloseable;
+import java.lang.Boolean;
+import java.lang.Exception;
+import java.lang.InterruptedException;
+import java.lang.Override;
+import java.lang.Runnable;
+import java.lang.RuntimeException;
+import java.lang.String;
+import java.lang.Throwable;
+import java.lang.Void;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import software.amazon.awssdk.aws.greengrass.model.AuthorizeClientDeviceActionRequest;
+import software.amazon.awssdk.aws.greengrass.model.AuthorizeClientDeviceActionResponse;
+import software.amazon.awssdk.aws.greengrass.model.CertificateUpdateEvent;
 import software.amazon.awssdk.aws.greengrass.model.ComponentUpdatePolicyEvents;
 import software.amazon.awssdk.aws.greengrass.model.ConfigurationUpdateEvents;
 import software.amazon.awssdk.aws.greengrass.model.CreateDebugPasswordRequest;
@@ -10,6 +32,8 @@ import software.amazon.awssdk.aws.greengrass.model.DeferComponentUpdateRequest;
 import software.amazon.awssdk.aws.greengrass.model.DeferComponentUpdateResponse;
 import software.amazon.awssdk.aws.greengrass.model.DeleteThingShadowRequest;
 import software.amazon.awssdk.aws.greengrass.model.DeleteThingShadowResponse;
+import software.amazon.awssdk.aws.greengrass.model.GetClientDeviceAuthTokenRequest;
+import software.amazon.awssdk.aws.greengrass.model.GetClientDeviceAuthTokenResponse;
 import software.amazon.awssdk.aws.greengrass.model.GetComponentDetailsRequest;
 import software.amazon.awssdk.aws.greengrass.model.GetComponentDetailsResponse;
 import software.amazon.awssdk.aws.greengrass.model.GetConfigurationRequest;
@@ -41,6 +65,8 @@ import software.amazon.awssdk.aws.greengrass.model.SendConfigurationValidityRepo
 import software.amazon.awssdk.aws.greengrass.model.SendConfigurationValidityReportResponse;
 import software.amazon.awssdk.aws.greengrass.model.StopComponentRequest;
 import software.amazon.awssdk.aws.greengrass.model.StopComponentResponse;
+import software.amazon.awssdk.aws.greengrass.model.SubscribeToCertificateUpdatesRequest;
+import software.amazon.awssdk.aws.greengrass.model.SubscribeToCertificateUpdatesResponse;
 import software.amazon.awssdk.aws.greengrass.model.SubscribeToComponentUpdatesRequest;
 import software.amazon.awssdk.aws.greengrass.model.SubscribeToComponentUpdatesResponse;
 import software.amazon.awssdk.aws.greengrass.model.SubscribeToConfigurationUpdateRequest;
@@ -61,6 +87,8 @@ import software.amazon.awssdk.aws.greengrass.model.UpdateThingShadowResponse;
 import software.amazon.awssdk.aws.greengrass.model.ValidateAuthorizationTokenRequest;
 import software.amazon.awssdk.aws.greengrass.model.ValidateAuthorizationTokenResponse;
 import software.amazon.awssdk.aws.greengrass.model.ValidateConfigurationUpdateEvents;
+import software.amazon.awssdk.aws.greengrass.model.VerifyClientDeviceIdentityRequest;
+import software.amazon.awssdk.aws.greengrass.model.VerifyClientDeviceIdentityResponse;
 import software.amazon.awssdk.crt.io.ClientBootstrap;
 import software.amazon.awssdk.crt.io.EventLoopGroup;
 import software.amazon.awssdk.crt.io.SocketOptions;
@@ -69,16 +97,6 @@ import software.amazon.awssdk.eventstreamrpc.EventStreamRPCConnection;
 import software.amazon.awssdk.eventstreamrpc.EventStreamRPCConnectionConfig;
 import software.amazon.awssdk.eventstreamrpc.GreengrassConnectMessageSupplier;
 import software.amazon.awssdk.eventstreamrpc.StreamResponseHandler;
-
-import java.io.IOException;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 /**
  * V2 Client for Greengrass.
@@ -91,7 +109,7 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
   protected EventStreamRPCConnection connection;
 
   GreengrassCoreIPCClientV2(GreengrassCoreIPC client, EventStreamRPCConnection connection,
-                            Executor executor) {
+      Executor executor) {
     this.client = client;
     this.connection = connection;
     this.executor = executor;
@@ -113,6 +131,31 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
 
   public static Builder builder() {
     return new Builder();
+  }
+
+  /**
+   * Perform the authorizeClientDeviceAction operation synchronously.
+   *
+   * @throws InterruptedException if thread is interrupted while waiting for the response
+   * @return the response
+   *
+   * @param request request object
+   */
+  public AuthorizeClientDeviceActionResponse authorizeClientDeviceAction(
+      final AuthorizeClientDeviceActionRequest request) throws InterruptedException {
+    return getResponse(this.authorizeClientDeviceActionAsync(request));
+  }
+
+  /**
+   * Perform the authorizeClientDeviceAction operation asynchronously.
+   *
+   * @return a future which resolves to the response
+   *
+   * @param request request object
+   */
+  public CompletableFuture<AuthorizeClientDeviceActionResponse> authorizeClientDeviceActionAsync(
+      final AuthorizeClientDeviceActionRequest request) {
+    return client.authorizeClientDeviceAction(request, Optional.empty()).getResponse();
   }
 
   /**
@@ -213,6 +256,31 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
   public CompletableFuture<DeleteThingShadowResponse> deleteThingShadowAsync(
       final DeleteThingShadowRequest request) {
     return client.deleteThingShadow(request, Optional.empty()).getResponse();
+  }
+
+  /**
+   * Perform the getClientDeviceAuthToken operation synchronously.
+   *
+   * @throws InterruptedException if thread is interrupted while waiting for the response
+   * @return the response
+   *
+   * @param request request object
+   */
+  public GetClientDeviceAuthTokenResponse getClientDeviceAuthToken(
+      final GetClientDeviceAuthTokenRequest request) throws InterruptedException {
+    return getResponse(this.getClientDeviceAuthTokenAsync(request));
+  }
+
+  /**
+   * Perform the getClientDeviceAuthToken operation asynchronously.
+   *
+   * @return a future which resolves to the response
+   *
+   * @param request request object
+   */
+  public CompletableFuture<GetClientDeviceAuthTokenResponse> getClientDeviceAuthTokenAsync(
+      final GetClientDeviceAuthTokenRequest request) {
+    return client.getClientDeviceAuthToken(request, Optional.empty()).getResponse();
   }
 
   /**
@@ -588,6 +656,89 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
   public CompletableFuture<StopComponentResponse> stopComponentAsync(
       final StopComponentRequest request) {
     return client.stopComponent(request, Optional.empty()).getResponse();
+  }
+
+  /**
+   * Perform the subscribeToCertificateUpdates operation asynchronously.
+   * The initial response or error will be returned as the result of the asynchronous future, further events will
+   * arrive via the streaming callbacks.
+   *
+   * @return a future which resolves to the response
+   *
+   * @param request request object
+   * @param onStreamEvent Callback for stream events. If an executor is provided, this method will run in the executor.
+   * @param onStreamError Callback for stream errors. Return true to close the stream,
+   *     return false to keep the stream open. Even if an executor is provided,
+   *     this method will not run in the executor.
+   * @param onStreamClosed Callback for when the stream closes. If an executor is provided, this method will run in the executor.
+   */
+  public StreamingResponse<CompletableFuture<SubscribeToCertificateUpdatesResponse>, SubscribeToCertificateUpdatesResponseHandler> subscribeToCertificateUpdatesAsync(
+      final SubscribeToCertificateUpdatesRequest request,
+      Consumer<CertificateUpdateEvent> onStreamEvent,
+      Optional<Function<Throwable, Boolean>> onStreamError, Optional<Runnable> onStreamClosed) {
+    return this.subscribeToCertificateUpdatesAsync(request, getStreamingResponseHandler(onStreamEvent, onStreamError, onStreamClosed));
+  }
+
+  /**
+   * Perform the subscribeToCertificateUpdates operation synchronously.
+   * The initial response or error will be returned synchronously,
+   * further events will arrive via the streaming callbacks.
+   *
+   * @throws InterruptedException if thread is interrupted while waiting for the response
+   * @return the response
+   *
+   * @param request request object
+   * @param onStreamEvent Callback for stream events. If an executor is provided, this method will run in the executor.
+   * @param onStreamError Callback for stream errors. Return true to close the stream,
+   *     return false to keep the stream open. Even if an executor is provided,
+   *     this method will not run in the executor.
+   * @param onStreamClosed Callback for when the stream closes. If an executor is provided, this method will run in the executor.
+   */
+  public StreamingResponse<SubscribeToCertificateUpdatesResponse, SubscribeToCertificateUpdatesResponseHandler> subscribeToCertificateUpdates(
+      final SubscribeToCertificateUpdatesRequest request,
+      Consumer<CertificateUpdateEvent> onStreamEvent,
+      Optional<Function<Throwable, Boolean>> onStreamError, Optional<Runnable> onStreamClosed)
+      throws InterruptedException {
+    StreamingResponse<CompletableFuture<SubscribeToCertificateUpdatesResponse>, SubscribeToCertificateUpdatesResponseHandler> r = this.subscribeToCertificateUpdatesAsync(request, onStreamEvent, onStreamError, onStreamClosed);
+    return new StreamingResponse<>(getResponse(r.getResponse()), r.getHandler());
+  }
+
+  /**
+   * Perform the subscribeToCertificateUpdates operation synchronously.
+   * The initial response or error will be returned synchronously, further events will
+   * arrive via the streaming callbacks.
+   *
+   * @throws InterruptedException if thread is interrupted while waiting for the response
+   * @return the response
+   *
+   * @param request request object
+   * @param streamResponseHandler Methods on this object will be called as stream events happen on this operation.
+   *     If an executor is provided, the onStreamEvent and onStreamClosed methods will run in the executor.
+   */
+  public StreamingResponse<SubscribeToCertificateUpdatesResponse, SubscribeToCertificateUpdatesResponseHandler> subscribeToCertificateUpdates(
+      final SubscribeToCertificateUpdatesRequest request,
+      final StreamResponseHandler<CertificateUpdateEvent> streamResponseHandler) throws
+      InterruptedException {
+    StreamingResponse<CompletableFuture<SubscribeToCertificateUpdatesResponse>, SubscribeToCertificateUpdatesResponseHandler> r = this.subscribeToCertificateUpdatesAsync(request, streamResponseHandler);
+    return new StreamingResponse<>(getResponse(r.getResponse()), r.getHandler());
+  }
+
+  /**
+   * Perform the subscribeToCertificateUpdates operation asynchronously.
+   * The initial response or error will be returned as the result of the asynchronous future, further events will
+   * arrive via the streaming callbacks.
+   *
+   * @return a future which resolves to the response
+   *
+   * @param request request object
+   * @param streamResponseHandler Methods on this object will be called as stream events happen on this operation.
+   *     If an executor is provided, the onStreamEvent and onStreamClosed methods will run in the executor.
+   */
+  public StreamingResponse<CompletableFuture<SubscribeToCertificateUpdatesResponse>, SubscribeToCertificateUpdatesResponseHandler> subscribeToCertificateUpdatesAsync(
+      final SubscribeToCertificateUpdatesRequest request,
+      final StreamResponseHandler<CertificateUpdateEvent> streamResponseHandler) {
+    SubscribeToCertificateUpdatesResponseHandler r = client.subscribeToCertificateUpdates(request, Optional.ofNullable(getStreamingResponseHandler(streamResponseHandler)));
+    return new StreamingResponse<>(r.getResponse(), r);
   }
 
   /**
@@ -1100,6 +1251,31 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
     return client.validateAuthorizationToken(request, Optional.empty()).getResponse();
   }
 
+  /**
+   * Perform the verifyClientDeviceIdentity operation synchronously.
+   *
+   * @throws InterruptedException if thread is interrupted while waiting for the response
+   * @return the response
+   *
+   * @param request request object
+   */
+  public VerifyClientDeviceIdentityResponse verifyClientDeviceIdentity(
+      final VerifyClientDeviceIdentityRequest request) throws InterruptedException {
+    return getResponse(this.verifyClientDeviceIdentityAsync(request));
+  }
+
+  /**
+   * Perform the verifyClientDeviceIdentity operation asynchronously.
+   *
+   * @return a future which resolves to the response
+   *
+   * @param request request object
+   */
+  public CompletableFuture<VerifyClientDeviceIdentityResponse> verifyClientDeviceIdentityAsync(
+      final VerifyClientDeviceIdentityRequest request) {
+    return client.verifyClientDeviceIdentity(request, Optional.empty()).getResponse();
+  }
+
   protected static <T> T getResponse(Future<T> fut) throws InterruptedException {
     try {
       return fut.get();
@@ -1195,7 +1371,6 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
         try (EventLoopGroup elGroup = new EventLoopGroup(1);
              ClientBootstrap clientBootstrap = new ClientBootstrap(elGroup, null);
              SocketOptions socketOptions = new SocketOptions()) {
-
           socketOptions.connectTimeoutMs = 3000;
           socketOptions.domain = this.socketDomain;
           socketOptions.type = SocketOptions.SocketType.STREAM;

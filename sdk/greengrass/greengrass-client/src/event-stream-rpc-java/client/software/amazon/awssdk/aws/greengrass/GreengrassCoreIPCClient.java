@@ -2,12 +2,15 @@ package software.amazon.awssdk.aws.greengrass;
 
 import java.lang.Override;
 import java.util.Optional;
+import software.amazon.awssdk.aws.greengrass.model.AuthorizeClientDeviceActionRequest;
+import software.amazon.awssdk.aws.greengrass.model.CertificateUpdateEvent;
 import software.amazon.awssdk.aws.greengrass.model.ComponentUpdatePolicyEvents;
 import software.amazon.awssdk.aws.greengrass.model.ConfigurationUpdateEvents;
 import software.amazon.awssdk.aws.greengrass.model.CreateDebugPasswordRequest;
 import software.amazon.awssdk.aws.greengrass.model.CreateLocalDeploymentRequest;
 import software.amazon.awssdk.aws.greengrass.model.DeferComponentUpdateRequest;
 import software.amazon.awssdk.aws.greengrass.model.DeleteThingShadowRequest;
+import software.amazon.awssdk.aws.greengrass.model.GetClientDeviceAuthTokenRequest;
 import software.amazon.awssdk.aws.greengrass.model.GetComponentDetailsRequest;
 import software.amazon.awssdk.aws.greengrass.model.GetConfigurationRequest;
 import software.amazon.awssdk.aws.greengrass.model.GetLocalDeploymentStatusRequest;
@@ -24,6 +27,7 @@ import software.amazon.awssdk.aws.greengrass.model.RestartComponentRequest;
 import software.amazon.awssdk.aws.greengrass.model.ResumeComponentRequest;
 import software.amazon.awssdk.aws.greengrass.model.SendConfigurationValidityReportRequest;
 import software.amazon.awssdk.aws.greengrass.model.StopComponentRequest;
+import software.amazon.awssdk.aws.greengrass.model.SubscribeToCertificateUpdatesRequest;
 import software.amazon.awssdk.aws.greengrass.model.SubscribeToComponentUpdatesRequest;
 import software.amazon.awssdk.aws.greengrass.model.SubscribeToConfigurationUpdateRequest;
 import software.amazon.awssdk.aws.greengrass.model.SubscribeToIoTCoreRequest;
@@ -35,6 +39,7 @@ import software.amazon.awssdk.aws.greengrass.model.UpdateStateRequest;
 import software.amazon.awssdk.aws.greengrass.model.UpdateThingShadowRequest;
 import software.amazon.awssdk.aws.greengrass.model.ValidateAuthorizationTokenRequest;
 import software.amazon.awssdk.aws.greengrass.model.ValidateConfigurationUpdateEvents;
+import software.amazon.awssdk.aws.greengrass.model.VerifyClientDeviceIdentityRequest;
 import software.amazon.awssdk.eventstreamrpc.EventStreamRPCClient;
 import software.amazon.awssdk.eventstreamrpc.EventStreamRPCConnection;
 import software.amazon.awssdk.eventstreamrpc.StreamResponseHandler;
@@ -43,6 +48,14 @@ import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
 public class GreengrassCoreIPCClient extends EventStreamRPCClient implements GreengrassCoreIPC {
   public GreengrassCoreIPCClient(final EventStreamRPCConnection connection) {
     super(connection);
+  }
+
+  @Override
+  public AuthorizeClientDeviceActionResponseHandler authorizeClientDeviceAction(
+      final AuthorizeClientDeviceActionRequest request,
+      final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler) {
+    final AuthorizeClientDeviceActionOperationContext operationContext = GreengrassCoreIPCServiceModel.getAuthorizeClientDeviceActionModelContext();
+    return new AuthorizeClientDeviceActionResponseHandler(doOperationInvoke(operationContext, request, streamResponseHandler));
   }
 
   @Override
@@ -74,6 +87,14 @@ public class GreengrassCoreIPCClient extends EventStreamRPCClient implements Gre
       final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler) {
     final DeleteThingShadowOperationContext operationContext = GreengrassCoreIPCServiceModel.getDeleteThingShadowModelContext();
     return new DeleteThingShadowResponseHandler(doOperationInvoke(operationContext, request, streamResponseHandler));
+  }
+
+  @Override
+  public GetClientDeviceAuthTokenResponseHandler getClientDeviceAuthToken(
+      final GetClientDeviceAuthTokenRequest request,
+      final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler) {
+    final GetClientDeviceAuthTokenOperationContext operationContext = GreengrassCoreIPCServiceModel.getGetClientDeviceAuthTokenModelContext();
+    return new GetClientDeviceAuthTokenResponseHandler(doOperationInvoke(operationContext, request, streamResponseHandler));
   }
 
   @Override
@@ -187,6 +208,14 @@ public class GreengrassCoreIPCClient extends EventStreamRPCClient implements Gre
   }
 
   @Override
+  public SubscribeToCertificateUpdatesResponseHandler subscribeToCertificateUpdates(
+      final SubscribeToCertificateUpdatesRequest request,
+      final Optional<StreamResponseHandler<CertificateUpdateEvent>> streamResponseHandler) {
+    final SubscribeToCertificateUpdatesOperationContext operationContext = GreengrassCoreIPCServiceModel.getSubscribeToCertificateUpdatesModelContext();
+    return new SubscribeToCertificateUpdatesResponseHandler(doOperationInvoke(operationContext, request, streamResponseHandler));
+  }
+
+  @Override
   public SubscribeToComponentUpdatesResponseHandler subscribeToComponentUpdates(
       final SubscribeToComponentUpdatesRequest request,
       final Optional<StreamResponseHandler<ComponentUpdatePolicyEvents>> streamResponseHandler) {
@@ -253,5 +282,13 @@ public class GreengrassCoreIPCClient extends EventStreamRPCClient implements Gre
       final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler) {
     final ValidateAuthorizationTokenOperationContext operationContext = GreengrassCoreIPCServiceModel.getValidateAuthorizationTokenModelContext();
     return new ValidateAuthorizationTokenResponseHandler(doOperationInvoke(operationContext, request, streamResponseHandler));
+  }
+
+  @Override
+  public VerifyClientDeviceIdentityResponseHandler verifyClientDeviceIdentity(
+      final VerifyClientDeviceIdentityRequest request,
+      final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler) {
+    final VerifyClientDeviceIdentityOperationContext operationContext = GreengrassCoreIPCServiceModel.getVerifyClientDeviceIdentityModelContext();
+    return new VerifyClientDeviceIdentityResponseHandler(doOperationInvoke(operationContext, request, streamResponseHandler));
   }
 }
