@@ -1,12 +1,12 @@
+/*
+ * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 package software.amazon.awssdk.eventstreamrpc;
 
-import java.nio.charset.StandardCharsets;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.logging.Logger;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.crt.eventstream.Header;
 import software.amazon.awssdk.crt.eventstream.MessageFlags;
 import software.amazon.awssdk.crt.eventstream.MessageType;
@@ -14,19 +14,25 @@ import software.amazon.awssdk.crt.eventstream.ServerConnectionContinuationHandle
 import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
 import software.amazon.awssdk.eventstreamrpc.model.EventStreamOperationError;
 
-public abstract class OperationContinuationHandler
-            <RequestType extends EventStreamJsonMessage, ResponseType extends EventStreamJsonMessage,
-            StreamingRequestType extends EventStreamJsonMessage, StreamingResponseType extends EventStreamJsonMessage>
-        extends ServerConnectionContinuationHandler
-        implements StreamEventPublisher<StreamingResponseType> {
-    private static final Logger LOGGER = Logger.getLogger(OperationContinuationHandler.class.getName());
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
-    private OperationContinuationHandlerContext context;
+public abstract class OperationContinuationHandler<RequestType extends EventStreamJsonMessage,
+        ResponseType extends EventStreamJsonMessage,
+        StreamingRequestType extends EventStreamJsonMessage,
+        StreamingResponseType extends EventStreamJsonMessage>
+        extends ServerConnectionContinuationHandler implements StreamEventPublisher<StreamingResponseType> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(OperationContinuationHandler.class);
+
+    private final OperationContinuationHandlerContext context;
     private List<Header> initialRequestHeaders;
     private RequestType initialRequest;
 
-    abstract public OperationModelContext<RequestType, ResponseType, StreamingRequestType, StreamingResponseType>
-        getOperationModelContext();
+    abstract public OperationModelContext<RequestType, ResponseType,
+            StreamingRequestType, StreamingResponseType> getOperationModelContext();
 
     public OperationContinuationHandler(final OperationContinuationHandlerContext context) {
         super(context.getContinuation());
@@ -35,15 +41,14 @@ public abstract class OperationContinuationHandler
 
     @Override
     final protected void onContinuationClosed() {
-        LOGGER.finer(String.format("%s stream continuation closed.", getOperationName()));
+        LOGGER.debug("{} stream continuation closed.", getOperationName());
+        continuation.close();
         try {
             onStreamClosed();
-        }
-        catch(Exception e) {
-            LOGGER.severe(String.format("%s threw %s: %s", getOperationName(), e.getClass().getCanonicalName(), e.getMessage()));
+        } catch (Exception e) {
+            LOGGER.error("{} threw {}: {}", getOperationName(), e.getClass().getCanonicalName(), e.getMessage());
         }
     }
-
 
     final protected Class<RequestType> getRequestClass() {
         return getOperationModelContext().getRequestTypeClass();
@@ -63,6 +68,7 @@ public abstract class OperationContinuationHandler
 
     /**
      * Returns the operation name implemented by the handler. Generated code should populate this
+     *
      * @return
      */
     private String getOperationName() {
@@ -70,9 +76,9 @@ public abstract class OperationContinuationHandler
     }
 
     /**
-     * Called when the underlying continuation is closed. Gives operations a chance to cleanup whatever
-     * resources may be on the other end of an open stream. Also invoked when an underlying ServerConnection
-     * is closed associated with the stream/continuation
+     * Called when the underlying continuation is closed. Gives operations a chance to cleanup whatever resources may be
+     * on the other end of an open stream. Also invoked when an underlying ServerConnection is closed associated with
+     * the stream/continuation
      */
     protected abstract void onStreamClosed();
 
@@ -87,13 +93,13 @@ public abstract class OperationContinuationHandler
     }
 
     /**
-     * Main request handler for any operation to do work on an initial request. Streaming response operations
-     * still must send an initial-response which is empty.
-     *
-     * Implementers should not call sendStreamEvent() during handleRequest() to send a streaming response after
-     * an initial-response. This would violate the sequence of messages expected to occur for the specific
-     * operation. Override "afterHandleRequest()" as a way of being informed of the quickest possible time
-     * to sent a stream response after handleRequest returns.
+     * Main request handler for any operation to do work on an initial request. Streaming response operations still must
+     * send an initial-response which is empty.
+     * <p>
+     * Implementers should not call sendStreamEvent() during handleRequest() to send a streaming response after an
+     * initial-response. This would violate the sequence of messages expected to occur for the specific operation.
+     * Override "afterHandleRequest()" as a way of being informed of the quickest possible time to sent a stream
+     * response after handleRequest returns.
      *
      * @param request
      * @return
@@ -101,27 +107,39 @@ public abstract class OperationContinuationHandler
     public abstract ResponseType handleRequest(final RequestType request);
 
     /**
-     * Override to appropriately enforce stream responses are sent after the initial response.
-     * This only gets called if handleRequest returns normally and starts to send a response.
+     * Same as handleRequest, but returns a future rather than running immediately on the SDK's thread.
+     * If this method returns null, then handleRequest will be called.
+     *
+     * @param request
+     * @return
      */
-    public void afterHandleRequest() { }
+    public CompletableFuture<ResponseType> handleRequestAsync(final RequestType request) {
+        return null;
+    }
+
+    /**
+     * Override to appropriately enforce stream responses are sent after the initial response. This only gets called if
+     * handleRequest returns normally and starts to send a response.
+     */
+    public void afterHandleRequest() {
+    }
 
     /**
      * Handle an incoming stream event from the connected client on the operation.
-     *
-     * If the implementation throws an exception, the framework will respond with the modeled
-     * exception to the client, if it is modeled. If it is not modeled, it will respond with
-     * an internal error and log appropriately. Either case, throwing an exception will result
-     * in closing the stream. To keep the stream open, do not throw
+     * <p>
+     * If the implementation throws an exception, the framework will respond with the modeled exception to the client,
+     * if it is modeled. If it is not modeled, it will respond with an internal error and log appropriately. Either
+     * case, throwing an exception will result in closing the stream. To keep the stream open, do not throw
      *
      * @param streamRequestEvent
      */
     public abstract void handleStreamEvent(final StreamingRequestType streamRequestEvent);
 
     /**
-     * Retrieves the underlying EventStream request headers for inspection. Pulling these headers
-     * out shouldn't be necessary as it means operations are aware of the underlying protocol. Any
-     * headers needed to be pulled are candidates for what should be in the service model directly
+     * Retrieves the underlying EventStream request headers for inspection. Pulling these headers out shouldn't be
+     * necessary as it means operations are aware of the underlying protocol. Any headers needed to be pulled are
+     * candidates for what should be in the service model directly
+     *
      * @return
      */
     final protected List<Header> getInitialRequestHeaders() {
@@ -130,10 +148,9 @@ public abstract class OperationContinuationHandler
 
     /**
      * Retrieves the initial request object that initiated the stream
-     *
-     * For use in handler implementations if initial request is wanted to handle further in-out events
-     * May be unecessary memory, but also initial request may be used by framework to log errors with
-     * 'request-id' like semantics
+     * <p>
+     * For use in handler implementations if initial request is wanted to handle further in-out events May be unecessary
+     * memory, but also initial request may be used by framework to log errors with 'request-id' like semantics
      *
      * @return
      */
@@ -142,38 +159,38 @@ public abstract class OperationContinuationHandler
     }
 
     /**
-     * Retrieves the operation handler context. Use for inspecting state outside of the
-     * limited scope of this operation handler.
+     * Retrieves the operation handler context. Use for inspecting state outside of the limited scope of this operation
+     * handler.
      *
      * @return
      */
-    final protected OperationContinuationHandlerContext getContext () {
+    final protected OperationContinuationHandlerContext getContext() {
         return context;
     }
 
     /**
      * TODO: close stream should be sent with the final message, or separately? Either should be fine
+     *
      * @return
      */
     @Override
     final public CompletableFuture<Void> closeStream() {
-        LOGGER.fine(String.format("[%s] closing stream", getOperationName()));
-        return continuation.sendMessage(null, null,
-                MessageType.ApplicationMessage, MessageFlags.TerminateStream.getByteValue())
-            .whenComplete((res, ex) -> {
-                if (ex != null) {
-                    LOGGER.fine(String.format("[%s] closed stream", getOperationName()));
-                } else {
-                    LOGGER.fine(String.format("[%s] %s closing stream: ", getOperationName(),
-                            ex.getClass().getName(), ex.getMessage()));
-                }
-                continuation.close();
-            });
+        LOGGER.debug("[{}] closing stream", getOperationName());
+        return continuation.sendMessage(null, null, MessageType.ApplicationMessage,
+                MessageFlags.TerminateStream.getByteValue()).whenComplete((res, ex) -> {
+            continuation.close();
+            if (ex == null) {
+                LOGGER.debug("[{}] closed stream", getOperationName());
+            } else {
+                LOGGER.error("[{}] {} error closing stream: {}", getOperationName(), ex.getClass().getName(),
+                        ex.getMessage());
+            }
+        });
     }
 
     /**
-     * Used so other processes/events going on in the server can push events back into this
-     * operation's opened continuation
+     * Used so other processes/events going on in the server can push events back into this operation's opened
+     * continuation
      *
      * @param streamingResponse
      */
@@ -183,118 +200,159 @@ public abstract class OperationContinuationHandler
 
     final protected CompletableFuture<Void> sendMessage(final EventStreamJsonMessage message, final boolean close) {
         if (continuation.isClosed()) { //is this check necessary?
-            return CompletableFuture.supplyAsync(() -> { throw new EventStreamClosedException(continuation.getNativeHandle()); });
+            return CompletableFuture.supplyAsync(() -> {
+                throw new EventStreamClosedException(continuation.getNativeHandle());
+            });
         }
         final List<Header> responseHeaders = new ArrayList<>();
         byte[] outputPayload = getOperationModelContext().getServiceModel().toJson(message);
         responseHeaders.add(Header.createHeader(EventStreamRPCServiceModel.CONTENT_TYPE_HEADER,
                 EventStreamRPCServiceModel.CONTENT_TYPE_APPLICATION_JSON));
-        responseHeaders.add(Header.createHeader(EventStreamRPCServiceModel.SERVICE_MODEL_TYPE_HEADER, message.getApplicationModelType()));
+        responseHeaders.add(Header.createHeader(EventStreamRPCServiceModel.SERVICE_MODEL_TYPE_HEADER,
+                message.getApplicationModelType()));
 
         return continuation.sendMessage(responseHeaders, outputPayload, MessageType.ApplicationMessage,
-                close ? MessageFlags.TerminateStream.getByteValue() : 0)
-                .whenComplete((res, ex) -> {
-                    if (close) {
-                        continuation.close();
-                    }
-                });
+                close ? MessageFlags.TerminateStream.getByteValue() : 0).whenComplete((res, ex) -> {
+            if (close) {
+                continuation.close();
+            }
+        });
     }
 
     /**
-     * Sends an error over the stream. Same method is used for errors from the initial response or any errors
-     * that occur while the stream is open. It will always close the stream/continuation on the same message
-     * using the terminate flag on the same message
+     * Sends an error over the stream. Same method is used for errors from the initial response or any errors that occur
+     * while the stream is open. It will always close the stream/continuation on the same message using the terminate
+     * flag on the same message
+     *
      * @param message
      * @return
      */
     final protected CompletableFuture<Void> sendModeledError(final EventStreamJsonMessage message) {
         if (continuation.isClosed()) {  //is this check necessary?
-            return CompletableFuture.supplyAsync(() -> { throw new EventStreamClosedException(continuation.getNativeHandle()); });
+            return CompletableFuture.supplyAsync(() -> {
+                throw new EventStreamClosedException(continuation.getNativeHandle());
+            });
         }
         final List<Header> responseHeaders = new ArrayList<>();
         byte[] outputPayload = getOperationModelContext().getServiceModel().toJson(message);
         responseHeaders.add(Header.createHeader(EventStreamRPCServiceModel.CONTENT_TYPE_HEADER,
                 EventStreamRPCServiceModel.CONTENT_TYPE_APPLICATION_JSON));
-        responseHeaders.add(Header.createHeader(EventStreamRPCServiceModel.SERVICE_MODEL_TYPE_HEADER, message.getApplicationModelType()));
+        responseHeaders.add(Header.createHeader(EventStreamRPCServiceModel.SERVICE_MODEL_TYPE_HEADER,
+                message.getApplicationModelType()));
 
-        return continuation.sendMessage(responseHeaders, outputPayload,
-                MessageType.ApplicationError, MessageFlags.TerminateStream.getByteValue())
-                .whenComplete((res, ex) -> {
-                    //complete silence on any error closing here
-                    continuation.close();
-                });
+        return continuation.sendMessage(responseHeaders, outputPayload, MessageType.ApplicationError,
+                MessageFlags.TerminateStream.getByteValue()).whenComplete((res, ex) -> {
+            //complete silence on any error closing here
+            continuation.close();
+        });
     }
 
     private void invokeAfterHandleRequest() {
         try {
             afterHandleRequest();
         } catch (Exception e) {
-            LOGGER.warning(String.format("%s.%s afterHandleRequest() threw %s: %s",
-                    getOperationModelContext().getServiceModel().getServiceName(),
-                    getOperationName(), e.getClass().getCanonicalName(),
-                    e.getMessage()));
+            LOGGER.warn("{}.{} afterHandleRequest() threw {}: {}",
+                    getOperationModelContext().getServiceModel().getServiceName(), getOperationName(),
+                    e.getClass().getCanonicalName(), e.getMessage());
         }
     }
 
     @Override
-    final protected void onContinuationMessage(List<Header> list, byte[] bytes, MessageType messageType, int i) {
-        LOGGER.fine("Continuation native id: " + continuation.getNativeHandle());
-        final EventStreamRPCServiceModel serviceModel = getOperationModelContext().getServiceModel();
+    final protected void onContinuationMessage(List<Header> list, byte[] bytes, MessageType messageType,
+                                               int messageFlags) {
+        LOGGER.debug("Continuation native id: " + continuation.getNativeHandle());
 
+        //We can prevent a client from sending a request, and hanging up before receiving a response
+        //but doing so will prevent any work from being done
+        if (initialRequest == null && (messageFlags & MessageFlags.TerminateStream.getByteValue()) != 0) {
+            LOGGER.debug("Not invoking " + getOperationName() + " operation for client request received with a "
+                    + "terminate flag set to 1");
+            return;
+        }
+        final EventStreamRPCServiceModel serviceModel = getOperationModelContext().getServiceModel();
         try {
             if (initialRequest != null) {
-                //TODO: FIX empty close messages arrive here and throw exception
-                final StreamingRequestType streamEvent = serviceModel.fromJson(getStreamingRequestClass(), bytes);
-                //exceptions occurring during this processing will result in closure of stream
-                handleStreamEvent(streamEvent);
-            } else { //this is the initial request
+                // Empty close stream messages from the client are valid. Do not need any processing here.
+                if ((messageFlags & MessageFlags.TerminateStream.getByteValue()) != 0 && (bytes == null
+                        || bytes.length == 0)) {
+                    return;
+                } else {
+                    final StreamingRequestType streamEvent = serviceModel.fromJson(getStreamingRequestClass(), bytes);
+                    //exceptions occurring during this processing will result in closure of stream
+                    handleStreamEvent(streamEvent);
+                }
+            } else {
+                //this is the initial request
                 initialRequestHeaders = new ArrayList<>(list);
                 initialRequest = serviceModel.fromJson(getRequestClass(), bytes);
                 //call into business logic
-                
-                final ResponseType result = handleRequest(initialRequest);
-                if (result != null) {
-                    if (!getResponseClass().isInstance(result)) {
-                        throw new RuntimeException("Handler for operation [" + getOperationName()
-                                + "] did not return expected type. Found: " + result.getClass().getName());
-                    }
-                    sendMessage(result, !isStreamingOperation()).whenComplete((res, ex) -> {
-                        if (ex != null) {
-                            LOGGER.severe(ex.getClass().getName() + " sending response message: " + ex.getMessage());
-                        } else {
-                            LOGGER.finer("Response successfully sent");
-                        }
-                    });
-                    invokeAfterHandleRequest();
-                } else {
-                    //not streaming, but null response? we have a problem
-                    throw new RuntimeException("Operation handler returned null response!");
+                CompletableFuture<ResponseType> resultFuture = handleRequestAsync(initialRequest);
+                if (resultFuture == null) {
+                    resultFuture = CompletableFuture.completedFuture(handleRequest(initialRequest));
                 }
+                resultFuture.handle((result, throwable) -> {
+                    if (throwable != null) {
+                        handleAndSendError(throwable);
+                        return null;
+                    }
+                    if (result != null) {
+                        if (!getResponseClass().isInstance(result)) {
+                            throw new RuntimeException("Handler for operation [" + getOperationName()
+                                    + "] did not return expected type. Found: " + result.getClass().getName());
+                        }
+                        sendMessage(result, !isStreamingOperation()).whenComplete((res, ex) -> {
+                            if (ex != null) {
+                                LOGGER.error(ex.getClass().getName() + " sending response message: " + ex.getMessage());
+                            } else {
+                                LOGGER.trace("Response successfully sent");
+                            }
+                        });
+                        invokeAfterHandleRequest();
+                    } else {
+                        //not streaming, but null response? we have a problem
+                        throw new RuntimeException("Operation handler returned null response!");
+                    }
+                    return null;
+                }).exceptionally((throwable) -> {
+                    if (throwable != null) {
+                        handleAndSendError(throwable);
+                    }
+                    return null;
+                });
             }
-        } catch (EventStreamOperationError e) {
-            //We do not check if the specific exception thrown is a part of the core service?
-            sendModeledError(e);
-            invokeAfterHandleRequest();
         } catch (Exception e) {
+            handleAndSendError(e);
+        }
+    }
+
+    private void handleAndSendError(Throwable throwable) {
+        // Pull out the underlying error from the "handle" method of a CompletableFuture
+        if (throwable instanceof CompletionException) {
+            throwable = throwable.getCause();
+        }
+        if (throwable instanceof EventStreamOperationError) {
+            //We do not check if the specific exception thrown is a part of the core service?
+            sendModeledError((EventStreamOperationError) throwable);
+            invokeAfterHandleRequest();
+        } else {
             final List<Header> responseHeaders = new ArrayList<>(1);
             byte[] outputPayload = "InternalServerError".getBytes(StandardCharsets.UTF_8);
             responseHeaders.add(Header.createHeader(EventStreamRPCServiceModel.CONTENT_TYPE_HEADER,
                     EventStreamRPCServiceModel.CONTENT_TYPE_APPLICATION_TEXT));
-            // TODO: are there any exceptions we wouldn't want to return a generic server fault?
-            // TODO: this is the kind of exception that should be logged with a request ID especially in a server-client context
-            LOGGER.severe(String.format("[%s] operation threw unexpected %s: %s", getOperationName(),
-                    e.getClass().getCanonicalName(), e.getMessage()));
+            //are there any exceptions we wouldn't want to return a generic server fault?
+            //this is the kind of exception that should be logged with a request ID especially in a server-client context
+            LOGGER.error("[{}] operation threw unexpected {}: {}", getOperationName(),
+                    throwable.getClass().getCanonicalName(), throwable.getMessage());
 
-            continuation.sendMessage(responseHeaders, outputPayload, MessageType.ApplicationError, MessageFlags.TerminateStream.getByteValue())
-                    .whenComplete((res, ex) -> {
-                        if (ex != null) {
-                            LOGGER.severe(ex.getClass().getName() + " sending error response message: " + ex.getMessage());
-                        }
-                        else {
-                            LOGGER.finer("Error response successfully sent");
-                        }
-                        continuation.close();
-                    });
+            continuation.sendMessage(responseHeaders, outputPayload, MessageType.ApplicationError,
+                    MessageFlags.TerminateStream.getByteValue()).whenComplete((res, ex) -> {
+                if (ex != null) {
+                    LOGGER.error(ex.getClass().getName() + " sending error response message: " + ex.getMessage());
+                } else {
+                    LOGGER.trace("Error response successfully sent");
+                }
+                continuation.close();
+            });
         }
     }
 }

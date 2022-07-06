@@ -51,6 +51,11 @@ public class MQTTMessage implements EventStreamJsonMessage {
     this.topicName = Optional.ofNullable(topicName);
   }
 
+  public MQTTMessage withTopicName(final String topicName) {
+    setTopicName(topicName);
+    return this;
+  }
+
   public byte[] getPayload() {
     if (payload.isPresent()) {
       return payload.get();
@@ -60,6 +65,11 @@ public class MQTTMessage implements EventStreamJsonMessage {
 
   public void setPayload(final byte[] payload) {
     this.payload = Optional.ofNullable(payload);
+  }
+
+  public MQTTMessage withPayload(final byte[] payload) {
+    setPayload(payload);
+    return this;
   }
 
   @Override

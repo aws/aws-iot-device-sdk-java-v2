@@ -47,6 +47,11 @@ public class PublishMessage implements EventStreamJsonMessage {
     this.setUnionMember = UnionMember.JSON_MESSAGE;
   }
 
+  public PublishMessage withJsonMessage(final JsonMessage jsonMessage) {
+    setJsonMessage(jsonMessage);
+    return this;
+  }
+
   public BinaryMessage getBinaryMessage() {
     if (binaryMessage.isPresent() && (setUnionMember == UnionMember.BINARY_MESSAGE)) {
       return binaryMessage.get();
@@ -62,9 +67,13 @@ public class PublishMessage implements EventStreamJsonMessage {
     this.setUnionMember = UnionMember.BINARY_MESSAGE;
   }
 
+  public PublishMessage withBinaryMessage(final BinaryMessage binaryMessage) {
+    setBinaryMessage(binaryMessage);
+    return this;
+  }
+
   /**
    * Returns an indicator for which enum member is set. Can be used to convert to proper type.
-   * @return {@link UnionMember}
    */
   public UnionMember getSetUnionMember() {
     return setUnionMember;

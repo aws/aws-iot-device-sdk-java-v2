@@ -54,6 +54,11 @@ public class InvalidTokenError extends GreengrassCoreIPCError implements EventSt
     this.message = Optional.ofNullable(message);
   }
 
+  public InvalidTokenError withMessage(final String message) {
+    setMessage(message);
+    return this;
+  }
+
   @Override
   public String getApplicationModelType() {
     return APPLICATION_MODEL_TYPE;

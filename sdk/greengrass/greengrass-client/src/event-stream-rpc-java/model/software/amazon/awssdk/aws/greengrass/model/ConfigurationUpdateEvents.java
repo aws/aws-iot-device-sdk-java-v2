@@ -40,9 +40,14 @@ public class ConfigurationUpdateEvents implements EventStreamJsonMessage {
     this.setUnionMember = UnionMember.CONFIGURATION_UPDATE_EVENT;
   }
 
+  public ConfigurationUpdateEvents withConfigurationUpdateEvent(
+      final ConfigurationUpdateEvent configurationUpdateEvent) {
+    setConfigurationUpdateEvent(configurationUpdateEvent);
+    return this;
+  }
+
   /**
    * Returns an indicator for which enum member is set. Can be used to convert to proper type.
-   * @return {@link UnionMember}
    */
   public UnionMember getSetUnionMember() {
     return setUnionMember;

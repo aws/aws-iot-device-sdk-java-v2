@@ -50,6 +50,11 @@ public class PublishToTopicRequest implements EventStreamJsonMessage {
     this.topic = Optional.ofNullable(topic);
   }
 
+  public PublishToTopicRequest withTopic(final String topic) {
+    setTopic(topic);
+    return this;
+  }
+
   public PublishMessage getPublishMessage() {
     if (publishMessage.isPresent()) {
       return publishMessage.get();
@@ -59,6 +64,11 @@ public class PublishToTopicRequest implements EventStreamJsonMessage {
 
   public void setPublishMessage(final PublishMessage publishMessage) {
     this.publishMessage = Optional.ofNullable(publishMessage);
+  }
+
+  public PublishToTopicRequest withPublishMessage(final PublishMessage publishMessage) {
+    setPublishMessage(publishMessage);
+    return this;
   }
 
   @Override

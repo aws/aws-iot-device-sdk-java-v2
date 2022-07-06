@@ -1,19 +1,34 @@
-/**
+/*
  * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  * SPDX-License-Identifier: Apache-2.0.
+ *
+ * This file is generated.
  */
 
 package software.amazon.awssdk.iot.iotjobs.model;
 
+/**
+ * The status of the job execution.
+ *
+ */
 public enum JobStatus {
+
     UNKNOWN_ENUM_VALUE("UNKNOWN_ENUM_VALUE"),
+
     IN_PROGRESS("IN_PROGRESS"),
+
     FAILED("FAILED"),
+
     QUEUED("QUEUED"),
+
     TIMED_OUT("TIMED_OUT"),
+
     SUCCEEDED("SUCCEEDED"),
+
     CANCELED("CANCELED"),
+
     REJECTED("REJECTED"),
+
     REMOVED("REMOVED");
 
     private String value;

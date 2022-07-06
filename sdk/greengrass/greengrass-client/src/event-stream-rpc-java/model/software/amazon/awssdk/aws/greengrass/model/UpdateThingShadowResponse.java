@@ -44,6 +44,11 @@ public class UpdateThingShadowResponse implements EventStreamJsonMessage {
     this.payload = Optional.ofNullable(payload);
   }
 
+  public UpdateThingShadowResponse withPayload(final byte[] payload) {
+    setPayload(payload);
+    return this;
+  }
+
   @Override
   public String getApplicationModelType() {
     return APPLICATION_MODEL_TYPE;

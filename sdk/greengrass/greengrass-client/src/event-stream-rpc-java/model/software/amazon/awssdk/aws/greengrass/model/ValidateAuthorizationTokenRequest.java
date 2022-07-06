@@ -43,6 +43,11 @@ public class ValidateAuthorizationTokenRequest implements EventStreamJsonMessage
     this.token = Optional.ofNullable(token);
   }
 
+  public ValidateAuthorizationTokenRequest withToken(final String token) {
+    setToken(token);
+    return this;
+  }
+
   @Override
   public String getApplicationModelType() {
     return APPLICATION_MODEL_TYPE;

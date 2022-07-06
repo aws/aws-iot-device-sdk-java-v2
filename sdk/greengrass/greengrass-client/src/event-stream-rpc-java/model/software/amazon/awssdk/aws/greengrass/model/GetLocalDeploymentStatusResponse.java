@@ -43,6 +43,11 @@ public class GetLocalDeploymentStatusResponse implements EventStreamJsonMessage 
     this.deployment = Optional.ofNullable(deployment);
   }
 
+  public GetLocalDeploymentStatusResponse withDeployment(final LocalDeployment deployment) {
+    setDeployment(deployment);
+    return this;
+  }
+
   @Override
   public String getApplicationModelType() {
     return APPLICATION_MODEL_TYPE;

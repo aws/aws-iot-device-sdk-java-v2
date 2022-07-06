@@ -44,6 +44,11 @@ public class DeleteThingShadowResponse implements EventStreamJsonMessage {
     this.payload = Optional.ofNullable(payload);
   }
 
+  public DeleteThingShadowResponse withPayload(final byte[] payload) {
+    setPayload(payload);
+    return this;
+  }
+
   @Override
   public String getApplicationModelType() {
     return APPLICATION_MODEL_TYPE;

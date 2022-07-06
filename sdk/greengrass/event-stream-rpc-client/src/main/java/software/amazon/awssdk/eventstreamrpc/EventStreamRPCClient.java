@@ -1,6 +1,11 @@
 package software.amazon.awssdk.eventstreamrpc;
 
-import software.amazon.awssdk.crt.eventstream.*;
+import software.amazon.awssdk.crt.eventstream.ClientConnectionContinuation;
+import software.amazon.awssdk.crt.eventstream.ClientConnectionContinuationHandler;
+import software.amazon.awssdk.crt.eventstream.Header;
+import software.amazon.awssdk.crt.eventstream.HeaderType;
+import software.amazon.awssdk.crt.eventstream.MessageFlags;
+import software.amazon.awssdk.crt.eventstream.MessageType;
 import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
 import software.amazon.awssdk.eventstreamrpc.model.EventStreamOperationError;
 
@@ -28,14 +33,7 @@ public class EventStreamRPCClient {
     /**
      * Work horse of all operations, streaming or otherwise.
      *
-     * @param <ReqType> - Extends {@link EventStreamJsonMessage}
-     * @param <RespType> - Extends {@link EventStreamJsonMessage}
-     * @param <StrReqType> - Extends {@link EventStreamJsonMessage}
-     * @param <StrRespType> - Extends {@link EventStreamJsonMessage}
-     * @param operationModelContext - operationModelContext
-     * @param request - request
-     * @param streamResponseHandler - streamResponseHandler
-     * @return {@link OperationResponse}
+     * @return
      */
     public <ReqType extends EventStreamJsonMessage,
             RespType extends EventStreamJsonMessage,

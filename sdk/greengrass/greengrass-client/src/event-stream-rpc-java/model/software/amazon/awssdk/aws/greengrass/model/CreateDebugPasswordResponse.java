@@ -72,6 +72,11 @@ public class CreateDebugPasswordResponse implements EventStreamJsonMessage {
     this.password = Optional.ofNullable(password);
   }
 
+  public CreateDebugPasswordResponse withPassword(final String password) {
+    setPassword(password);
+    return this;
+  }
+
   public String getUsername() {
     if (username.isPresent()) {
       return username.get();
@@ -81,6 +86,11 @@ public class CreateDebugPasswordResponse implements EventStreamJsonMessage {
 
   public void setUsername(final String username) {
     this.username = Optional.ofNullable(username);
+  }
+
+  public CreateDebugPasswordResponse withUsername(final String username) {
+    setUsername(username);
+    return this;
   }
 
   public Instant getPasswordExpiration() {
@@ -94,6 +104,11 @@ public class CreateDebugPasswordResponse implements EventStreamJsonMessage {
     this.passwordExpiration = Optional.ofNullable(passwordExpiration);
   }
 
+  public CreateDebugPasswordResponse withPasswordExpiration(final Instant passwordExpiration) {
+    setPasswordExpiration(passwordExpiration);
+    return this;
+  }
+
   public String getCertificateSHA256Hash() {
     if (certificateSHA256Hash.isPresent()) {
       return certificateSHA256Hash.get();
@@ -105,6 +120,11 @@ public class CreateDebugPasswordResponse implements EventStreamJsonMessage {
     this.certificateSHA256Hash = Optional.ofNullable(certificateSHA256Hash);
   }
 
+  public CreateDebugPasswordResponse withCertificateSHA256Hash(final String certificateSHA256Hash) {
+    setCertificateSHA256Hash(certificateSHA256Hash);
+    return this;
+  }
+
   public String getCertificateSHA1Hash() {
     if (certificateSHA1Hash.isPresent()) {
       return certificateSHA1Hash.get();
@@ -114,6 +134,11 @@ public class CreateDebugPasswordResponse implements EventStreamJsonMessage {
 
   public void setCertificateSHA1Hash(final String certificateSHA1Hash) {
     this.certificateSHA1Hash = Optional.ofNullable(certificateSHA1Hash);
+  }
+
+  public CreateDebugPasswordResponse withCertificateSHA1Hash(final String certificateSHA1Hash) {
+    setCertificateSHA1Hash(certificateSHA1Hash);
+    return this;
   }
 
   @Override

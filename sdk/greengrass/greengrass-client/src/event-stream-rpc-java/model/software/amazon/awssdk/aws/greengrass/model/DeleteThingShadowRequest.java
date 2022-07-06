@@ -50,6 +50,11 @@ public class DeleteThingShadowRequest implements EventStreamJsonMessage {
     this.thingName = Optional.ofNullable(thingName);
   }
 
+  public DeleteThingShadowRequest withThingName(final String thingName) {
+    setThingName(thingName);
+    return this;
+  }
+
   public String getShadowName() {
     if (shadowName.isPresent()) {
       return shadowName.get();
@@ -59,6 +64,11 @@ public class DeleteThingShadowRequest implements EventStreamJsonMessage {
 
   public void setShadowName(final String shadowName) {
     this.shadowName = Optional.ofNullable(shadowName);
+  }
+
+  public DeleteThingShadowRequest withShadowName(final String shadowName) {
+    setShadowName(shadowName);
+    return this;
   }
 
   @Override

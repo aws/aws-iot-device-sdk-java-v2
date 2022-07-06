@@ -54,6 +54,11 @@ public class InvalidArtifactsDirectoryPathError extends GreengrassCoreIPCError i
     this.message = Optional.ofNullable(message);
   }
 
+  public InvalidArtifactsDirectoryPathError withMessage(final String message) {
+    setMessage(message);
+    return this;
+  }
+
   @Override
   public String getApplicationModelType() {
     return APPLICATION_MODEL_TYPE;

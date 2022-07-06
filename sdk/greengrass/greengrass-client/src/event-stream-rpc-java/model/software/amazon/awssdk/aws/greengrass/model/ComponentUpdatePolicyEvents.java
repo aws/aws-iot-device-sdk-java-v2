@@ -47,6 +47,12 @@ public class ComponentUpdatePolicyEvents implements EventStreamJsonMessage {
     this.setUnionMember = UnionMember.PRE_UPDATE_EVENT;
   }
 
+  public ComponentUpdatePolicyEvents withPreUpdateEvent(
+      final PreComponentUpdateEvent preUpdateEvent) {
+    setPreUpdateEvent(preUpdateEvent);
+    return this;
+  }
+
   public PostComponentUpdateEvent getPostUpdateEvent() {
     if (postUpdateEvent.isPresent() && (setUnionMember == UnionMember.POST_UPDATE_EVENT)) {
       return postUpdateEvent.get();
@@ -62,9 +68,14 @@ public class ComponentUpdatePolicyEvents implements EventStreamJsonMessage {
     this.setUnionMember = UnionMember.POST_UPDATE_EVENT;
   }
 
+  public ComponentUpdatePolicyEvents withPostUpdateEvent(
+      final PostComponentUpdateEvent postUpdateEvent) {
+    setPostUpdateEvent(postUpdateEvent);
+    return this;
+  }
+
   /**
    * Returns an indicator for which enum member is set. Can be used to convert to proper type.
-   * @return {@link UnionMember}
    */
   public UnionMember getSetUnionMember() {
     return setUnionMember;

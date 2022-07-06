@@ -60,6 +60,11 @@ public class UpdateConfigurationRequest implements EventStreamJsonMessage {
     this.keyPath = Optional.ofNullable(keyPath);
   }
 
+  public UpdateConfigurationRequest withKeyPath(final List<String> keyPath) {
+    setKeyPath(keyPath);
+    return this;
+  }
+
   public Instant getTimestamp() {
     if (timestamp.isPresent()) {
       return timestamp.get();
@@ -71,6 +76,11 @@ public class UpdateConfigurationRequest implements EventStreamJsonMessage {
     this.timestamp = Optional.ofNullable(timestamp);
   }
 
+  public UpdateConfigurationRequest withTimestamp(final Instant timestamp) {
+    setTimestamp(timestamp);
+    return this;
+  }
+
   public Map<String, Object> getValueToMerge() {
     if (valueToMerge.isPresent()) {
       return valueToMerge.get();
@@ -80,6 +90,11 @@ public class UpdateConfigurationRequest implements EventStreamJsonMessage {
 
   public void setValueToMerge(final Map<String, Object> valueToMerge) {
     this.valueToMerge = Optional.ofNullable(valueToMerge);
+  }
+
+  public UpdateConfigurationRequest withValueToMerge(final Map<String, Object> valueToMerge) {
+    setValueToMerge(valueToMerge);
+    return this;
   }
 
   @Override

@@ -53,12 +53,22 @@ public class RestartComponentResponse implements EventStreamJsonMessage {
     return null;
   }
 
+  public void setRestartStatus(final String restartStatus) {
+    this.restartStatus = Optional.ofNullable(restartStatus);
+  }
+
+  public RestartComponentResponse withRestartStatus(final String restartStatus) {
+    setRestartStatus(restartStatus);
+    return this;
+  }
+
   public void setRestartStatus(final RequestStatus restartStatus) {
     this.restartStatus = Optional.ofNullable(restartStatus.getValue());
   }
 
-  public void setRestartStatus(final String restartStatus) {
-    this.restartStatus = Optional.ofNullable(restartStatus);
+  public RestartComponentResponse withRestartStatus(final RequestStatus restartStatus) {
+    setRestartStatus(restartStatus);
+    return this;
   }
 
   public String getMessage() {
@@ -70,6 +80,11 @@ public class RestartComponentResponse implements EventStreamJsonMessage {
 
   public void setMessage(final String message) {
     this.message = Optional.ofNullable(message);
+  }
+
+  public RestartComponentResponse withMessage(final String message) {
+    setMessage(message);
+    return this;
   }
 
   @Override

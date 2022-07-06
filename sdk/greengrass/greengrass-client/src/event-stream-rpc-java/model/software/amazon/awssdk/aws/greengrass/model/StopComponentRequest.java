@@ -43,6 +43,11 @@ public class StopComponentRequest implements EventStreamJsonMessage {
     this.componentName = Optional.ofNullable(componentName);
   }
 
+  public StopComponentRequest withComponentName(final String componentName) {
+    setComponentName(componentName);
+    return this;
+  }
+
   @Override
   public String getApplicationModelType() {
     return APPLICATION_MODEL_TYPE;

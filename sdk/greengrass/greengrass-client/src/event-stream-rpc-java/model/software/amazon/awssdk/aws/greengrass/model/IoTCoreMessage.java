@@ -40,9 +40,13 @@ public class IoTCoreMessage implements EventStreamJsonMessage {
     this.setUnionMember = UnionMember.MESSAGE;
   }
 
+  public IoTCoreMessage withMessage(final MQTTMessage message) {
+    setMessage(message);
+    return this;
+  }
+
   /**
    * Returns an indicator for which enum member is set. Can be used to convert to proper type.
-   * @return {@link UnionMember}
    */
   public UnionMember getSetUnionMember() {
     return setUnionMember;

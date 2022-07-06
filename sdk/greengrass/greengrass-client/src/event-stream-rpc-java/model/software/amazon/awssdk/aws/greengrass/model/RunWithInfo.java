@@ -32,10 +32,17 @@ public class RunWithInfo implements EventStreamJsonMessage {
       serialize = true,
       deserialize = true
   )
+  private Optional<String> windowsUser;
+
+  @Expose(
+      serialize = true,
+      deserialize = true
+  )
   private Optional<SystemResourceLimits> systemResourceLimits;
 
   public RunWithInfo() {
     this.posixUser = Optional.empty();
+    this.windowsUser = Optional.empty();
     this.systemResourceLimits = Optional.empty();
   }
 
@@ -50,6 +57,27 @@ public class RunWithInfo implements EventStreamJsonMessage {
     this.posixUser = Optional.ofNullable(posixUser);
   }
 
+  public RunWithInfo withPosixUser(final String posixUser) {
+    setPosixUser(posixUser);
+    return this;
+  }
+
+  public String getWindowsUser() {
+    if (windowsUser.isPresent()) {
+      return windowsUser.get();
+    }
+    return null;
+  }
+
+  public void setWindowsUser(final String windowsUser) {
+    this.windowsUser = Optional.ofNullable(windowsUser);
+  }
+
+  public RunWithInfo withWindowsUser(final String windowsUser) {
+    setWindowsUser(windowsUser);
+    return this;
+  }
+
   public SystemResourceLimits getSystemResourceLimits() {
     if (systemResourceLimits.isPresent()) {
       return systemResourceLimits.get();
@@ -59,6 +87,11 @@ public class RunWithInfo implements EventStreamJsonMessage {
 
   public void setSystemResourceLimits(final SystemResourceLimits systemResourceLimits) {
     this.systemResourceLimits = Optional.ofNullable(systemResourceLimits);
+  }
+
+  public RunWithInfo withSystemResourceLimits(final SystemResourceLimits systemResourceLimits) {
+    setSystemResourceLimits(systemResourceLimits);
+    return this;
   }
 
   @Override
@@ -74,12 +107,13 @@ public class RunWithInfo implements EventStreamJsonMessage {
     final RunWithInfo other = (RunWithInfo)rhs;
     boolean isEquals = true;
     isEquals = isEquals && this.posixUser.equals(other.posixUser);
+    isEquals = isEquals && this.windowsUser.equals(other.windowsUser);
     isEquals = isEquals && this.systemResourceLimits.equals(other.systemResourceLimits);
     return isEquals;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(posixUser, systemResourceLimits);
+    return Objects.hash(posixUser, windowsUser, systemResourceLimits);
   }
 }

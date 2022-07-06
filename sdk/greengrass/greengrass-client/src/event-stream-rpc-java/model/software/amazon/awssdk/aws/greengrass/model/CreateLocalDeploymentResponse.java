@@ -43,6 +43,11 @@ public class CreateLocalDeploymentResponse implements EventStreamJsonMessage {
     this.deploymentId = Optional.ofNullable(deploymentId);
   }
 
+  public CreateLocalDeploymentResponse withDeploymentId(final String deploymentId) {
+    setDeploymentId(deploymentId);
+    return this;
+  }
+
   @Override
   public String getApplicationModelType() {
     return APPLICATION_MODEL_TYPE;

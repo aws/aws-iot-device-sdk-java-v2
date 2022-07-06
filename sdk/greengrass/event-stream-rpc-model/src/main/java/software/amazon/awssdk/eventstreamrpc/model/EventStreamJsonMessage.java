@@ -15,15 +15,15 @@ public interface EventStreamJsonMessage {
      * with final implementations for serialization/deserialization. Or better yet, rework
      * how it works
      *
-     * @param gson - gson
-     * @return - byte[]
+     * @param gson
+     * @return
      */
     default byte[] toPayload(final Gson gson) {
         final String payloadString = gson.toJson(this);
         if (payloadString == null || payloadString.isEmpty() || payloadString.equals("null")) {
             return "{}".getBytes(StandardCharsets.UTF_8);
         }
-        return gson.toJson(this).getBytes(StandardCharsets.UTF_8);
+        return payloadString.getBytes(StandardCharsets.UTF_8);
     }
 
     default EventStreamJsonMessage fromJson(final Gson gson, byte[] payload) {
@@ -41,7 +41,7 @@ public interface EventStreamJsonMessage {
 
     /**
      * Returns the named model type. May be used for a header.
-     * @return - Application Model Type
+     * @return
      */
     public String getApplicationModelType();
 

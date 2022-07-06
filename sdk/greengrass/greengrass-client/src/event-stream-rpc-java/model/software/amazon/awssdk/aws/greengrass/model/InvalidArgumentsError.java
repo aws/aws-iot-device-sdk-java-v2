@@ -54,6 +54,11 @@ public class InvalidArgumentsError extends GreengrassCoreIPCError implements Eve
     this.message = Optional.ofNullable(message);
   }
 
+  public InvalidArgumentsError withMessage(final String message) {
+    setMessage(message);
+    return this;
+  }
+
   @Override
   public String getApplicationModelType() {
     return APPLICATION_MODEL_TYPE;

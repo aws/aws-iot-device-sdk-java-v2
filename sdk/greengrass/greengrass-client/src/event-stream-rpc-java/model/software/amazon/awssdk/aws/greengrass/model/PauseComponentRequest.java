@@ -43,6 +43,11 @@ public class PauseComponentRequest implements EventStreamJsonMessage {
     this.componentName = Optional.ofNullable(componentName);
   }
 
+  public PauseComponentRequest withComponentName(final String componentName) {
+    setComponentName(componentName);
+    return this;
+  }
+
   @Override
   public String getApplicationModelType() {
     return APPLICATION_MODEL_TYPE;

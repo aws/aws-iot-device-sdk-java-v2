@@ -17,8 +17,8 @@ import java.util.logging.Logger;
  * client, closing of any open stream, and retrieval of response. Specific generated operation response
  * handlers are usually simple wrappers with the generic types specified
  *
- * @param <ResponseType> - Response Type
- * @param <StreamRequestType> - Stream Request Type
+ * @param <ResponseType>
+ * @param <StreamRequestType>
  */
 public class OperationResponse<ResponseType extends EventStreamJsonMessage,
                         StreamRequestType extends EventStreamJsonMessage>
@@ -52,7 +52,7 @@ public class OperationResponse<ResponseType extends EventStreamJsonMessage,
      * May throw exception if requestFlushFuture throws an exception and will
      * block if requestFlush has not completed.
      *
-     * @return {@link CompletableFuture}
+     * @return
      */
     public CompletableFuture<ResponseType> getResponse() {
         //semantics here are: if the request was never successfully sent
@@ -98,7 +98,7 @@ public class OperationResponse<ResponseType extends EventStreamJsonMessage,
     /**
      * Initiate a close on the event stream from the client side.
      *
-     * @return {@link CompletableFuture}
+     * @return
      */
     @Override
     public CompletableFuture<Void> closeStream() {
@@ -120,7 +120,7 @@ public class OperationResponse<ResponseType extends EventStreamJsonMessage,
 
     /**
      * Checks if the stream is closed
-     * @return - boolean
+     * @return
      */
     public boolean isClosed() {
         return isClosed.get();

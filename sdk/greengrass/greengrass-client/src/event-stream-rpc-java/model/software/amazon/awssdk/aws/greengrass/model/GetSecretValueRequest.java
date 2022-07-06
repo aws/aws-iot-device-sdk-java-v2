@@ -57,6 +57,11 @@ public class GetSecretValueRequest implements EventStreamJsonMessage {
     this.secretId = Optional.ofNullable(secretId);
   }
 
+  public GetSecretValueRequest withSecretId(final String secretId) {
+    setSecretId(secretId);
+    return this;
+  }
+
   public String getVersionId() {
     if (versionId.isPresent()) {
       return versionId.get();
@@ -68,6 +73,11 @@ public class GetSecretValueRequest implements EventStreamJsonMessage {
     this.versionId = Optional.ofNullable(versionId);
   }
 
+  public GetSecretValueRequest withVersionId(final String versionId) {
+    setVersionId(versionId);
+    return this;
+  }
+
   public String getVersionStage() {
     if (versionStage.isPresent()) {
       return versionStage.get();
@@ -77,6 +87,11 @@ public class GetSecretValueRequest implements EventStreamJsonMessage {
 
   public void setVersionStage(final String versionStage) {
     this.versionStage = Optional.ofNullable(versionStage);
+  }
+
+  public GetSecretValueRequest withVersionStage(final String versionStage) {
+    setVersionStage(versionStage);
+    return this;
   }
 
   @Override

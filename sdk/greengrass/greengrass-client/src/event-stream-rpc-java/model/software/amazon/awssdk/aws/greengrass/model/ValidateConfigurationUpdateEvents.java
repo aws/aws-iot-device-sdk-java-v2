@@ -41,9 +41,14 @@ public class ValidateConfigurationUpdateEvents implements EventStreamJsonMessage
     this.setUnionMember = UnionMember.VALIDATE_CONFIGURATION_UPDATE_EVENT;
   }
 
+  public ValidateConfigurationUpdateEvents withValidateConfigurationUpdateEvent(
+      final ValidateConfigurationUpdateEvent validateConfigurationUpdateEvent) {
+    setValidateConfigurationUpdateEvent(validateConfigurationUpdateEvent);
+    return this;
+  }
+
   /**
    * Returns an indicator for which enum member is set. Can be used to convert to proper type.
-   * @return {@link UnionMember}
    */
   public UnionMember getSetUnionMember() {
     return setUnionMember;

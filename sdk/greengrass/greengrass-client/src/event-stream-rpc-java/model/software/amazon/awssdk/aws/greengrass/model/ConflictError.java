@@ -54,6 +54,11 @@ public class ConflictError extends GreengrassCoreIPCError implements EventStream
     this.message = Optional.ofNullable(message);
   }
 
+  public ConflictError withMessage(final String message) {
+    setMessage(message);
+    return this;
+  }
+
   @Override
   public String getApplicationModelType() {
     return APPLICATION_MODEL_TYPE;

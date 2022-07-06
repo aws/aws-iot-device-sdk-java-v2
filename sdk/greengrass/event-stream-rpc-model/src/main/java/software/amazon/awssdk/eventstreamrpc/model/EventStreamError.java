@@ -1,5 +1,6 @@
 package software.amazon.awssdk.eventstreamrpc.model;
 
+import com.google.gson.JsonSyntaxException;
 import software.amazon.awssdk.crt.eventstream.Header;
 import software.amazon.awssdk.crt.eventstream.MessageType;
 import software.amazon.awssdk.eventstreamrpc.EventStreamRPCServiceModel;
@@ -23,15 +24,19 @@ public class EventStreamError
 
     /**
      * Put
-     * @param headers - currently unusued, but likely a useful element for output
-     * @param payload - payload
-     * @param messageType - message type
-     * @return {@link EventStreamError}
+     * @param headers currently unusued, but likely a useful element for output
+     * @param payload
+     * @param messageType
+     * @return
      */
     public static EventStreamError create(final List<Header> headers, final byte[] payload, final MessageType messageType) {
-        final HashMap<String, Object> map = EventStreamRPCServiceModel.getStaticGson().fromJson(new String(payload), HashMap.class);
-        final String message = map.getOrDefault("message", "no message").toString();
-        return new EventStreamError(String.format("%s: %s", messageType.name(), message), headers, messageType);
+        try {
+            final HashMap<String, Object> map = EventStreamRPCServiceModel.getStaticGson().fromJson(new String(payload), HashMap.class);
+            final String message = map.getOrDefault("message", "no message").toString();
+            return new EventStreamError(String.format("%s: %s", messageType.name(), message), headers, messageType);
+        } catch (JsonSyntaxException jse) {
+            return new EventStreamError(String.format("%s: Failed to deserialize error message as JSON(%s)", messageType.name(), jse.toString()), headers, messageType);
+        }
     }
 
     public EventStreamError(String message) {

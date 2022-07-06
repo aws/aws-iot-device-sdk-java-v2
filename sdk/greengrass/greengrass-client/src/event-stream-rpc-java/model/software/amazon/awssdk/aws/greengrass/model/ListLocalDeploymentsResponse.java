@@ -44,6 +44,12 @@ public class ListLocalDeploymentsResponse implements EventStreamJsonMessage {
     this.localDeployments = Optional.ofNullable(localDeployments);
   }
 
+  public ListLocalDeploymentsResponse withLocalDeployments(
+      final List<LocalDeployment> localDeployments) {
+    setLocalDeployments(localDeployments);
+    return this;
+  }
+
   @Override
   public String getApplicationModelType() {
     return APPLICATION_MODEL_TYPE;

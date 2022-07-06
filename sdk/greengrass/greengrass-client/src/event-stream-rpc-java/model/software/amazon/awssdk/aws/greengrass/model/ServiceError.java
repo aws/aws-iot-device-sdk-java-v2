@@ -54,6 +54,11 @@ public class ServiceError extends GreengrassCoreIPCError implements EventStreamJ
     this.message = Optional.ofNullable(message);
   }
 
+  public ServiceError withMessage(final String message) {
+    setMessage(message);
+    return this;
+  }
+
   @Override
   public String getApplicationModelType() {
     return APPLICATION_MODEL_TYPE;

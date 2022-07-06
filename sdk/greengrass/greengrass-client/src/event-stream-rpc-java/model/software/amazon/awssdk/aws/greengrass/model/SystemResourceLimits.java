@@ -52,6 +52,11 @@ public class SystemResourceLimits implements EventStreamJsonMessage {
     this.memory = Optional.ofNullable(memory);
   }
 
+  public SystemResourceLimits withMemory(final Long memory) {
+    setMemory(memory);
+    return this;
+  }
+
   public Double getCpus() {
     if (cpus.isPresent()) {
       return cpus.get();
@@ -61,6 +66,11 @@ public class SystemResourceLimits implements EventStreamJsonMessage {
 
   public void setCpus(final Double cpus) {
     this.cpus = Optional.ofNullable(cpus);
+  }
+
+  public SystemResourceLimits withCpus(final Double cpus) {
+    setCpus(cpus);
+    return this;
   }
 
   @Override

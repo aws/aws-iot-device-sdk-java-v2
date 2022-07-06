@@ -44,6 +44,11 @@ public class ValidateAuthorizationTokenResponse implements EventStreamJsonMessag
     this.isValid = Optional.ofNullable(isValid);
   }
 
+  public ValidateAuthorizationTokenResponse withIsValid(final Boolean isValid) {
+    setIsValid(isValid);
+    return this;
+  }
+
   @Override
   public String getApplicationModelType() {
     return APPLICATION_MODEL_TYPE;

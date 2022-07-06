@@ -29,8 +29,15 @@ public class BinaryMessage implements EventStreamJsonMessage {
   )
   private Optional<byte[]> message;
 
+  @Expose(
+      serialize = true,
+      deserialize = true
+  )
+  private Optional<MessageContext> context;
+
   public BinaryMessage() {
     this.message = Optional.empty();
+    this.context = Optional.empty();
   }
 
   public byte[] getMessage() {
@@ -42,6 +49,36 @@ public class BinaryMessage implements EventStreamJsonMessage {
 
   public void setMessage(final byte[] message) {
     this.message = Optional.ofNullable(message);
+  }
+
+  public BinaryMessage withMessage(final byte[] message) {
+    setMessage(message);
+    return this;
+  }
+
+  /**
+   * The context is ignored if used in PublishMessage.
+   */
+  public MessageContext getContext() {
+    if (context.isPresent()) {
+      return context.get();
+    }
+    return null;
+  }
+
+  /**
+   * The context is ignored if used in PublishMessage.
+   */
+  public void setContext(final MessageContext context) {
+    this.context = Optional.ofNullable(context);
+  }
+
+  /**
+   * The context is ignored if used in PublishMessage.
+   */
+  public BinaryMessage withContext(final MessageContext context) {
+    setContext(context);
+    return this;
   }
 
   @Override
@@ -57,11 +94,12 @@ public class BinaryMessage implements EventStreamJsonMessage {
     final BinaryMessage other = (BinaryMessage)rhs;
     boolean isEquals = true;
     isEquals = isEquals && EventStreamRPCServiceModel.blobTypeEquals(this.message, other.message);
+    isEquals = isEquals && this.context.equals(other.context);
     return isEquals;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(message);
+    return Objects.hash(message, context);
   }
 }

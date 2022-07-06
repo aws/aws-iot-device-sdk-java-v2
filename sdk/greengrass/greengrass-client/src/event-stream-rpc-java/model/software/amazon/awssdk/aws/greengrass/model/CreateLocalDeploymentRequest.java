@@ -87,6 +87,11 @@ public class CreateLocalDeploymentRequest implements EventStreamJsonMessage {
     this.groupName = Optional.ofNullable(groupName);
   }
 
+  public CreateLocalDeploymentRequest withGroupName(final String groupName) {
+    setGroupName(groupName);
+    return this;
+  }
+
   public Map<String, String> getRootComponentVersionsToAdd() {
     if (rootComponentVersionsToAdd.isPresent()) {
       return rootComponentVersionsToAdd.get();
@@ -98,6 +103,12 @@ public class CreateLocalDeploymentRequest implements EventStreamJsonMessage {
     this.rootComponentVersionsToAdd = Optional.ofNullable(rootComponentVersionsToAdd);
   }
 
+  public CreateLocalDeploymentRequest withRootComponentVersionsToAdd(
+      final Map<String, String> rootComponentVersionsToAdd) {
+    setRootComponentVersionsToAdd(rootComponentVersionsToAdd);
+    return this;
+  }
+
   public List<String> getRootComponentsToRemove() {
     if (rootComponentsToRemove.isPresent()) {
       return rootComponentsToRemove.get();
@@ -107,6 +118,12 @@ public class CreateLocalDeploymentRequest implements EventStreamJsonMessage {
 
   public void setRootComponentsToRemove(final List<String> rootComponentsToRemove) {
     this.rootComponentsToRemove = Optional.ofNullable(rootComponentsToRemove);
+  }
+
+  public CreateLocalDeploymentRequest withRootComponentsToRemove(
+      final List<String> rootComponentsToRemove) {
+    setRootComponentsToRemove(rootComponentsToRemove);
+    return this;
   }
 
   public Map<String, Map<String, Object>> getComponentToConfiguration() {
@@ -121,6 +138,12 @@ public class CreateLocalDeploymentRequest implements EventStreamJsonMessage {
     this.componentToConfiguration = Optional.ofNullable(componentToConfiguration);
   }
 
+  public CreateLocalDeploymentRequest withComponentToConfiguration(
+      final Map<String, Map<String, Object>> componentToConfiguration) {
+    setComponentToConfiguration(componentToConfiguration);
+    return this;
+  }
+
   public Map<String, RunWithInfo> getComponentToRunWithInfo() {
     if (componentToRunWithInfo.isPresent()) {
       return componentToRunWithInfo.get();
@@ -130,6 +153,12 @@ public class CreateLocalDeploymentRequest implements EventStreamJsonMessage {
 
   public void setComponentToRunWithInfo(final Map<String, RunWithInfo> componentToRunWithInfo) {
     this.componentToRunWithInfo = Optional.ofNullable(componentToRunWithInfo);
+  }
+
+  public CreateLocalDeploymentRequest withComponentToRunWithInfo(
+      final Map<String, RunWithInfo> componentToRunWithInfo) {
+    setComponentToRunWithInfo(componentToRunWithInfo);
+    return this;
   }
 
   public String getRecipeDirectoryPath() {
@@ -143,6 +172,11 @@ public class CreateLocalDeploymentRequest implements EventStreamJsonMessage {
     this.recipeDirectoryPath = Optional.ofNullable(recipeDirectoryPath);
   }
 
+  public CreateLocalDeploymentRequest withRecipeDirectoryPath(final String recipeDirectoryPath) {
+    setRecipeDirectoryPath(recipeDirectoryPath);
+    return this;
+  }
+
   public String getArtifactsDirectoryPath() {
     if (artifactsDirectoryPath.isPresent()) {
       return artifactsDirectoryPath.get();
@@ -152,6 +186,12 @@ public class CreateLocalDeploymentRequest implements EventStreamJsonMessage {
 
   public void setArtifactsDirectoryPath(final String artifactsDirectoryPath) {
     this.artifactsDirectoryPath = Optional.ofNullable(artifactsDirectoryPath);
+  }
+
+  public CreateLocalDeploymentRequest withArtifactsDirectoryPath(
+      final String artifactsDirectoryPath) {
+    setArtifactsDirectoryPath(artifactsDirectoryPath);
+    return this;
   }
 
   @Override

@@ -5,7 +5,6 @@
 
 package software.amazon.awssdk.iot;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializer;
 import com.google.gson.JsonSerializationContext;
@@ -17,6 +16,9 @@ import com.google.gson.JsonPrimitive;
 import java.lang.reflect.Type;
 import java.util.Date;
 
+/**
+ * Extension of Java date class to support Json serialization.  Used in IoT service models.
+ */
 public class Timestamp extends java.util.Date {
     public static class Serializer implements JsonSerializer<Timestamp> {
         public JsonElement serialize(Timestamp src, Type typeOfSrc, JsonSerializationContext context) {

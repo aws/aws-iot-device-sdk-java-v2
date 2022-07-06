@@ -1,19 +1,35 @@
 package software.amazon.awssdk.eventstreamrpc;
 
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+import com.google.gson.TypeAdapter;
+import com.google.gson.TypeAdapterFactory;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
-import software.amazon.awssdk.eventstreamrpc.model.*;
+import software.amazon.awssdk.eventstreamrpc.model.AccessDeniedException;
+import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
 import software.amazon.awssdk.eventstreamrpc.model.UnsupportedOperationException;
+import software.amazon.awssdk.eventstreamrpc.model.ValidationException;
 
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Implementers of this service model are expected to likely be singletons. There
@@ -34,9 +50,48 @@ public abstract class EventStreamRPCServiceModel {
         GsonBuilder builder = new GsonBuilder();
         builder.registerTypeAdapterFactory(new ForceNullsForMapTypeAdapterFactory());
         builder.registerTypeAdapterFactory(OptionalTypeAdapter.FACTORY);
+        builder.registerTypeAdapterFactory(EventStreamPostFromJsonTypeAdapter.FACTORY);
         builder.registerTypeAdapter(byte[].class, new Base64BlobSerializerDeserializer());
         builder.registerTypeAdapter(Instant.class, new InstantSerializerDeserializer());
+        builder.excludeFieldsWithoutExposeAnnotation();
         GSON = builder.create();
+    }
+
+    // Type adapter to automatically call "postFromJson" on all instances of EventStreamJsonMessage we construct
+    private static class EventStreamPostFromJsonTypeAdapter<E extends EventStreamJsonMessage> extends TypeAdapter<E> {
+        public static final TypeAdapterFactory FACTORY = new TypeAdapterFactory() {
+            @Override
+            public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+                if (EventStreamJsonMessage.class.isAssignableFrom(type.getRawType())) {
+                    final TypeAdapter<?> delegate = gson.getDelegateAdapter(this, type);
+                    return new EventStreamPostFromJsonTypeAdapter(delegate);
+                }
+
+                return null;
+            }
+        };
+
+        private final TypeAdapter<E> adapter;
+
+        public EventStreamPostFromJsonTypeAdapter(TypeAdapter<E> adapter) {
+            this.adapter = adapter;
+        }
+
+        @Override
+        public void write(JsonWriter out, E value) throws IOException {
+            adapter.write(out, value);
+        }
+
+        @Override
+        public E read(JsonReader in) throws IOException {
+            E obj = adapter.read(in);
+            if (obj != null) {
+                // Call postFromJson to finalize the deserialization. Especially important for unions to have their
+                // member get set correctly.
+                obj.postFromJson();
+            }
+            return obj;
+        }
     }
 
     private static class ForceNullsForMapTypeAdapterFactory implements TypeAdapterFactory {
@@ -113,9 +168,9 @@ public abstract class EventStreamRPCServiceModel {
      *
      * Note: Generated code for equals method of Smithy shapes relies on this
      *
-     * @param lhs - lhs
-     * @param rhs - rhs
-     * @return boolean
+     * @param lhs
+     * @param rhs
+     * @return
      */
     public static boolean blobTypeEquals(Optional<byte[]> lhs, Optional<byte[]> rhs) {
         if (lhs.equals(rhs)) {
@@ -162,7 +217,7 @@ public abstract class EventStreamRPCServiceModel {
 
     /**
      * For actual
-     * @return Service Name
+     * @return
      */
     public abstract String getServiceName();
 
@@ -185,7 +240,7 @@ public abstract class EventStreamRPCServiceModel {
 
     /**
      * Retreives all operations on the service
-     * @return Collection
+     * @return
      */
     public abstract Collection<String> getAllOperations();
 
@@ -203,8 +258,8 @@ public abstract class EventStreamRPCServiceModel {
      *
      * This may not be a useful interface as generated code will typically pull a known operation model context
      * Public visibility is useful for testing
-     * @param operationName operationName
-     * @return {@link OperationModelContext}
+     * @param operationName
+     * @return
      */
     public abstract OperationModelContext getOperationModelContext(String operationName);
 
@@ -247,25 +302,21 @@ public abstract class EventStreamRPCServiceModel {
 
     /**
      * Uses this service's specific model class
-     * @param applicationModelType - applicationModelType
-     * @param payload - payload
-     * @return {@link EventStreamJsonMessage}
+     * @param applicationModelType
+     * @param payload
+     * @return
      */
     public EventStreamJsonMessage fromJson(final String applicationModelType, byte[] payload) {
         final Optional<Class<? extends EventStreamJsonMessage>> clazz = getApplicationModelClass(applicationModelType);
         if (!clazz.isPresent()) {
             throw new UnmappedDataException(applicationModelType);
         }
-        final EventStreamJsonMessage msg = fromJson(clazz.get(), payload);
-        msg.postFromJson();
-        return msg;
+        return fromJson(clazz.get(), payload);
     }
 
     public <T extends EventStreamJsonMessage> T fromJson(final Class<T> clazz, byte[] payload) {
         try {
-            final T obj = getGson().fromJson(new String(payload, StandardCharsets.UTF_8), clazz);
-            obj.postFromJson();
-            return obj;
+            return getGson().fromJson(new String(payload, StandardCharsets.UTF_8), clazz);
         } catch (Exception e) {
             throw new DeserializationException(payload, e);
         }

@@ -44,6 +44,12 @@ public class SendConfigurationValidityReportRequest implements EventStreamJsonMe
     this.configurationValidityReport = Optional.ofNullable(configurationValidityReport);
   }
 
+  public SendConfigurationValidityReportRequest withConfigurationValidityReport(
+      final ConfigurationValidityReport configurationValidityReport) {
+    setConfigurationValidityReport(configurationValidityReport);
+    return this;
+  }
+
   @Override
   public String getApplicationModelType() {
     return APPLICATION_MODEL_TYPE;

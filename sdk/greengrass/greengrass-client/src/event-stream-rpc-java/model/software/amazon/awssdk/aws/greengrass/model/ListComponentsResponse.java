@@ -44,6 +44,11 @@ public class ListComponentsResponse implements EventStreamJsonMessage {
     this.components = Optional.ofNullable(components);
   }
 
+  public ListComponentsResponse withComponents(final List<ComponentDetails> components) {
+    setComponents(components);
+    return this;
+  }
+
   @Override
   public String getApplicationModelType() {
     return APPLICATION_MODEL_TYPE;

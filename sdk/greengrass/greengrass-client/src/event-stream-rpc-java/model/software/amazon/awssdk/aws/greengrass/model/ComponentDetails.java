@@ -65,6 +65,11 @@ public class ComponentDetails implements EventStreamJsonMessage {
     this.componentName = Optional.ofNullable(componentName);
   }
 
+  public ComponentDetails withComponentName(final String componentName) {
+    setComponentName(componentName);
+    return this;
+  }
+
   public String getVersion() {
     if (version.isPresent()) {
       return version.get();
@@ -74,6 +79,11 @@ public class ComponentDetails implements EventStreamJsonMessage {
 
   public void setVersion(final String version) {
     this.version = Optional.ofNullable(version);
+  }
+
+  public ComponentDetails withVersion(final String version) {
+    setVersion(version);
+    return this;
   }
 
   public LifecycleState getState() {
@@ -90,12 +100,22 @@ public class ComponentDetails implements EventStreamJsonMessage {
     return null;
   }
 
+  public void setState(final String state) {
+    this.state = Optional.ofNullable(state);
+  }
+
+  public ComponentDetails withState(final String state) {
+    setState(state);
+    return this;
+  }
+
   public void setState(final LifecycleState state) {
     this.state = Optional.ofNullable(state.getValue());
   }
 
-  public void setState(final String state) {
-    this.state = Optional.ofNullable(state);
+  public ComponentDetails withState(final LifecycleState state) {
+    setState(state);
+    return this;
   }
 
   public Map<String, Object> getConfiguration() {
@@ -107,6 +127,11 @@ public class ComponentDetails implements EventStreamJsonMessage {
 
   public void setConfiguration(final Map<String, Object> configuration) {
     this.configuration = Optional.ofNullable(configuration);
+  }
+
+  public ComponentDetails withConfiguration(final Map<String, Object> configuration) {
+    setConfiguration(configuration);
+    return this;
   }
 
   @Override

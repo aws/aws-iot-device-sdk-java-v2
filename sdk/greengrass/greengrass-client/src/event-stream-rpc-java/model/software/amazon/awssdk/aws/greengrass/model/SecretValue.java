@@ -48,6 +48,11 @@ public class SecretValue implements EventStreamJsonMessage {
     this.setUnionMember = UnionMember.SECRET_STRING;
   }
 
+  public SecretValue withSecretString(final String secretString) {
+    setSecretString(secretString);
+    return this;
+  }
+
   public byte[] getSecretBinary() {
     if (secretBinary.isPresent() && (setUnionMember == UnionMember.SECRET_BINARY)) {
       return secretBinary.get();
@@ -63,9 +68,13 @@ public class SecretValue implements EventStreamJsonMessage {
     this.setUnionMember = UnionMember.SECRET_BINARY;
   }
 
+  public SecretValue withSecretBinary(final byte[] secretBinary) {
+    setSecretBinary(secretBinary);
+    return this;
+  }
+
   /**
    * Returns an indicator for which enum member is set. Can be used to convert to proper type.
-   * @return {@link UnionMember}
    */
   public UnionMember getSetUnionMember() {
     return setUnionMember;

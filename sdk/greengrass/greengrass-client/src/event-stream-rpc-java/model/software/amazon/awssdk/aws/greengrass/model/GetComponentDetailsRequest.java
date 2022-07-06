@@ -43,6 +43,11 @@ public class GetComponentDetailsRequest implements EventStreamJsonMessage {
     this.componentName = Optional.ofNullable(componentName);
   }
 
+  public GetComponentDetailsRequest withComponentName(final String componentName) {
+    setComponentName(componentName);
+    return this;
+  }
+
   @Override
   public String getApplicationModelType() {
     return APPLICATION_MODEL_TYPE;
