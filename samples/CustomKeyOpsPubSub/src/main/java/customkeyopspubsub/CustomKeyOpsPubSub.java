@@ -12,6 +12,9 @@ import software.amazon.awssdk.crt.io.*;
 import software.amazon.awssdk.crt.mqtt.*;
 import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
 
+import software.amazon.awssdk.crt.Log;
+import software.amazon.awssdk.crt.Log.LogLevel;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.FileReader;
@@ -27,6 +30,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 
+import utils.commandlineutils.CommandLineUtils;
+
 public class CustomKeyOpsPubSub {
 
     // When run normally, we want to exit nicely even if something goes wrong
@@ -35,97 +40,13 @@ public class CustomKeyOpsPubSub {
     static String ciPropValue = System.getProperty("aws.crt.ci");
     static boolean isCI = ciPropValue != null && Boolean.valueOf(ciPropValue);
 
-    static String clientId = "test-" + UUID.randomUUID().toString();
-    static String rootCaPath;
-    static String certPath;
-    static String keyPath;
-    static String endpoint;
+    static CommandLineUtils cmdUtils;
+
     static String topic = "test/topic";
     static String message = "Hello World!";
     static int    messagesToPublish = 10;
-    static boolean showHelp = false;
-    static int port = 8883;
-
-    static void printUsage() {
-        System.out.println(
-                "Usage:\n"+
-                "  --help            This message\n"+
-                "  --clientId        Client ID to use when connecting (optional)\n"+
-                "  -e|--endpoint     AWS IoT service endpoint hostname\n"+
-                "  -p|--port         Port to connect to on the endpoint\n"+
-                "  -r|--rootca       Path to the root certificate\n"+
-                "  -c|--cert         Path to the IoT thing certificate\n"+
-                "  -k|--key          Path to the IoT thing private key\n"+
-                "  -t|--topic        Topic to subscribe/publish to (optional)\n"+
-                "  -m|--message      Message to publish (optional)\n"+
-                "  -n|--count        Number of messages to publish (optional)\n"
-        );
-    }
-
-    static void parseCommandLine(String[] args) {
-        for (int idx = 0; idx < args.length; ++idx) {
-            switch (args[idx]) {
-                case "--help":
-                    showHelp = true;
-                    break;
-                case "--clientId":
-                    if (idx + 1 < args.length) {
-                        clientId = args[++idx];
-                    }
-                    break;
-                case "-e":
-                case "--endpoint":
-                    if (idx + 1 < args.length) {
-                        endpoint = args[++idx];
-                    }
-                    break;
-                case "-p":
-                case "--port":
-                    if (idx + 1 < args.length) {
-                        port = Integer.parseInt(args[++idx]);
-                    }
-                    break;
-                case "-r":
-                case "--rootca":
-                    if (idx + 1 < args.length) {
-                        rootCaPath = args[++idx];
-                    }
-                    break;
-                case "-c":
-                case "--cert":
-                    if (idx + 1 < args.length) {
-                        certPath = args[++idx];
-                    }
-                    break;
-                case "-k":
-                case "--key":
-                    if (idx + 1 < args.length) {
-                        keyPath = args[++idx];
-                    }
-                    break;
-                case "-t":
-                case "--topic":
-                    if (idx + 1 < args.length) {
-                        topic = args[++idx];
-                    }
-                    break;
-                case "-m":
-                case "--message":
-                    if (idx + 1 < args.length) {
-                        message = args[++idx];
-                    }
-                    break;
-                case "-n":
-                case "--count":
-                    if (idx + 1 < args.length) {
-                        messagesToPublish = Integer.parseInt(args[++idx]);
-                    }
-                    break;
-                default:
-                    System.out.println("Unrecognized argument: " + args[idx]);
-            }
-        }
-    }
+    static String certPath;
+    static String keyPath;
 
     /*
      * When called during a CI run, throw an exception that will escape and fail the exec:java task
@@ -147,6 +68,8 @@ public class CustomKeyOpsPubSub {
         }
 
         public void performOperation(TlsKeyOperation operation) {
+            // throw new RuntimeException("Test Exception!");
+
             try {
                 System.out.println("MyKeyOperationHandler.performOperation" + operation.getType().name());
                 if (operation.getType() != TlsKeyOperation.Type.SIGN) {
@@ -233,13 +156,23 @@ public class CustomKeyOpsPubSub {
 
     public static void main(String[] args) {
 
-        parseCommandLine(args);
-        if (showHelp || endpoint == null || certPath == null || keyPath == null) {
-            printUsage();
-            onApplicationFailure(null);
-            return;
-        }
+        cmdUtils = new CommandLineUtils();
+        cmdUtils.registerProgramName("CustomKeyOpsPubSub");
+        cmdUtils.addCommonMQTTCommands();
+        cmdUtils.addCommonTopicMessageCommands();
+        cmdUtils.registerCommand("key", "<path>", "Path to your PKCS#8 key in PEM format.");
+        cmdUtils.registerCommand("cert", "<path>", "Path to your client certificate in PEM format.");
+        cmdUtils.registerCommand("client_id", "<int>", "Client id to use (optional, default='test-*').");
+        cmdUtils.registerCommand("port", "<int>", "Port to connect to on the endpoint (optional, default='8883').");
+        cmdUtils.registerCommand("count", "<int>", "Number of messages to publish (optional, default='10').");
+        cmdUtils.sendArguments(args);
 
+        keyPath = cmdUtils.getCommandRequired("key", "");
+        certPath = cmdUtils.getCommandRequired("cert", "");
+
+        topic = cmdUtils.getCommandOrDefault("topic", topic);
+        message = cmdUtils.getCommandOrDefault("message", message);
+        messagesToPublish = Integer.parseInt(cmdUtils.getCommandOrDefault("count", String.valueOf(messagesToPublish)));
 
         MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
             @Override
@@ -259,61 +192,48 @@ public class CustomKeyOpsPubSub {
         TlsContextCustomKeyOperationOptions keyOperationOptions = new TlsContextCustomKeyOperationOptions(myKeyOperationHandler)
                 .withCertificateFilePath(certPath);
 
-        try(EventLoopGroup eventLoopGroup = new EventLoopGroup(1);
-            HostResolver resolver = new HostResolver(eventLoopGroup);
-            ClientBootstrap clientBootstrap = new ClientBootstrap(eventLoopGroup, resolver);
-            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsCustomKeyOperationsBuilder(keyOperationOptions)) {
-
-            if (rootCaPath != null) {
-                builder.withCertificateAuthorityFromPath(null, rootCaPath);
+        try {
+            MqttClientConnection connection = cmdUtils.buildCustomKeyOperationConnection(callbacks, keyOperationOptions);
+            if (connection == null)
+            {
+                onApplicationFailure(new RuntimeException("MQTT connection creation failed!"));
             }
 
-            builder.withBootstrap(clientBootstrap)
-                .withConnectionEventCallbacks(callbacks)
-                .withClientId(clientId)
-                .withEndpoint(endpoint)
-                .withPort((short)port)
-                .withCleanSession(true)
-                .withProtocolOperationTimeoutMs(60000);
-
-            try(MqttClientConnection connection = builder.build()) {
-
-                CompletableFuture<Boolean> connected = connection.connect();
-                try {
-                    boolean sessionPresent = connected.get();
-                    System.out.println("Connected to " + (!sessionPresent ? "new" : "existing") + " session!");
-                } catch (Exception ex) {
-                    throw new RuntimeException("Exception occurred during connect", ex);
-                }
-
-                CountDownLatch countDownLatch = new CountDownLatch(messagesToPublish);
-
-                CompletableFuture<Integer> subscribed = connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, (message) -> {
-                    String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
-                    System.out.println("MESSAGE: " + payload);
-                    countDownLatch.countDown();
-                });
-
-                subscribed.get();
-
-                int count = 0;
-                while (count++ < messagesToPublish) {
-                    CompletableFuture<Integer> published = connection.publish(new MqttMessage(topic, message.getBytes(), QualityOfService.AT_LEAST_ONCE, false));
-                    published.get();
-                    Thread.sleep(1000);
-                }
-
-                countDownLatch.await();
-
-                CompletableFuture<Void> disconnected = connection.disconnect();
-                disconnected.get();
+            CompletableFuture<Boolean> connected = connection.connect();
+            try {
+                boolean sessionPresent = connected.get();
+                System.out.println("Connected to " + (!sessionPresent ? "new" : "existing") + " session!");
+            } catch (Exception ex) {
+                throw new RuntimeException("Exception occurred during connect", ex);
             }
+
+            CountDownLatch countDownLatch = new CountDownLatch(messagesToPublish);
+
+            CompletableFuture<Integer> subscribed = connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, (message) -> {
+                String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
+                System.out.println("MESSAGE: " + payload);
+                countDownLatch.countDown();
+            });
+
+            subscribed.get();
+
+            int count = 0;
+            while (count++ < messagesToPublish) {
+                CompletableFuture<Integer> published = connection.publish(new MqttMessage(topic, message.getBytes(), QualityOfService.AT_LEAST_ONCE, false));
+                published.get();
+                Thread.sleep(1000);
+            }
+
+            countDownLatch.await();
+
+            CompletableFuture<Void> disconnected = connection.disconnect();
+            disconnected.get();
+
         } catch (CrtRuntimeException | InterruptedException | ExecutionException ex) {
             onApplicationFailure(ex);
         }
 
         CrtResource.waitForNoResources();
-
         System.out.println("Complete!");
     }
 }
