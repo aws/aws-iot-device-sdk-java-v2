@@ -152,6 +152,10 @@ public class CustomKeyOpsPubSub {
                 throw new RuntimeException(ex);
             }
         }
+
+        public void onCleanup() {
+            System.out.println(("Cleaned up MyKeyOperationHandler"));
+        }
     }
 
     public static void main(String[] args) {
