@@ -60,7 +60,7 @@ public class CustomKeyOpsPubSub {
         }
     }
 
-    static class MyKeyOperationHandler implements TlsKeyOperationHandler {
+    static class MyKeyOperationHandler implements TlsKeyOperationHandler.TlsKeyOperationHandlerEvents {
         RSAPrivateKey key;
 
         MyKeyOperationHandler(String keyPath) {
@@ -189,7 +189,8 @@ public class CustomKeyOpsPubSub {
         };
 
         MyKeyOperationHandler myKeyOperationHandler = new MyKeyOperationHandler(keyPath);
-        TlsContextCustomKeyOperationOptions keyOperationOptions = new TlsContextCustomKeyOperationOptions(myKeyOperationHandler)
+        TlsKeyOperationHandler keyOperationHandler = new TlsKeyOperationHandler(myKeyOperationHandler);
+        TlsContextCustomKeyOperationOptions keyOperationOptions = new TlsContextCustomKeyOperationOptions(keyOperationHandler)
                 .withCertificateFilePath(certPath);
 
         try {

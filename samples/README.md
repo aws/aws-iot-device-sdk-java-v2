@@ -7,6 +7,7 @@
 * [Raw Connect](#raw-connect)
 * [WindowsCert Connect](#windowscert-connect)
 * [CustomAuthorizer Connect](#custom-authorizer-connect)
+* [CustomKeyOperationPubSub](#custom-key-operations-pubsub)
 * [Shadow](#shadow)
 * [Jobs](#jobs)
 * [fleet provisioning](#fleet-provisioning)
@@ -366,6 +367,8 @@ You will need to setup your Custom Authorizer so that the lambda function return
 
 ## Custom Key Operations PubSub
 
+WARNING: Linux only
+
 This sample shows how to perform custom private key operations during the MQTT TLS handshake.
 This is necessary if you require an external library to handle private
 key operations such as signing and decrypting.
@@ -381,7 +384,7 @@ a PKCS#8 file (starts with "-----BEGIN PRIVATE KEY-----"), run the following cmd
 
 To Run:
 ``` sh
-> mvn exec:java -pl samples/CustomKeyOpsPubSub -Dexec.mainClass=customkeyopspubsub.CustomKeyOpsPubSub -Dexec.args='--endpoint <endpoint> --rootca </path/to/AmazonRootCA1.pem> --cert <cert path> --key <pkcs8 key path>'
+> mvn exec:java -pl samples/CustomKeyOpsPubSub -Dexec.mainClass=customkeyopspubsub.CustomKeyOpsPubSub -Dexec.args='--endpoint <endpoint> --ca_file <path to root CA> --cert <path to certificate> --key <path to pkcs8 key>'
 ```
 
 
