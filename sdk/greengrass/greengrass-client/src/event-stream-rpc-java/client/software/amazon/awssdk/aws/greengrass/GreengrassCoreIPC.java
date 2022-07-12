@@ -22,6 +22,7 @@ import software.amazon.awssdk.aws.greengrass.model.ListNamedShadowsForThingReque
 import software.amazon.awssdk.aws.greengrass.model.PauseComponentRequest;
 import software.amazon.awssdk.aws.greengrass.model.PublishToIoTCoreRequest;
 import software.amazon.awssdk.aws.greengrass.model.PublishToTopicRequest;
+import software.amazon.awssdk.aws.greengrass.model.PutComponentMetricRequest;
 import software.amazon.awssdk.aws.greengrass.model.RestartComponentRequest;
 import software.amazon.awssdk.aws.greengrass.model.ResumeComponentRequest;
 import software.amazon.awssdk.aws.greengrass.model.SendConfigurationValidityReportRequest;
@@ -99,6 +100,9 @@ public interface GreengrassCoreIPC {
       final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler);
 
   PublishToTopicResponseHandler publishToTopic(final PublishToTopicRequest request,
+      final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler);
+
+  PutComponentMetricResponseHandler putComponentMetric(final PutComponentMetricRequest request,
       final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler);
 
   RestartComponentResponseHandler restartComponent(final RestartComponentRequest request,

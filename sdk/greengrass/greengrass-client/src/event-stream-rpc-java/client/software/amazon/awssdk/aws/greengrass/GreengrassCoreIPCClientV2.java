@@ -57,6 +57,8 @@ import software.amazon.awssdk.aws.greengrass.model.PublishToIoTCoreRequest;
 import software.amazon.awssdk.aws.greengrass.model.PublishToIoTCoreResponse;
 import software.amazon.awssdk.aws.greengrass.model.PublishToTopicRequest;
 import software.amazon.awssdk.aws.greengrass.model.PublishToTopicResponse;
+import software.amazon.awssdk.aws.greengrass.model.PutComponentMetricRequest;
+import software.amazon.awssdk.aws.greengrass.model.PutComponentMetricResponse;
 import software.amazon.awssdk.aws.greengrass.model.RestartComponentRequest;
 import software.amazon.awssdk.aws.greengrass.model.RestartComponentResponse;
 import software.amazon.awssdk.aws.greengrass.model.ResumeComponentRequest;
@@ -556,6 +558,31 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
   public CompletableFuture<PublishToTopicResponse> publishToTopicAsync(
       final PublishToTopicRequest request) {
     return client.publishToTopic(request, Optional.empty()).getResponse();
+  }
+
+  /**
+   * Perform the putComponentMetric operation synchronously.
+   *
+   * @throws InterruptedException if thread is interrupted while waiting for the response
+   * @return the response
+   *
+   * @param request request object
+   */
+  public PutComponentMetricResponse putComponentMetric(final PutComponentMetricRequest request)
+      throws InterruptedException {
+    return getResponse(this.putComponentMetricAsync(request));
+  }
+
+  /**
+   * Perform the putComponentMetric operation asynchronously.
+   *
+   * @return a future which resolves to the response
+   *
+   * @param request request object
+   */
+  public CompletableFuture<PutComponentMetricResponse> putComponentMetricAsync(
+      final PutComponentMetricRequest request) {
+    return client.putComponentMetric(request, Optional.empty()).getResponse();
   }
 
   /**
