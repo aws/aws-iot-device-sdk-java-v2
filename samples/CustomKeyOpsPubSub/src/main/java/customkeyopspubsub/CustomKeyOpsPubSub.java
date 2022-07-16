@@ -154,7 +154,7 @@ public class CustomKeyOpsPubSub {
         }
 
         public void onCleanup() {
-            System.out.println(("Cleaned up MyKeyOperationHandler"));
+            System.out.println(("\n Cleaned up MyKeyOperationHandler \n"));
         }
     }
 
