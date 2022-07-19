@@ -167,7 +167,11 @@ public class CommandLineUtils {
             buildConnectionSetupCAFileDefaults(builder);
             buildConnectionSetupConnectionDefaults(builder, callbacks);
             buildConnectionSetupProxyDefaults(builder);
-            return builder.build();
+            
+            MqttClientConnection conn = builder.build();
+            builder.close();
+            return conn;
+
         } catch (CrtRuntimeException ex) {
             return null;
         }

@@ -154,7 +154,7 @@ public class CustomKeyOpsPubSub {
         }
 
         public void onCleanup() {
-            System.out.println(("\n Cleaned up MyKeyOperationHandler \n"));
+            System.out.println(("Cleaned up MyKeyOperationHandler"));
         }
     }
 
@@ -233,6 +233,8 @@ public class CustomKeyOpsPubSub {
 
             CompletableFuture<Void> disconnected = connection.disconnect();
             disconnected.get();
+
+            connection.close();
 
         } catch (CrtRuntimeException | InterruptedException | ExecutionException ex) {
             onApplicationFailure(ex);
