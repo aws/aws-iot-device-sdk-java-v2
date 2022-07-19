@@ -78,6 +78,9 @@ public class CustomAuthorizerConnect {
             // (see sampleConnectAndDisconnect for implementation)
             cmdUtils.sampleConnectAndDisconnect(connection);
 
+            // Close the connection now that we are completely done with it.
+            connection.close();
+
         } catch (CrtRuntimeException | InterruptedException | ExecutionException ex) {
             onApplicationFailure(ex);
         }
