@@ -80,7 +80,7 @@ mvn clean install
 mkdir sdk-workspace
 cd sdk-workspace
 # Clone the CRT repository
-#     (Use the latest version of the CRT here instead of "v0.16.14")
+#     (Use the latest version of the CRT here instead of "v0.17.1")
 git clone --branch v0.17.1 --recurse-submodules https://github.com/awslabs/aws-crt-java.git
 cd aws-crt-java
 # Compile and install the CRT
@@ -102,7 +102,7 @@ NOTE: The shadow sample does not currently complete on android due to its depend
 mkdir sdk-workspace
 cd sdk-workspace
 # Clone the CRT repository
-#     (Use the latest version of the CRT here instead of "v0.16.14")
+#     (Use the latest version of the CRT here instead of "v0.17.1")
 git clone --branch v0.17.1 --recurse-submodules https://github.com/awslabs/aws-crt-java.git
 # Compile and install the CRT for Android
 cd aws-crt-java/android
