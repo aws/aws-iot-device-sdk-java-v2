@@ -142,6 +142,9 @@ public class Pkcs11Connect {
                     CompletableFuture<Void> disconnected = connection.disconnect();
                     disconnected.get();
                     System.out.println("Disconnected.");
+
+                    // Close the connection now that we are completely done with it.
+                    connection.close();
                 }
             } catch (CrtRuntimeException | InterruptedException | ExecutionException ex) {
                 onApplicationFailure(ex);
