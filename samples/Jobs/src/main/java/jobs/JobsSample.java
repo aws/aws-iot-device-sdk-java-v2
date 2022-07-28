@@ -278,6 +278,10 @@ public class JobsSample {
 
             CompletableFuture<Void> disconnected = connection.disconnect();
             disconnected.get();
+
+            // Close the connection now that we are completely done with it.
+            connection.close();
+
         } catch (CrtRuntimeException | InterruptedException | ExecutionException ex) {
             System.out.println("Exception encountered: " + ex.toString());
         }
