@@ -23,6 +23,7 @@ import software.amazon.awssdk.aws.greengrass.model.ListNamedShadowsForThingReque
 import software.amazon.awssdk.aws.greengrass.model.PauseComponentRequest;
 import software.amazon.awssdk.aws.greengrass.model.PublishToIoTCoreRequest;
 import software.amazon.awssdk.aws.greengrass.model.PublishToTopicRequest;
+import software.amazon.awssdk.aws.greengrass.model.PutComponentMetricRequest;
 import software.amazon.awssdk.aws.greengrass.model.RestartComponentRequest;
 import software.amazon.awssdk.aws.greengrass.model.ResumeComponentRequest;
 import software.amazon.awssdk.aws.greengrass.model.SendConfigurationValidityReportRequest;
@@ -176,6 +177,14 @@ public class GreengrassCoreIPCClient extends EventStreamRPCClient implements Gre
       final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler) {
     final PublishToTopicOperationContext operationContext = GreengrassCoreIPCServiceModel.getPublishToTopicModelContext();
     return new PublishToTopicResponseHandler(doOperationInvoke(operationContext, request, streamResponseHandler));
+  }
+
+  @Override
+  public PutComponentMetricResponseHandler putComponentMetric(
+      final PutComponentMetricRequest request,
+      final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler) {
+    final PutComponentMetricOperationContext operationContext = GreengrassCoreIPCServiceModel.getPutComponentMetricModelContext();
+    return new PutComponentMetricResponseHandler(doOperationInvoke(operationContext, request, streamResponseHandler));
   }
 
   @Override
