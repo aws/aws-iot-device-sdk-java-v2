@@ -165,7 +165,7 @@ public class GreengrassV2ClientTest {
 
         assertEquals("message", receivedMessage.get());
         subResp.getHandler().closeStream().get();
-        subscriptionClosed.get(1, TimeUnit.SECONDS);
+        subscriptionClosed.get(5, TimeUnit.SECONDS);
 
         subscriptionClosed = new CompletableFuture<>();
         receivedMessage = new CompletableFuture<>();
