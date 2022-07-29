@@ -369,9 +369,9 @@ You will need to setup your Custom Authorizer so that the lambda function return
 
 WARNING: Linux only
 
-This sample shows how to perform custom private key operations during the MQTT TLS handshake.
-This is necessary if you require an external library to handle private
-key operations such as signing and decrypting.
+This sample shows how to perform custom private key operations during the Mutual
+TLS handshake. This is necessary if you require an external library to handle
+private key operations such as signing and decrypting.
 
 Note that, for this sample, the `--key` passed via args must be a PKCS#8 file,
 instead of the typical PKCS#1 file that AWS IoT Core vends by default. To convert

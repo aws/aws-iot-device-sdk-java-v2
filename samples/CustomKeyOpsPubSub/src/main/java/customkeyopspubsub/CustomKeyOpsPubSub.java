@@ -68,10 +68,9 @@ public class CustomKeyOpsPubSub {
         }
 
         public void performOperation(TlsKeyOperation operation) {
-            // throw new RuntimeException("Test Exception!");
-
             try {
                 System.out.println("MyKeyOperationHandler.performOperation" + operation.getType().name());
+                
                 if (operation.getType() != TlsKeyOperation.Type.SIGN) {
                     throw new RuntimeException("Simple sample only handles SIGN operations");
                 }
