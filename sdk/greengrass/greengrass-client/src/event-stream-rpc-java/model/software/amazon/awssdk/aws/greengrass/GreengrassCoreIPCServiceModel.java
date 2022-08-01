@@ -67,6 +67,8 @@ import software.amazon.awssdk.aws.greengrass.model.LocalDeployment;
 import software.amazon.awssdk.aws.greengrass.model.MQTTCredential;
 import software.amazon.awssdk.aws.greengrass.model.MQTTMessage;
 import software.amazon.awssdk.aws.greengrass.model.MessageContext;
+import software.amazon.awssdk.aws.greengrass.model.Metric;
+import software.amazon.awssdk.aws.greengrass.model.MetricUnitType;
 import software.amazon.awssdk.aws.greengrass.model.PauseComponentRequest;
 import software.amazon.awssdk.aws.greengrass.model.PauseComponentResponse;
 import software.amazon.awssdk.aws.greengrass.model.PostComponentUpdateEvent;
@@ -76,6 +78,8 @@ import software.amazon.awssdk.aws.greengrass.model.PublishToIoTCoreRequest;
 import software.amazon.awssdk.aws.greengrass.model.PublishToIoTCoreResponse;
 import software.amazon.awssdk.aws.greengrass.model.PublishToTopicRequest;
 import software.amazon.awssdk.aws.greengrass.model.PublishToTopicResponse;
+import software.amazon.awssdk.aws.greengrass.model.PutComponentMetricRequest;
+import software.amazon.awssdk.aws.greengrass.model.PutComponentMetricResponse;
 import software.amazon.awssdk.aws.greengrass.model.QOS;
 import software.amazon.awssdk.aws.greengrass.model.ReceiveMode;
 import software.amazon.awssdk.aws.greengrass.model.ReportedLifecycleState;
@@ -204,6 +208,10 @@ public class GreengrassCoreIPCServiceModel extends EventStreamRPCServiceModel {
 
   private static final PublishToTopicOperationContext _PUBLISH_TO_TOPIC_OPERATION_CONTEXT = new PublishToTopicOperationContext();
 
+  public static final String PUT_COMPONENT_METRIC = SERVICE_NAMESPACE + "#" + "PutComponentMetric";
+
+  private static final PutComponentMetricOperationContext _PUT_COMPONENT_METRIC_OPERATION_CONTEXT = new PutComponentMetricOperationContext();
+
   public static final String RESTART_COMPONENT = SERVICE_NAMESPACE + "#" + "RestartComponent";
 
   private static final RestartComponentOperationContext _RESTART_COMPONENT_OPERATION_CONTEXT = new RestartComponentOperationContext();
@@ -299,6 +307,8 @@ public class GreengrassCoreIPCServiceModel extends EventStreamRPCServiceModel {
     SERVICE_OPERATION_SET.add(PUBLISH_TO_IOT_CORE);
     SERVICE_OPERATION_MODEL_MAP.put(PUBLISH_TO_TOPIC, _PUBLISH_TO_TOPIC_OPERATION_CONTEXT);
     SERVICE_OPERATION_SET.add(PUBLISH_TO_TOPIC);
+    SERVICE_OPERATION_MODEL_MAP.put(PUT_COMPONENT_METRIC, _PUT_COMPONENT_METRIC_OPERATION_CONTEXT);
+    SERVICE_OPERATION_SET.add(PUT_COMPONENT_METRIC);
     SERVICE_OPERATION_MODEL_MAP.put(RESTART_COMPONENT, _RESTART_COMPONENT_OPERATION_CONTEXT);
     SERVICE_OPERATION_SET.add(RESTART_COMPONENT);
     SERVICE_OPERATION_MODEL_MAP.put(RESUME_COMPONENT, _RESUME_COMPONENT_OPERATION_CONTEXT);
@@ -387,6 +397,8 @@ public class GreengrassCoreIPCServiceModel extends EventStreamRPCServiceModel {
     SERVICE_OBJECT_MODEL_MAP.put(MQTTCredential.APPLICATION_MODEL_TYPE, MQTTCredential.class);
     SERVICE_OBJECT_MODEL_MAP.put(MQTTMessage.APPLICATION_MODEL_TYPE, MQTTMessage.class);
     SERVICE_OBJECT_MODEL_MAP.put(MessageContext.APPLICATION_MODEL_TYPE, MessageContext.class);
+    SERVICE_OBJECT_MODEL_MAP.put(Metric.APPLICATION_MODEL_TYPE, Metric.class);
+    SERVICE_OBJECT_MODEL_MAP.put(MetricUnitType.APPLICATION_MODEL_TYPE, MetricUnitType.class);
     SERVICE_OBJECT_MODEL_MAP.put(PauseComponentRequest.APPLICATION_MODEL_TYPE, PauseComponentRequest.class);
     SERVICE_OBJECT_MODEL_MAP.put(PauseComponentResponse.APPLICATION_MODEL_TYPE, PauseComponentResponse.class);
     SERVICE_OBJECT_MODEL_MAP.put(PostComponentUpdateEvent.APPLICATION_MODEL_TYPE, PostComponentUpdateEvent.class);
@@ -396,6 +408,8 @@ public class GreengrassCoreIPCServiceModel extends EventStreamRPCServiceModel {
     SERVICE_OBJECT_MODEL_MAP.put(PublishToIoTCoreResponse.APPLICATION_MODEL_TYPE, PublishToIoTCoreResponse.class);
     SERVICE_OBJECT_MODEL_MAP.put(PublishToTopicRequest.APPLICATION_MODEL_TYPE, PublishToTopicRequest.class);
     SERVICE_OBJECT_MODEL_MAP.put(PublishToTopicResponse.APPLICATION_MODEL_TYPE, PublishToTopicResponse.class);
+    SERVICE_OBJECT_MODEL_MAP.put(PutComponentMetricRequest.APPLICATION_MODEL_TYPE, PutComponentMetricRequest.class);
+    SERVICE_OBJECT_MODEL_MAP.put(PutComponentMetricResponse.APPLICATION_MODEL_TYPE, PutComponentMetricResponse.class);
     SERVICE_OBJECT_MODEL_MAP.put(QOS.APPLICATION_MODEL_TYPE, QOS.class);
     SERVICE_OBJECT_MODEL_MAP.put(ReceiveMode.APPLICATION_MODEL_TYPE, ReceiveMode.class);
     SERVICE_OBJECT_MODEL_MAP.put(ReportedLifecycleState.APPLICATION_MODEL_TYPE, ReportedLifecycleState.class);
@@ -520,6 +534,10 @@ public class GreengrassCoreIPCServiceModel extends EventStreamRPCServiceModel {
 
   public static PublishToTopicOperationContext getPublishToTopicModelContext() {
     return _PUBLISH_TO_TOPIC_OPERATION_CONTEXT;
+  }
+
+  public static PutComponentMetricOperationContext getPutComponentMetricModelContext() {
+    return _PUT_COMPONENT_METRIC_OPERATION_CONTEXT;
   }
 
   public static RestartComponentOperationContext getRestartComponentModelContext() {

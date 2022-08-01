@@ -204,7 +204,10 @@ public class CommandLineUtils {
             buildConnectionSetupCAFileDefaults(builder);
             buildConnectionSetupConnectionDefaults(builder, callbacks);
 
-            return builder.build();
+            MqttClientConnection conn = builder.build();
+            builder.close();
+            return conn;
+
         } catch (CrtRuntimeException ex) {
             return null;
         }
@@ -245,7 +248,9 @@ public class CommandLineUtils {
             X509CredentialsProvider provider = x509builder.build();
             builder.withWebsocketCredentialsProvider(provider);
 
-            return builder.build();
+            MqttClientConnection conn = builder.build();
+            builder.close();
+            return conn;
 
         } catch (CrtRuntimeException ex) {
             return null;
@@ -264,7 +269,9 @@ public class CommandLineUtils {
             builder.withWebsockets(true);
             builder.withWebsocketSigningRegion(getCommandRequired(m_cmd_signing_region, ""));
 
-            return builder.build();
+            MqttClientConnection conn = builder.build();
+            builder.close();
+            return conn;
 
         } catch (CrtRuntimeException ex) {
             return null;
@@ -280,7 +287,10 @@ public class CommandLineUtils {
             buildConnectionSetupCAFileDefaults(builder);
             buildConnectionSetupConnectionDefaults(builder, callbacks);
             buildConnectionSetupProxyDefaults(builder);
-            return builder.build();
+
+            MqttClientConnection conn = builder.build();
+            builder.close();
+            return conn;
         }
         catch (CrtRuntimeException ex) {
             return null;
@@ -298,7 +308,10 @@ public class CommandLineUtils {
                 getCommandOrDefault(m_cmd_custom_auth_authorizer_name, null),
                 getCommandOrDefault(m_cmd_custom_auth_authorizer_signature, null),
                 getCommandOrDefault(m_cmd_custom_auth_password, null));
-            return builder.build();
+
+            MqttClientConnection conn = builder.build();
+            builder.close();
+            return conn;
         }
         catch (CrtRuntimeException | UnsupportedEncodingException ex) {
             return null;
