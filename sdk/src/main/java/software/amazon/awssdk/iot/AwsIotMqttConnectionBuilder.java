@@ -21,6 +21,7 @@ import software.amazon.awssdk.crt.http.HttpProxyOptions;
 import software.amazon.awssdk.crt.io.ClientBootstrap;
 import software.amazon.awssdk.crt.io.ClientTlsContext;
 import software.amazon.awssdk.crt.io.SocketOptions;
+import software.amazon.awssdk.crt.io.TlsContextCustomKeyOperationOptions;
 import software.amazon.awssdk.crt.io.TlsContextOptions;
 import software.amazon.awssdk.crt.io.TlsContextPkcs11Options;
 import software.amazon.awssdk.crt.mqtt.MqttClient;
@@ -146,6 +147,18 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     }
 
     /**
+     * Create a new builder with mTLS, using a custom handler for private key operations.
+     *
+     * @param operationOptions options for using a custom handler
+     * @return {@link AwsIotMqttConnectionBuilder}
+     */
+    public static AwsIotMqttConnectionBuilder newMtlsCustomKeyOperationsBuilder(TlsContextCustomKeyOperationOptions operationOptions) {
+        try (TlsContextOptions tlsContextOptions = TlsContextOptions.createWithMtlsCustomKeyOperations(operationOptions)) {
+            return new AwsIotMqttConnectionBuilder(tlsContextOptions);
+        }
+    }
+    
+    /**     
      * Create a new builder with mTLS, using a certificate in a Windows certificate store.
      *
      * NOTE: Windows only

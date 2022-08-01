@@ -7,6 +7,7 @@
 * [Raw Connect](#raw-connect)
 * [WindowsCert Connect](#windowscert-connect)
 * [CustomAuthorizer Connect](#custom-authorizer-connect)
+* [CustomKeyOperationPubSub](#custom-key-operations-pubsub)
 * [Shadow](#shadow)
 * [Jobs](#jobs)
 * [fleet provisioning](#fleet-provisioning)
@@ -365,6 +366,29 @@ mvn compile exec:java -pl samples/CustomAuthorizerConnect -Dexec.mainClass=custo
 ```
 
 You will need to setup your Custom Authorizer so that the lambda function returns a policy document. See [this page on the documentation](https://docs.aws.amazon.com/iot/latest/developerguide/config-custom-auth.html) for more details and example return result.
+
+## Custom Key Operations PubSub
+
+WARNING: Linux only
+
+This sample shows how to perform custom private key operations during the Mutual
+TLS handshake. This is necessary if you require an external library to handle
+private key operations such as signing and decrypting.
+
+Note that, for this sample, the `--key` passed via args must be a PKCS#8 file,
+instead of the typical PKCS#1 file that AWS IoT Core vends by default. To convert
+your key file from PKCS#1 (starts with "-----BEGIN RSA PRIVATE KEY-----") into
+a PKCS#8 file (starts with "-----BEGIN PRIVATE KEY-----"), run the following cmd:
+
+```sh
+> openssl pkcs8 -topk8 -in <my-private.pem.key> -out <my-private-p8.pem.key> -nocrypt
+```
+
+To Run:
+``` sh
+> mvn exec:java -pl samples/CustomKeyOpsPubSub -Dexec.mainClass=customkeyopspubsub.CustomKeyOpsPubSub -Dexec.args='--endpoint <endpoint> --ca_file <path to root CA> --cert <path to certificate> --key <path to pkcs8 key>'
+```
+
 
 ## Shadow
 

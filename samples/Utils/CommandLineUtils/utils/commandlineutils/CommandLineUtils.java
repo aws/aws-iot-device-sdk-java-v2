@@ -158,6 +158,25 @@ public class CommandLineUtils {
         registerCommand(m_cmd_topic, "<str>", "Topic to publish, subscribe to. (optional, default='test/topic')");
     }
 
+    public MqttClientConnection buildCustomKeyOperationConnection(
+        MqttClientConnectionEvents callbacks, TlsContextCustomKeyOperationOptions customKeyOperationOptions)
+    {
+        try {
+            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsCustomKeyOperationsBuilder(
+                customKeyOperationOptions);
+            buildConnectionSetupCAFileDefaults(builder);
+            buildConnectionSetupConnectionDefaults(builder, callbacks);
+            buildConnectionSetupProxyDefaults(builder);
+            
+            MqttClientConnection conn = builder.build();
+            builder.close();
+            return conn;
+
+        } catch (CrtRuntimeException ex) {
+            return null;
+        }
+    }
+
     public MqttClientConnection buildPKCS11MQTTConnection(MqttClientConnectionEvents callbacks)
     {
         try {
