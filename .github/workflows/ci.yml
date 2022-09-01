@@ -117,9 +117,17 @@ jobs:
     runs-on: ubuntu-20.04 # latest
     steps:
       - uses: actions/checkout@v2
-        with:
-          submodules: true
       - name: Check docs
         run: |
           mvn install -Dmaven.test.skip
           ./make-docs.py
+
+  # ensure that aws-crt version is consistent among different files
+  consistent-crt-version:
+    runs-on: ubuntu-20.04 # latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Consistent aws-crt version
+        run: |
+          ./update-crt.py --check-consistency
+
