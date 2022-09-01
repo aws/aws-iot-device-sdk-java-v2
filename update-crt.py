@@ -11,16 +11,22 @@ parser = argparse.ArgumentParser(
     description="Update files containing hard-coded aws-crt-java version numbers.")
 parser.add_argument('version', nargs='?',
                     help='version to use (i.e. "0.1.2"). default: automatically detect latest version')
+parser.add_argument('--check-consistency', action='store_true',
+                    help='Exit with error if version is inconsistent between files')
 args = parser.parse_args()
 
 
 def main():
-    if args.version is None:
-        args.version = get_latest_crt_version()
-        print(f'Latest version: {args.version}')
+    if args.check_consistency:
+        # we'll find the version from the first file we scan
+        args.version = None
+    else:
+        if args.version is None:
+            args.version = get_latest_crt_version()
+            print(f'Latest version: {args.version}')
 
-    if re.fullmatch(VERSION_PATTERN, args.version) is None:
-        exit(f'Invalid version: "{args.version}". Must look like "0.1.2"')
+        if re.fullmatch(VERSION_PATTERN, args.version) is None:
+            exit(f'Invalid version: "{args.version}". Must look like "0.1.2"')
 
     os.chdir(os.path.dirname(__file__))
 
@@ -51,17 +57,30 @@ def update(*, filepath, preceded_by, followed_by):
     with open(filepath, 'r+') as f:
         txt_old = f.read()
 
-        full_pattern = rf'({preceded_by}){VERSION_PATTERN}({followed_by})'
-        full_replacement = rf'\g<1>{args.version}\g<2>'
+        full_pattern = rf'({preceded_by})({VERSION_PATTERN})({followed_by})'
+        full_replacement = rf'\g<1>{args.version}\g<3>'
 
-        if len(re.findall(full_pattern, txt_old)) == 0:
+        matches = re.findall(full_pattern, txt_old)
+        if len(matches) == 0:
             exit(f'Version not found in: {filepath}\n' +
                  f'Preceded by: "{preceded_by}"')
 
-        txt_new = re.sub(full_pattern, full_replacement, txt_old)
-        f.seek(0)
-        f.write(txt_new)
-        f.truncate()
+        if args.check_consistency:
+            # in --check-consistency mode we remember the version from the first
+            # file we scan, and then ensure all subsequent files use that version too
+            for match in matches:
+                found_version = match[1]
+                if args.version is None:
+                    print(f'Found version {found_version} in: {filepath}')
+                    args.version = found_version
+                elif found_version != args.version:
+                    exit(f'Found different version {found_version} in: {filepath}')
+        else:
+            # running in normal mode, update the file
+            txt_new = re.sub(full_pattern, full_replacement, txt_old)
+            f.seek(0)
+            f.write(txt_new)
+            f.truncate()
 
 
 def get_latest_crt_version():
