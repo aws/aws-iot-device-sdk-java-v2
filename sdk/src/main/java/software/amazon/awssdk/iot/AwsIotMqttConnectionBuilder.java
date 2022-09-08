@@ -157,8 +157,8 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
             return new AwsIotMqttConnectionBuilder(tlsContextOptions);
         }
     }
-    
-    /**     
+
+    /**
      * Create a new builder with mTLS, using a certificate in a Windows certificate store.
      *
      * NOTE: Windows only
@@ -550,7 +550,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      * @param authorizerSignature The signature of the custom authorizer. If null is passed, then 'x-amz-customauthorizer-signature'
      *                  will not be added with the MQTT connection.
      * @param password The password to use with the custom authorizer. If null is passed, then no password will be set.
-     * @return
+     * @return {@link AwsIotMqttConnectionBuilder}
      */
     public AwsIotMqttConnectionBuilder withCustomAuthorizer(String username, String authorizerName, String authorizerSignature, String password) {
         isUsingCustomAuthorizer = true;
