@@ -23,11 +23,11 @@ public class EventStreamError
     private final MessageType messageType;
 
     /**
-     * Put
+     * Creates a new EventStreamError
      * @param headers currently unusued, but likely a useful element for output
-     * @param payload
-     * @param messageType
-     * @return
+     * @param payload The payload to associated with the EventStreamError
+     * @param messageType The message type to associate with the EventStreamError
+     * @return A new EventStreamError
      */
     public static EventStreamError create(final List<Header> headers, final byte[] payload, final MessageType messageType) {
         try {
@@ -39,22 +39,40 @@ public class EventStreamError
         }
     }
 
+    /**
+     * Creates a new EventStream error with only a message
+     * @param message The message to associate with the EventStreamError
+     */
     public EventStreamError(String message) {
         super(message);
         this.messageType = null;
         this.headers = null;
     }
 
+    /**
+     * Creates a new EventStreamError with a message, headers, and message type
+     * @param message The message to associate with the EventStreamError
+     * @param headers Headers to associate with the EventStreamError
+     * @param messageType The message type to associate with the EventStreamError
+     */
     public EventStreamError(String message, List<Header> headers, MessageType messageType) {
         super(message);
         this.messageType = messageType;
         this.headers = headers;
     }
 
+    /**
+     * Returns the headers associated with the EventStreamError
+     * @return the headers associated with the EventStreamError
+     */
     public List<Header> getMessageHeaders() {
         return headers;
     }
 
+    /**
+     * Returns the message type associated with the EventStreamError
+     * @return the message type associated with the EventStreamError
+     */
     public MessageType getMessageType() {
         return messageType;
     }

@@ -15,8 +15,8 @@ public interface EventStreamJsonMessage {
      * with final implementations for serialization/deserialization. Or better yet, rework
      * how it works
      *
-     * @param gson
-     * @return
+     * @param gson The GSON to convert to a JSON payload
+     * @return The GSON converted to a JSON payload
      */
     default byte[] toPayload(final Gson gson) {
         final String payloadString = gson.toJson(this);
@@ -26,6 +26,12 @@ public interface EventStreamJsonMessage {
         return payloadString.getBytes(StandardCharsets.UTF_8);
     }
 
+    /**
+     * Converts the given GSON and payload into a EventStreamJsonMessage
+     * @param gson The GSON to convert
+     * @param payload The payload to convert
+     * @return A EventStreamJsonMessage
+     */
     default EventStreamJsonMessage fromJson(final Gson gson, byte[] payload) {
         final String payloadString = new String(payload, StandardCharsets.UTF_8);
         if (payloadString.equals("null")) {
@@ -41,9 +47,13 @@ public interface EventStreamJsonMessage {
 
     /**
      * Returns the named model type. May be used for a header.
-     * @return
+     * @return the named model type
      */
     public String getApplicationModelType();
 
+    /**
+     * Returns whether the EventStreamJsonMessage is void
+     * @return True if the EventStreamJsonMessage is void
+     */
     default boolean isVoid() { return false; }
 }

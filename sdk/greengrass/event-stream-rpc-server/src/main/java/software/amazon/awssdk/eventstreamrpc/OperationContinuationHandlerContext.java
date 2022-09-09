@@ -16,6 +16,12 @@ public class OperationContinuationHandlerContext {
     private final ServerConnectionContinuation continuation;
     private final AuthenticationData authenticationData;
 
+    /**
+     * Creates a new OperationContinuationHandlerContext
+     * @param connection The connection to associate with the OperationContinuationHandlerContext
+     * @param continuation The continuation to associate with the OperationContinuationHandlerContext
+     * @param authenticationData The authentication data to associate with the OperationContinuationHandlerContext
+     */
     public OperationContinuationHandlerContext(final ServerConnection connection,
            final ServerConnectionContinuation continuation,
            final AuthenticationData authenticationData) {
@@ -24,14 +30,26 @@ public class OperationContinuationHandlerContext {
         this.authenticationData = authenticationData;
     }
 
+    /**
+     * Returns the connection associated with the OperationContinuationHandlerContext
+     * @return the connection associated with the OperationContinuationHandlerContext
+     */
     public ServerConnection getServerConnection() {
         return serverConnection;
     }
 
+    /**
+     * Returns the continuation associated with the OperationContinuationHandlerContext
+     * @return the continuation associated with the OperationContinuationHandlerContext
+     */
     public ServerConnectionContinuation getContinuation() {
         return continuation;
     }
 
+    /**
+     * Returns the authentication data associated with the OperationContinuationHandlerContext
+     * @return the authentication data associated with the OperationContinuationHandlerContext
+     */
     public AuthenticationData getAuthenticationData() {
         return authenticationData;
     }
