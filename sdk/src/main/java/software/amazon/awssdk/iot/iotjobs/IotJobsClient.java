@@ -59,6 +59,10 @@ public class IotJobsClient {
     private MqttClientConnection connection = null;
     private final Gson gson = getGson();
 
+    /**
+     * Constructs a new IotJobsClient
+     * @param connection The connection to use
+     */
     public IotJobsClient(MqttClientConnection connection) {
         this.connection = connection;
     }
@@ -282,7 +286,6 @@ public class IotJobsClient {
     }
 
     /**
-     * 
      *
      * Once subscribed, `handler` is invoked each time a message matching
      * the `topic` is received. It is possible for such messages to arrive before
@@ -325,7 +328,6 @@ public class IotJobsClient {
     }
 
     /**
-     * 
      *
      * Once subscribed, `handler` is invoked each time a message matching
      * the `topic` is received. It is possible for such messages to arrive before

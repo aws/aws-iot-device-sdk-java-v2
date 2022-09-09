@@ -21,6 +21,9 @@ public class ShadowState {
      */
     public HashMap<String, Object> desired;
 
+    /**
+     * If set to true, then desired can be set to null.
+     */
     public transient boolean desiredIsNullable;
 
     /**
@@ -29,6 +32,9 @@ public class ShadowState {
      */
     public HashMap<String, Object> reported;
 
+    /**
+     * If set to true, then reported can be set to null.
+     */
     public transient boolean reportedIsNullable;
 
 }

@@ -46,6 +46,10 @@ public class IotIdentityClient {
     private MqttClientConnection connection = null;
     private final Gson gson = getGson();
 
+    /**
+     * Constructs a new IotIdentityClient
+     * @param connection The connection to use
+     */
     public IotIdentityClient(MqttClientConnection connection) {
         this.connection = connection;
     }
