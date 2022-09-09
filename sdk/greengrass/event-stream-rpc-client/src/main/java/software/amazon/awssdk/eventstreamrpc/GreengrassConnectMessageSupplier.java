@@ -9,8 +9,16 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
+/**
+ * The connect message supplier for Greengrass
+ */
 public class GreengrassConnectMessageSupplier {
-    
+
+    /**
+     * Returns a new connect message supplier using the given token
+     * @param authToken The auth token to use
+     * @return A new connect message supplier
+     */
     public static Supplier<CompletableFuture<MessageAmendInfo>> connectMessageSupplier(String authToken) {
         return () -> {
             final List<Header> headers = new LinkedList<>();

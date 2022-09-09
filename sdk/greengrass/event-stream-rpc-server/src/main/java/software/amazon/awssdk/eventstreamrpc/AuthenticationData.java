@@ -10,7 +10,7 @@ public interface AuthenticationData {
      * string must be appropriate for audit logs and enable tracing specific callers/clients
      * to relevant decision and operations executed
      *
-     * @return
+     * @return A human readable string for who the identity of the client/caller is
      */
     public String getIdentityLabel();
 }

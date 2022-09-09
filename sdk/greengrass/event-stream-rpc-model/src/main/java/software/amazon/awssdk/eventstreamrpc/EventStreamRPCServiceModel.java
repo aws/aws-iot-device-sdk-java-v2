@@ -39,11 +39,29 @@ import java.util.Optional;
 public abstract class EventStreamRPCServiceModel {
     private static final Gson GSON;
 
-    //package visibility so client
+    /**
+     * Version header string
+     */
     static final String VERSION_HEADER = ":version";
+
+    /**
+     * Content type header string
+     */
     public static final String CONTENT_TYPE_HEADER = ":content-type";
+
+    /**
+     * Content type application text string
+     */
     public static final String CONTENT_TYPE_APPLICATION_TEXT = "text/plain";
+
+    /**
+     * Content type application json string
+     */
     public static final String CONTENT_TYPE_APPLICATION_JSON = "application/json";
+
+    /**
+     * Service model type header
+     */
     public static final String SERVICE_MODEL_TYPE_HEADER = "service-model-type";
 
     static {
@@ -168,9 +186,9 @@ public abstract class EventStreamRPCServiceModel {
      *
      * Note: Generated code for equals method of Smithy shapes relies on this
      *
-     * @param lhs
-     * @param rhs
-     * @return
+     * @param lhs The first to compare
+     * @param rhs The second to compare
+     * @return True if both are equal, false otherwise
      */
     public static boolean blobTypeEquals(Optional<byte[]> lhs, Optional<byte[]> rhs) {
         if (lhs.equals(rhs)) {
@@ -216,8 +234,8 @@ public abstract class EventStreamRPCServiceModel {
     }
 
     /**
-     * For actual
-     * @return
+     * For getting the actual service name
+     * @return The name of the service as a string
      */
     public abstract String getServiceName();
 
@@ -230,6 +248,11 @@ public abstract class EventStreamRPCServiceModel {
         FRAMEWORK_APPLICATION_MODEL_TYPES.put(ValidationException.ERROR_CODE, ValidationException.class);
     }
 
+    /**
+     * Returns the application model class
+     * @param applicationModelType The application model
+     * @return The class of the given application model
+     */
     final public Optional<Class<? extends EventStreamJsonMessage>> getApplicationModelClass(final String applicationModelType) {
         final Class<? extends EventStreamJsonMessage> clazz = FRAMEWORK_APPLICATION_MODEL_TYPES.get(applicationModelType);
         if (clazz != null) {
@@ -240,7 +263,7 @@ public abstract class EventStreamRPCServiceModel {
 
     /**
      * Retreives all operations on the service
-     * @return
+     * @return All operations on the service
      */
     public abstract Collection<String> getAllOperations();
 
@@ -248,8 +271,8 @@ public abstract class EventStreamRPCServiceModel {
      * Need to override per specific service type so it can look up all associated types and errors
      * possible.
      *
-     * @param applicationModelType
-     * @return
+     * @param applicationModelType The application model
+     * @return The service class type of the given application model
      */
     protected abstract Optional<Class<? extends EventStreamJsonMessage>> getServiceClassType(String applicationModelType);
 
@@ -258,8 +281,9 @@ public abstract class EventStreamRPCServiceModel {
      *
      * This may not be a useful interface as generated code will typically pull a known operation model context
      * Public visibility is useful for testing
-     * @param operationName
-     * @return
+     *
+     * @param operationName The name of the operation
+     * @return The operation context associated with the given operation name
      */
     public abstract OperationModelContext getOperationModelContext(String operationName);
 
@@ -278,13 +302,18 @@ public abstract class EventStreamRPCServiceModel {
         }
     }
 
+    /**
+     * Converts the given EventStreamJsonMessage to a JSON string
+     * @param message The message to convert
+     * @return A JSON string
+     */
     public String toJsonString(final EventStreamJsonMessage message) {
         return new String(toJson(message), StandardCharsets.UTF_8);
     }
 
     /**
      * Internal getter method can be used by subclasses of specific service models to override default Gson
-     * @return
+     * @return Returns GSON context
      */
     protected Gson getGson() {
         return GSON;
@@ -301,10 +330,11 @@ public abstract class EventStreamRPCServiceModel {
     }
 
     /**
-     * Uses this service's specific model class
-     * @param applicationModelType
-     * @param payload
-     * @return
+     * Creates a EventStreamJsonMessage from the given application model type string and payload.
+     * Uses this service's specific model class to create the EventStreamJsonMessage.
+     * @param applicationModelType The application model type string
+     * @param payload The payload
+     * @return A EventStreamMessage
      */
     public EventStreamJsonMessage fromJson(final String applicationModelType, byte[] payload) {
         final Optional<Class<? extends EventStreamJsonMessage>> clazz = getApplicationModelClass(applicationModelType);
@@ -314,6 +344,14 @@ public abstract class EventStreamRPCServiceModel {
         return fromJson(clazz.get(), payload);
     }
 
+    /**
+     * Creates a EventStreamJsonMessage of type T from the given application model
+     * class and payload.
+     * @param <T> The type to convert the result to
+     * @param clazz The class
+     * @param payload The payload
+     * @return A EventStreamMessage of type T
+     */
     public <T extends EventStreamJsonMessage> T fromJson(final Class<T> clazz, byte[] payload) {
         try {
             return getGson().fromJson(new String(payload, StandardCharsets.UTF_8), clazz);

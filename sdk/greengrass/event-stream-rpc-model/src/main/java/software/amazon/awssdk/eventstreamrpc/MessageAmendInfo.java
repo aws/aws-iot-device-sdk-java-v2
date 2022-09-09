@@ -22,15 +22,33 @@ public class MessageAmendInfo {
     private final List<Header> headers;
     private final byte[] payload;
 
+    /**
+     * Constructs a new MessageAmendInfo
+     * @param headers The headers to store
+     * @param payload The payload to store
+     */
     public MessageAmendInfo(List<Header> headers, byte[] payload) {
         this.headers = headers;
         this.payload = payload;
     }
 
+    /**
+     * Returns the headers stored in the object. For sent messages,
+     * the headers stored in the object may be used to append to existing headers,
+     * where it won't overwrite an existing one that may be outgoing.
+     *
+     * @return The headers stored
+     */
     public List<Header> getHeaders() {
         return headers;
     }
 
+    /**
+     * Returns the payload stored in the object. A payload may, or may not, be used
+     * in a given MessageAmendInfo. Refer to the method that accepts or expects this
+     * structure to understand what parts are used and which are not.
+     * @return The payload stored
+     */
     public byte[] getPayload() {
         return payload;
     }

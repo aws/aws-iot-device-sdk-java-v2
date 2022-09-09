@@ -25,6 +25,12 @@ public abstract class EventStreamOperationError
     @Expose(serialize = true, deserialize = true)
     private final String _errorCode;
 
+    /**
+     * Creates a new EventStreamOperationError from the given service name, error code, and message
+     * @param serviceName The service that caused the error
+     * @param errorCode The error code associated with the error
+     * @param message The message to show alongside the error
+     */
     public EventStreamOperationError(final String serviceName, final String errorCode, final String message) {
         super(String.format("%s[%s]: %s", errorCode, serviceName, message));
         this._service = serviceName;
@@ -32,13 +38,17 @@ public abstract class EventStreamOperationError
         this._message = message;
     }
 
+    /**
+     * Returns the name of the service that caused the error
+     * @return the name of the service that caused the error
+     */
     public String getService() {
         return _service;
     }
 
     /**
      * Likely overridden by a specific field defined in service-operation model
-     * @return
+     * @return The message associated with the error
      */
     public String getMessage() {
         return _message;
@@ -46,7 +56,7 @@ public abstract class EventStreamOperationError
 
     /**
      * Likely subclasses will have a more limited set of valid error codes
-     * @return
+     * @return The error code associated with the error
      */
     public String getErrorCode() { return _errorCode; }
 }

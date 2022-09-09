@@ -31,6 +31,16 @@ public class EventStreamRPCConnectionConfig {
      */
     private final Supplier<CompletableFuture<MessageAmendInfo>> connectMessageAmender;
 
+    /**
+     * Creates a new EventStreamRPCConnectionConfig with the given data
+     * @param clientBootstrap The ClientBootstrap to use
+     * @param eventLoopGroup The EventLoopGroup to use
+     * @param socketOptions The SocketOptions to use
+     * @param tlsContext The TlsContext to use
+     * @param host The host name to use
+     * @param port The host port to use
+     * @param connectMessageAmender The connect message amender to use
+     */
     public EventStreamRPCConnectionConfig(ClientBootstrap clientBootstrap, EventLoopGroup eventLoopGroup,
                                           SocketOptions socketOptions, ClientTlsContext tlsContext,
                                           String host, int port, Supplier<CompletableFuture<MessageAmendInfo>> connectMessageAmender) {
@@ -52,30 +62,58 @@ public class EventStreamRPCConnectionConfig {
         }
     }
 
+    /**
+     * Returns the ClientBootstrap associated with the EventStreamRPCConnectionConfig
+     * @return the ClientBootstrap associated with the EventStreamRPCConnectionConfig
+     */
     public ClientBootstrap getClientBootstrap() {
         return clientBootstrap;
     }
 
+    /**
+     * Returns the EventLoopGroup associated with the EventStreamRPCConnectionConfig
+     * @return the EventLoopGroup associated with the EventStreamRPCConnectionConfig
+     */
     public EventLoopGroup getEventLoopGroup() {
         return eventLoopGroup;
     }
 
+    /**
+     * Returns the SocketOptions associated with the EventStreamRPCConnectionConfig
+     * @return The SocketOptions associated with the EventStreamRPCConnectionConfig
+     */
     public SocketOptions getSocketOptions() {
         return socketOptions;
     }
 
+    /**
+     * Returns the TlsContext associated with the EventStreamRPCConnectionConfig
+     * @return The TlsContext associated with the EventStreamRPCConnectionConfig
+     */
     public ClientTlsContext getTlsContext() {
         return tlsContext;
     }
 
+    /**
+     * Returns the host name associated with the EventStreamRPCConnectionConfig
+     * @return The host name associated with the EventStreamRPCConnectionConfig
+     */
     public String getHost() {
         return host;
     }
 
+    /**
+     * Returns the port associated with the EventStreamRPCConnectionConfig
+     * @return The port associated with the EventStreamRPCConnectionConfig
+     */
     public int getPort() {
         return port;
     }
 
+    /**
+     * Returns the connect message amender associated with the EventStreamRPCConnectionConfig
+     * @return The connect message amender associated with the EventStreamRPCConnectionConfig
+     */
     public Supplier<CompletableFuture<MessageAmendInfo>> getConnectMessageAmender() {
         return connectMessageAmender;
     }

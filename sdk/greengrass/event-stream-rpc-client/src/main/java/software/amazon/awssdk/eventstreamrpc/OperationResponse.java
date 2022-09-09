@@ -17,8 +17,8 @@ import java.util.logging.Logger;
  * client, closing of any open stream, and retrieval of response. Specific generated operation response
  * handlers are usually simple wrappers with the generic types specified
  *
- * @param <ResponseType>
- * @param <StreamRequestType>
+ * @param <ResponseType> The response type
+ * @param <StreamRequestType> The stream response type
  */
 public class OperationResponse<ResponseType extends EventStreamJsonMessage,
                         StreamRequestType extends EventStreamJsonMessage>
@@ -30,6 +30,13 @@ public class OperationResponse<ResponseType extends EventStreamJsonMessage,
     private final CompletableFuture<Void> requestFlushFuture;
     private final AtomicBoolean isClosed;
 
+    /**
+     * Creates a new OperationResponse from the given data
+     * @param operationModelContext The operation model context to use
+     * @param continuation The continuation to use
+     * @param responseFuture The response future to use
+     * @param requestFlushFuture The request flush future to use
+     */
     public OperationResponse(OperationModelContext<ResponseType, ?, StreamRequestType, ?> operationModelContext,
                              ClientConnectionContinuation continuation,
                              CompletableFuture<ResponseType> responseFuture,
@@ -41,6 +48,10 @@ public class OperationResponse<ResponseType extends EventStreamJsonMessage,
         this.isClosed = new AtomicBoolean(continuation != null && !continuation.isNull());
     }
 
+    /**
+     * Returns the request flush future to use
+     * @return The request flush future to use
+     */
     final public CompletableFuture<Void> getRequestFlushFuture() {
         return requestFlushFuture;
     }
@@ -52,7 +63,8 @@ public class OperationResponse<ResponseType extends EventStreamJsonMessage,
      * May throw exception if requestFlushFuture throws an exception and will
      * block if requestFlush has not completed.
      *
-     * @return
+     * @return the response completable future to wait on the initial response
+     * if there is one.
      */
     public CompletableFuture<ResponseType> getResponse() {
         //semantics here are: if the request was never successfully sent
@@ -98,7 +110,7 @@ public class OperationResponse<ResponseType extends EventStreamJsonMessage,
     /**
      * Initiate a close on the event stream from the client side.
      *
-     * @return
+     * @return A future that completes when the event stream is closed
      */
     @Override
     public CompletableFuture<Void> closeStream() {
@@ -120,7 +132,7 @@ public class OperationResponse<ResponseType extends EventStreamJsonMessage,
 
     /**
      * Checks if the stream is closed
-     * @return
+     * @return True if the stream is closed
      */
     public boolean isClosed() {
         return isClosed.get();
