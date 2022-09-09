@@ -23,6 +23,10 @@ public class EventStreamRPCClient {
     private static final Logger LOGGER = Logger.getLogger(EventStreamRPCClient.class.getName());
     private final EventStreamRPCConnection connection;
 
+    /**
+      * Creates a new EventStreamRPCClient
+      * @param connection The connection for the EventStreamRPCClient to use
+      */
     public EventStreamRPCClient(EventStreamRPCConnection connection) {
         if (connection == null) {
             throw new IllegalArgumentException("Cannot create eventstream RPC client with null connection");
@@ -32,8 +36,14 @@ public class EventStreamRPCClient {
 
     /**
      * Work horse of all operations, streaming or otherwise.
-     *
-     * @return
+     * @param <ReqType> The request type
+     * @param <RespType> The response type
+     * @param <StrReqType> The streaming request type
+     * @param <StrRespType> The streaming response type
+     * @param operationModelContext The operation context
+     * @param request The request
+     * @param streamResponseHandler The streaming handler
+     * @return The operation result
      */
     public <ReqType extends EventStreamJsonMessage,
             RespType extends EventStreamJsonMessage,
@@ -135,7 +145,7 @@ public class EventStreamRPCClient {
                     }
                 }
             }
-            
+
             @Override
             protected void onContinuationClosed() {
                 super.onContinuationClosed();
@@ -159,10 +169,10 @@ public class EventStreamRPCClient {
         return response;
     }
 
-    
+
 
     /**
-     * Sends an empty close message on the open stream. 
+     * Sends an empty close message on the open stream.
      * @param continuation continuation to send the close message on
      * @return CompletableFuture indicating flush of the close message.
      */

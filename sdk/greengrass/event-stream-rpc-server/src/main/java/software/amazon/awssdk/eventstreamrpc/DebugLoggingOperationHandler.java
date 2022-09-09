@@ -15,6 +15,11 @@ public class DebugLoggingOperationHandler extends OperationContinuationHandler
     private static Logger LOGGER = LoggerFactory.getLogger(DebugLoggingOperationHandler.class);
     private final OperationModelContext operationModelContext;
 
+    /**
+     * Constructs a new DebugLoggingOperationHandler from the given model and continuation handler contexts
+     * @param modelContext The model context
+     * @param context The continuation handler model context
+     */
     public DebugLoggingOperationHandler(final OperationModelContext modelContext, final OperationContinuationHandlerContext context) {
         super(context);
         this.operationModelContext = modelContext;

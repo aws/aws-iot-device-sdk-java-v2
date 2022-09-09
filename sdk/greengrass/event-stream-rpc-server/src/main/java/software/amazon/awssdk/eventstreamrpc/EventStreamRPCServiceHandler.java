@@ -2,10 +2,16 @@ package software.amazon.awssdk.eventstreamrpc;
 
 import java.util.Collection;
 
+/**
+ * The EventStream RPC Service Handler
+ */
 public abstract class EventStreamRPCServiceHandler implements OperationContinuationHandlerFactory {
     private AuthenticationHandler authenticationHandler;
     private AuthorizationHandler authorizationHandler;
 
+    /**
+     * Constructs a new EventStreamRPCServiceHandler
+     */
     public EventStreamRPCServiceHandler() {
         authorizationHandler = null;
     }
@@ -22,7 +28,7 @@ public abstract class EventStreamRPCServiceHandler implements OperationContinuat
 
     /**
      * TODO: How may we want to protect this from being re-assigned after service creation?
-     * @param handler
+     * @param handler Sets the authorization handler
      */
     public void setAuthorizationHandler(final AuthorizationHandler handler) {
         this.authorizationHandler = handler;
@@ -30,8 +36,7 @@ public abstract class EventStreamRPCServiceHandler implements OperationContinuat
 
     /**
      * Use this to determine if the connection should be accepted or rejected for this service
-     *
-     * @return
+     * @return Returns the authorization handler
      */
     public AuthorizationHandler getAuthorizationHandler() {
         return authorizationHandler;
@@ -44,7 +49,7 @@ public abstract class EventStreamRPCServiceHandler implements OperationContinuat
 
     /**
      * Pulls caller/client identity when server connection occurs
-     * @return
+     * @return Returns the authentication handler
      */
     public AuthenticationHandler getAuthenticationHandler() {
         return authenticationHandler;
@@ -52,7 +57,7 @@ public abstract class EventStreamRPCServiceHandler implements OperationContinuat
 
     /**
      * TODO: How may we want to protect this from being re-assigned after service creation?
-     * @param authenticationHandler
+     * @param authenticationHandler Sets the authentication handler
      */
     public void setAuthenticationHandler(AuthenticationHandler authenticationHandler) {
         this.authenticationHandler = authenticationHandler;

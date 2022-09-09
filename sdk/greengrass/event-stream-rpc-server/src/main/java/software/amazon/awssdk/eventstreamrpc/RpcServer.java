@@ -18,6 +18,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
+/**
+ * The RPCServer implementation
+ */
 public class RpcServer implements AutoCloseable {
     private static final Logger LOGGER = LoggerFactory.getLogger(RpcServer.class);
 
@@ -34,6 +37,15 @@ public class RpcServer implements AutoCloseable {
     private AtomicBoolean serverRunning;
     private int boundPort = -1;
 
+    /**
+     * Creates a new RPC Server
+     * @param eventLoopGroup The EventLoopGroup to use in the RPC server
+     * @param socketOptions The SocketOptions to use in the RPC server
+     * @param tlsContextOptions The TlsContextOptions to use in the RPC server
+     * @param hostname The hostname to use in the RPC server
+     * @param port The port to use in the RPC server
+     * @param serviceHandler The ServceHandler to use in the RPC server
+     */
     public RpcServer(EventLoopGroup eventLoopGroup, SocketOptions socketOptions, TlsContextOptions tlsContextOptions, String hostname, int port, EventStreamRPCServiceHandler serviceHandler) {
         this.eventLoopGroup = eventLoopGroup;
         this.socketOptions = socketOptions;
@@ -90,6 +102,8 @@ public class RpcServer implements AutoCloseable {
 
     /**
      * Stops running server and allows the caller to wait on a CompletableFuture
+     *
+     * @return A future that is completed when the server stops
      */
     public CompletableFuture<Void> stopServer() {
         if (serverRunning.compareAndSet(true, false)) {

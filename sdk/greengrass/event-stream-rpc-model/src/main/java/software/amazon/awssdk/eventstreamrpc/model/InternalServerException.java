@@ -1,8 +1,18 @@
 package software.amazon.awssdk.eventstreamrpc.model;
 
+/**
+ * Thrown when a internal server exception occurs
+ */
 public class InternalServerException extends EventStreamOperationError {
+    /**
+     * The error code associated with a internal server exception
+     */
     public static final String ERROR_CODE = "aws#InternalServerException";
 
+    /**
+     * Creates a new internal server exception from the given service name
+     * @param serviceName The name of the service that caused the exception
+     */
     public InternalServerException(String serviceName) {
         super(serviceName, ERROR_CODE, "An internal server exception has occurred.");
     }
