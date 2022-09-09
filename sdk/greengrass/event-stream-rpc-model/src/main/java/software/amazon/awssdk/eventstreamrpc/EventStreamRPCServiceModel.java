@@ -345,12 +345,12 @@ public abstract class EventStreamRPCServiceModel {
     }
 
     /**
-     * Creates a EventStreamJsonMessage of type <T> from the given application model
+     * Creates a EventStreamJsonMessage of type T from the given application model
      * class and payload.
      * @param <T> The type to convert the result to
      * @param clazz The class
      * @param payload The payload
-     * @return A EventStreamMessage of type <T>
+     * @return A EventStreamMessage of type T
      */
     public <T extends EventStreamJsonMessage> T fromJson(final Class<T> clazz, byte[] payload) {
         try {
