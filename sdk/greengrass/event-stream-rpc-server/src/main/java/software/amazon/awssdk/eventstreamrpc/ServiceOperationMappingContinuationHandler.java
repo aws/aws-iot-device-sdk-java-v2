@@ -19,11 +19,19 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * Handler for Service Operation Continuation Mapping
+ */
 public class ServiceOperationMappingContinuationHandler extends ServerConnectionHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(ServiceOperationMappingContinuationHandler.class);
     private final EventStreamRPCServiceHandler serviceHandler;
     private AuthenticationData authenticationData;  //should only be set once after AuthN
 
+    /**
+     * Constructs a new ServiceOperationMappingContinuationHandler
+     * @param serverConnection The ServerConnection to use
+     * @param handler The EventStreamRPCServiceHandler to use
+     */
     public ServiceOperationMappingContinuationHandler(final ServerConnection serverConnection, final EventStreamRPCServiceHandler handler) {
         super(serverConnection);
         this.serviceHandler = handler;
@@ -57,8 +65,8 @@ public class ServiceOperationMappingContinuationHandler extends ServerConnection
 
     /**
      * Post: authenticationData should not be null
-     * @param headers
-     * @param payload
+     * @param headers The connection request headers
+     * @param payload The connection request payload
      */
     protected void onConnectRequest(List<Header> headers, byte[] payload) {
         final int[] responseMessageFlag = { 0 };

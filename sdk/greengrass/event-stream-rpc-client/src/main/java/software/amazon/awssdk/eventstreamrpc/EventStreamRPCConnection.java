@@ -19,7 +19,13 @@ import java.util.concurrent.CompletableFuture;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+/**
+ * A connection for an EventStreamRPC client
+ */
 public class EventStreamRPCConnection implements AutoCloseable {
+    /**
+     * Class containing the possible connection states of the EventStreamRPCConnection
+     */
     protected static class ConnectionState {
         enum Phase {
             DISCONNECTED,
@@ -45,8 +51,15 @@ public class EventStreamRPCConnection implements AutoCloseable {
     private static final Logger LOGGER = Logger.getLogger(EventStreamRPCConnection.class.getName());
 
     private final EventStreamRPCConnectionConfig config;
+    /**
+     * The connection state of the EventStreamRPCConnection
+     */
     protected ConnectionState connectionState;
 
+    /**
+     * Constructs a new EventStreamRPCConnection from the given configuration
+     * @param config The configuration used to construct the EventStreamRPCConnection
+     */
     public EventStreamRPCConnection(final EventStreamRPCConnectionConfig config) {
         this.config = config;
         this.connectionState = new ConnectionState(ConnectionState.Phase.DISCONNECTED, null);
@@ -63,7 +76,7 @@ public class EventStreamRPCConnection implements AutoCloseable {
     /**
      * Connects to the event stream RPC server asynchronously
      *
-     * @return
+     * @return A future that completes when connected
      */
     public CompletableFuture<Void> connect(final LifecycleHandler lifecycleHandler) {
         synchronized (connectionState) {
@@ -206,6 +219,13 @@ public class EventStreamRPCConnection implements AutoCloseable {
         return initialConnectFuture;
     }
 
+    /**
+     * Creates a new stream with the given continuation handler.
+     * Trhows an exception if not connected
+     *
+     * @param continuationHandler The continuation handler to use
+     * @return A new ClientConnectionContinuation containing the new stream.
+     */
     public ClientConnectionContinuation newStream(ClientConnectionContinuationHandler continuationHandler) {
         synchronized (connectionState) {
             if (connectionState.connectionPhase == ConnectionState.Phase.CONNECTED) {
@@ -216,6 +236,9 @@ public class EventStreamRPCConnection implements AutoCloseable {
         }
     }
 
+    /**
+     * Disconnects the EventStreamRPCConnection
+     */
     public void disconnect() {
         synchronized (connectionState) {
             if (connectionState.connectionPhase != ConnectionState.Phase.CLOSING &&
@@ -269,8 +292,8 @@ public class EventStreamRPCConnection implements AutoCloseable {
     /**
      * Interface to send ping. Optional MessageAmendInfo will use the headers and payload
      * for the ping message verbatim. Should trigger a pong response and server copies back
-     * @param pingData
-     * @return
+     * @param pingData The ping data to send
+     * @return A future that completes when the pong response is receieved
      */
     public CompletableFuture<Void> sendPing(Optional<MessageAmendInfo> pingData) {
         ClientConnection connection;
@@ -291,8 +314,8 @@ public class EventStreamRPCConnection implements AutoCloseable {
     /**
      * Interface to send pingResponse. Optional MessageAmendInfo will use the headers and payload
      * for the ping message verbatim. Should trigger a pong response and server copies back
-     * @param pingResponseData
-     * @return
+     * @param pingResponseData The ping response data to send
+     * @return A future that completes when the pong response is receieved
      */
     public CompletableFuture<Void> sendPingResponse(Optional<MessageAmendInfo> pingResponseData) {
         ClientConnection connection;
@@ -329,7 +352,7 @@ public class EventStreamRPCConnection implements AutoCloseable {
         /**
          * Invoked for both connect failures and disconnects from a healthy state
          *
-         * @param errorCode
+         * @param errorCode A code indicating the reason for the disconnect
          */
         void onDisconnect(int errorCode);
 
@@ -348,11 +371,14 @@ public class EventStreamRPCConnection implements AutoCloseable {
          */
         boolean onError(Throwable t);
 
-        /**
-         * Do nothing on ping by default. Inform handler of ping data
+         /**
+          * Do nothing on ping by default. Inform handler of ping data
          *
          * TODO: Could use boolean return here as a hint on whether a pong reply should be sent?
-         */
+         *
+          * @param headers The ping headers
+          * @param payload The ping payload
+          */
         default void onPing(List<Header> headers, byte[] payload) { };
     }
 }
