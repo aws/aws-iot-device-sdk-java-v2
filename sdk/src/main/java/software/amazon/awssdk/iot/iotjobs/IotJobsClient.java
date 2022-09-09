@@ -41,8 +41,6 @@ import software.amazon.awssdk.crt.mqtt.MqttMessage;
 import software.amazon.awssdk.iot.Timestamp;
 import software.amazon.awssdk.iot.EnumSerializer;
 
-import software.amazon.awssdk.iot.ShadowStateFactory;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -81,8 +79,6 @@ public class IotJobsClient {
     private void addTypeAdapters(GsonBuilder gson) {
         gson.registerTypeAdapter(JobStatus.class, new EnumSerializer<JobStatus>());
         gson.registerTypeAdapter(RejectedErrorCode.class, new EnumSerializer<RejectedErrorCode>());
-        ShadowStateFactory shadowStateFactory = new ShadowStateFactory();
-        gson.registerTypeAdapterFactory(shadowStateFactory);
     }
 
     /**
