@@ -28,6 +28,8 @@ import software.amazon.awssdk.crt.mqtt.MqttMessage;
 import software.amazon.awssdk.iot.Timestamp;
 import software.amazon.awssdk.iot.EnumSerializer;
 
+import software.amazon.awssdk.iot.ShadowStateFactory;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -46,6 +48,10 @@ public class IotIdentityClient {
     private MqttClientConnection connection = null;
     private final Gson gson = getGson();
 
+    /**
+     * Constructs a new IotIdentityClient
+     * @param connection The connection to use
+     */
     public IotIdentityClient(MqttClientConnection connection) {
         this.connection = connection;
     }
@@ -60,6 +66,8 @@ public class IotIdentityClient {
     }
 
     private void addTypeAdapters(GsonBuilder gson) {
+        ShadowStateFactory shadowStateFactory = new ShadowStateFactory();
+        gson.registerTypeAdapterFactory(shadowStateFactory);
     }
 
     /**

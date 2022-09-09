@@ -13,6 +13,9 @@ package software.amazon.awssdk.iot.iotjobs.model;
  */
 public enum RejectedErrorCode {
 
+    /**
+     * Enum value is an unknown value
+     */
     UNKNOWN_ENUM_VALUE("UNKNOWN_ENUM_VALUE"),
 
     /**
@@ -71,6 +74,12 @@ public enum RejectedErrorCode {
         return value;
     }
 
+    /**
+     * Returns The enum associated with the given string or UNKNOWN_ENUM_VALUE
+     * if no enum is found.
+     * @param val The string to use
+     * @return The enum associated with the string or UNKNOWN_ENUM_VALUE
+     */
     static RejectedErrorCode fromString(String val) {
         for (RejectedErrorCode e : RejectedErrorCode.class.getEnumConstants()) {
             if (e.toString().compareTo(val) == 0) {

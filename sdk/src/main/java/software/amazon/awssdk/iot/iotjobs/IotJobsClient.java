@@ -41,6 +41,8 @@ import software.amazon.awssdk.crt.mqtt.MqttMessage;
 import software.amazon.awssdk.iot.Timestamp;
 import software.amazon.awssdk.iot.EnumSerializer;
 
+import software.amazon.awssdk.iot.ShadowStateFactory;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -59,6 +61,10 @@ public class IotJobsClient {
     private MqttClientConnection connection = null;
     private final Gson gson = getGson();
 
+    /**
+     * Constructs a new IotJobsClient
+     * @param connection The connection to use
+     */
     public IotJobsClient(MqttClientConnection connection) {
         this.connection = connection;
     }
@@ -75,6 +81,8 @@ public class IotJobsClient {
     private void addTypeAdapters(GsonBuilder gson) {
         gson.registerTypeAdapter(JobStatus.class, new EnumSerializer<JobStatus>());
         gson.registerTypeAdapter(RejectedErrorCode.class, new EnumSerializer<RejectedErrorCode>());
+        ShadowStateFactory shadowStateFactory = new ShadowStateFactory();
+        gson.registerTypeAdapterFactory(shadowStateFactory);
     }
 
     /**
@@ -282,7 +290,6 @@ public class IotJobsClient {
     }
 
     /**
-     * 
      *
      * Once subscribed, `handler` is invoked each time a message matching
      * the `topic` is received. It is possible for such messages to arrive before
@@ -325,7 +332,6 @@ public class IotJobsClient {
     }
 
     /**
-     * 
      *
      * Once subscribed, `handler` is invoked each time a message matching
      * the `topic` is received. It is possible for such messages to arrive before

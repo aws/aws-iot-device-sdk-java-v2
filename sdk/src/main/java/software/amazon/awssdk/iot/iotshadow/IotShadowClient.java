@@ -65,6 +65,10 @@ public class IotShadowClient {
     private MqttClientConnection connection = null;
     private final Gson gson = getGson();
 
+    /**
+     * Constructs a new IotShadowClient
+     * @param connection The connection to use
+     */
     public IotShadowClient(MqttClientConnection connection) {
         this.connection = connection;
     }
