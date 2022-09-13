@@ -11,7 +11,7 @@ import java.util.Optional;
  * Smithy code generation should produce one of these per model, but we aren't going to take steps to prevent
  * hand construction.
  *
- * @param <RequestType> The initial-request
+ * @param <RequestType> The initial-request 
  * @param <ResponseType> The initial-response
  * @param <StreamingRequestType> The streaming initial-request
  * @param <StreamingResponseType> The streaming initial-response

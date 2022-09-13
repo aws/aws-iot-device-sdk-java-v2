@@ -281,7 +281,7 @@ public abstract class EventStreamRPCServiceModel {
      *
      * This may not be a useful interface as generated code will typically pull a known operation model context
      * Public visibility is useful for testing
-     *
+     * 
      * @param operationName The name of the operation
      * @return The operation context associated with the given operation name
      */

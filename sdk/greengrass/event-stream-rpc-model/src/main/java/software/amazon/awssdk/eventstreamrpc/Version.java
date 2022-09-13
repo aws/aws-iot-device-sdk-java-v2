@@ -62,7 +62,7 @@ public class Version implements Comparable<Version> {
     /**
      * Returns a new Version class from the given version string.
      * Will throw an exception if it cannot convert.
-     *
+     * 
      * @param versionString The version string to convert
      * @return The Version class created from the string
      */

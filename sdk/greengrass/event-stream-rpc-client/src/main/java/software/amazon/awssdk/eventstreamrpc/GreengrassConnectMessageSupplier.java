@@ -13,7 +13,7 @@ import java.util.function.Supplier;
  * The connect message supplier for Greengrass
  */
 public class GreengrassConnectMessageSupplier {
-
+    
     /**
      * Returns a new connect message supplier using the given token
      * @param authToken The auth token to use
