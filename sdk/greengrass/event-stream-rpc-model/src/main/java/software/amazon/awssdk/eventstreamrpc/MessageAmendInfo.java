@@ -36,7 +36,7 @@ public class MessageAmendInfo {
      * Returns the headers stored in the object. For sent messages,
      * the headers stored in the object may be used to append to existing headers,
      * where it won't overwrite an existing one that may be outgoing.
-     *
+     * 
      * @return The headers stored
      */
     public List<Header> getHeaders() {
