@@ -32,6 +32,8 @@ jobs:
           - fedora-34-x64
           - rhel8-x64
           #- manylinux2014-x86 until we find 32-bit linux binaries we can use
+    permissions:
+      id-token: write # This is required for requesting the JWT
     steps:
     - name: configure AWS credentials (containers)
       uses: aws-actions/configure-aws-credentials@v1
@@ -65,6 +67,8 @@ jobs:
           - 8
           - 11
           - 17
+    permissions:
+      id-token: write # This is required for requesting the JWT
     steps:
     - name: Checkout Sources
       uses: actions/checkout@v2
@@ -101,6 +105,8 @@ jobs:
           - 8
           - 11
           - 17
+    permissions:
+      id-token: write # This is required for requesting the JWT
     steps:
     - name: Checkout Sources
       uses: actions/checkout@v2
@@ -138,6 +144,8 @@ jobs:
           - 8
           - 11
           - 17
+    permissions:
+      id-token: write # This is required for requesting the JWT
     steps:
       - name: Checkout Sources
         uses: actions/checkout@v2
