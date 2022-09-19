@@ -12,12 +12,8 @@ env:
   BUILDER_HOST: https://d19elf31gohf1l.cloudfront.net
   PACKAGE_NAME: aws-iot-device-sdk-java-v2
   RUN: ${{ github.run_id }}-${{ github.run_number }}
-  # TEMP AWS KEY FOR TESTING
-  # AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  # AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  # AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_DATEST_ACCESS_KEY_ID }}
-  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_DATEST_SECRET_ACCESS_KEY }}
+  # AWS_ACCESS_KEY_ID: ${{ secrets.AWS_DATEST_ACCESS_KEY_ID }}
+  # AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_DATEST_SECRET_ACCESS_KEY }}
   AWS_DEFAULT_REGION: us-east-1
   DA_TOPIC: test/da
   DA_SHADOW_PROPERTY: datest
@@ -115,7 +111,7 @@ jobs:
       uses: aws-actions/configure-aws-credentials@v1
       with:
         role-to-assume: ${{ env.CI_PUBSUB_ROLE }}
-        aws-region: us-east-1
+        aws-region: ${{ env.AWS_DEFAULT_REGION }}
     - name: run PubSub sample
       run: |
         pushd ./samples/BasicPubSub
