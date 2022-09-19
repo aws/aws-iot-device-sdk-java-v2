@@ -92,6 +92,11 @@ jobs:
 
   osx_new_ci:
     runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        version:
+          - 8
     steps:
     - name: Checkout Sources
       uses: actions/checkout@v2
