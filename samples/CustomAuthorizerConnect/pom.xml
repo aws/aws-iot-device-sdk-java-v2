@@ -4,7 +4,7 @@
     <groupId>software.amazon.awssdk.iotdevicesdk</groupId>
     <artifactId>CustomAuthorizerConnect</artifactId>
     <packaging>jar</packaging>
-    <version>1.0.SNAPSHOT</version>
+    <version>1.0-SNAPSHOT</version>
     <name>${project.groupId}:${project.artifactId}</name>
     <description>Java bindings for the AWS IoT Core Service</description>
     <url>https://github.com/awslabs/aws-iot-device-sdk-java-v2</url>

@@ -51,12 +51,9 @@ jobs:
         aws-region: ${{ env.AWS_DEFAULT_REGION }}
     - name: run PubSub sample
       run: |
-        pushd ./samples/BasicPubSub
-        cert=$(aws secretsmanager get-secret-value --secret-id "ci/PubSub/cert" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$cert" > /tmp/certificate.pem
-        key=$(aws secretsmanager get-secret-value --secret-id "ci/PubSub/key" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$key" > /tmp/privatekey.pem
-        ENDPOINT=$(aws secretsmanager get-secret-value --secret-id "ci/endpoint" --query "SecretString" | cut -f2 -d":" | sed -e 's/[\\\"\}]//g')
-        mvn exec:java -Dexec.mainClass="pubsub.PubSub" -Daws.crt.ci="True" -Dexec.arguments="--endpoint,$ENDPOINT,--key,/tmp/privatekey.pem,--cert,/tmp/certificate.pem"
-        popd
+        - name: run PubSub sample
+      run: |
+        python3 ./utils/run_sample_ci.py --language Java --sample_file 'samples/BasicPubSub' --sample_region ${{ env.AWS_DEFAULT_REGION }} --sample_secret_endpoint 'ci/endpoint' --sample_secret_certificate 'ci/PubSub/cert' --sample_secret_private_key 'ci/PubSub/key' --sample_main_class 'pubsub.PubSub'
 
   windows:
     runs-on: windows-latest
@@ -87,14 +84,9 @@ jobs:
       with:
         role-to-assume: ${{ env.CI_PUBSUB_ROLE }}
         aws-region: ${{ env.AWS_DEFAULT_REGION }}
-    # - name: run PubSub sample
-    #   run: |
-    #     pushd ./samples/BasicPubSub
-    #     cert=$(aws secretsmanager get-secret-value --secret-id "ci/PubSub/cert" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$cert" > /tmp/certificate.pem
-    #     key=$(aws secretsmanager get-secret-value --secret-id "ci/PubSub/key" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$key" > /tmp/privatekey.pem
-    #     ENDPOINT=$(aws secretsmanager get-secret-value --secret-id "ci/endpoint" --query "SecretString" | cut -f2 -d":" | sed -e 's/[\\\"\}]//g')
-    #     mvn exec:java -Dexec.mainClass="pubsub.PubSub" -Daws.crt.ci="True" -Dexec.arguments="--endpoint,$ENDPOINT,--key,/tmp/privatekey.pem,--cert,/tmp/certificate.pem"
-    #     popd
+    - name: run PubSub sample
+      run: |
+        python ./utils/run_sample_ci.py --language Java --sample_file 'samples/BasicPubSub' --sample_region ${{ env.AWS_DEFAULT_REGION }} --sample_secret_endpoint 'ci/endpoint' --sample_secret_certificate 'ci/PubSub/cert' --sample_secret_private_key 'ci/PubSub/key' --sample_main_class 'pubsub.PubSub'
 
   osx:
     runs-on: macos-latest
@@ -128,12 +120,7 @@ jobs:
         aws-region: ${{ env.AWS_DEFAULT_REGION }}
     - name: run PubSub sample
       run: |
-        pushd ./samples/BasicPubSub
-        cert=$(aws secretsmanager get-secret-value --secret-id "ci/PubSub/cert" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$cert" > /tmp/certificate.pem
-        key=$(aws secretsmanager get-secret-value --secret-id "ci/PubSub/key" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$key" > /tmp/privatekey.pem
-        ENDPOINT=$(aws secretsmanager get-secret-value --secret-id "ci/endpoint" --query "SecretString" | cut -f2 -d":" | sed -e 's/[\\\"\}]//g')
-        mvn exec:java -Dexec.mainClass="pubsub.PubSub" -Daws.crt.ci="True" -Dexec.arguments="--endpoint,$ENDPOINT,--key,/tmp/privatekey.pem,--cert,/tmp/certificate.pem"
-        popd
+        python3 ./utils/run_sample_ci.py --language Java --sample_file 'samples/BasicPubSub' --sample_region ${{ env.AWS_DEFAULT_REGION }} --sample_secret_endpoint 'ci/endpoint' --sample_secret_certificate 'ci/PubSub/cert' --sample_secret_private_key 'ci/PubSub/key' --sample_main_class 'pubsub.PubSub'
 
   java-compat:
     runs-on: ubuntu-latest
