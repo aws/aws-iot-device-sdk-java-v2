@@ -87,14 +87,14 @@ jobs:
       with:
         role-to-assume: ${{ env.CI_PUBSUB_ROLE }}
         aws-region: ${{ env.AWS_DEFAULT_REGION }}
-    - name: run PubSub sample
-      run: |
-        pushd ./samples/BasicPubSub
-        cert=$(aws secretsmanager get-secret-value --secret-id "ci/PubSub/cert" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$cert" > /tmp/certificate.pem
-        key=$(aws secretsmanager get-secret-value --secret-id "ci/PubSub/key" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$key" > /tmp/privatekey.pem
-        ENDPOINT=$(aws secretsmanager get-secret-value --secret-id "ci/endpoint" --query "SecretString" | cut -f2 -d":" | sed -e 's/[\\\"\}]//g')
-        mvn exec:java -Dexec.mainClass="pubsub.PubSub" -Daws.crt.ci="True" -Dexec.arguments="--endpoint,$ENDPOINT,--key,/tmp/privatekey.pem,--cert,/tmp/certificate.pem"
-        popd
+    # - name: run PubSub sample
+    #   run: |
+    #     pushd ./samples/BasicPubSub
+    #     cert=$(aws secretsmanager get-secret-value --secret-id "ci/PubSub/cert" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$cert" > /tmp/certificate.pem
+    #     key=$(aws secretsmanager get-secret-value --secret-id "ci/PubSub/key" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$key" > /tmp/privatekey.pem
+    #     ENDPOINT=$(aws secretsmanager get-secret-value --secret-id "ci/endpoint" --query "SecretString" | cut -f2 -d":" | sed -e 's/[\\\"\}]//g')
+    #     mvn exec:java -Dexec.mainClass="pubsub.PubSub" -Daws.crt.ci="True" -Dexec.arguments="--endpoint,$ENDPOINT,--key,/tmp/privatekey.pem,--cert,/tmp/certificate.pem"
+    #     popd
 
   osx:
     runs-on: macos-latest
@@ -144,8 +144,6 @@ jobs:
           - 8
           - 11
           - 17
-    permissions:
-      id-token: write # This is required for requesting the JWT
     steps:
       - name: Checkout Sources
         uses: actions/checkout@v2
@@ -159,19 +157,6 @@ jobs:
         run: |
           java -version
           mvn -B test -Daws.crt.debugnative=true
-      - name: configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          role-to-assume: ${{ env.CI_PUBSUB_ROLE }}
-          aws-region: ${{ env.AWS_DEFAULT_REGION }}
-      - name: run PubSub sample
-        run: |
-          pushd ./samples/BasicPubSub
-          cert=$(aws secretsmanager get-secret-value --secret-id "ci/PubSub/cert" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$cert" > /tmp/certificate.pem
-          key=$(aws secretsmanager get-secret-value --secret-id "ci/PubSub/key" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$key" > /tmp/privatekey.pem
-          ENDPOINT=$(aws secretsmanager get-secret-value --secret-id "ci/endpoint" --query "SecretString" | cut -f2 -d":" | sed -e 's/[\\\"\}]//g')
-          mvn exec:java -Dexec.mainClass="pubsub.PubSub" -Daws.crt.ci="True" -Dexec.arguments="--endpoint,$ENDPOINT,--key,/tmp/privatekey.pem,--cert,/tmp/certificate.pem"
-          popd
 
   # check that docs can still build
   check-docs:
