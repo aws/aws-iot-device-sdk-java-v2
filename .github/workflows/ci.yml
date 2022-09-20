@@ -22,6 +22,7 @@ env:
 
 jobs:
   linux-compat:
+    if: github.repository_owner == "aws"
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -48,6 +49,7 @@ jobs:
     # We run the samples on Linux via Codebuild though, so we still get full Linux coverage
 
   windows:
+    if: github.repository_owner == "aws"
     runs-on: windows-latest
     strategy:
       fail-fast: false
@@ -82,6 +84,7 @@ jobs:
         python ./utils/run_sample_ci.py --language Java --sample_file 'samples/BasicPubSub' --sample_region ${{ env.AWS_DEFAULT_REGION }} --sample_secret_endpoint 'ci/endpoint' --sample_secret_certificate 'ci/PubSub/cert' --sample_secret_private_key 'ci/PubSub/key' --sample_main_class 'pubsub.PubSub'
 
   osx:
+    if: github.repository_owner == "aws"
     runs-on: macos-latest
     strategy:
       fail-fast: false
@@ -117,6 +120,7 @@ jobs:
         python3 ./utils/run_sample_ci.py --language Java --sample_file 'samples/BasicPubSub' --sample_region ${{ env.AWS_DEFAULT_REGION }} --sample_secret_endpoint 'ci/endpoint' --sample_secret_certificate 'ci/PubSub/cert' --sample_secret_private_key 'ci/PubSub/key' --sample_main_class 'pubsub.PubSub'
 
   java-compat:
+    if: github.repository_owner == "aws"
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -153,6 +157,7 @@ jobs:
 
   # check that docs can still build
   check-docs:
+    if: github.repository_owner == "aws"
     runs-on: ubuntu-20.04 # latest
     steps:
       - uses: actions/checkout@v2
@@ -163,6 +168,7 @@ jobs:
 
   # ensure that aws-crt version is consistent among different files
   consistent-crt-version:
+    if: github.repository_owner == "aws"
     runs-on: ubuntu-20.04 # latest
     steps:
       - uses: actions/checkout@v2
