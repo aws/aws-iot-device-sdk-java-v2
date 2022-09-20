@@ -140,6 +140,7 @@ jobs:
         run: |
           java -version
           mvn -B test -Daws.crt.debugnative=true
+          mvn install -Dmaven.test.skip
       - name: configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
