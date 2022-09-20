@@ -95,7 +95,7 @@ def launch_sample(parsed_commands, sample_endpoint, sample_certificate, sample_p
         launch_arguments.append("--custom_auth_authorizer_name")
         launch_arguments.append(sample_custom_authorizer_name)
     if (sample_custom_authorizer_password != ""):
-        launch_arguments.append("--custom_auth_authorizer_password")
+        launch_arguments.append("--custom_auth_password")
         launch_arguments.append(sample_custom_authorizer_password)
     if (parsed_commands.sample_arguments != ""):
         sample_arguments_split = parsed_commands.sample_arguments.split(" ")
