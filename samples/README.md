@@ -46,19 +46,17 @@ mvn compile exec:java -pl samples/BasicPubSub -Daws.crt.debugnative=true -Daws.c
 
 ### Running SDK Compiled From Source
 
-If you want to run a sample using the version of the SDK you compiled from source rather than the latest release, there is to ways to do it:
+If you want to run a sample using the version of the SDK you compiled from source rather than the latest release, there are two ways to do it:
 
-The first is to tell Maven to use the `debug` profile. For example:
+* Tell Maven to use the `debug` profile. For example:
+  ```sh
+  mvn -P debug compile exec:java -pl samples/BasicPubSub -Dexec.mainClass=pubsub.PubSub -Dexec.args='--endpoint <endpoint> --cert <path to certificate> --key <path to private key> --ca_file <path to root CA>'
+  ```
 
-```sh
-mvn -P debug compile exec:java -pl samples/BasicPubSub -Dexec.mainClass=pubsub.PubSub -Dexec.args='--endpoint <endpoint> --cert <path to certificate> --key <path to private key> --ca_file <path to root CA>'
-```
-
-The second way is to pass the `debug.native` flag:
-
-```sh
-mvn compile exec:java -pl samples/BasicPubSub -Dexec.mainClass=pubsub.PubSub -Dexec.args='--endpoint <endpoint> --cert <path to certificate> --key <path to private key> --ca_file <path to root CA>' -Ddebug.native
-```
+* Pass the `debug.native` flag:
+  ```sh
+  mvn compile exec:java -pl samples/BasicPubSub -Dexec.mainClass=pubsub.PubSub -Dexec.args='--endpoint <endpoint> --cert <path to certificate> --key <path to private key> --ca_file <path to root CA>' -Ddebug.native
+  ```
 
 Either way will make the sample run using `1.0.0-SNAPSHOT`, which will point to the version of the SDK installed from source rather than the latest release.
 
@@ -763,6 +761,13 @@ mvn compile exec:java -pl samples/Identity -Dexec.mainClass="identity.FleetProvi
 
 Notice that we provided substitution values for the two parameters in the template body, `DeviceLocation` and `SerialNumber`.
 
+If you want to run the sample using the SDK compiled from source, rather than the latest release, then you need to run the snippet below instead. If you are not using the temporary provisioning certificate, replace the paths for `--cert` and `--key` appropriately:
+
+``` sh
+mvn -P debug compile exec:java -pl samples/Identity -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint <endpoint> --ca_file <path to root CA>
+--cert <path to certificate> --key <path to private key> --template_name <template name> --template_parameters {\"SerialNumber\":\"1\",\"DeviceLocation\":\"Seattle\"}"
+```
+
 #### Run the sample using the certificate signing request workflow
 
 To run the sample with this workflow, you'll need to create a certificate signing request.
@@ -792,6 +797,12 @@ Finally, supply the certificate signing request while invoking the provisioning 
 using a permanent certificate set, replace the paths specified in the `--cert` and `--key` arguments:
 ``` sh
 mvn compile exec:java -pl samples/Identity -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint <endpoint> --ca_file <path to root CA>
+--cert <path to certificate> --key <path to private key> --template_name <template name> --template_parameters {\"SerialNumber\":\"1\",\"DeviceLocation\":\"Seattle\"}  --csr <path to csr file>"
+```
+
+If you want to run the sample using the SDK compiled from source, rather than the latest release, then you need to run the snippet below instead. If using a permanent certificate set, make sure to replace the paths specified in the `--cert` and `--key` arguments:
+``` sh
+mvn -P debug compile exec:java -pl samples/Identity -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint <endpoint> --ca_file <path to root CA>
 --cert <path to certificate> --key <path to private key> --template_name <template name> --template_parameters {\"SerialNumber\":\"1\",\"DeviceLocation\":\"Seattle\"}  --csr <path to csr file>"
 ```
 
