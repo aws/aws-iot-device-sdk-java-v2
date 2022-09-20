@@ -125,6 +125,8 @@ jobs:
           - 8
           - 11
           - 17
+    permissions:
+      id-token: write # This is required for requesting the JWT
     steps:
       - name: Checkout Sources
         uses: actions/checkout@v2
