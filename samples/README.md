@@ -44,6 +44,24 @@ For example, to run `BasicPubSub` with logging you could use the following:
 mvn compile exec:java -pl samples/BasicPubSub -Daws.crt.debugnative=true -Daws.crt.log.level=Debug -Daws.crt.log.destionation=Stdout -Dexec.mainClass=pubsub.PubSub -Dexec.args='--endpoint <endpoint> --cert <path to cert> --key <path to key> --ca_file <path to ca file>'
 ```
 
+_________
+
+If you want to run a sample using the version of the SDK you compiled from source rather than the latest release, there is to ways to do it:
+
+The first is to tell Maven to use the `debug` profile. For example:
+
+```sh
+mvn -P debug compile exec:java -pl samples/BasicPubSub -Dexec.mainClass=pubsub.PubSub -Dexec.args='--endpoint <endpoint> --cert <path to certificate> --key <path to private key> --ca_file <path to root CA>'
+```
+
+The second way is to pass the `debug.native` flag:
+
+```sh
+mvn compile exec:java -pl samples/BasicPubSub -Dexec.mainClass=pubsub.PubSub -Dexec.args='--endpoint <endpoint> --cert <path to certificate> --key <path to private key> --ca_file <path to root CA>' -Ddebug.native
+```
+
+Either way will make the sample run using `1.0.0-SNAPSHOT`, which will point to the version of the SDK installed from source rather than the latest release.
+
 ## BasicPubSub
 
 This sample uses the

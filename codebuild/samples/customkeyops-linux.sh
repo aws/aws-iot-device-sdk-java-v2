@@ -11,6 +11,6 @@ ENDPOINT=$(aws secretsmanager get-secret-value --secret-id "unit-test/endpoint" 
 mvn compile
 
 echo "Custom Key Ops test"
-mvn exec:java -Dexec.mainClass="customkeyopspubsub.CustomKeyOpsPubSub" -Daws.crt.ci="True" -Dexec.arguments="--endpoint,$ENDPOINT,--key,/tmp/privatekey_p8.pem,--cert,/tmp/certificate.pem"
+mvn -P debug exec:java -Dexec.mainClass="customkeyopspubsub.CustomKeyOpsPubSub" -Daws.crt.ci="True" -Dexec.arguments="--endpoint,$ENDPOINT,--key,/tmp/privatekey_p8.pem,--cert,/tmp/certificate.pem"
 
 popd
