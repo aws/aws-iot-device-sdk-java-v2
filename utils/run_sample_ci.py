@@ -16,13 +16,15 @@ tmp_certificate_file_path = str(current_folder) + "tmp_certificate.pem"
 tmp_private_key_path = str(current_folder) + "tmp_privatekey.pem.key"
 
 
-def launchSample(parsed_commands):
+def getSecretsAndLaunch(parsed_commands):
     global tmp_certificate_file_path
     global tmp_private_key_path
     exit_code = 0
     sample_endpoint = ""
     sample_certificate = ""
     sample_private_key = ""
+    sample_custom_authorizer_name = ""
+    sample_custom_authorizer_password = ""
 
     current_folder = pathlib.Path(__file__).resolve()
     # Remove the name of the python file
@@ -41,18 +43,25 @@ def launchSample(parsed_commands):
             with open(tmp_certificate_file_path, "w") as file:
                 # lgtm [py/clear-text-storage-sensitive-data]
                 file.write(sample_certificate["SecretString"])
-
         if (parsed_commands.sample_secret_private_key != ""):
             sample_private_key = secrets_client.get_secret_value(
                 SecretId=parsed_commands.sample_secret_private_key)
             with open(tmp_private_key_path, "w") as file:
                 # lgtm [py/clear-text-storage-sensitive-data]
                 file.write(sample_private_key["SecretString"])
-    except Exception:
-        sys.exit("ERROR: Could not get secrets to launch sample!")
+        if (parsed_commands.sample_secret_custom_authorizer_name != ""):
+            sample_custom_authorizer_name = secrets_client.get_secret_value(
+                SecretId=parsed_commands.sample_secret_custom_authorizer_name)["SecretString"]
+        if (parsed_commands.sample_secret_custom_authorizer_password != ""):
+            sample_custom_authorizer_password = secrets_client.get_secret_value(
+                SecretId=parsed_commands.sample_secret_custom_authorizer_password)["SecretString"]
 
-    print ("Launching sample...")
-    exit_code = launch_sample(parsed_commands, sample_endpoint, sample_certificate, sample_private_key)
+    except Exception:
+        sys.exit("⛔️ ERROR: Could not get secrets to launch sample!")
+
+    print("Launching sample...")
+    exit_code = launch_sample(parsed_commands, sample_endpoint, sample_certificate,
+                              sample_private_key, sample_custom_authorizer_name, sample_custom_authorizer_password)
 
     print("Deleting files...")
     if (sample_certificate != ""):
@@ -61,13 +70,13 @@ def launchSample(parsed_commands):
         os.remove(tmp_private_key_path)
 
     if (exit_code == 0):
-        print("SUCCESS: Finished running sample! Exiting with success")
+        print("SUCCESS ✅: Finished running sample! Exiting with success")
     else:
-        print("ERROR: Sample did not return success! Exit code " + str(exit_code))
+        print("ERROR ⛔️: Sample did not return success! Exit code " + str(exit_code))
     return exit_code
 
 
-def launch_sample(parsed_commands, sample_endpoint, sample_certificate, sample_private_key):
+def launch_sample(parsed_commands, sample_endpoint, sample_certificate, sample_private_key, sample_custom_authorizer_name, sample_custom_authorizer_password):
     global tmp_certificate_file_path
     global tmp_private_key_path
     exit_code = 0
@@ -82,6 +91,12 @@ def launch_sample(parsed_commands, sample_endpoint, sample_certificate, sample_p
     if (sample_private_key != ""):
         launch_arguments.append("--key")
         launch_arguments.append(tmp_private_key_path)
+    if (sample_custom_authorizer_name != ""):
+        launch_arguments.append("--custom_auth_authorizer_name")
+        launch_arguments.append(sample_custom_authorizer_name)
+    if (sample_custom_authorizer_password != ""):
+        launch_arguments.append("--custom_auth_authorizer_password")
+        launch_arguments.append(sample_custom_authorizer_password)
     if (parsed_commands.sample_arguments != ""):
         sample_arguments_split = parsed_commands.sample_arguments.split(" ")
         for arg in sample_arguments_split:
@@ -98,17 +113,21 @@ def launch_sample(parsed_commands, sample_endpoint, sample_certificate, sample_p
         arguments = ["mvn", "compile", "exec:java"]
         arguments.append("-pl")
         arguments.append(parsed_commands.sample_file)
-        arguments.append("-Dexec.mainClass=" + parsed_commands.sample_main_class)
+        arguments.append("-Dexec.mainClass=" +
+                         parsed_commands.sample_main_class)
         arguments.append("-Dexec.crt.ci=True")
         # We have to do this as a string, unfortunately, due to how -Dexec.args= works...
-        argument_string = subprocess.list2cmdline(arguments) + " -Dexec.args=\"" + arguments_as_string + "\""
+        argument_string = subprocess.list2cmdline(
+            arguments) + " -Dexec.args=\"" + arguments_as_string + "\""
         sample_return = subprocess.run(argument_string, shell=True)
         exit_code = sample_return.returncode
     elif (parsed_commands.language == "CPP"):
-        sample_return = subprocess.run(args=launch_arguments, executable=parsed_commands.sample_file)
+        sample_return = subprocess.run(
+            args=launch_arguments, executable=parsed_commands.sample_file)
         exit_code = sample_return.returncode
     elif (parsed_commands.language == "Python"):
-        sample_return = subprocess.run(args=[sys.executable, parsed_commands.sample_file] + launch_arguments)
+        sample_return = subprocess.run(
+            args=[sys.executable, parsed_commands.sample_file] + launch_arguments)
         exit_code = sample_return.returncode
     elif (parsed_commands.language == "Javascript"):
         os.chdir(parsed_commands.sample_file)
@@ -117,10 +136,11 @@ def launch_sample(parsed_commands, sample_endpoint, sample_certificate, sample_p
             exit_code = sample_return_one.returncode
         else:
             arguments = ["node", "dist/index.js"]
-            sample_return_two = subprocess.run(args=arguments + launch_arguments)
+            sample_return_two = subprocess.run(
+                args=arguments + launch_arguments)
             exit_code = sample_return_two.returncode
     else:
-        print ("ERROR - unknown programming language! Supported programming languages are 'Java', 'CPP', 'Python', and 'Javascript'")
+        print("ERROR - unknown programming language! Supported programming languages are 'Java', 'CPP', 'Python', and 'Javascript'")
         return -1
 
     # finish!
@@ -133,7 +153,7 @@ def main():
     argument_parser.add_argument("--language", metavar="<CPP, Java, Python, or Javascript>", required=True,
                                  help="The name of the programming language. Used to determine how to launch the sample")
     argument_parser.add_argument("--sample_file",
-                                metavar="<CPP=C:\\repository\\PubSub.exe, Java=samples/BasicPubSub, Python=PubSub.py, Javascript=C:\\samples\\node\\pub_sub>",
+                                 metavar="<CPP=C:\\repository\\PubSub.exe, Java=samples/BasicPubSub, Python=PubSub.py, Javascript=C:\\samples\\node\\pub_sub>",
                                  required=True, default="", help="Sample to launch. Format varies based on programming language")
     argument_parser.add_argument("--sample_region", metavar="<Name of region>",
                                  required=True, default="us-east-1", help="The name of the region to use for accessing secrets")
@@ -143,6 +163,10 @@ def main():
                                  default="", help="The name of the secret containing the certificate PEM file")
     argument_parser.add_argument("--sample_secret_private_key", metavar="<Name of private key secret>", required=False,
                                  default="", help="The name of the secret containing the private key PEM file")
+    argument_parser.add_argument("--sample_secret_custom_authorizer_name", metavar="<Name of custom authorizer name secret>", required=False,
+                                 default="", help="The name of the secret containing the custom authorizer name")
+    argument_parser.add_argument("--sample_secret_custom_authorizer_password", metavar="<Name of custom authorizer password secret>", required=False,
+                                 default="", help="The name of the secret containing the custom authorizer password")
     argument_parser.add_argument("--sample_arguments", metavar="<Arguments here in single string!>",
                                  required=False, default="",
                                  help="Arguments to pass to sample. In Java, these arguments will be in a double quote (\") string")
@@ -152,7 +176,7 @@ def main():
     parsed_commands = argument_parser.parse_args()
 
     print("Starting to launch sample...")
-    sample_result = launchSample(parsed_commands)
+    sample_result = getSecretsAndLaunch(parsed_commands)
     sys.exit(sample_result)
 
 

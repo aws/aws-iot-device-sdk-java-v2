@@ -201,7 +201,8 @@ jobs:
         run: |
           java -version
           mvn install -Dmaven.test.skip
-      - name: configure AWS credentials
+
+      - name: configure AWS credentials (Connect and PubSub)
         uses: aws-actions/configure-aws-credentials@v1
         with:
           role-to-assume: ${{ env.CI_PUBSUB_ROLE }}
@@ -219,3 +220,12 @@ jobs:
       - name: run CustomKeyOperations sample
         run: |
           python3 ./utils/run_sample_ci.py --language Java --sample_file 'samples/CustomKeyOpsPubSub' --sample_region ${{ env.AWS_DEFAULT_REGION }} --sample_secret_endpoint 'ci/endpoint' --sample_secret_certificate 'ci/PubSub/cert' --sample_secret_private_key 'ci/PubSub/keyp8' --sample_main_class 'customkeyopspubsub.CustomKeyOpsPubSub'
+
+      - name: configure AWS credentials (Custom Authorizer)
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ env.CI_CUSTOM_AUTHORIZER_ROLE }}
+          aws-region: ${{ env.AWS_DEFAULT_REGION }}
+      - name: run CustomAuthorizerConnect sample
+        run: |
+          python3 ./utils/run_sample_ci.py --language Java --sample_file 'samples/CustomAuthorizerConnect' --sample_region ${{ env.AWS_DEFAULT_REGION }} --sample_secret_endpoint 'ci/endpoint' --sample_secret_custom_authorizer_name 'ci/CustomAuthorizer/name' --sample_secret_custom_authorizer_password 'ci/CustomAuthorizer/password' --sample_main_class 'customauthorizerconnect.CustomAuthorizerConnect'
