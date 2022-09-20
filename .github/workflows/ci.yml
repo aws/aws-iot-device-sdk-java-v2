@@ -44,8 +44,6 @@ jobs:
       run: |
         aws s3 cp s3://aws-crt-test-stuff/ci/${{ env.BUILDER_VERSION }}/linux-container-ci.sh ./linux-container-ci.sh && chmod a+x ./linux-container-ci.sh
         ./linux-container-ci.sh ${{ env.BUILDER_VERSION }} aws-crt-${{ matrix.image }} build -p ${{ env.PACKAGE_NAME }}
-    # Linux runs in a container - meaning we cannot just execute the sample in the same way we do the other actions.
-    # We run the samples on Linux via Codebuild though, so we still get full Linux coverage
 
   windows:
     runs-on: windows-latest
@@ -82,7 +80,6 @@ jobs:
         python ./utils/run_sample_ci.py --language Java --sample_file 'samples/BasicPubSub' --sample_region ${{ env.AWS_DEFAULT_REGION }} --sample_secret_endpoint 'ci/endpoint' --sample_secret_certificate 'ci/PubSub/cert' --sample_secret_private_key 'ci/PubSub/key' --sample_main_class 'pubsub.PubSub'
 
   osx:
-    if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: macos-latest
     strategy:
       fail-fast: false
