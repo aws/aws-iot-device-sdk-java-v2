@@ -44,16 +44,8 @@ jobs:
       run: |
         aws s3 cp s3://aws-crt-test-stuff/ci/${{ env.BUILDER_VERSION }}/linux-container-ci.sh ./linux-container-ci.sh && chmod a+x ./linux-container-ci.sh
         ./linux-container-ci.sh ${{ env.BUILDER_VERSION }} aws-crt-${{ matrix.image }} build -p ${{ env.PACKAGE_NAME }}
-    - name: configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        role-to-assume: ${{ env.CI_PUBSUB_ROLE }}
-        aws-region: ${{ env.AWS_DEFAULT_REGION }}
-    - name: run PubSub sample
-      run: |
-        sudo cd /root/aws-iot-device-sdk-java-v2
-        python3 -m pip install boto3
-        python3 ./utils/run_sample_ci.py --language Java --sample_file 'samples/BasicPubSub' --sample_region ${{ env.AWS_DEFAULT_REGION }} --sample_secret_endpoint 'ci/endpoint' --sample_secret_certificate 'ci/PubSub/cert' --sample_secret_private_key 'ci/PubSub/key' --sample_main_class 'pubsub.PubSub'
+    # Linux runs in a container - meaning we cannot just execute the sample in the same way we do the other actions.
+    # We run the samples on Linux via Codebuild though, so we still get full Linux coverage
 
   windows:
     runs-on: windows-latest
@@ -146,6 +138,15 @@ jobs:
         run: |
           java -version
           mvn -B test -Daws.crt.debugnative=true
+      - name: configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ env.CI_PUBSUB_ROLE }}
+          aws-region: ${{ env.AWS_DEFAULT_REGION }}
+      - name: run PubSub sample
+        run: |
+          python3 -m pip install boto3
+          python3 ./utils/run_sample_ci.py --language Java --sample_file 'samples/BasicPubSub' --sample_region ${{ env.AWS_DEFAULT_REGION }} --sample_secret_endpoint 'ci/endpoint' --sample_secret_certificate 'ci/PubSub/cert' --sample_secret_private_key 'ci/PubSub/key' --sample_main_class 'pubsub.PubSub'
 
   # check that docs can still build
   check-docs:
