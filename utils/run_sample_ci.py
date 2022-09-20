@@ -57,7 +57,7 @@ def getSecretsAndLaunch(parsed_commands):
                 SecretId=parsed_commands.sample_secret_custom_authorizer_password)["SecretString"]
 
     except Exception:
-        sys.exit("⛔️ ERROR: Could not get secrets to launch sample!")
+        sys.exit("ERROR: Could not get secrets to launch sample!")
 
     print("Launching sample...")
     exit_code = launch_sample(parsed_commands, sample_endpoint, sample_certificate,
@@ -70,9 +70,9 @@ def getSecretsAndLaunch(parsed_commands):
         os.remove(tmp_private_key_path)
 
     if (exit_code == 0):
-        print("SUCCESS ✅: Finished running sample! Exiting with success")
+        print("SUCCESS: Finished running sample! Exiting with success")
     else:
-        print("ERROR ⛔️: Sample did not return success! Exit code " + str(exit_code))
+        print("ERROR: Sample did not return success! Exit code " + str(exit_code))
     return exit_code
 
 
