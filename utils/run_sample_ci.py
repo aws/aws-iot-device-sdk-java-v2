@@ -35,29 +35,24 @@ def getSecretsAndLaunch(parsed_commands):
         "secretsmanager", region_name=parsed_commands.sample_region)
     try:
         if (parsed_commands.sample_secret_endpoint != ""):
-            print ("About to get the endpoint...")
             sample_endpoint = secrets_client.get_secret_value(
                 SecretId=parsed_commands.sample_secret_endpoint)["SecretString"]
         if (parsed_commands.sample_secret_certificate != ""):
-            print ("About to get the certificate...")
             sample_certificate = secrets_client.get_secret_value(
                 SecretId=parsed_commands.sample_secret_certificate)
             with open(tmp_certificate_file_path, "w") as file:
                 # lgtm [py/clear-text-storage-sensitive-data]
                 file.write(sample_certificate["SecretString"])
         if (parsed_commands.sample_secret_private_key != ""):
-            print ("About to get the private key...")
             sample_private_key = secrets_client.get_secret_value(
                 SecretId=parsed_commands.sample_secret_private_key)
             with open(tmp_private_key_path, "w") as file:
                 # lgtm [py/clear-text-storage-sensitive-data]
                 file.write(sample_private_key["SecretString"])
         if (parsed_commands.sample_secret_custom_authorizer_name != ""):
-            print ("About to get the authorizer name...")
             sample_custom_authorizer_name = secrets_client.get_secret_value(
                 SecretId=parsed_commands.sample_secret_custom_authorizer_name)["SecretString"]
         if (parsed_commands.sample_secret_custom_authorizer_password != ""):
-            print ("About to get the authorizer password...")
             sample_custom_authorizer_password = secrets_client.get_secret_value(
                 SecretId=parsed_commands.sample_secret_custom_authorizer_password)["SecretString"]
 
