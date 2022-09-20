@@ -75,9 +75,6 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
         this.tlsOptions = tlsOptions;
         addReferenceTo(tlsOptions);
 
-        // Test to make sure we are using the latest version of the SDK from source, not the latest release, in Codebuild. Delete once finished!
-        System.out.println("\n\n Hello world! \n\n");
-
         resetDefaultPort();
     }
 
