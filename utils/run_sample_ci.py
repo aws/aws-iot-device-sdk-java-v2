@@ -59,6 +59,12 @@ def getSecretsAndLaunch(parsed_commands):
     except Exception:
         sys.exit("ERROR: Could not get secrets to launch sample!")
 
+    if (parsed_commands.sample_run_softhsm != ""):
+        print ("Setting up private key via SoftHSM")
+        subprocess.run("softhsm2-util --init-token --free --label my-token --pin 0000 --so-pin 0000", shell=True)
+        subprocess.run(f"softhsm2-util --import {tmp_private_key_path} --token my-token --label my-key --id BEEFCAFE --pin 0000", shell=True)
+        print ("Finished setting up private key in SoftHSM")
+
     print("Launching sample...")
     exit_code = launch_sample(parsed_commands, sample_endpoint, sample_certificate,
                               sample_private_key, sample_custom_authorizer_name, sample_custom_authorizer_password)
@@ -88,7 +94,7 @@ def launch_sample(parsed_commands, sample_endpoint, sample_certificate, sample_p
     if (sample_certificate != ""):
         launch_arguments.append("--cert")
         launch_arguments.append(tmp_certificate_file_path)
-    if (sample_private_key != ""):
+    if (sample_private_key != "" and parsed_commands.sample_run_softhsm == ""):
         launch_arguments.append("--key")
         launch_arguments.append(tmp_private_key_path)
     if (sample_custom_authorizer_name != ""):
@@ -172,6 +178,8 @@ def main():
                                  default="", help="The name of the secret containing the custom authorizer name")
     argument_parser.add_argument("--sample_secret_custom_authorizer_password", metavar="<Name of custom authorizer password secret>", required=False,
                                  default="", help="The name of the secret containing the custom authorizer password")
+    argument_parser.add_argument("--sample_run_softhsm", metavar="<Set to 'True' to run SoftHSM>", required=False,
+                                 default="", help="Runs SoftHSM on the private key passed, storing it, rather than passing it directly to the sample. Used for PKCS11 sample")
     argument_parser.add_argument("--sample_arguments", metavar="<Arguments here in single string!>",
                                  required=False, default="",
                                  help="Arguments to pass to sample. In Java, these arguments will be in a double quote (\") string")

@@ -9,9 +9,6 @@ phases:
       - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/tmp/awscliv2.zip"
       - unzip -q -d /tmp /tmp/awscliv2.zip
       - sudo /tmp/aws/install
-      - add-apt-repository ppa:ubuntu-toolchain-r/test
-      - apt-get update -y
-      - apt-get install python3 softhsm -y
   build:
     commands:
       - echo Build started on `date`
