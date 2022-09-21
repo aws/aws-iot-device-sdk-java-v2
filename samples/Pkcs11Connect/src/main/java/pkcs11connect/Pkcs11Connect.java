@@ -67,12 +67,23 @@ public class Pkcs11Connect {
         int port = Integer.parseInt(cmdUtils.getCommandOrDefault("port", "8883"));
         String pkcs11LibPath = cmdUtils.getCommandRequired("pkcs11_lib", "");
         String pkcs11UserPin = cmdUtils.getCommandRequired("pin", "");
-        String pkcs11TokenLabel = cmdUtils.getCommandOrDefault("key_label", "");
+        String pkcs11TokenLabel = cmdUtils.getCommandOrDefault("token_label", "");
         Long pkcs11SlotId = null;
         if (cmdUtils.hasCommand("slot_id")) {
             Long.parseLong(cmdUtils.getCommandOrDefault("slot_id", "-1"));
         }
         String pkcs11KeyLabel = cmdUtils.getCommandOrDefault("key_label", "");
+
+        System.out.println("\n\n");
+        System.out.println("Lib: " + pkcs11LibPath);
+        System.out.println("Pin: " + pkcs11UserPin);
+        System.out.println("Token: " + pkcs11TokenLabel);
+        if (pkcs11SlotId != null) {
+            System.out.println("Slot ID: " + pkcs11SlotId.toString());
+        } else {
+            System.out.println("Slot ID: NULL");
+        }
+        System.out.println("\n\n");
 
         MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
             @Override
