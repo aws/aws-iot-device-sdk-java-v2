@@ -115,20 +115,24 @@ def launch_sample(parsed_commands, sample_endpoint, sample_certificate, sample_p
         arguments.append(parsed_commands.sample_file)
         arguments.append("-Dexec.mainClass=" +
                          parsed_commands.sample_main_class)
-        arguments.append("-Dexec.crt.ci=True")
+        arguments.append("-Daws.crt.ci=True")
+
         # We have to do this as a string, unfortunately, due to how -Dexec.args= works...
         argument_string = subprocess.list2cmdline(
             arguments) + " -Dexec.args=\"" + arguments_as_string + "\""
         sample_return = subprocess.run(argument_string, shell=True)
         exit_code = sample_return.returncode
+
     elif (parsed_commands.language == "CPP"):
         sample_return = subprocess.run(
             args=launch_arguments, executable=parsed_commands.sample_file)
         exit_code = sample_return.returncode
+
     elif (parsed_commands.language == "Python"):
         sample_return = subprocess.run(
             args=[sys.executable, parsed_commands.sample_file] + launch_arguments)
         exit_code = sample_return.returncode
+
     elif (parsed_commands.language == "Javascript"):
         os.chdir(parsed_commands.sample_file)
         sample_return_one = subprocess.run(args=["npm", "install"])
@@ -139,6 +143,7 @@ def launch_sample(parsed_commands, sample_endpoint, sample_certificate, sample_p
             sample_return_two = subprocess.run(
                 args=arguments + launch_arguments)
             exit_code = sample_return_two.returncode
+
     else:
         print("ERROR - unknown programming language! Supported programming languages are 'Java', 'CPP', 'Python', and 'Javascript'")
         return -1

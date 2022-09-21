@@ -238,7 +238,7 @@ public class ShadowSample {
                             ShadowSample::onShadowDeltaUpdated);
             subscribedToDeltas.get();
 
-            System.out.println("Subscribing to update respones...");
+            System.out.println("Subscribing to update responses...");
             UpdateShadowSubscriptionRequest requestUpdateShadow = new UpdateShadowSubscriptionRequest();
             requestUpdateShadow.thingName = thingName;
             CompletableFuture<Integer> subscribedToUpdateAccepted =
