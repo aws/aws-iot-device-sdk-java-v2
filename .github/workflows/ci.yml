@@ -225,7 +225,6 @@ jobs:
           python3 ./utils/run_sample_ci.py --language Java --sample_file 'samples/CustomKeyOpsPubSub' --sample_region ${{ env.AWS_DEFAULT_REGION }} --sample_secret_endpoint 'ci/endpoint' --sample_secret_certificate 'ci/PubSub/cert' --sample_secret_private_key 'ci/PubSub/keyp8' --sample_main_class 'customkeyopspubsub.CustomKeyOpsPubSub'
       - name: run PKCS11 Connect sample
         run: |
-          sudo add-apt-repository ppa:ubuntu-toolchain-r/test
           sudo apt-get update -y
           sudo apt-get install softhsm -y
           softhsm2-util --version
