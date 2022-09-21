@@ -227,6 +227,7 @@ jobs:
           sudo apt-get update -y
           sudo apt-get install softhsm -y
           softhsm2-util --version
+          sudo dpkg -L libsofthsm2
           mkdir -p /tmp/tokens
           export SOFTHSM2_CONF=/tmp/softhsm2.conf
           echo "directories.tokendir = /tmp/tokens" > /tmp/softhsm2.conf
