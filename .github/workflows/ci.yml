@@ -230,3 +230,12 @@ jobs:
       - name: run CustomAuthorizerConnect sample
         run: |
           python3 ./utils/run_sample_ci.py --language Java --sample_file 'samples/CustomAuthorizerConnect' --sample_region ${{ env.AWS_DEFAULT_REGION }} --sample_secret_endpoint 'ci/endpoint' --sample_secret_custom_authorizer_name 'ci/CustomAuthorizer/name' --sample_secret_custom_authorizer_password 'ci/CustomAuthorizer/password' --sample_main_class 'customauthorizerconnect.CustomAuthorizerConnect'
+
+      - name: configure AWS credentials (Shadow)
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ env.CI_SHADOW_ROLE }}
+          aws-region: ${{ env.AWS_DEFAULT_REGION }}
+      - name: run Shadow sample
+        run: |
+          python3 ./utils/run_sample_ci.py --language Java --sample_file 'samples/Shadow' --sample_region ${{ env.AWS_DEFAULT_REGION }} --sample_secret_endpoint 'ci/endpoint' --sample_secret_certificate 'ci/Shadow/cert' --sample_secret_private_key 'ci/Shadow/key' --sample_arguments '--thing_name CI_Shadow_Thing' --sample_main_class 'shadow.ShadowSample'
