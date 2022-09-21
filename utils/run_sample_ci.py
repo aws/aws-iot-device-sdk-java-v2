@@ -123,11 +123,6 @@ def launch_sample(parsed_commands, sample_endpoint, sample_certificate, sample_p
                          parsed_commands.sample_main_class)
         arguments.append("-Daws.crt.ci=True")
 
-        # Debug logs
-        arguments.append("-Daws.crt.debugnative=true")
-        arguments.append("-Daws.crt.log.destination=Stdout")
-        arguments.append("-Daws.crt.log.level=Trace")
-
         # We have to do this as a string, unfortunately, due to how -Dexec.args= works...
         argument_string = subprocess.list2cmdline(
             arguments) + " -Dexec.args=\"" + arguments_as_string + "\""
