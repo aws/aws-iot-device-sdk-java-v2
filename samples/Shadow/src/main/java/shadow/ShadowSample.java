@@ -35,9 +35,8 @@ import utils.commandlineutils.CommandLineUtils;
 
 public class ShadowSample {
 
-    // When run normally, we want to exit nicely even if something goes wrong
-    // When run from CI, we want to let an exception escape which in turn causes the
-    // exec:java task to return a non-zero exit code
+    // When run normally, we want to get input from the console
+    // When run from CI, we want to automatically make changes to the shadow document
     static String ciPropValue = System.getProperty("aws.crt.ci");
     static boolean isCI = ciPropValue != null && Boolean.valueOf(ciPropValue);
 

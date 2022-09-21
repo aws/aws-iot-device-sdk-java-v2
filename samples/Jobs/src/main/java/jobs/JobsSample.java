@@ -38,6 +38,12 @@ import java.util.concurrent.ExecutionException;
 import utils.commandlineutils.CommandLineUtils;
 
 public class JobsSample {
+
+    // When run normally, we want to check for jobs and process them
+    // When run from CI, we want to just check for jobs
+    static String ciPropValue = System.getProperty("aws.crt.ci");
+    static boolean isCI = ciPropValue != null && Boolean.valueOf(ciPropValue);
+
     static String thingName;
 
     static CompletableFuture<Void> gotResponse;
@@ -162,6 +168,12 @@ public class JobsSample {
 
             if (availableJobs.isEmpty()) {
                 System.out.println("No jobs queued, no further work to do");
+
+                // If sample is running in CI, there should be at least one job
+                if (isCI == true) {
+                    System.out.println("ERROR: No jobs queued in CI! At least one job should be queued!");
+                    System.exit(1);
+                }
             }
 
             for (String jobId : availableJobs) {
@@ -187,92 +199,95 @@ public class JobsSample {
                 gotResponse.get();
             }
 
-            for (int jobIdx = 0; jobIdx < availableJobs.size(); ++jobIdx) {
-                {
-                    gotResponse = new CompletableFuture<>();
+            // If sample is not running in CI, then process the available jobs.
+            if (isCI == false) {
+                for (int jobIdx = 0; jobIdx < availableJobs.size(); ++jobIdx) {
+                    {
+                        gotResponse = new CompletableFuture<>();
 
-                    // Start the next pending job
-                    StartNextPendingJobExecutionSubscriptionRequest subscriptionRequest = new StartNextPendingJobExecutionSubscriptionRequest();
-                    subscriptionRequest.thingName = thingName;
+                        // Start the next pending job
+                        StartNextPendingJobExecutionSubscriptionRequest subscriptionRequest = new StartNextPendingJobExecutionSubscriptionRequest();
+                        subscriptionRequest.thingName = thingName;
 
-                    jobs.SubscribeToStartNextPendingJobExecutionAccepted(
-                            subscriptionRequest,
-                            QualityOfService.AT_LEAST_ONCE,
-                            JobsSample::onStartNextPendingJobExecutionAccepted);
-                    jobs.SubscribeToStartNextPendingJobExecutionRejected(
-                            subscriptionRequest,
-                            QualityOfService.AT_LEAST_ONCE,
-                            JobsSample::onRejectedError);
+                        jobs.SubscribeToStartNextPendingJobExecutionAccepted(
+                                subscriptionRequest,
+                                QualityOfService.AT_LEAST_ONCE,
+                                JobsSample::onStartNextPendingJobExecutionAccepted);
+                        jobs.SubscribeToStartNextPendingJobExecutionRejected(
+                                subscriptionRequest,
+                                QualityOfService.AT_LEAST_ONCE,
+                                JobsSample::onRejectedError);
 
-                    StartNextPendingJobExecutionRequest publishRequest = new StartNextPendingJobExecutionRequest();
-                    publishRequest.thingName = thingName;
-                    publishRequest.stepTimeoutInMinutes = 15L;
-                    jobs.PublishStartNextPendingJobExecution(publishRequest, QualityOfService.AT_LEAST_ONCE);
+                        StartNextPendingJobExecutionRequest publishRequest = new StartNextPendingJobExecutionRequest();
+                        publishRequest.thingName = thingName;
+                        publishRequest.stepTimeoutInMinutes = 15L;
+                        jobs.PublishStartNextPendingJobExecution(publishRequest, QualityOfService.AT_LEAST_ONCE);
 
-                    gotResponse.get();
-                }
+                        gotResponse.get();
+                    }
 
-                {
-                    // Update the service to let it know we're executing
-                    gotResponse = new CompletableFuture<>();
+                    {
+                        // Update the service to let it know we're executing
+                        gotResponse = new CompletableFuture<>();
 
-                    UpdateJobExecutionSubscriptionRequest subscriptionRequest = new UpdateJobExecutionSubscriptionRequest();
-                    subscriptionRequest.thingName = thingName;
-                    subscriptionRequest.jobId = currentJobId;
-                    jobs.SubscribeToUpdateJobExecutionAccepted(
-                            subscriptionRequest,
-                            QualityOfService.AT_LEAST_ONCE,
-                            (response) -> {
-                                System.out.println("Marked job " + currentJobId + " IN_PROGRESS");
-                                gotResponse.complete(null);
-                            });
-                    jobs.SubscribeToUpdateJobExecutionRejected(
-                            subscriptionRequest,
-                            QualityOfService.AT_LEAST_ONCE,
-                            JobsSample::onRejectedError);
+                        UpdateJobExecutionSubscriptionRequest subscriptionRequest = new UpdateJobExecutionSubscriptionRequest();
+                        subscriptionRequest.thingName = thingName;
+                        subscriptionRequest.jobId = currentJobId;
+                        jobs.SubscribeToUpdateJobExecutionAccepted(
+                                subscriptionRequest,
+                                QualityOfService.AT_LEAST_ONCE,
+                                (response) -> {
+                                    System.out.println("Marked job " + currentJobId + " IN_PROGRESS");
+                                    gotResponse.complete(null);
+                                });
+                        jobs.SubscribeToUpdateJobExecutionRejected(
+                                subscriptionRequest,
+                                QualityOfService.AT_LEAST_ONCE,
+                                JobsSample::onRejectedError);
 
-                    UpdateJobExecutionRequest publishRequest = new UpdateJobExecutionRequest();
-                    publishRequest.thingName = thingName;
-                    publishRequest.jobId = currentJobId;
-                    publishRequest.executionNumber = currentExecutionNumber;
-                    publishRequest.status = JobStatus.IN_PROGRESS;
-                    publishRequest.expectedVersion = currentVersionNumber++;
-                    jobs.PublishUpdateJobExecution(publishRequest, QualityOfService.AT_LEAST_ONCE);
+                        UpdateJobExecutionRequest publishRequest = new UpdateJobExecutionRequest();
+                        publishRequest.thingName = thingName;
+                        publishRequest.jobId = currentJobId;
+                        publishRequest.executionNumber = currentExecutionNumber;
+                        publishRequest.status = JobStatus.IN_PROGRESS;
+                        publishRequest.expectedVersion = currentVersionNumber++;
+                        jobs.PublishUpdateJobExecution(publishRequest, QualityOfService.AT_LEAST_ONCE);
 
-                    gotResponse.get();
-                }
+                        gotResponse.get();
+                    }
 
-                // Fake doing something
-                Thread.sleep(1000);
+                    // Fake doing something
+                    Thread.sleep(1000);
 
-                {
-                    // Update the service to let it know we're done
-                    gotResponse = new CompletableFuture<>();
+                    {
+                        // Update the service to let it know we're done
+                        gotResponse = new CompletableFuture<>();
 
-                    UpdateJobExecutionSubscriptionRequest subscriptionRequest = new UpdateJobExecutionSubscriptionRequest();
-                    subscriptionRequest.thingName = thingName;
-                    subscriptionRequest.jobId = currentJobId;
-                    jobs.SubscribeToUpdateJobExecutionAccepted(
-                            subscriptionRequest,
-                            QualityOfService.AT_LEAST_ONCE,
-                            (response) -> {
-                                System.out.println("Marked job " + currentJobId + " SUCCEEDED");
-                                gotResponse.complete(null);
-                            });
-                    jobs.SubscribeToUpdateJobExecutionRejected(
-                            subscriptionRequest,
-                            QualityOfService.AT_LEAST_ONCE,
-                            JobsSample::onRejectedError);
+                        UpdateJobExecutionSubscriptionRequest subscriptionRequest = new UpdateJobExecutionSubscriptionRequest();
+                        subscriptionRequest.thingName = thingName;
+                        subscriptionRequest.jobId = currentJobId;
+                        jobs.SubscribeToUpdateJobExecutionAccepted(
+                                subscriptionRequest,
+                                QualityOfService.AT_LEAST_ONCE,
+                                (response) -> {
+                                    System.out.println("Marked job " + currentJobId + " SUCCEEDED");
+                                    gotResponse.complete(null);
+                                });
+                        jobs.SubscribeToUpdateJobExecutionRejected(
+                                subscriptionRequest,
+                                QualityOfService.AT_LEAST_ONCE,
+                                JobsSample::onRejectedError);
 
-                    UpdateJobExecutionRequest publishRequest = new UpdateJobExecutionRequest();
-                    publishRequest.thingName = thingName;
-                    publishRequest.jobId = currentJobId;
-                    publishRequest.executionNumber = currentExecutionNumber;
-                    publishRequest.status = JobStatus.SUCCEEDED;
-                    publishRequest.expectedVersion = currentVersionNumber++;
-                    jobs.PublishUpdateJobExecution(publishRequest, QualityOfService.AT_LEAST_ONCE);
+                        UpdateJobExecutionRequest publishRequest = new UpdateJobExecutionRequest();
+                        publishRequest.thingName = thingName;
+                        publishRequest.jobId = currentJobId;
+                        publishRequest.executionNumber = currentExecutionNumber;
+                        publishRequest.status = JobStatus.SUCCEEDED;
+                        publishRequest.expectedVersion = currentVersionNumber++;
+                        jobs.PublishUpdateJobExecution(publishRequest, QualityOfService.AT_LEAST_ONCE);
 
-                    gotResponse.get();
+                        gotResponse.get();
+                    }
                 }
             }
 
