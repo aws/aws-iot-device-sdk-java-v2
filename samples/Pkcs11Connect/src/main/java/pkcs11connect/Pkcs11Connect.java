@@ -34,7 +34,7 @@ public class Pkcs11Connect {
      */
     static void onApplicationFailure(Throwable cause) {
         if (isCI) {
-            throw new RuntimeException("Pkcs11PubSub execution failure", cause);
+            throw new RuntimeException("Pkcs11Connect execution failure", cause);
         } else if (cause != null) {
             System.out.println("Exception encountered: " + cause.toString());
         }
@@ -53,7 +53,6 @@ public class Pkcs11Connect {
         cmdUtils.registerCommand("token_label", "<str>", "Label of PKCS#11 token to use (optional).");
         cmdUtils.registerCommand("slot_id", "<int>", "Slot ID containing PKCS#11 token to use (optional).");
         cmdUtils.registerCommand("key_label", "<str>", "Label of private key on the PKCS#11 token (optional).");
-        cmdUtils.registerCommand("help", "", "Prints this message");
         cmdUtils.sendArguments(args);
 
         if (cmdUtils.hasCommand("help")) {
