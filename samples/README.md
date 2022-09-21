@@ -501,44 +501,34 @@ Your Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-
   "Statement": [
     {
       "Effect": "Allow",
-      "Action": [
-        "iot:Publish"
-      ],
+      "Action": "iot:Publish",
       "Resource": [
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/<b>thingname</b>/jobs/start-next",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/<b>thingname</b>/jobs/*/update",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/<b>thingname</b>/jobs/*/get,
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/<b>thingname</b>/jobs/get,
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/CI_Jobs_Thing/jobs/start-next",
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/CI_Jobs_Thing/jobs/*/update",
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/CI_Jobs_Thing/jobs/*/get",
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/CI_Jobs_Thing/jobs/get"
       ]
     },
     {
       "Effect": "Allow",
-      "Action": [
-        "iot:Receive"
-      ],
+      "Action": "iot:Receive",
       "Resource": [
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/<b>thingname</b>/jobs/notify-next",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/<b>thingname</b>/jobs/start-next/accepted",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/<b>thingname</b>/jobs/start-next/rejected",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/<b>thingname</b>/jobs/*/update/accepted",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/<b>thingname</b>/jobs/*/update/rejected",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/<b>thingname</b>/jobs/get/accepted",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/<b>thingname</b>/jobs/get/rejected"
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/CI_Jobs_Thing/jobs/notify-next",
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/CI_Jobs_Thing/jobs/start-next/*",
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/CI_Jobs_Thing/jobs/*/update/*",
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/CI_Jobs_Thing/jobs/get/*",
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/CI_Jobs_Thing/jobs/*/get/*"
       ]
     },
     {
       "Effect": "Allow",
-      "Action": [
-        "iot:Subscribe"
-      ],
+      "Action": "iot:Subscribe",
       "Resource": [
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topicfilter/$aws/things/<b>thingname</b>/jobs/notify-next",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topicfilter/$aws/things/<b>thingname</b>/jobs/start-next/accepted",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topicfilter/$aws/things/<b>thingname</b>/jobs/start-next/rejected",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topicfilter/$aws/things/<b>thingname</b>/jobs/*/update/accepted",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topicfilter/$aws/things/<b>thingname</b>/jobs/*/update/rejected",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topicfilter/$aws/things/<b>thingname</b>/jobs/get/accepted",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topicfilter/$aws/things/<b>thingname</b>/jobs/get/rejected"
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topicfilter/$aws/things/CI_Jobs_Thing/jobs/notify-next",
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topicfilter/$aws/things/CI_Jobs_Thing/jobs/start-next/*",
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topicfilter/$aws/things/CI_Jobs_Thing/jobs/*/update/*",
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topicfilter/$aws/things/CI_Jobs_Thing/jobs/get/*",
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topicfilter/$aws/things/CI_Jobs_Thing/jobs/*/get/*"
       ]
     },
     {
