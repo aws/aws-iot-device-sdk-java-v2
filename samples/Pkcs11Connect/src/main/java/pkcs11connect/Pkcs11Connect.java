@@ -117,7 +117,7 @@ public class Pkcs11Connect {
             try (AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder
                     .newMtlsPkcs11Builder(pkcs11Options)) {
 
-                if (CaPath != null) {
+                if (CaPath != null && CaPath != "") {
                     builder.withCertificateAuthorityFromPath(null, CaPath);
                 }
 
