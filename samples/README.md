@@ -578,9 +578,7 @@ Your Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-
   "Statement": [
     {
       "Effect": "Allow",
-      "Action": [
-        "iot:Publish"
-      ],
+      "Action": "iot:Publish",
       "Resource": [
         "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/certificates/create/json",
         "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/certificates/create-from-csr/json",
@@ -590,8 +588,7 @@ Your Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-
     {
       "Effect": "Allow",
       "Action": [
-        "iot:Receive",
-        "iot:Subscribe"
+        "iot:Receive"
       ],
       "Resource": [
         "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/certificates/create/json/accepted",
@@ -600,6 +597,20 @@ Your Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-
         "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/certificates/create-from-csr/json/rejected",
         "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/provisioning-templates/<b>templatename</b>/provision/json/accepted",
         "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/provisioning-templates/<b>templatename</b>/provision/json/rejected"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iot:Subscribe"
+      ],
+      "Resource": [
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topicfilter/$aws/certificates/create/json/accepted",
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topicfilter/$aws/certificates/create/json/rejected",
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topicfilter/$aws/certificates/create-from-csr/json/accepted",
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topicfilter/$aws/certificates/create-from-csr/json/rejected",
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topicfilter/$aws/provisioning-templates/<b>templatename</b>/provision/json/accepted",
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topicfilter/$aws/provisioning-templates/<b>templatename</b>/provision/json/rejected"
       ]
     },
     {
