@@ -26,7 +26,6 @@ def DeleteIoTThing(parsed_commands):
             if (thing_principals["principals"] != None):
                 if (len(thing_principals["principals"]) > 0 and parsed_commands.delete_certificate == "true"):
                     for principal in thing_principals["principals"]:
-                        print("Certificate: " + principal)
                         certificate_id = principal.split("/")[1]
                         iot_client.detach_thing_principal(thingName=parsed_commands.thing_name, principal=principal)
                         iot_client.update_certificate(certificateId=certificate_id, newStatus ='INACTIVE')
