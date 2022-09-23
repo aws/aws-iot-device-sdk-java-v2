@@ -68,6 +68,9 @@ BACKOFF_MAX = 10
 # 60 minutes divided by the maximum back-off = longest time a DA run can last with this script.
 MAXIMUM_CYCLE_COUNT = (3600 / BACKOFF_MAX)
 
+# Did Device Advisor fail a test? If so, this should be true
+did_at_least_one_test_fail = False
+
 # load test config
 f = open('deviceadvisor/script/DATestConfig.json')
 DATestConfig = json.load(f)
@@ -231,10 +234,12 @@ for test_name in DATestConfig['tests']:
 
             # Add backoff to avoid TooManyRequestsException
             sleep_with_backoff(BACKOFF_BASE, BACKOFF_MAX)
+            print ("[Device Advisor] Info: About to get Device Advisor suite run.")
             test_result_responds = deviceAdvisor.get_suite_run(
                 suiteDefinitionId=DATestConfig['test_suite_ids'][test_name],
                 suiteRunId=test_start_response['suiteRunId']
             )
+
             # If the status is PENDING or the responds does not loaded, the test suite is still loading
             if (test_result_responds['status'] == 'PENDING' or
             len(test_result_responds['testResult']['groups']) == 0 or # test group has not been loaded
@@ -245,6 +250,7 @@ for test_name in DATestConfig['tests']:
             # Start to run the test sample after the status turns into RUNNING
             elif (test_result_responds['status'] == 'RUNNING' and
             test_result_responds['testResult']['groups'][0]['tests'][0]['status'] == 'RUNNING'):
+                print ("[Device Advisor] Info: About to get start Device Advisor companion test application.")
                 working_dir = os.getcwd()
                 exe_path = os.path.join("deviceadvisor/tests/",DATestConfig['test_exe_path'][test_name])
                 os.chdir(exe_path)
@@ -258,6 +264,7 @@ for test_name in DATestConfig['tests']:
                 test_result[test_name] = test_result_responds['status']
                 # If the test failed, upload the logs to S3 before clean up
                 if(test_result[test_name] != "PASS"):
+                    print ("[Device Advisor] Info: About to upload log to S3.")
                     log_url = test_result_responds['testResult']['groups'][0]['tests'][0]['logUrl']
                     group_string = re.search('group=(.*);', log_url)
                     log_group = group_string.group(1)
@@ -270,6 +277,7 @@ for test_name in DATestConfig['tests']:
     except Exception:
         delete_thing_with_certi(thing_name, certificate_id ,certificate_arn)
         print("[Device Advisor]Error: Failed to test: "+ test_name)
+        did_at_least_one_test_fail = True;
 
 ##############################################
 # print result and cleanup things
@@ -282,6 +290,10 @@ for test in test_result:
         failed = True
 if failed:
     # if the test failed, we dont clean the Thing so that we can track the error
+    exit(-1)
+
+if (did_at_least_one_test_fail == True):
+    print("[Device Advisor] At least one test failed!")
     exit(-1)
 
 exit(0)
