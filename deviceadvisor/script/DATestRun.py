@@ -84,7 +84,7 @@ shadowDefault = os.environ['DA_SHADOW_VALUE_DEFAULT']
 ##############################################
 # make sure sdk get installed
 print("[Device Advisor]Info: Start to build sdk...")
-subprocess.run("mvn clean install", shell = True)
+subprocess.run("mvn clean install -Dmaven.test.skip=true", shell = True)
 
 # test result
 test_result = {}
@@ -166,7 +166,7 @@ for test_name in DATestConfig['tests']:
 
     except Exception:
         delete_thing_with_certi(thing_name, certificate_id ,certificate_arn )
-        print("[Device Advisor]Error: Failed to attach certificate.")
+        print("[Device Advisor] Error: Failed to attach certificate.")
         exit(-1)
 
     ##############################################
@@ -176,6 +176,7 @@ for test_name in DATestConfig['tests']:
         ######################################
         # set default shadow, for shadow update, if the
         # shadow does not exists, update will fail
+        print("[Device Advisor] Info: About to update shadow.")
         payload_shadow = json.dumps(
         {
         "state": {
@@ -192,6 +193,7 @@ for test_name in DATestConfig['tests']:
             payload = payload_shadow)
         get_shadow_response = dataClient.get_thing_shadow(thingName = thing_name)
         # make sure shadow is created before we go to next step
+        print("[Device Advisor] Info: About to wait for shadow update.")
         while(get_shadow_response is None):
             get_shadow_response = dataClient.get_thing_shadow(thingName = thing_name)
 
@@ -202,7 +204,7 @@ for test_name in DATestConfig['tests']:
         # 'suiteRunArn': 'string',
         # 'createdAt': datetime(2015, 1, 1)
         # }
-        print("[Device Advisor]Info: Start device advisor test: " + test_name)
+        print("[Device Advisor] Info: Start device advisor test: " + test_name)
         sleep_with_backoff(BACKOFF_BASE, BACKOFF_MAX)
         test_start_response = deviceAdvisor.start_suite_run(
         suiteDefinitionId=DATestConfig['test_suite_ids'][test_name],
@@ -214,6 +216,7 @@ for test_name in DATestConfig['tests']:
         })
 
         # get DA endpoint
+        print("[Device Advisor] Info: Getting Device Advisor endpoint.")
         endpoint_response = deviceAdvisor.get_endpoint(
             thingArn = create_thing_response['thingArn']
         )
@@ -223,6 +226,7 @@ for test_name in DATestConfig['tests']:
         while True:
             cycle_number += 1
             if (cycle_number >= MAXIMUM_CYCLE_COUNT):
+                print("[Device Advisor] Error: {cycle_number} of cycles lasting {BACKOFF_BASE} to {BACKOFF_MAX} seconds have passed.")
                 raise Exception(f"ERROR - {cycle_number} of cycles lasting {BACKOFF_BASE} to {BACKOFF_MAX} seconds have passed.")
 
             # Add backoff to avoid TooManyRequestsException
