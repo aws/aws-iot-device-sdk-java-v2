@@ -503,32 +503,32 @@ Your Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-
       "Effect": "Allow",
       "Action": "iot:Publish",
       "Resource": [
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/CI_Jobs_Thing/jobs/start-next",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/CI_Jobs_Thing/jobs/*/update",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/CI_Jobs_Thing/jobs/*/get",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/CI_Jobs_Thing/jobs/get"
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/<b>thingname</b>/jobs/start-next",
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/<b>thingname</b>/jobs/*/update",
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/<b>thingname</b>/jobs/*/get",
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/<b>thingname</b>/jobs/get"
       ]
     },
     {
       "Effect": "Allow",
       "Action": "iot:Receive",
       "Resource": [
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/CI_Jobs_Thing/jobs/notify-next",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/CI_Jobs_Thing/jobs/start-next/*",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/CI_Jobs_Thing/jobs/*/update/*",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/CI_Jobs_Thing/jobs/get/*",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/CI_Jobs_Thing/jobs/*/get/*"
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/<b>thingname</b>/jobs/notify-next",
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/<b>thingname</b>/jobs/start-next/*",
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/<b>thingname</b>/jobs/*/update/*",
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/<b>thingname</b>/jobs/get/*",
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/<b>thingname</b>/jobs/*/get/*"
       ]
     },
     {
       "Effect": "Allow",
       "Action": "iot:Subscribe",
       "Resource": [
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topicfilter/$aws/things/CI_Jobs_Thing/jobs/notify-next",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topicfilter/$aws/things/CI_Jobs_Thing/jobs/start-next/*",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topicfilter/$aws/things/CI_Jobs_Thing/jobs/*/update/*",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topicfilter/$aws/things/CI_Jobs_Thing/jobs/get/*",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topicfilter/$aws/things/CI_Jobs_Thing/jobs/*/get/*"
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topicfilter/$aws/things/<b>thingname</b>/jobs/notify-next",
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topicfilter/$aws/things/<b>thingname</b>/jobs/start-next/*",
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topicfilter/$aws/things/<b>thingname</b>/jobs/*/update/*",
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topicfilter/$aws/things/<b>thingname</b>/jobs/get/*",
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topicfilter/$aws/things/<b>thingname</b>/jobs/*/get/*"
       ]
     },
     {
@@ -545,7 +545,7 @@ Your Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-
 
 This sample uses the AWS IoT
 [Fleet provisioning](https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html)
-to provision devices using either a CSR or KeysAndcertificate and subsequently calls RegisterThing.
+to provision devices using either a CSR or Keys-And-Certificate and subsequently calls RegisterThing.
 
 On startup, the script subscribes to topics based on the request type of either CSR or Keys topics,
 publishes the request to corresponding topic and calls RegisterThing.

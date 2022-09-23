@@ -91,7 +91,6 @@ jobs:
         aws-region: ${{ env.AWS_DEFAULT_REGION }}
     - name: run DeviceAdvisor
       run: |
-        python3 -m pip install boto3
         python3 ./deviceadvisor/script/DATestRun.py
 
   osx:
@@ -135,7 +134,6 @@ jobs:
         aws-region: ${{ env.AWS_DEFAULT_REGION }}
     - name: run DeviceAdvisor
       run: |
-        python3 -m pip install boto3
         python3 ./deviceadvisor/script/DATestRun.py
 
   java-compat:
@@ -179,7 +177,6 @@ jobs:
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
       - name: run DeviceAdvisor
         run: |
-          python3 -m pip install boto3
           python3 ./deviceadvisor/script/DATestRun.py
 
   # check that docs can still build
