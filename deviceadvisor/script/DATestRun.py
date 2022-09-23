@@ -210,12 +210,12 @@ for test_name in DATestConfig['tests']:
         print("[Device Advisor] Info: Start device advisor test: " + test_name)
         sleep_with_backoff(BACKOFF_BASE, BACKOFF_MAX)
         test_start_response = deviceAdvisor.start_suite_run(
-        suiteDefinitionId=DATestConfig['test_suite_ids'][test_name],
-        suiteRunConfiguration={
-            'primaryDevice': {
-                'thingArn': create_thing_response['thingArn'],
-            },
-            'parallelRun': True
+            suiteDefinitionId=DATestConfig['test_suite_ids'][test_name],
+            suiteRunConfiguration={
+                'primaryDevice': {
+                    'thingArn': create_thing_response['thingArn'],
+                },
+                'parallelRun': True
         })
 
         # get DA endpoint
@@ -274,7 +274,9 @@ for test_name in DATestConfig['tests']:
                 delete_thing_with_certi(thing_name, certificate_id ,certificate_arn )
                 break
 
-    except Exception:
+    except Exception as ex:
+        print ("Exception")
+        print (ex)
         delete_thing_with_certi(thing_name, certificate_id ,certificate_arn)
         print("[Device Advisor]Error: Failed to test: "+ test_name)
         did_at_least_one_test_fail = True;
