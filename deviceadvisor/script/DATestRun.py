@@ -274,12 +274,11 @@ for test_name in DATestConfig['tests']:
                 delete_thing_with_certi(thing_name, certificate_id ,certificate_arn )
                 break
 
-    except Exception as ex:
-        print ("Exception")
-        print (ex)
+    except Exception:
         delete_thing_with_certi(thing_name, certificate_id ,certificate_arn)
         print("[Device Advisor]Error: Failed to test: "+ test_name)
-        did_at_least_one_test_fail = True;
+        did_at_least_one_test_fail = True
+        sleep_with_backoff(BACKOFF_BASE, BACKOFF_MAX)
 
 ##############################################
 # print result and cleanup things
