@@ -23,6 +23,7 @@ env:
   CI_SHADOW_ROLE: ${{ secrets.AWS_CI_SHADOW_ROLE }}
   CI_JOBS_ROLE: ${{ secrets.AWS_CI_JOBS_ROLE }}
   CI_FLEET_PROVISIONING_ROLE: ${{ secrets.AWS_CI_FLEET_PROVISIONING_ROLE }}
+  CI_DEVICE_ADVISOR: ${{ secrets.AWS_CI_DEVICE_ADVISOR_ROLE }}
 
 jobs:
   linux-compat:
@@ -152,6 +153,15 @@ jobs:
         run: |
           python3 -m pip install boto3
           python3 ./utils/run_sample_ci.py --language Java --sample_file 'samples/BasicPubSub' --sample_region ${{ env.AWS_DEFAULT_REGION }} --sample_secret_endpoint 'ci/endpoint' --sample_secret_certificate 'ci/PubSub/cert' --sample_secret_private_key 'ci/PubSub/key' --sample_main_class 'pubsub.PubSub'
+      - name: configure AWS credentials (Device Advisor)
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ env.CI_DEVICE_ADVISOR }}
+          aws-region: ${{ env.AWS_DEFAULT_REGION }}
+      - name: run DeviceAdvisor
+        run: |
+          python3 -m pip install boto3
+          python3 ./deviceadvisor/script/DATestRun.py
 
   # check that docs can still build
   check-docs:

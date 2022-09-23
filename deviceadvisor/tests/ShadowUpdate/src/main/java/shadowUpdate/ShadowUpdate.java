@@ -35,7 +35,7 @@ public class ShadowUpdate {
         UpdateShadowRequest request = new UpdateShadowRequest();
         request.thingName = DATestUtils.thing_name;
         request.state = new ShadowState();
-        
+
         request.state.reported = new HashMap<String, Object>() {{
            put(DATestUtils.shadowProperty, DATestUtils.shadowValue);
         }};
@@ -81,8 +81,8 @@ public class ShadowUpdate {
             }
         } catch (CrtRuntimeException | InterruptedException | ExecutionException ex) {
             throw new RuntimeException("Builder Connection Failed.", ex);
-        }        
-        
+        }
+
         System.exit(0);
     }
 }
