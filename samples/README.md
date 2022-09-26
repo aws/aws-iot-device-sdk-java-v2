@@ -44,6 +44,16 @@ For example, to run `BasicPubSub` with logging you could use the following:
 mvn compile exec:java -pl samples/BasicPubSub -Daws.crt.debugnative=true -Daws.crt.log.level=Debug -Daws.crt.log.destionation=Stdout -Dexec.mainClass=pubsub.PubSub -Dexec.args='--endpoint <endpoint> --cert <path to cert> --key <path to key> --ca_file <path to ca file>'
 ```
 
+### Running Samples with latest SDK release
+
+If you want to run a sample using the latest release of the SDK, instead of compiled from source, you need to use the `latest-release` profile. For example:
+
+```sh
+mvn -P latest-release compile exec:java -pl samples/BasicPubSub -Dexec.mainClass=pubsub.PubSub -Dexec.args='--endpoint <endpoint> --cert <path to certificate> --key <path to private key> --ca_file <path to root CA>'
+```
+
+This will run the sample using the latest released version of the SDK rather than the version compiled from source. If you are wanting to try the samples without first compiling the SDK, then make sure to add `-P latest-release` and to have Maven download the Java V2 SDK.
+
 ## BasicPubSub
 
 This sample uses the
@@ -100,6 +110,12 @@ To Run this sample, use the following command:
 mvn compile exec:java -pl samples/BasicPubSub -Dexec.mainClass=pubsub.PubSub -Dexec.args='--endpoint <endpoint> --cert <path to certificate> --key <path to private key> --ca_file <path to root CA>'
 ```
 
+To run this sample using the latest SDK release, use the following command:
+
+```sh
+mvn -P latest-release compile exec:java -pl samples/BasicPubSub -Dexec.mainClass=pubsub.PubSub -Dexec.args='--endpoint <endpoint> --cert <path to certificate> --key <path to private key> --ca_file <path to root CA>'
+```
+
 ## Basic Connect
 
 This sample makes an MQTT connection using a certificate and key file. On startup, the device connects to the server using the certificate and key files, and then disconnects. This sample is for reference on connecting via certificate and key files.
@@ -132,6 +148,12 @@ To run the basic connect sample use the following command:
 
 ```sh
 mvn compile exec:java -pl samples/BasicConnect -Dexec.mainClass=basicconnect.BasicConnect -Dexec.args='--endpoint <endpoint> --cert <path to certificate> --key <path to private key> --ca_file <path to root CA>'
+```
+
+To run this sample using the latest SDK release, use the following command:
+
+```sh
+mvn -P latest-release compile exec:java -pl samples/BasicConnect -Dexec.mainClass=basicconnect.BasicConnect -Dexec.args='--endpoint <endpoint> --cert <path to certificate> --key <path to private key> --ca_file <path to root CA>'
 ```
 
 ## Websocket Connect
@@ -168,7 +190,13 @@ To run the websocket connect use the following command:
 mvn compile exec:java -pl samples/WebsocketConnect -Dexec.mainClass=websocketconnect.WebsocketConnect -Dexec.args='--endpoint <endpoint> --signing_region <signing region> --ca_file <path to root CA>'
 ```
 
-Note that using Websockets will attempt to fetch the AWS credentials from your enviornment variables or local files.
+To run this sample using the latest SDK release, use the following command:
+
+```sh
+mvn -P latest-release compile exec:java -pl samples/WebsocketConnect -Dexec.mainClass=websocketconnect.WebsocketConnect -Dexec.args='--endpoint <endpoint> --signing_region <signing region> --ca_file <path to root CA>'
+```
+
+Note that using Websockets will attempt to fetch the AWS credentials from your environment variables or local files.
 See the [authorizing direct AWS](https://docs.aws.amazon.com/iot/latest/developerguide/authorizing-direct-aws.html) page for documentation on how to get the AWS credentials, which then you can set to the `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS`, and `AWS_SESSION_TOKEN` environment variables.
 
 ## PKCS#11 Connect
@@ -222,6 +250,11 @@ To run this sample using [SoftHSM2](https://www.opendnssec.org/softhsm/) as the 
 5)  Now you can run the sample:
     ```sh
     mvn compile exec:java -pl samples/Pkcs11Connect -Dexec.mainClass=pkcs11connect.Pkcs11Connect -Dexec.args='--endpoint <endpoint> --cert <path to certificate> --ca_file <path to root CA> --pkcs11_lib <path to PKCS11 lib> --pin <user-pin> --token_label <token-label> --key_label <key-label>'
+    ```
+
+6) To run the sample using the latest SDK release:
+    ```sh
+    mvn -P latest-release compile exec:java -pl samples/Pkcs11Connect -Dexec.mainClass=pkcs11connect.Pkcs11Connect -Dexec.args='--endpoint <endpoint> --cert <path to certificate> --ca_file <path to root CA> --pkcs11_lib <path to PKCS11 lib> --pin <user-pin> --token_label <token-label> --key_label <key-label>'
     ```
 
 Your Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-policies.html) must provide privileges for this sample to connect. Make sure your policy allows a client ID of `test-*` to connect or use `--client_id <client ID here>` to send the client ID your policy supports.
@@ -309,6 +342,11 @@ To run this sample with a basic certificate from AWS IoT Core:
     mvn compile exec:java -pl samples/WindowsCertConnect "-Dexec.mainClass=windowscertconnect.WindowsCertConnect" "-Dexec.args=--endpoint <endpoint> --cert <path to certificate> --ca_file <path to root CA>"
     ```
 
+5) To run the sample using the latest SDK release:
+    ```sh
+    mvn -P latest-release compile exec:java -pl samples/WindowsCertConnect "-Dexec.mainClass=windowscertconnect.WindowsCertConnect" "-Dexec.args=--endpoint <endpoint> --cert <path to certificate> --ca_file <path to root CA>"
+    ```
+
 Your Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-policies.html) must provide privileges for this sample to connect. Make sure your policy allows a client ID of `test-*` to connect or use `--client_id <client ID here>` to send the client ID your policy supports.
 
 <details>
@@ -365,6 +403,12 @@ To run the custom authorizer connect use the following command:
 mvn compile exec:java -pl samples/CustomAuthorizerConnect -Dexec.mainClass=customauthorizerconnect.CustomAuthorizerConnect -Dexec.args='--endpoint <endpoint> --ca_file <path to root CA> --custom_auth_authorizer_name <custom authorizer name>'
 ```
 
+To run this sample using the latest SDK release, use the following command:
+
+```sh
+mvn -P latest-release compile exec:java -pl samples/CustomAuthorizerConnect -Dexec.mainClass=customauthorizerconnect.CustomAuthorizerConnect -Dexec.args='--endpoint <endpoint> --ca_file <path to root CA> --custom_auth_authorizer_name <custom authorizer name>'
+```
+
 You will need to setup your Custom Authorizer so that the lambda function returns a policy document. See [this page on the documentation](https://docs.aws.amazon.com/iot/latest/developerguide/config-custom-auth.html) for more details and example return result.
 
 ## Custom Key Operations PubSub
@@ -389,6 +433,11 @@ To Run:
 > mvn exec:java -pl samples/CustomKeyOpsPubSub -Dexec.mainClass=customkeyopspubsub.CustomKeyOpsPubSub -Dexec.args='--endpoint <endpoint> --ca_file <path to root CA> --cert <path to certificate> --key <path to pkcs8 key>'
 ```
 
+To run this sample using the latest SDK release, use the following command:
+
+``` sh
+> mvn -P latest-release exec:java -pl samples/CustomKeyOpsPubSub -Dexec.mainClass=customkeyopspubsub.CustomKeyOpsPubSub -Dexec.args='--endpoint <endpoint> --ca_file <path to root CA> --cert <path to certificate> --key <path to pkcs8 key>'
+```
 
 ## Shadow
 
@@ -416,6 +465,12 @@ To Run:
 
 ``` sh
 mvn compile exec:java -pl samples/Shadow -Dexec.mainClass=shadow.ShadowSample -Dexec.args='--endpoint <endpoint> --ca_file <path to root CA> --cert <path to certificate> --key <path to private key> --thing_name <thing name>'
+```
+
+To run this sample using the latest SDK release, use the following command:
+
+``` sh
+mvn -P latest-release compile exec:java -pl samples/Shadow -Dexec.mainClass=shadow.ShadowSample -Dexec.args='--endpoint <endpoint> --ca_file <path to root CA> --cert <path to certificate> --key <path to private key> --thing_name <thing name>'
 ```
 
 Your Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-policies.html) must provide privileges for this sample to connect, subscribe, publish, and receive. Make sure your policy allows a client ID of `test-*` to connect or use `--client_id <client ID here>` to send the client ID your policy supports.
@@ -489,6 +544,12 @@ To Run:
 
 ``` sh
 mvn compile exec:java -pl samples/Jobs -Dexec.mainClass=jobs.JobsSample -Dexec.args='--endpoint <endpoint> --ca_file <path to root CA> --cert <path to certificate> --key <path to private key> --thing_name <thing name>'
+```
+
+To run this sample using the latest SDK release, use the following command:
+
+``` sh
+mvn -P latest-release compile exec:java -pl samples/Jobs -Dexec.mainClass=jobs.JobsSample -Dexec.args='--endpoint <endpoint> --ca_file <path to root CA> --cert <path to certificate> --key <path to private key> --thing_name <thing name>'
 ```
 
 Your Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-policies.html) must provide privileges for this sample to connect, subscribe, publish, and receive. Make sure your policy allows a client ID of `test-*` to connect or use `--client_id <client ID here>` to send the client ID your policy supports.
@@ -570,6 +631,13 @@ Run the sample using CreateCertificateFromCsr:
 ``` sh
 mvn compile exec:java -pl samples/Identity -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint <endpoint> --ca_file <path to root CA>
 --cert <path to certificate> --key <path to private key> --template_name <template name> --template_parameters <template params> --csr <path to csr file>"
+```
+
+To run this sample using the latest SDK release, use the following command:
+
+``` sh
+mvn -P latest-release compile exec:java -pl samples/Identity -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint <endpoint> --ca_file <path to root CA>
+--cert <path to certificate> --key <path to private key> --template_name <template name> --template_parameters <template params>"
 ```
 
 Your Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-policies.html) must provide privileges for this sample to connect, subscribe, publish, and receive. Make sure your policy allows a client ID of `test-*` to connect or use `--client_id <client ID here>` to send the client ID your policy supports.
@@ -686,6 +754,13 @@ mvn compile exec:java -pl samples/Identity -Dexec.mainClass="identity.FleetProvi
 
 Notice that we provided substitution values for the two parameters in the template body, `DeviceLocation` and `SerialNumber`.
 
+If you want to run the sample using the latest SDK release then you need to run the snippet below instead. If you are not using the temporary provisioning certificate, replace the paths for `--cert` and `--key` appropriately:
+
+``` sh
+mvn -P latest-release compile exec:java -pl samples/Identity -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint <endpoint> --ca_file <path to root CA>
+--cert <path to certificate> --key <path to private key> --template_name <template name> --template_parameters {\"SerialNumber\":\"1\",\"DeviceLocation\":\"Seattle\"}"
+```
+
 #### Run the sample using the certificate signing request workflow
 
 To run the sample with this workflow, you'll need to create a certificate signing request.
@@ -715,6 +790,12 @@ Finally, supply the certificate signing request while invoking the provisioning 
 using a permanent certificate set, replace the paths specified in the `--cert` and `--key` arguments:
 ``` sh
 mvn compile exec:java -pl samples/Identity -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint <endpoint> --ca_file <path to root CA>
+--cert <path to certificate> --key <path to private key> --template_name <template name> --template_parameters {\"SerialNumber\":\"1\",\"DeviceLocation\":\"Seattle\"}  --csr <path to csr file>"
+```
+
+If you want to run the sample using the latest SDK release then you need to run the snippet below instead. If using a permanent certificate set, make sure to replace the paths specified in the `--cert` and `--key` arguments:
+``` sh
+mvn -P latest-release compile exec:java -pl samples/Identity -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint <endpoint> --ca_file <path to root CA>
 --cert <path to certificate> --key <path to private key> --template_name <template name> --template_parameters {\"SerialNumber\":\"1\",\"DeviceLocation\":\"Seattle\"}  --csr <path to csr file>"
 ```
 
