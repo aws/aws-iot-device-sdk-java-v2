@@ -13,6 +13,8 @@ parser.add_argument('version', nargs='?',
                     help='version to use (i.e. "0.1.2"). default: automatically detect latest version')
 parser.add_argument('--check-consistency', action='store_true',
                     help='Exit with error if version is inconsistent between files')
+parser.add_argument('--update_samples', action='store_true',
+                    help="Update the SDK samples to the latest SDK release OR to the passed in version")
 args = parser.parse_args()
 
 
@@ -22,32 +24,35 @@ def main():
         args.version = None
     else:
         if args.version is None:
-            args.version = get_latest_crt_version()
-            print(f'Latest version: {args.version}')
+            args.version = get_latest_github_version("https://github.com/awslabs/aws-crt-java.git")
+            print(f'Latest CRT version: {args.version}')
 
         if re.fullmatch(VERSION_PATTERN, args.version) is None:
             exit(f'Invalid version: "{args.version}". Must look like "0.1.2"')
 
     os.chdir(os.path.dirname(__file__))
 
-    update(filepath='sdk/pom.xml',
-           preceded_by=r'<artifactId>aws-crt</artifactId>\s*<version>',
-           followed_by=r'</version>')
+    if args.update_samples == None:
+        update(filepath='sdk/pom.xml',
+            preceded_by=r'<artifactId>aws-crt</artifactId>\s*<version>',
+            followed_by=r'</version>')
 
-    update(filepath='README.md',
-           preceded_by=r'--branch v',
-           followed_by=r' .*aws-crt-java.git')
+        update(filepath='README.md',
+            preceded_by=r'--branch v',
+            followed_by=r' .*aws-crt-java.git')
 
-    update(filepath='README.md',
-           preceded_by=r"implementation 'software.amazon.awssdk.crt:android:",
-           followed_by=r"'")
+        update(filepath='README.md',
+            preceded_by=r"implementation 'software.amazon.awssdk.crt:android:",
+            followed_by=r"'")
 
-    update(filepath='android/iotdevicesdk/build.gradle',
-           preceded_by=r"api 'software.amazon.awssdk.crt:aws-crt-android:",
-           followed_by=r"'")
+        update(filepath='android/iotdevicesdk/build.gradle',
+            preceded_by=r"api 'software.amazon.awssdk.crt:aws-crt-android:",
+            followed_by=r"'")
+    else:
+        update_samples()
 
 
-def update(*, filepath, preceded_by, followed_by):
+def update(*, filepath, preceded_by, followed_by, force_version=None):
     """
     Args:
         filepath: File containing hard-coded CRT version numbers.
@@ -60,12 +65,15 @@ def update(*, filepath, preceded_by, followed_by):
         full_pattern = rf'({preceded_by})({VERSION_PATTERN})({followed_by})'
         full_replacement = rf'\g<1>{args.version}\g<3>'
 
+        if force_version != None:
+            full_replacement = rf'\g<1>{force_version}\g<3>'
+
         matches = re.findall(full_pattern, txt_old)
         if len(matches) == 0:
             exit(f'Version not found in: {filepath}\n' +
                  f'Preceded by: "{preceded_by}"')
 
-        if args.check_consistency:
+        if args.check_consistency and force_version == None:
             # in --check-consistency mode we remember the version from the first
             # file we scan, and then ensure all subsequent files use that version too
             for match in matches:
@@ -82,9 +90,23 @@ def update(*, filepath, preceded_by, followed_by):
             f.write(txt_new)
             f.truncate()
 
+def update_samples():
+    sdk_version = get_latest_github_version("https://github.com/aws/aws-iot-device-sdk-java-v2.git")
+    print (f"Latest SDK version: {sdk_version}")
 
-def get_latest_crt_version():
-    repo = 'https://github.com/awslabs/aws-crt-java.git'
+    sample_folders = [x[0] for x in os.walk("samples")]
+    for sample_folder in sample_folders:
+        sample_files = os.walk(sample_folder).__next__()[2]
+        for file in sample_files:
+            if file.endswith(".xml"):
+                update(filepath=sample_folder + "/" + file,
+                    preceded_by=r'<artifactId>aws-iot-device-sdk</artifactId>\s*<version>',
+                    followed_by=r'</version>',
+                    force_version=sdk_version)
+
+
+def get_latest_github_version(github_repo="https://github.com/awslabs/aws-crt-java.git"):
+    repo = github_repo
     cmd = ['git', 'ls-remote', '--tags', repo]
     results = subprocess.run(cmd, check=True, capture_output=True, text=True)
 
