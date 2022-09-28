@@ -229,7 +229,7 @@ for test_name in DATestConfig['tests']:
         while True:
             cycle_number += 1
             if (cycle_number >= MAXIMUM_CYCLE_COUNT):
-                print("[Device Advisor] Error: {cycle_number} of cycles lasting {BACKOFF_BASE} to {BACKOFF_MAX} seconds have passed.")
+                print(f"[Device Advisor] Error: {cycle_number} of cycles lasting {BACKOFF_BASE} to {BACKOFF_MAX} seconds have passed.")
                 raise Exception(f"ERROR - {cycle_number} of cycles lasting {BACKOFF_BASE} to {BACKOFF_MAX} seconds have passed.")
 
             # Add backoff to avoid TooManyRequestsException
