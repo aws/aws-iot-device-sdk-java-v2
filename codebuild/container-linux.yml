@@ -3,17 +3,16 @@ version: 0.2
 phases:
   install:
     commands:
-      - sudo apt install openjdk-8-jdk -y
-      - sudo apt install maven -y
       - sudo apt-get update -y
-      - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/tmp/awscliv2.zip"
-      - unzip -q -d /tmp /tmp/awscliv2.zip
-      - sudo /tmp/aws/install
+      - sudo apt-get install openjdk-8-jdk -y
+      - sudo apt-get install maven -y
+      - sudo apt-get awscli -y
+      - sudo apt-get update -y
+
   build:
     commands:
       - echo Build started on `date`
-      - aws s3 cp s3://aws-crt-test-stuff/ci/v0.9.14/linux-container-ci.sh ./linux-container-ci.sh && chmod a+x ./linux-container-ci.sh
-      - ./linux-container-ci.sh v0.9.14 aws-crt-raspbian-armv6 build -p aws-iot-device-sdk-java-v2
+      - mvn compile
 
   post_build:
     commands:
