@@ -46,7 +46,7 @@ jobs:
       with:
         role-to-assume: ${{ env.CI_IOT_CONTAINERS }}
         aws-region: ${{ env.AWS_DEFAULT_REGION }}
-      uses: uraimo/run-on-arch-action@v2
+    - uses: uraimo/run-on-arch-action@v2
       id: runcmd
       with: 
         arch: armv6
