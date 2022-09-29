@@ -57,20 +57,22 @@ jobs:
     # NOTE: we cannot run samples or DeviceAdvisor here due to container restrictions
 
     raspberry:
-    runs-on: ubuntu-20.04 # latest
-    steps:
-    - name: Docker Setup QEMU
-      # You may pin to the exact commit or the version.
-      # uses: docker/setup-qemu-action@8b122486cedac8393e77aa9734c3528886e4a1a8
-      uses: docker/setup-qemu-action@v2.0.0
-      with:
-        # QEMU static binaries Docker image (e.g. tonistiigi/binfmt:latest)
-        platforms: # optional, default is all
-          - arm
-    - name: Build ${{ env.PACKAGE_NAME }}
-      run: |
-        aws s3 cp s3://aws-crt-test-stuff/ci/${{ env.BUILDER_VERSION }}/linux-container-ci.sh ./linux-container-ci.sh && chmod a+x ./linux-container-ci.sh
-        ./linux-container-ci.sh ${{ env.BUILDER_VERSION }} aws-crt-raspbian-armv6 build -p ${{ env.PACKAGE_NAME }}
+      #   strategy:
+      #     fail-fast: false
+      runs-on: ubuntu-20.04 # latest
+      steps:
+      - name: Docker Setup QEMU
+        # You may pin to the exact commit or the version.
+        # uses: docker/setup-qemu-action@8b122486cedac8393e77aa9734c3528886e4a1a8
+        uses: docker/setup-qemu-action@v2.0.0
+        with:
+          # QEMU static binaries Docker image (e.g. tonistiigi/binfmt:latest)
+          platforms: # optional, default is all
+            - arm
+      - name: Build ${{ env.PACKAGE_NAME }}
+        run: |
+          aws s3 cp s3://aws-crt-test-stuff/ci/${{ env.BUILDER_VERSION }}/linux-container-ci.sh ./linux-container-ci.sh && chmod a+x ./linux-container-ci.sh
+          ./linux-container-ci.sh ${{ env.BUILDER_VERSION }} aws-crt-raspbian-armv6 build -p ${{ env.PACKAGE_NAME }}
 
 
   # windows:
