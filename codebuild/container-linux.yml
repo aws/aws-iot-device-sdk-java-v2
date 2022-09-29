@@ -3,8 +3,8 @@ version: 0.2
 phases:
   install:
     commands:
-      - sudo add-apt-repository ppa:openjdk-r/ppa
-      - sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+      - sudo apt install openjdk-8-jdk -y
+      - sudo apt install maven -y
       - sudo apt-get update -y
       - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/tmp/awscliv2.zip"
       - unzip -q -d /tmp /tmp/awscliv2.zip
