@@ -6,7 +6,7 @@ phases:
       - sudo apt-get update -y
       - sudo apt-get install openjdk-8-jdk -y
       - sudo apt-get install maven -y
-      - sudo apt-get awscli -y
+      - sudo apt-get install awscli -y
       - sudo apt-get update -y
 
   build:
