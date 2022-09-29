@@ -38,6 +38,7 @@ jobs:
           # - rhel8-x64
           - raspbian-armv6
           #- manylinux2014-x86 until we find 32-bit linux binaries we can use
+        arch: [armv6]
     permissions:
       id-token: write # This is required for requesting the JWT
     steps:
@@ -46,15 +47,10 @@ jobs:
       with:
         role-to-assume: ${{ env.CI_IOT_CONTAINERS }}
         aws-region: ${{ env.AWS_DEFAULT_REGION }}
-    - uses: uraimo/run-on-arch-action@v2
-      id: runcmd
-      with: 
-        arch: armv6
-        distro: ubuntu18.04
     - name: Build ${{ env.PACKAGE_NAME }}
       run: |
-        aws s3 cp s3://aws-crt-test-stuff/ci/${{ env.BUILDER_VERSION }}/linux-container-ci.sh ./linux-container-ci.sh && chmod a+x ./linux-container-ci.sh
-        ./linux-container-ci.sh ${{ env.BUILDER_VERSION }} aws-crt-${{ matrix.image }} build -p ${{ env.PACKAGE_NAME }}
+        python -c "from urllib.request import urlretrieve; urlretrieve('${{ env.BUILDER_HOST }}/${{ env.BUILDER_SOURCE }}/${{ env.BUILDER_VERSION }}/builder.pyz?run=${{ env.RUN }}', 'builder.pyz')"
+        python builder.pyz build -p ${{ env.PACKAGE_NAME }} --spec=downstream --platform=armv6
     # NOTE: we cannot run samples or DeviceAdvisor here due to container restrictions
 
   # windows:
