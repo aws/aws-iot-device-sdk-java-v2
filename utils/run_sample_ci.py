@@ -3,6 +3,7 @@
 
 # Built-in
 import argparse
+from ast import arguments
 import os
 import subprocess
 import pathlib
@@ -14,11 +15,12 @@ import boto3  # - for launching sample
 current_folder = pathlib.Path(__file__).resolve()
 tmp_certificate_file_path = str(current_folder) + "tmp_certificate.pem"
 tmp_private_key_path = str(current_folder) + "tmp_privatekey.pem.key"
+tmp_pfx_file_path = str(current_folder) + "tmp_pfx_certificate.pfx"
 
-
-def getSecretsAndLaunch(parsed_commands):
+def get_secrets_and_launch(parsed_commands):
     global tmp_certificate_file_path
     global tmp_private_key_path
+    global tmp_pfx_file_path
     exit_code = 0
     sample_endpoint = ""
     sample_certificate = ""
@@ -38,17 +40,19 @@ def getSecretsAndLaunch(parsed_commands):
             sample_endpoint = secrets_client.get_secret_value(
                 SecretId=parsed_commands.sample_secret_endpoint)["SecretString"]
         if (parsed_commands.sample_secret_certificate != ""):
-            sample_certificate = secrets_client.get_secret_value(
+            secret_data = secrets_client.get_secret_value(
                 SecretId=parsed_commands.sample_secret_certificate)
             with open(tmp_certificate_file_path, "w") as file:
                 # lgtm [py/clear-text-storage-sensitive-data]
-                file.write(sample_certificate["SecretString"])
+                file.write(secret_data["SecretString"])
+            sample_certificate = tmp_certificate_file_path
         if (parsed_commands.sample_secret_private_key != ""):
-            sample_private_key = secrets_client.get_secret_value(
+            secret_data = secrets_client.get_secret_value(
                 SecretId=parsed_commands.sample_secret_private_key)
             with open(tmp_private_key_path, "w") as file:
                 # lgtm [py/clear-text-storage-sensitive-data]
-                file.write(sample_private_key["SecretString"])
+                file.write(secret_data["SecretString"])
+            sample_private_key = tmp_private_key_path
         if (parsed_commands.sample_secret_custom_authorizer_name != ""):
             sample_custom_authorizer_name = secrets_client.get_secret_value(
                 SecretId=parsed_commands.sample_secret_custom_authorizer_name)["SecretString"]
@@ -59,44 +63,88 @@ def getSecretsAndLaunch(parsed_commands):
     except Exception:
         sys.exit("ERROR: Could not get secrets to launch sample!")
 
+    extra_step_return = 0
     if (parsed_commands.sample_run_softhsm != ""):
+        extra_step_return = make_softhsm_key()
+        sample_private_key = "" # Do not use the private key
+    if (parsed_commands.sample_run_certutil != ""):
+        extra_step_return = make_windows_pfx_file()
+        sample_private_key = "" # Do not use the private key
+        sample_certificate = tmp_pfx_file_path # use the PFX file rather than the normal certificate
+
+    exit_code = extra_step_return
+    if (extra_step_return == 0):
+        print("Launching sample...")
+        exit_code = launch_sample(parsed_commands, sample_endpoint, sample_certificate,
+                                sample_private_key, sample_custom_authorizer_name, sample_custom_authorizer_password)
+
+        if (exit_code == 0):
+            print("SUCCESS: Finished running sample! Exiting with success")
+        else:
+            print("ERROR: Sample did not return success! Exit code " + str(exit_code))
+    else:
+        print ("ERROR: Could not run extra step (SoftHSM, CertUtil, etc)")
+
+    print("Deleting files...")
+    if (os.path.isfile(tmp_certificate_file_path)):
+        os.remove(tmp_certificate_file_path)
+    if (os.path.isfile(tmp_private_key_path)):
+        os.remove(tmp_private_key_path)
+    if (os.path.isfile(tmp_pfx_file_path)):
+        os.remove(tmp_pfx_file_path)
+
+    return exit_code
+
+
+def make_softhsm_key():
+    if sys.platform != "linux" or sys.platform == "linux2":
         print ("Setting up private key via SoftHSM")
         subprocess.run("softhsm2-util --init-token --free --label my-token --pin 0000 --so-pin 0000", shell=True)
         subprocess.run(f"softhsm2-util --import {tmp_private_key_path} --token my-token --label my-key --id BEEFCAFE --pin 0000", shell=True)
         print ("Finished setting up private key in SoftHSM")
-
-    print("Launching sample...")
-    exit_code = launch_sample(parsed_commands, sample_endpoint, sample_certificate,
-                              sample_private_key, sample_custom_authorizer_name, sample_custom_authorizer_password)
-
-    print("Deleting files...")
-    if (sample_certificate != ""):
-        os.remove(tmp_certificate_file_path)
-    if (sample_private_key != ""):
-        os.remove(tmp_private_key_path)
-
-    if (exit_code == 0):
-        print("SUCCESS: Finished running sample! Exiting with success")
+        return 0
     else:
-        print("ERROR: Sample did not return success! Exit code " + str(exit_code))
-    return exit_code
+        print("ERROR - SoftHSM can only be run on a Linux platform!")
+        return -1
+
+def make_windows_pfx_file():
+    global tmp_certificate_file_path
+    global tmp_private_key_path
+    global tmp_pfx_file_path
+
+    if sys.platform == "win32" or sys.platform == "cygwin":
+        if os.path.isfile(tmp_certificate_file_path) != True:
+            print("ERROR - Certificate file not found!")
+            return -1
+        if os.path.isfile(tmp_private_key_path) != True:
+            print("ERROR - Private key file not found!")
+            return -1
+
+        arguments = ["certutil", "-mergePFX", f"{tmp_certificate_file_path},{tmp_private_key_path}", tmp_pfx_file_path]
+        certutil_run = subprocess.run(args=arguments + launch_arguments, shell=True)
+        return certutil.returncode
+    else:
+        print("ERROR - Windows PFX file can only be created on a Windows platform!")
+        return -1
 
 
 def launch_sample(parsed_commands, sample_endpoint, sample_certificate, sample_private_key, sample_custom_authorizer_name, sample_custom_authorizer_password):
     global tmp_certificate_file_path
     global tmp_private_key_path
+    global tmp_pfx_file_path
     exit_code = 0
 
     print("Processing arguments...")
     launch_arguments = []
     launch_arguments.append("--endpoint")
     launch_arguments.append(sample_endpoint)
+
     if (sample_certificate != ""):
         launch_arguments.append("--cert")
-        launch_arguments.append(tmp_certificate_file_path)
-    if (sample_private_key != "" and parsed_commands.sample_run_softhsm == ""):
+        launch_arguments.append(sample_certificate)
+    if (sample_private_key != ""):
         launch_arguments.append("--key")
-        launch_arguments.append(tmp_private_key_path)
+        launch_arguments.append(sample_private_key)
     if (sample_custom_authorizer_name != ""):
         launch_arguments.append("--custom_auth_authorizer_name")
         launch_arguments.append(sample_custom_authorizer_name)
@@ -204,8 +252,11 @@ def main():
                                  default="", help="The name of the secret containing the custom authorizer name")
     argument_parser.add_argument("--sample_secret_custom_authorizer_password", metavar="<Name of custom authorizer password secret>", required=False,
                                  default="", help="The name of the secret containing the custom authorizer password")
-    argument_parser.add_argument("--sample_run_softhsm", metavar="<Set to 'True' to run SoftHSM>", required=False,
+    argument_parser.add_argument("--sample_run_softhsm", metavar="<Set to 'True' to run SoftHSM (Linux ONLY)>", required=False,
                                  default="", help="Runs SoftHSM on the private key passed, storing it, rather than passing it directly to the sample. Used for PKCS11 sample")
+    argument_parser.add_argument("--sample_run_certutil", metavar="<Set to 'True' to run Certutil (Windows ONLY)>", required=False,
+                                 default="", help="Runs CertUtil on the private key and certificate passed and makes a certificate.pfx file, "
+                                 "which is used automatically in the --cert argument. Used for Windows Certificate Connect sample")
     argument_parser.add_argument("--sample_arguments", metavar="<Arguments here in single string!>",
                                  required=False, default="",
                                  help="Arguments to pass to sample. In Java, these arguments will be in a double quote (\") string")
@@ -217,7 +268,7 @@ def main():
     parsed_commands = argument_parser.parse_args()
 
     print("Starting to launch sample...")
-    sample_result = getSecretsAndLaunch(parsed_commands)
+    sample_result = get_secrets_and_launch(parsed_commands)
     sys.exit(sample_result)
 
 
