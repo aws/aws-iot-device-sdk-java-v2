@@ -118,7 +118,7 @@ def make_windows_pfx_file():
 
         arguments = ["certutil", "-mergePFX", f"{tmp_certificate_file_path},{tmp_private_key_path}", tmp_pfx_file_path]
         certutil_run = subprocess.run(args=arguments, shell=True)
-        return certutil.returncode
+        return certutil_run.returncode
     else:
         print("ERROR - Windows PFX file can only be created on a Windows platform!")
         return -1
