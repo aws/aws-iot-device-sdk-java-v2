@@ -14,6 +14,10 @@ import boto3  # - for launching sample
 
 
 current_folder = os.path.dirname(pathlib.Path(__file__).resolve()) + "\\"
+if sys.platform == "win32" or sys.platform == "cygwin":
+    current_folder =+ "\\"
+else:
+    current_folder =+ "/"
 tmp_certificate_file_path = str(current_folder) + "tmp_certificate.pem"
 tmp_private_key_path = str(current_folder) + "tmp_privatekey.pem.key"
 tmp_pfx_file_path = str(current_folder) + "tmp_pfx_certificate.pfx"
