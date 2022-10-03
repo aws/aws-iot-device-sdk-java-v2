@@ -13,12 +13,13 @@ import sys
 import boto3  # - for launching sample
 
 
-current_folder = pathlib.Path(__file__).resolve()
+current_folder = os.path.dirname(pathlib.Path(__file__).resolve()) + "\\"
 tmp_certificate_file_path = str(current_folder) + "tmp_certificate.pem"
 tmp_private_key_path = str(current_folder) + "tmp_privatekey.pem.key"
 tmp_pfx_file_path = str(current_folder) + "tmp_pfx_certificate.pfx"
 tmp_pfx_certificate_path = ""
 tmp_pfx_certificate_store_location = "\\CurrentUser\\My"
+tmp_pfx_password = "" # Setting a password causes issues, but an empty string is valid so we use that
 
 def get_secrets_and_launch(parsed_commands):
     global tmp_certificate_file_path
@@ -120,30 +121,44 @@ def make_windows_pfx_file():
 
     if sys.platform == "win32" or sys.platform == "cygwin":
         if os.path.isfile(tmp_certificate_file_path) != True:
+            print (tmp_certificate_file_path)
             print("ERROR: Certificate file not found!")
             return 1
         if os.path.isfile(tmp_private_key_path) != True:
             print("ERROR: Private key file not found!")
             return 1
 
-        abs_tmp_certificate_file_path = os.path.abspath(tmp_certificate_file_path)
-        abs_tmp_private_key_path = os.path.abspath(tmp_private_key_path)
-        abs_tmp_pfx_file_path = os.path.abspath(tmp_pfx_file_path)
+        # Delete old PFX file if it exists
+        if os.path.isfile(tmp_pfx_file_path):
+            os.remove(tmp_pfx_file_path)
 
-        arguments = ["certutil",  "-mergePFX", "-p", "Password", f"{abs_tmp_certificate_file_path},{abs_tmp_private_key_path}", abs_tmp_pfx_file_path]
-        certutil_run = subprocess.run(args=arguments, shell=True)
+        # Make a key copy
+        copy_path = os.path.splitext(tmp_certificate_file_path)
+        with open(copy_path[0] + ".key", 'w') as file:
+            key_file = open(tmp_private_key_path)
+            file.write(key_file.read())
+            key_file.close()
+
+        certutil_error_occured = False
+        arguments = ["certutil",  "-mergePFX", tmp_certificate_file_path, tmp_pfx_file_path]
+        # print (f'Calling CertUtil with: {subprocess.list2cmdline(arguments)}')
+        certutil_run = subprocess.run(args=arguments, shell=True, input=f"{tmp_pfx_password}\n{tmp_pfx_password}", encoding='ascii')
         if (certutil_run.returncode != 0):
             print ("ERROR: Could not make PFX file")
+            certutil_error_occured = True
             return 1
         else:
             print ("PFX file created successfully")
 
-        tmp_password_run = subprocess.run(args=["$mypwd", "=", "Get-Credential", "-UserName", "Password", "-Message", "Password"], shell=True)
-        if (tmp_password_run.returncode != 0):
-            print ("ERROR: Could not set temporary password")
+        # Remove the temporary key copy
+        if os.path.isfile(copy_path[0] + ".key"):
+            os.remove(copy_path[0] + ".key")
+        if (certutil_error_occured == True):
             return 1
 
-        import_pfx_run = subprocess.run(args=["Import-PfxCertificate", "-FilePath", abs_tmp_pfx_file_path, "-CertStoreLocation", "Cert:\\" + tmp_pfx_certificate_store_location, "-Password", "$mypwd.Password"], shell=True)
+        import_pfx_arguments = ["powershell.exe", "Import-PfxCertificate", "-FilePath", tmp_pfx_file_path, "-CertStoreLocation", "Cert:" + tmp_pfx_certificate_store_location, "-Password", "$mypwd"]
+        # print (f'Calling Import-PfxCertificate with: {subprocess.list2cmdline(import_pfx_arguments)}')
+        import_pfx_run = subprocess.run(args=import_pfx_arguments, shell=True, stdout=subprocess.PIPE)
         if (import_pfx_run.returncode != 0):
             print ("ERROR: Could not import PFX certificate into Windows store!")
             return 1
@@ -151,13 +166,16 @@ def make_windows_pfx_file():
             print ("Certificate imported to Windows Certificate Store successfully")
 
         # Get the certificate path from the output:
-        import_pfx_output = import_pfx_run.stdout
+        import_pfx_output = str(import_pfx_run.stdout)
         # We know the Thumbprint will always be 40 characters long, so we can find it using that
         # TODO: Extract this using a better method
         thumbprint = ""
         current_str = ""
+        # The input comes as a string with the special characters still included, so we need to remove them!
+        import_pfx_output = import_pfx_output.replace("\\r", " ")
+        import_pfx_output = import_pfx_output.replace("\\n", "\n")
         for i in range(0, len(import_pfx_output)):
-            if (import_pfx_output[i] == " " or import_pfx_output[i] == "\n"):
+            if (import_pfx_output[i] == " " or import_pfx_output[i] == "\r" or import_pfx_output[i] == "\n"):
                 if (len(current_str) == 40):
                     thumbprint = current_str
                     break
@@ -167,6 +185,9 @@ def make_windows_pfx_file():
 
         if (thumbprint == ""):
             print ("ERROR: Could not find certificate thumbprint")
+        else:
+            # print (f"Thumbprint is: {thumbprint}")
+            pass
 
         # Construct the certificate path
         tmp_pfx_certificate_path = tmp_pfx_certificate_store_location + "\\" + thumbprint
