@@ -4,6 +4,7 @@
 # Built-in
 import argparse
 from ast import arguments
+from cgitb import text
 import os
 import subprocess
 import pathlib
@@ -16,11 +17,14 @@ current_folder = pathlib.Path(__file__).resolve()
 tmp_certificate_file_path = str(current_folder) + "tmp_certificate.pem"
 tmp_private_key_path = str(current_folder) + "tmp_privatekey.pem.key"
 tmp_pfx_file_path = str(current_folder) + "tmp_pfx_certificate.pfx"
+tmp_pfx_certificate_path = ""
+tmp_pfx_certificate_store_location = "\\CurrentUser\\My"
 
 def get_secrets_and_launch(parsed_commands):
     global tmp_certificate_file_path
     global tmp_private_key_path
     global tmp_pfx_file_path
+    global tmp_pfx_certificate_path
     exit_code = 0
     sample_endpoint = ""
     sample_certificate = ""
@@ -70,7 +74,7 @@ def get_secrets_and_launch(parsed_commands):
     if (parsed_commands.sample_run_certutil != ""):
         extra_step_return = make_windows_pfx_file()
         sample_private_key = "" # Do not use the private key
-        sample_certificate = tmp_pfx_file_path # use the PFX file rather than the normal certificate
+        sample_certificate = tmp_pfx_certificate_path # use the Windows certificate path
 
     exit_code = extra_step_return
     if (extra_step_return == 0):
@@ -98,8 +102,13 @@ def get_secrets_and_launch(parsed_commands):
 
 def make_softhsm_key():
     print ("Setting up private key via SoftHSM")
-    subprocess.run("softhsm2-util --init-token --free --label my-token --pin 0000 --so-pin 0000", shell=True)
-    subprocess.run(f"softhsm2-util --import {tmp_private_key_path} --token my-token --label my-key --id BEEFCAFE --pin 0000", shell=True)
+    softhsm_run = subprocess.run("softhsm2-util --init-token --free --label my-token --pin 0000 --so-pin 0000", shell=True)
+    if (softhsm_run.returncode != 0):
+        print ("ERROR: SoftHSM could not initialize a new token")
+        return softhsm_run.returncode
+    softhsm_run = subprocess.run(f"softhsm2-util --import {tmp_private_key_path} --token my-token --label my-key --id BEEFCAFE --pin 0000", shell=True)
+    if (softhsm_run.returncode != 0):
+        print ("ERROR: SoftHSM could not import token")
     print ("Finished setting up private key in SoftHSM")
     return 0
 
@@ -107,21 +116,68 @@ def make_windows_pfx_file():
     global tmp_certificate_file_path
     global tmp_private_key_path
     global tmp_pfx_file_path
+    global tmp_pfx_certificate_path
 
     if sys.platform == "win32" or sys.platform == "cygwin":
         if os.path.isfile(tmp_certificate_file_path) != True:
-            print("ERROR - Certificate file not found!")
-            return -1
+            print("ERROR: Certificate file not found!")
+            return 1
         if os.path.isfile(tmp_private_key_path) != True:
-            print("ERROR - Private key file not found!")
-            return -1
+            print("ERROR: Private key file not found!")
+            return 1
 
-        arguments = ["certutil", "-mergePFX", f"{tmp_certificate_file_path},{tmp_private_key_path}", tmp_pfx_file_path]
+        abs_tmp_certificate_file_path = os.path.abspath(tmp_certificate_file_path)
+        abs_tmp_private_key_path = os.path.abspath(tmp_private_key_path)
+        abs_tmp_pfx_file_path = os.path.abspath(tmp_pfx_file_path)
+
+        arguments = ["certutil", "-mergePFX", f"{abs_tmp_certificate_file_path},{abs_tmp_private_key_path}", abs_tmp_pfx_file_path, "-p", "Password"]
         certutil_run = subprocess.run(args=arguments, shell=True)
-        return certutil_run.returncode
+        if (certutil_run.returncode != 0):
+            print ("ERROR: Could not make PFX file")
+            return 1
+        else:
+            print ("PFX file created successfully")
+
+        tmp_password_run = subprocess.run(args=["$mypwd", "=", "Get-Credential", "-UserName", "Password", "-Message", "Password"], shell=True)
+        if (tmp_password_run.returncode != 0):
+            print ("ERROR: Could not set temporary password")
+            return 1
+
+        import_pfx_run = subprocess.run(args=["Import-PfxCertificate", "-FilePath", abs_tmp_pfx_file_path, "-CertStoreLocation", "Cert:\\" + tmp_pfx_certificate_store_location, "-Password", "$mypwd.Password"], shell=True)
+        if (import_pfx_run.returncode != 0):
+            print ("ERROR: Could not import PFX certificate into Windows store!")
+            return 1
+        else:
+            print ("Certificate imported to Windows Certificate Store successfully")
+
+        # Get the certificate path from the output:
+        import_pfx_output = import_pfx_run.stdout
+        # We know the Thumbprint will always be 40 characters long, so we can find it using that
+        # TODO: Extract this using a better method
+        thumbprint = ""
+        current_str = ""
+        for i in range(0, len(import_pfx_output)):
+            if (import_pfx_output[i] == " " or import_pfx_output[i] == "\n"):
+                if (len(current_str) == 40):
+                    thumbprint = current_str
+                    break
+                current_str = ""
+            else:
+                current_str += import_pfx_output[i]
+
+        if (thumbprint == ""):
+            print ("ERROR: Could not find certificate thumbprint")
+
+        # Construct the certificate path
+        tmp_pfx_certificate_path = tmp_pfx_certificate_store_location + "\\" + thumbprint
+
+        # Return success
+        print ("PFX certificate created and imported successfully!")
+        return 0
+
     else:
         print("ERROR - Windows PFX file can only be created on a Windows platform!")
-        return -1
+        return 1
 
 
 def launch_sample(parsed_commands, sample_endpoint, sample_certificate, sample_private_key, sample_custom_authorizer_name, sample_custom_authorizer_password):
