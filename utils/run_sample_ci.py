@@ -33,10 +33,6 @@ def get_secrets_and_launch(parsed_commands):
     sample_custom_authorizer_name = ""
     sample_custom_authorizer_password = ""
 
-    current_folder = pathlib.Path(__file__).resolve()
-    # Remove the name of the python file
-    current_folder = str(current_folder).replace("run_sample_ci.py", "")
-
     print("Attempting to get credentials from secrets using Boto3...")
     secrets_client = boto3.client(
         "secretsmanager", region_name=parsed_commands.sample_region)
@@ -157,7 +153,8 @@ def make_windows_pfx_file():
             return 1
 
         # Import the PFX into the Windows Certificate Store
-        import_pfx_arguments = ["powershell.exe", "Import-PfxCertificate", "-FilePath", tmp_pfx_file_path, "-CertStoreLocation", "Cert:\\" + tmp_pfx_certificate_store_location, "-Password", " "]
+        # (Passing '$mypwd' is required even though it is empty and our certificate has no password. It fails CI otherwise)
+        import_pfx_arguments = ["powershell.exe", "Import-PfxCertificate", "-FilePath", tmp_pfx_file_path, "-CertStoreLocation", "Cert:\\" + tmp_pfx_certificate_store_location, "-Password", "$mypwd"]
         import_pfx_run = subprocess.run(args=import_pfx_arguments, shell=True, stdout=subprocess.PIPE)
         if (import_pfx_run.returncode != 0):
             print ("ERROR: Could not import PFX certificate into Windows store!")
@@ -183,8 +180,10 @@ def make_windows_pfx_file():
             else:
                 current_str += import_pfx_output[i]
 
+        # Did we get a thumbprint?
         if (thumbprint == ""):
             print ("ERROR: Could not find certificate thumbprint")
+            return 1
 
         # Construct the certificate path
         tmp_pfx_certificate_path = tmp_pfx_certificate_store_location + "\\" + thumbprint
