@@ -13,7 +13,7 @@ import sys
 import boto3  # - for launching sample
 
 
-current_folder = os.path.dirname(pathlib.Path(__file__).resolve()) + "\\"
+current_folder = os.path.dirname(pathlib.Path(__file__).resolve())
 if sys.platform == "win32" or sys.platform == "cygwin":
     current_folder += "\\"
 else:
