@@ -97,15 +97,11 @@ def get_secrets_and_launch(parsed_commands):
 
 
 def make_softhsm_key():
-    if sys.platform != "linux" or sys.platform == "linux2":
-        print ("Setting up private key via SoftHSM")
-        subprocess.run("softhsm2-util --init-token --free --label my-token --pin 0000 --so-pin 0000", shell=True)
-        subprocess.run(f"softhsm2-util --import {tmp_private_key_path} --token my-token --label my-key --id BEEFCAFE --pin 0000", shell=True)
-        print ("Finished setting up private key in SoftHSM")
-        return 0
-    else:
-        print("ERROR - SoftHSM can only be run on a Linux platform!")
-        return -1
+    print ("Setting up private key via SoftHSM")
+    subprocess.run("softhsm2-util --init-token --free --label my-token --pin 0000 --so-pin 0000", shell=True)
+    subprocess.run(f"softhsm2-util --import {tmp_private_key_path} --token my-token --label my-key --id BEEFCAFE --pin 0000", shell=True)
+    print ("Finished setting up private key in SoftHSM")
+    return 0
 
 def make_windows_pfx_file():
     global tmp_certificate_file_path
@@ -121,7 +117,7 @@ def make_windows_pfx_file():
             return -1
 
         arguments = ["certutil", "-mergePFX", f"{tmp_certificate_file_path},{tmp_private_key_path}", tmp_pfx_file_path]
-        certutil_run = subprocess.run(args=arguments + launch_arguments, shell=True)
+        certutil_run = subprocess.run(args=arguments, shell=True)
         return certutil.returncode
     else:
         print("ERROR - Windows PFX file can only be created on a Windows platform!")
