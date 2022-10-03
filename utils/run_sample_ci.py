@@ -3,15 +3,12 @@
 
 # Built-in
 import argparse
-from ast import arguments
-from cgitb import text
 import os
 import subprocess
 import pathlib
 import sys
 # Needs to be installed via pip
 import boto3  # - for launching sample
-
 
 current_folder = os.path.dirname(pathlib.Path(__file__).resolve())
 if sys.platform == "win32" or sys.platform == "cygwin":
@@ -24,6 +21,7 @@ tmp_pfx_file_path = str(current_folder) + "tmp_pfx_certificate.pfx"
 tmp_pfx_certificate_path = ""
 tmp_pfx_certificate_store_location = "CurrentUser\\My"
 tmp_pfx_password = "" # Setting a password causes issues, but an empty string is valid so we use that
+
 
 def get_secrets_and_launch(parsed_commands):
     global tmp_certificate_file_path
@@ -112,6 +110,7 @@ def make_softhsm_key():
         print ("ERROR: SoftHSM could not import token")
     print ("Finished setting up private key in SoftHSM")
     return 0
+
 
 def make_windows_pfx_file():
     global tmp_certificate_file_path
