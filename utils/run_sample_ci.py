@@ -130,7 +130,7 @@ def make_windows_pfx_file():
         abs_tmp_private_key_path = os.path.abspath(tmp_private_key_path)
         abs_tmp_pfx_file_path = os.path.abspath(tmp_pfx_file_path)
 
-        arguments = ["certutil", "-mergePFX", f"{abs_tmp_certificate_file_path},{abs_tmp_private_key_path}", abs_tmp_pfx_file_path, "-p", "Password"]
+        arguments = ["certutil",  "-mergePFX", "-p", "Password", f"{abs_tmp_certificate_file_path},{abs_tmp_private_key_path}", abs_tmp_pfx_file_path]
         certutil_run = subprocess.run(args=arguments, shell=True)
         if (certutil_run.returncode != 0):
             print ("ERROR: Could not make PFX file")
