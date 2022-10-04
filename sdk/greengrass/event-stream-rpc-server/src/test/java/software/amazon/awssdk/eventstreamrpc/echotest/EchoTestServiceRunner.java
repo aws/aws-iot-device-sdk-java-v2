@@ -206,7 +206,7 @@ public class EchoTestServiceRunner implements AutoCloseable {
                     final CompletableFuture<Object> runClientOrError =
                             CompletableFuture.anyOf(clientErrorFuture, CompletableFuture.runAsync(
                                     () -> testClientLogic.accept(connection, client), Executors.newSingleThreadExecutor()));
-                    runClientOrError.get(240, TimeUnit.SECONDS);
+                    runClientOrError.get(24000, TimeUnit.SECONDS);
                 }
             }
         }

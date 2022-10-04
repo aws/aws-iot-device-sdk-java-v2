@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 
 public class EchoTestServiceTests {
     static {
-        Log.initLoggingToFile(Log.LogLevel.Trace, "crt-EchoTestService.log");
+        //Log.initLoggingToFile(Log.LogLevel.Trace, "crt-EchoTestService.log");
     }
 
     final BiConsumer<EchoTestRPC, MessageData> DO_ECHO_FN = (client, data) -> {
@@ -96,12 +96,22 @@ public class EchoTestServiceTests {
     
     @Test //this test takes too long to complete so turn it off by default
     public void testLongRunningServerOperations() throws Exception {
-        final int numIterations = Integer.parseInt(System.getProperty("numIterations", "10"));
+        final int numIterations = Integer.parseInt(System.getProperty("numIterations", "1000"));
         final int threadPoolSize = Integer.parseInt(System.getProperty("threadPoolSize", "16"));          //max threads, since tasks are IO intense, doesn't need to be large 
         final int parallelTaskMultiplyFactor = Integer.parseInt(System.getProperty("parallelTaskFactor", "10"));  //however many tasks to run in parallel
-        final int taskLengthMultiplyFactor = Integer.parseInt(System.getProperty("taskLengthFactor", "10")); //whatever work each task does (very small), do it this many times within a single run with a short sleep in between
-        final long taskRepeatSleepDelayMs = 10; //time to sleep before repeating a tasks' impl
-        
+        final int taskLengthMultiplyFactor = Integer.parseInt(System.getProperty("taskLengthFactor", "1000")); //whatever work each task does (very small), do it this many times within a single run with a short sleep in between
+        final long taskRepeatSleepDelayMs = 1; //time to sleep before repeating a tasks' impl
+
+        char[] payload = new char[10000];
+        for (int i = 0; i < payload.length; ++i) {
+            payload[i] = 'A';
+        }
+
+        byte[] binaryPayload = new byte[5000];
+        for (int i = 0; i < binaryPayload.length; ++i) {
+            binaryPayload[i] = (byte)(i & 0xFF);
+        }
+
         final ArrayList<BiConsumer<EventStreamRPCConnection, EchoTestRPC>> tasks = new ArrayList<>();
         final ExecutorService service = Executors.newFixedThreadPool(threadPoolSize);
         
@@ -110,68 +120,27 @@ public class EchoTestServiceTests {
             data.setEnumMessage(FruitEnum.PINEAPPLE);
             DO_ECHO_FN.accept(client, data);
 
-            data.setStringMessage("Hello EventStream RPC world");
+            data.setStringMessage(new String(payload));
             DO_ECHO_FN.accept(client, data);
 
             data.setBooleanMessage(true);
             DO_ECHO_FN.accept(client, data);
 
-            data.setBlobMessage(new byte[] {23, 42, -120, -3, 53});
+            data.setBlobMessage(binaryPayload);
             DO_ECHO_FN.accept(client, data);
 
             data.setTimeMessage(Instant.ofEpochSecond(1606173648));
             DO_ECHO_FN.accept(client, data);
         });
 
-        tasks.add((connection, client) -> {
-            final CauseServiceErrorResponseHandler responseHandler = client.causeServiceError(new CauseServiceErrorRequest(), Optional.empty());
-            futureCausesOperationError(responseHandler.getResponse(), ServiceError.class, "ServiceError");
-        });
-        tasks.add((connection, client) -> {
-            final CompletableFuture<Throwable> exceptionReceivedFuture = new CompletableFuture<>();
-            final CauseStreamServiceToErrorResponseHandler streamErrorResponseHandler = client.causeStreamServiceToError(EchoStreamingRequest.VOID, Optional.of(new StreamResponseHandler<EchoStreamingMessage>() {
-                @Override
-                public void onStreamEvent(EchoStreamingMessage streamEvent) {
-                    exceptionReceivedFuture.completeExceptionally(new RuntimeException("Stream event received when expecting error!"));
-                }
-
-                @Override
-                public boolean onStreamError(Throwable error) {
-                    //this is normal, but we are looking for a specific one
-                    exceptionReceivedFuture.complete(error);
-                    return true;
-                }
-
-                @Override
-                public void onStreamClosed() {
-                    if (!exceptionReceivedFuture.isDone()) {
-                        exceptionReceivedFuture.completeExceptionally(new RuntimeException("Stream closed before exception thrown!"));
-                    }
-                }
-            }));
-
-            try {
-                final EchoStreamingMessage msg = new EchoStreamingMessage();
-                final MessageData data = new MessageData();
-                data.setStringMessage("basicStringMessage");
-                msg.setStreamMessage(data);
-                streamErrorResponseHandler.sendStreamEvent(msg);   //sends message, exception should be is the response
-                final Throwable t = exceptionReceivedFuture.get(10, TimeUnit.SECONDS);
-                Assertions.assertTrue(t instanceof ServiceError);
-                final ServiceError error = (ServiceError)t;
-                Assertions.assertEquals("ServiceError", error.getErrorCode());
-            } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                Assertions.fail(e);
-            }
-        });
         int count[] = { 0 };
         EchoTestServiceRunner.runLocalEchoTestServerClientLoopUnixDomain(
-                CRT.getOSIdentifier().equals("windows") ? "\\\\.\\pipe\\TestP-" + UUID.randomUUID() : "/tmp/ipc.sock",
-                (connection, client) -> {
-                    final Collection<Future<?>> taskFutures = new LinkedList<>();
+            CRT.getOSIdentifier().equals("windows") ? "\\\\.\\pipe\\TestP-" + UUID.randomUUID() : "/tmp/ipc.sock",
+            (connection, client) -> {
+                final Collection<Future<?>> taskFutures = new LinkedList<>();
 
-                    for (int i = 0; i < parallelTaskMultiplyFactor; ++i) {  //multiply the tasks evenly
-                taskFutures.addAll(tasks.stream()
+                for (int i = 0; i < parallelTaskMultiplyFactor; ++i) {  //multiply the tasks evenly
+                    taskFutures.addAll(tasks.stream()
                         .map(task -> service.submit(()-> {
                             for (int taskExecIndx = 0; taskExecIndx < taskLengthMultiplyFactor; ++taskExecIndx) {
                                 task.accept(connection, client);
@@ -180,21 +149,21 @@ public class EchoTestServiceTests {
                                 } catch (InterruptedException e) {
                                     throw new RuntimeException(e);
                                 }
-                                System.out.println("Task repeat...");
+                                //System.out.println("Task repeat...");
                             }
                         }))
                         .collect(Collectors.toList()));
-            }
-
-            taskFutures.forEach(task -> {
-                try {
-                    task.get(10, TimeUnit.SECONDS);
-                } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                    Assertions.fail(e);
                 }
-            });
-            System.out.println("ALL TASKS finished an ITERATION: " + ++count[0]);
-        }, numIterations);
+
+                taskFutures.forEach(task -> {
+                    try {
+                        task.get(100, TimeUnit.SECONDS);
+                    } catch (InterruptedException | ExecutionException | TimeoutException e) {
+                        Assertions.fail(e);
+                    }
+                });
+                System.out.println("ALL TASKS finished an ITERATION: " + ++count[0]);
+            }, numIterations);
         CrtResource.waitForNoResources();
     }
 
