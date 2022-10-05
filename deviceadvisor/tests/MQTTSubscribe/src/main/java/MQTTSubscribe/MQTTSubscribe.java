@@ -48,7 +48,6 @@ public class MQTTSubscribe {
 
         try(AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(DATestUtils.certificatePath, DATestUtils.keyPath)) {
 
-
             builder.withClientId(clientId)
                 .withEndpoint(DATestUtils.endpoint)
                 .withPort((short)port)

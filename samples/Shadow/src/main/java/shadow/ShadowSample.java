@@ -34,6 +34,12 @@ import java.util.UUID;
 import utils.commandlineutils.CommandLineUtils;
 
 public class ShadowSample {
+
+    // When run normally, we want to get input from the console
+    // When run from CI, we want to automatically make changes to the shadow document
+    static String ciPropValue = System.getProperty("aws.crt.ci");
+    static boolean isCI = ciPropValue != null && Boolean.valueOf(ciPropValue);
+
     static String thingName;
     final static String SHADOW_PROPERTY = "color";
     final static String SHADOW_VALUE_DEFAULT = "off";
@@ -231,7 +237,7 @@ public class ShadowSample {
                             ShadowSample::onShadowDeltaUpdated);
             subscribedToDeltas.get();
 
-            System.out.println("Subscribing to update respones...");
+            System.out.println("Subscribing to update responses...");
             UpdateShadowSubscriptionRequest requestUpdateShadow = new UpdateShadowSubscriptionRequest();
             requestUpdateShadow.thingName = thingName;
             CompletableFuture<Integer> subscribedToUpdateAccepted =
@@ -274,20 +280,35 @@ public class ShadowSample {
             publishedGetShadow.get();
             gotResponse.get();
 
-            String newValue = "";
-            Scanner scanner = new Scanner(System.in);
-            while (true) {
-                System.out.print(SHADOW_PROPERTY + "> ");
-                System.out.flush();
-                newValue = scanner.next();
-                if (newValue.compareToIgnoreCase("quit") == 0) {
-                    break;
+            // If this is not running in CI, then take input from the console
+            if (isCI == false) {
+                String newValue = "";
+                Scanner scanner = new Scanner(System.in);
+                while (true) {
+                    System.out.print(SHADOW_PROPERTY + "> ");
+                    System.out.flush();
+                    newValue = scanner.next();
+                    if (newValue.compareToIgnoreCase("quit") == 0) {
+                        break;
+                    }
+                    gotResponse = new CompletableFuture<>();
+                    changeShadowValue(newValue).get();
+                    gotResponse.get();
                 }
-                gotResponse = new CompletableFuture<>();
-                changeShadowValue(newValue).get();
-                gotResponse.get();
+                scanner.close();
             }
-            scanner.close();
+            // If this is in running in CI, then automatically update the shadow
+            else {
+                int messages_sent = 0;
+                String message_string = "";
+                while (messages_sent < 5) {
+                    gotResponse = new CompletableFuture<>();
+                    message_string = "Shadow_Value_" + String.valueOf(messages_sent);
+                    changeShadowValue(message_string).get();
+                    gotResponse.get();
+                    messages_sent += 1;
+                }
+            }
 
             CompletableFuture<Void> disconnected = connection.disconnect();
             disconnected.get();
@@ -297,6 +318,7 @@ public class ShadowSample {
 
         } catch (CrtRuntimeException | InterruptedException | ExecutionException ex) {
             System.out.println("Exception encountered: " + ex.toString());
+            System.exit(1);
         }
 
         System.out.println("Complete!");

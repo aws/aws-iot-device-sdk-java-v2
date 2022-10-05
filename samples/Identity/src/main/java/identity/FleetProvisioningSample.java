@@ -246,7 +246,6 @@ public class FleetProvisioningSample {
                 registerThingRequest,
                 QualityOfService.AT_LEAST_ONCE);
 
-        System.out.println("####### I am here");
         try {
             publishRegister.get();
             System.out.println("Published to RegisterThing");

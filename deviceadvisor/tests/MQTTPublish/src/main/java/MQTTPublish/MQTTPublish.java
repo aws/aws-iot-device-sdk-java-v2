@@ -48,9 +48,7 @@ public class MQTTPublish {
             throw new RuntimeException("Failed to initialize environment variables.");
         }
 
-        
         try(AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(DATestUtils.certificatePath, DATestUtils.keyPath)) {
-
 
             builder.withClientId(clientId)
                 .withEndpoint(DATestUtils.endpoint)
@@ -78,7 +76,7 @@ public class MQTTPublish {
         } catch (CrtRuntimeException | InterruptedException | ExecutionException ex) {
             onApplicationFailure(ex);
         }
-        
+
         System.exit(0);
     }
 }

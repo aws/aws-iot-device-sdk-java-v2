@@ -34,7 +34,7 @@ public class Pkcs11Connect {
      */
     static void onApplicationFailure(Throwable cause) {
         if (isCI) {
-            throw new RuntimeException("Pkcs11PubSub execution failure", cause);
+            throw new RuntimeException("Pkcs11Connect execution failure", cause);
         } else if (cause != null) {
             System.out.println("Exception encountered: " + cause.toString());
         }
@@ -53,7 +53,6 @@ public class Pkcs11Connect {
         cmdUtils.registerCommand("token_label", "<str>", "Label of PKCS#11 token to use (optional).");
         cmdUtils.registerCommand("slot_id", "<int>", "Slot ID containing PKCS#11 token to use (optional).");
         cmdUtils.registerCommand("key_label", "<str>", "Label of private key on the PKCS#11 token (optional).");
-        cmdUtils.registerCommand("help", "", "Prints this message");
         cmdUtils.sendArguments(args);
 
         if (cmdUtils.hasCommand("help")) {
@@ -68,7 +67,7 @@ public class Pkcs11Connect {
         int port = Integer.parseInt(cmdUtils.getCommandOrDefault("port", "8883"));
         String pkcs11LibPath = cmdUtils.getCommandRequired("pkcs11_lib", "");
         String pkcs11UserPin = cmdUtils.getCommandRequired("pin", "");
-        String pkcs11TokenLabel = cmdUtils.getCommandOrDefault("key_label", "");
+        String pkcs11TokenLabel = cmdUtils.getCommandOrDefault("token_label", "");
         Long pkcs11SlotId = null;
         if (cmdUtils.hasCommand("slot_id")) {
             Long.parseLong(cmdUtils.getCommandOrDefault("slot_id", "-1"));
@@ -118,7 +117,7 @@ public class Pkcs11Connect {
             try (AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder
                     .newMtlsPkcs11Builder(pkcs11Options)) {
 
-                if (CaPath != null) {
+                if (CaPath != null && CaPath != "") {
                     builder.withCertificateAuthorityFromPath(null, CaPath);
                 }
 
