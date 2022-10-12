@@ -15,6 +15,8 @@ parser.add_argument('--check-consistency', action='store_true',
                     help='Exit with error if version is inconsistent between files')
 parser.add_argument('--update_samples', action='store_true',
                     help="Update the SDK samples to the latest SDK release OR to the passed in version")
+parser.add_argument('--update_sdk_text', action='store_true',
+                    help="Update the SDK text (readme, etc) to the latest SDK release OR to the passed in version")
 args = parser.parse_args()
 
 
@@ -32,7 +34,48 @@ def main():
 
     os.chdir(os.path.dirname(__file__))
 
-    if args.update_samples == None:
+    if args.update_samples == True:
+        update_samples()
+    elif args.update_sdk_text == True:
+        sdk_version = get_latest_github_version("https://github.com/aws/aws-iot-device-sdk-java-v2.git")
+        print (f"Latest SDK version: {sdk_version}")
+        update(filepath='README.md',
+            preceded_by=r'<artifactId>aws-iot-device-sdk</artifactId>\s*<version>',
+            followed_by=r'</version>',
+            force_version=sdk_version)
+        update(filepath='README.md',
+            preceded_by=r"Replace `",
+            followed_by=r"` in `<version>.*</version>` with the latest release version for the SDK.",
+            force_version=sdk_version)
+        update(filepath='README.md',
+            preceded_by=r"Replace .* in `<version>",
+            followed_by=r"</version>` with the latest release version for the SDK.",
+            force_version=sdk_version)
+    else:
+        update(filepath='sdk/pom.xml',
+            preceded_by=r'<artifactId>aws-crt</artifactId>\s*<version>',
+            followed_by=r'</version>')
+        update(filepath='README.md',
+            preceded_by=r'--branch v',
+            followed_by=r' .*aws-crt-java.git')
+        update(filepath='README.md',
+            preceded_by=r"implementation 'software.amazon.awssdk.crt:android:",
+            followed_by=r"'")
+        update(filepath='android/iotdevicesdk/build.gradle',
+            preceded_by=r"api 'software.amazon.awssdk.crt:aws-crt-android:",
+            followed_by=r"'")
+        update(filepath='README.md',
+            preceded_by=r'Use the latest version of the CRT here instead of ".*',
+            followed_by=r'"')
+        update(filepath='README.md',
+            preceded_by=r"Replace `",
+            followed_by=r"` in .* with the latest version of the CRT.")
+        update(filepath='README.md',
+            preceded_by=r"Replace .* in `software.amazon.awssdk.crt:android:",
+            followed_by=r"` with the latest version of the CRT.")
+
+    """
+    if args.update_samples == None and args.update_sdk_text == None:
         update(filepath='sdk/pom.xml',
             preceded_by=r'<artifactId>aws-crt</artifactId>\s*<version>',
             followed_by=r'</version>')
@@ -48,8 +91,25 @@ def main():
         update(filepath='android/iotdevicesdk/build.gradle',
             preceded_by=r"api 'software.amazon.awssdk.crt:aws-crt-android:",
             followed_by=r"'")
-    else:
+    elif args.update_sdk_text == None:
         update_samples()
+    else:
+        print ("HELLO WORLD")
+        sdk_version = get_latest_github_version("https://github.com/aws/aws-iot-device-sdk-java-v2.git")
+        print (f"Latest SDK version: {sdk_version}")
+        update(filepath='README.md',
+            preceded_by=r'<artifactId>aws-iot-device-sdk</artifactId>\s*<version>',
+            followed_by=r'</version>',
+            force_version=sdk_version)
+        update(filepath='README.md',
+            preceded_by=r"Replace `",
+            followed_by=r"` in `<version>.*</version>` with the latest release version for the SDK.",
+            force_version=sdk_version)
+        update(filepath='README.md',
+            preceded_by=r"Replace .* in `<version>",
+            followed_by=r"</version>` with the latest release version for the SDK.",
+            force_version=sdk_version)
+    """
 
 
 def update(*, filepath, preceded_by, followed_by, force_version=None):
