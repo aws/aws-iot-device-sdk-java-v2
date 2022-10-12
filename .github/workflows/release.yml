@@ -26,4 +26,5 @@ jobs:
         aws-region: us-east-1
 
     - name: Trigger Release
-      aws s3 cp VERSION ${{ secrets.AWS_CI_RELEASE_S3_URL }}
+      run: |
+        aws s3 cp VERSION ${{ secrets.AWS_CI_RELEASE_S3_URL }}
