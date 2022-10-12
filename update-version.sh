@@ -38,7 +38,7 @@ else
     git add README.md
     git add android/iotdevicesdk/build.gradle
     # Add all the sample pom files
-    find . -name "pom.xml" -maxdepth 2 -mindepth 2 -exec git add {} +
+    find . -name "pom.xml" -maxdepth 3 -mindepth 3 -exec git add {} +
     # Make the commit
     git commit -m "Updated version to ${version}"
 

@@ -19,3 +19,11 @@ jobs:
     - name: Update Version
       run: ./update-version.sh ${{ secrets.GITHUB_TOKEN }} ${{ secrets.TAG_PR_TOKEN }}
 
+    - name: configure AWS credentials (Release)
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        role-to-assume: ${{ secrets.AWS_CI_RELEASE }}
+        aws-region: us-east-1
+
+    - name: Trigger Release
+      aws s3 cp VERSION ${{ secrets.AWS_CI_RELEASE_S3_URL }}
