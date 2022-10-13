@@ -21,9 +21,8 @@ phases:
       # install settings.xml to ~/.m2/settings.xml
       - mkdir -p $HOME/.m2
       # - aws s3 cp s3://code-sharing-aws-crt/aws-crt-java.settings.xml $HOME/.m2/settings.xml
-      - export CD_SETTINGS=$(aws secretsmanager get-secret-value --secret-id cd/aws-crt-java-settings --query "SecretString")
-      # Remove the first and last character (will be ", which we do not want)
-      - echo ${CD_SETTINGS:1:-1} > $HOME/.m2/settings.xml
+      - export CD_SETTINGS=$(aws secretsmanager get-secret-value --secret-id cd/aws-crt-java-settings --query "SecretString" | cut -f2 -d\")
+      - echo $CD_SETTINGS > $HOME/.m2/settings.xml
 
       - export ST_PASSWORD=$(aws --query "SecretString" secretsmanager get-secret-value --secret-id cd/Sonatype/JIRA/Password | cut -f2 -d":" | sed -e 's/[\\\"\}]//g')
       # Use the password from secret manager to update the settings
@@ -31,9 +30,8 @@ phases:
 
       # import gpg key
       # - aws s3 cp s3://code-sharing-aws-crt/aws-sdk-common-runtime.key.asc /tmp/aws-sdk-common-runtime.key.asc
-      - export CD_KEY=$(aws secretsmanager get-secret-value --secret-id cd/aws-crt-java-key --query "SecretString")
-      # Remove the first and last character (will be ", which we do not want)
-      - echo ${CD_KEY:1:-1} > /tmp/aws-sdk-common-runtime.key.asc
+      - export CD_KEY=$(aws secretsmanager get-secret-value --secret-id cd/aws-crt-java-key --query "SecretString" | cut -f2 -d\")
+      - echo $CD_KEY > /tmp/aws-sdk-common-runtime.key.asc
 
       - gpg --import /tmp/aws-sdk-common-runtime.key.asc
       - export GPG_PASSPHRASE=$(aws --query "SecretString" secretsmanager get-secret-value --secret-id cd/aws-crt-java-key/password | cut -f2 -d":" | sed -e 's/[\\\"\}]//g')
