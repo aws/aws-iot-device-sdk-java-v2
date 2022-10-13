@@ -1,9 +1,7 @@
-# Assumes are running using the Ubuntu 14.04 openjdk-8 image
-# Runs third - Makes a test deployment to the SNAPSHOT repository in the package manager
+version: 0.2
+#this buildspec assumes the ubuntu 14.04 openjdk-8 image
 # This job is responsible for artifacting the JAR which will have all of the other shared libs stuffed
 # into it once all platforms are built and artifacted
-
-version: 0.2
 phases:
   install:
     commands:
@@ -16,7 +14,7 @@ phases:
   pre_build:
     commands:
       - cd $CODEBUILD_SRC_DIR/aws-iot-device-sdk-java-v2
-      - export PKG_VERSION=$(cat VERSION)
+      - export PKG_VERSION=$(git describe --tags | cut -f2 -dv)
       # install settings.xml to ~/.m2/settings.xml
       - mkdir -p $HOME/.m2
       - aws s3 cp s3://code-sharing-aws-crt/aws-crt-java.settings.xml $HOME/.m2/settings.xml

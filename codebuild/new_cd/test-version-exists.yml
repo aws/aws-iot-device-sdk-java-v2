@@ -1,0 +1,10 @@
+# Assumes are running using the Ubuntu 16.04:x64 image.
+# Runs second - makes sure the version in CD has not already been released.
+# Will fail the build and stop the pipeline if the version has already been released.
+
+version: 0.2
+phases:
+  build:
+    commands:
+      - cd $CODEBUILD_SRC_DIR/aws-iot-device-sdk-java-v2
+      - bash ./codebuild/new_cd/test-version-exists.sh

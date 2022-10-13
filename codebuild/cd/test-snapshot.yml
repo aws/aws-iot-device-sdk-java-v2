@@ -1,7 +1,7 @@
-# Assumes are running using the Ubuntu 16.04:x64 image
-# Runs fourth - Tests the snapshot deployment to make sure it works as expected.
-
 version: 0.2
+#this buildspec assumes the ubuntu 16.04:x64 image
+# This job is responsible for artifacting the JAR which will have all of the other shared libs stuffed
+# into it once all platforms are built and artifacted
 phases:
   install:
     commands:
@@ -12,7 +12,7 @@ phases:
   pre_build:
     commands:
       - cd $CODEBUILD_SRC_DIR/aws-iot-device-sdk-java-v2
-      - export PKG_VERSION=$(cat VERSION)
+      - export PKG_VERSION=$(git describe --tags | sed -e s/^v//)
 
   build:
     commands:

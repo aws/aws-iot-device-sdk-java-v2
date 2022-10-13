@@ -1,41 +1,23 @@
 #!/usr/bin/env bash
-if [ ! -f VERSION ]; then
-    echo "No VERSION file found! Cannot make release!"
-    exit 1
-else
-    echo "VERSION file found..."
-fi
-VERSION=$(cat VERSION)
-
-# Make sure the version variable is populated
-if [ -z "${VERSION}" ]; then
-    echo "VERSION file is empty!"
-    exit 1
-else
-    echo "VERSION file contains: ${VERSION}"
-fi
-
-# Make sure the version follows the correct format: major.minor.patch
-LENGTH_CHECK="${VERSION//[^.]}"
-if [ ${#LENGTH_CHECK} != 2 ]; then
-    echo "VERSION file contains invalid version (not in format major.minor.patch)"
-    exit 1
-fi
-# Use RegX to ensure it only contains numbers and periods
-REGX_CHECK='^([0-9]+\.){0,2}(\*|[0-9]+)$'
-if [[ $VERSION =~ $REGX_CHECK ]]; then
-    echo "VERSION file contains valid version"
-else
-    echo "VERSION file contains invalid version (RegX validator failed)"
+set -e
+set -x
+# force a failure if there's no tag
+git describe --tags
+# now get the tag
+CURRENT_TAG=$(git describe --tags | cut -f2 -dv)
+# convert v0.2.12-2-g50254a9 to 0.2.12
+CURRENT_TAG_VERSION=$(git describe --tags | cut -f1 -d'-' | cut -f2 -dv)
+# if there's a hash on the tag, then this is not a release tagged commit
+if [ "$CURRENT_TAG" != "$CURRENT_TAG_VERSION" ]; then
+    echo "Current tag version is not a release tag, cut a new release if you want to publish."
     exit 1
 fi
 
-# Does Maven have the version? If so, do not allow it!
 PUBLISHED_TAG_VERSION=$(curl -s "https://repo.maven.apache.org/maven2/software/amazon/awssdk/iotdevicesdk/aws-iot-device-sdk/maven-metadata.xml" | grep "<latest>" | cut -f2 -d ">" | cut -f1 -d "<")
-if [ "$PUBLISHED_TAG_VERSION" == "$VERSION" ]; then
-    echo "$VERSION is already in Sonatype, cut a new tag if you want to upload another version."
+if [ "$PUBLISHED_TAG_VERSION" == "$CURRENT_TAG_VERSION" ]; then
+    echo "$CURRENT_TAG_VERSION is already in Sonatype, cut a new tag if you want to upload another version."
     exit 1
 fi
 
-echo "$VERSION currently does not exist in Sonatype, allowing pipeline to continue."
+echo "$CURRENT_TAG_VERSION currently does not exist in Sonatype, allowing pipeline to continue."
 exit 0

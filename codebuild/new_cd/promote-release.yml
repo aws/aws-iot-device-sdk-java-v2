@@ -1,7 +1,9 @@
-version: 0.2
-#this buildspec assumes the ubuntu 16.04:x64 image
+# Assumes are running using the Ubuntu 16.04:x64 image
+# Runs fifth - Makes the full release deployment.
 # This job is responsible for artifacting the JAR which will have all of the other shared libs stuffed
 # into it once all platforms are built and artifacted
+
+version: 0.2
 phases:
   install:
     commands:
@@ -14,7 +16,7 @@ phases:
   pre_build:
     commands:
       - cd $CODEBUILD_SRC_DIR/aws-iot-device-sdk-java-v2
-      - export PKG_VERSION=$(git describe --tags | cut -f2 -dv)
+      - export PKG_VERSION=$(cat VERSION)
       - echo PKG_VERSION=$PKG_VERSION
       # install settings.xml to ~/.m2/settings.xml
       - mkdir -p $HOME/.m2
@@ -30,8 +32,10 @@ phases:
   build:
     commands:
       - cd $CODEBUILD_SRC_DIR/aws-iot-device-sdk-java-v2/sdk
-      # Trigger the release of the last staged package in the staging repository
-      - mvn -B nexus-staging:release -Prelease -DstagingRepositoryId=$REPOSITORY_ID
+
+      # Skip for testing purposes!
+      # # Trigger the release of the last staged package in the staging repository
+      # - mvn -B nexus-staging:release -Prelease -DstagingRepositoryId=$REPOSITORY_ID
 
 cache:
   paths:
