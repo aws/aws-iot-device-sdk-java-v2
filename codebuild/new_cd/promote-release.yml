@@ -10,8 +10,6 @@ phases:
       - sudo add-apt-repository ppa:openjdk-r/ppa
       - sudo apt-get update -y
       - sudo apt-get install openjdk-8-jdk-headless maven -y -f
-      # need latest awscli for secretsmanager
-      # - sudo pip3 install awscli --upgrade
 
   pre_build:
     commands:
@@ -21,7 +19,6 @@ phases:
 
       # install settings.xml to ~/.m2/settings.xml
       - mkdir -p $HOME/.m2
-      # - aws s3 cp s3://code-sharing-aws-crt/aws-crt-java.settings.xml $HOME/.m2/settings.xml
       - export CD_SETTINGS=$(aws secretsmanager get-secret-value --secret-id cd/aws-crt-java-settings --query "SecretString" | cut -f2 -d\")
       - echo $CD_SETTINGS > $HOME/.m2/settings.xml
 
@@ -30,7 +27,6 @@ phases:
       - sed -i 's/password-to-replace/'"$ST_PASSWORD"'/g' $HOME/.m2/settings.xml
 
       # import gpg key
-      # - aws s3 cp s3://code-sharing-aws-crt/aws-sdk-common-runtime.key.asc /tmp/aws-sdk-common-runtime.key.asc
       - export CD_KEY=$(aws secretsmanager get-secret-value --secret-id cd/aws-crt-java-key --query "SecretString" | cut -f2 -d\")
       - echo $CD_KEY > /tmp/aws-sdk-common-runtime.key.asc
 

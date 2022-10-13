@@ -22,10 +22,11 @@ jobs:
     - name: configure AWS credentials (Release)
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        role-to-assume: ${{ secrets.AWS_CI_RELEASE }}
+        role-to-assume: ${{ secrets.AWS_CI_RELEASE_ROLE }}
         aws-region: us-east-1
 
     - name: Trigger Release
       run: |
         zip VERSION.zip VERSION
-        aws s3 cp VERSION.zip ${{ secrets.AWS_CI_RELEASE_S3_URL }}
+        export S3_URL=$(aws secretsmanager get-secret-value --secret-id ci/java_v2_version --query "SecretString" | cut -f2 -d\")
+        aws s3 cp VERSION.zip $S3_URL
