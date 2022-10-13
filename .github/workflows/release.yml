@@ -27,4 +27,5 @@ jobs:
 
     - name: Trigger Release
       run: |
-        aws s3 cp VERSION ${{ secrets.AWS_CI_RELEASE_S3_URL }}
+        zip VERSION.zip VERSION
+        aws s3 cp VERSION.zip ${{ secrets.AWS_CI_RELEASE_S3_URL }}

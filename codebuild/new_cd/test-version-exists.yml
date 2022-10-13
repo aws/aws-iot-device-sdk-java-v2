@@ -1,6 +1,8 @@
 # Assumes are running using the Ubuntu 16.04:x64 image.
 # Runs second - makes sure the version in CD has not already been released.
 # Will fail the build and stop the pipeline if the version has already been released.
+#
+# (The first step is to download source and does not have a YAML file associated with it)
 
 version: 0.2
 phases:
