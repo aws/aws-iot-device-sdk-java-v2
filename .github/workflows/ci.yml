@@ -119,7 +119,7 @@ jobs:
         cache: maven
     - name: Build ${{ env.PACKAGE_NAME }} + consumers
       run: |
-        mvn install -Dmaven.test.skip=true
+        mvn install
     - name: Running samples in CI setup
       run: |
         python3 -m pip install boto3
