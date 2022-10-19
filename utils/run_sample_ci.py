@@ -63,12 +63,14 @@ def get_secrets_and_launch(parsed_commands):
                 # lgtm [py/clear-text-storage-sensitive-data]
                 file.write(secret_data["SecretString"])
             sample_private_key = tmp_private_key_path
+
         if (parsed_commands.sample_secret_custom_authorizer_name != ""):
             sample_custom_authorizer_name = secrets_client.get_secret_value(
                 SecretId=parsed_commands.sample_secret_custom_authorizer_name)["SecretString"]
         if (parsed_commands.sample_secret_custom_authorizer_password != ""):
             sample_custom_authorizer_password = secrets_client.get_secret_value(
                 SecretId=parsed_commands.sample_secret_custom_authorizer_password)["SecretString"]
+
         if (parsed_commands.sample_secret_certificate_x509 != ""):
             secret_data = secrets_client.get_secret_value(
                 SecretId=parsed_commands.sample_secret_certificate_x509)
@@ -112,9 +114,17 @@ def get_secrets_and_launch(parsed_commands):
     exit_code = extra_step_return
     if (extra_step_return == 0):
         print("Launching sample...")
-        exit_code = launch_sample(parsed_commands, sample_endpoint, sample_certificate,
-                                sample_private_key, sample_custom_authorizer_name, sample_custom_authorizer_password,
-                                sample_certificate_x509, sample_private_key_x509, sample_ca_x509, sample_endpoint_x509, sample_role_alias_x509)
+        exit_code = launch_sample(parsed_commands=parsed_commands,
+                                sample_endpoint=sample_endpoint,
+                                sample_certificate=sample_certificate,
+                                sample_private_key=sample_private_key,
+                                sample_custom_authorizer_name=sample_custom_authorizer_name,
+                                sample_custom_authorizer_password=sample_custom_authorizer_password,
+                                sample_certificate_x509=sample_certificate_x509,
+                                sample_private_key_x509=sample_private_key_x509,
+                                sample_ca_x509=sample_ca_x509,
+                                sample_endpoint_x509=sample_endpoint_x509,
+                                sample_role_alias_x509=sample_role_alias_x509)
 
         if (exit_code == 0):
             print("SUCCESS: Finished running sample! Exiting with success")
@@ -269,7 +279,7 @@ def launch_sample(parsed_commands, sample_endpoint, sample_certificate, sample_p
         launch_arguments.append(sample_private_key_x509)
     if (sample_ca_x509 != ""):
         launch_arguments.append("--x509_ca_file")
-        launch_arguments.append(sample_private_key_x509)
+        launch_arguments.append(sample_ca_x509)
     if (sample_endpoint_x509 != ""):
         launch_arguments.append("--x509_endpoint")
         launch_arguments.append(sample_endpoint_x509)
