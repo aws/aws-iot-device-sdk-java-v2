@@ -369,6 +369,50 @@ Your Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-
 </pre>
 </details>
 
+## x509 Credentials Provider Connect
+
+This sample is similar to the [Basic Pub-Sub](#basic-pub-sub), but the connection uses a X.509 certificate
+to source the AWS credentials when connecting.
+See the [Authorizing direct calls to AWS services using AWS IoT Core credential provider]() documentation for instructions on how to setup the IAM roles, the trust policy for the IAM roles, how to setup the IoT Core Role alias, and how to get the credential provider endpoint for your AWS account.
+
+source: `samples/X509CredentialsProviderConnect`
+
+To run the x509 Credentials Provider Connect sample use the following command:
+
+``` sh
+./x509-credentials-provider-connect --endpoint <endpoint> --ca_file <path to root CA>
+--signing_region <signing region> --x509_ca_file <path to x509 CA>
+--x509_cert <path to x509 cert> --x509_endpoint <x509 credentials endpoint>
+--x509_key <path to x509 key> --x509_role_alias <alias> -x509_thing_name <thing name>
+```
+
+Your Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-policies.html) must provide privileges for this sample to connect. Make sure your policy allows a client ID of `test-*` to connect or use `--client_id <client ID here>` to send the client ID your policy supports.
+
+<details>
+<summary>(see sample policy)</summary>
+<pre>
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iot:Connect"
+      ],
+      "Resource": [
+        "arn:aws:iot:<b>region</b>:<b>account</b>:client/test-*"
+      ]
+    },
+    {
+      "Effect":"Allow",
+      "Action":"iot:AssumeRoleWithCertificate",
+      "Resource":"arn:aws:iot:<b>region</b>:<b>account</b>:rolealias/<b>role alias</b>"
+    }
+  ]
+}
+</pre>
+</details>
+
 ## Custom Authorizer Connect
 
 This sample makes an MQTT connection and connects through a [Custom Authorizer](https://docs.aws.amazon.com/iot/latest/developerguide/custom-authentication.html). On startup, the device connects to the server and then disconnects. This sample is for reference on connecting using a custom authorizer.

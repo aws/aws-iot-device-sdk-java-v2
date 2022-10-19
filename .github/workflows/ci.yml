@@ -24,6 +24,7 @@ env:
   CI_JOBS_ROLE: ${{ secrets.AWS_CI_JOBS_ROLE }}
   CI_FLEET_PROVISIONING_ROLE: ${{ secrets.AWS_CI_FLEET_PROVISIONING_ROLE }}
   CI_DEVICE_ADVISOR: ${{ secrets.AWS_CI_DEVICE_ADVISOR_ROLE }}
+  CI_X509_ROLE: ${{ AWS_CI_X509_ROLE }}
 
 jobs:
   linux-compat:
@@ -301,3 +302,11 @@ jobs:
           Sample_UUID=$(python3  -c "import uuid; print (uuid.uuid4())")
           python3 ./utils/run_sample_ci.py --language Java --sample_file 'samples/Identity' --sample_region ${{ env.AWS_DEFAULT_REGION }} --sample_secret_endpoint 'ci/endpoint' --sample_secret_certificate 'ci/FleetProvisioning/cert' --sample_secret_private_key 'ci/FleetProvisioning/key' --sample_arguments "--template_name CI_FleetProvisioning_Template --template_parameters '{SerialNumber:${Sample_UUID}}'" --sample_main_class 'identity.FleetProvisioningSample'
           python3 utils/delete_iot_thing_ci.py --thing_name "Fleet_Thing_${Sample_UUID}" --region "us-east-1"
+      - name: configure AWS credentials (X509)
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ env.CI_X509_ROLE }}
+          aws-region: ${{ env.AWS_DEFAULT_REGION }}
+      - name: run X509 sample
+        run: |
+          python3 ./utils/run_sample_ci.py --language Java --sample_file 'samples/X509CredentialsProviderConnect' --sample_region ${{ env.AWS_DEFAULT_REGION }} --sample_secret_endpoint 'ci/endpoint' --sample_secret_certificate_x509 'ci/PubSub/cert' --sample_secret_private_key_x509 'ci/PubSub/key' --sample_secret_ca_x509 'ci/PubSub/ca' --sample_secret_endpoint_x509 'ci/X509/endpoint_credentials' --sample_secret_alias_x509 'ci/X509/alias' --sample_arguments '--signing_region us-east-1 --x509_thing_name CI_PubSub_Thing' --sample_main_class 'x509credentialsproviderconnect.X509CredentialsProviderConnect'
