@@ -140,6 +140,8 @@ def get_secrets_and_launch(parsed_commands):
         os.remove(tmp_private_key_path)
     if (os.path.isfile(tmp_pfx_file_path)):
         os.remove(tmp_pfx_file_path)
+    if (os.path.isfile(tmp_ca_file_path)):
+        os.remove(tmp_ca_file_path)
 
     return exit_code
 
