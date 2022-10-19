@@ -24,7 +24,7 @@ env:
   CI_JOBS_ROLE: ${{ secrets.AWS_CI_JOBS_ROLE }}
   CI_FLEET_PROVISIONING_ROLE: ${{ secrets.AWS_CI_FLEET_PROVISIONING_ROLE }}
   CI_DEVICE_ADVISOR: ${{ secrets.AWS_CI_DEVICE_ADVISOR_ROLE }}
-  CI_X509_ROLE: ${{ AWS_CI_X509_ROLE }}
+  CI_X509_ROLE: ${{ secrets.AWS_CI_X509_ROLE }}
 
 jobs:
   linux-compat:
