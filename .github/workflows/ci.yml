@@ -73,10 +73,12 @@ jobs:
         cache: maven
     - name: Build ${{ env.PACKAGE_NAME }} + consumers
       run: |
-        mvn install
+        python -c "from urllib.request import urlretrieve; urlretrieve('${{ env.BUILDER_HOST }}/${{ env.BUILDER_SOURCE }}/${{ env.BUILDER_VERSION }}/builder.pyz?run=${{ env.RUN }}', 'builder.pyz')"
+        python builder.pyz build -p ${{ env.PACKAGE_NAME }} --spec=downstream
     - name: Running samples in CI setup
       run: |
         python -m pip install boto3
+        mvn install -DskipTests
     - name: configure AWS credentials (PubSub)
       uses: aws-actions/configure-aws-credentials@v1
       with:
@@ -119,10 +121,13 @@ jobs:
         cache: maven
     - name: Build ${{ env.PACKAGE_NAME }} + consumers
       run: |
-        mvn install
+        python3 -c "from urllib.request import urlretrieve; urlretrieve('${{ env.BUILDER_HOST }}/${{ env.BUILDER_SOURCE }}/${{ env.BUILDER_VERSION }}/builder.pyz?run=${{ env.RUN }}', 'builder')"
+        chmod a+x builder
+        ./builder build -p ${{ env.PACKAGE_NAME }} --spec=downstream
     - name: Running samples in CI setup
       run: |
         python3 -m pip install boto3
+        mvn install -Dmaven.test.skip=true
     - name: configure AWS credentials (PubSub)
       uses: aws-actions/configure-aws-credentials@v1
       with:
