@@ -24,6 +24,7 @@ env:
   CI_JOBS_ROLE: ${{ secrets.AWS_CI_JOBS_ROLE }}
   CI_FLEET_PROVISIONING_ROLE: ${{ secrets.AWS_CI_FLEET_PROVISIONING_ROLE }}
   CI_DEVICE_ADVISOR: ${{ secrets.AWS_CI_DEVICE_ADVISOR_ROLE }}
+  CI_MQTT5_ROLE: ${{ secrets.AWS_CI_MQTT5_ROLE }}
 
 jobs:
   linux-compat:
@@ -51,7 +52,7 @@ jobs:
         ./linux-container-ci.sh ${{ env.BUILDER_VERSION }} aws-crt-${{ matrix.image }} build -p ${{ env.PACKAGE_NAME }}
     # NOTE: we cannot run samples or DeviceAdvisor here due to container restrictions
 
-  
+
   raspberry:
     runs-on: ubuntu-20.04 # latest
     strategy:
@@ -74,7 +75,7 @@ jobs:
       run: |
         aws s3 cp s3://aws-crt-test-stuff/ci/${{ env.BUILDER_VERSION }}/linux-container-ci.sh ./linux-container-ci.sh && chmod a+x ./linux-container-ci.sh
         ./linux-container-ci.sh ${{ env.BUILDER_VERSION }} aws-crt-${{ matrix.image }} build -p ${{ env.PACKAGE_NAME }}
- 
+
 
   windows:
     runs-on: windows-latest
@@ -100,6 +101,11 @@ jobs:
       run: |
         python -c "from urllib.request import urlretrieve; urlretrieve('${{ env.BUILDER_HOST }}/${{ env.BUILDER_SOURCE }}/${{ env.BUILDER_VERSION }}/builder.pyz?run=${{ env.RUN }}', 'builder.pyz')"
         python builder.pyz build -p ${{ env.PACKAGE_NAME }} --spec=downstream
+    - name: MQTT5 tests # may need adjusting to work on Windows
+      run: |
+        source utils/mqtt5_test_setup.sh ${{ env.AWS_MQTT5_TESTS_ENVIRONMENT }}
+        mvn test -Dtest=Mqtt5BuilderTest -DfailIfNoTests=false
+        source utils/mqtt5_test_setup.sh ${{ env.AWS_MQTT5_TESTS_ENVIRONMENT }} cleanup
     - name: Running samples in CI setup
       run: |
         python -m pip install boto3
@@ -115,6 +121,14 @@ jobs:
     - name: run Windows Certificate Connect sample
       run: |
         python ./utils/run_sample_ci.py --language Java --sample_file 'samples/WindowsCertConnect' --sample_region ${{ env.AWS_DEFAULT_REGION }} --sample_secret_endpoint 'ci/endpoint' --sample_secret_certificate 'ci/PubSub/cert' --sample_secret_private_key 'ci/PubSub/key' --sample_run_certutil true --sample_main_class 'windowscertconnect.WindowsCertConnect'
+    - name: configure AWS credentials (MQTT5)
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        role-to-assume: ${{ env.CI_MQTT5_ROLE }}
+        aws-region: ${{ env.AWS_DEFAULT_REGION }}
+    - name: run MQTT5 PubSub sample
+      run: |
+        python ./utils/run_sample_ci.py --language Java --sample_file 'samples/Mqtt5/PubSub' --sample_region ${{ env.AWS_DEFAULT_REGION }} --sample_secret_endpoint 'ci/endpoint' --sample_secret_certificate 'ci/mqtt5/us/mqtt5_thing/cert' --sample_secret_private_key 'ci/mqtt5/us/mqtt5_thing/key' --sample_main_class 'mqtt5.pubsub.PubSub'
     - name: configure AWS credentials (Device Advisor)
       uses: aws-actions/configure-aws-credentials@v1
       with:
@@ -149,6 +163,11 @@ jobs:
         python3 -c "from urllib.request import urlretrieve; urlretrieve('${{ env.BUILDER_HOST }}/${{ env.BUILDER_SOURCE }}/${{ env.BUILDER_VERSION }}/builder.pyz?run=${{ env.RUN }}', 'builder')"
         chmod a+x builder
         ./builder build -p ${{ env.PACKAGE_NAME }} --spec=downstream
+    - name: MQTT5 tests
+      run: |
+        source utils/mqtt5_test_setup.sh ${{ env.AWS_MQTT5_TESTS_ENVIRONMENT }}
+        mvn test -Dtest=Mqtt5BuilderTest -DfailIfNoTests=false
+        source utils/mqtt5_test_setup.sh ${{ env.AWS_MQTT5_TESTS_ENVIRONMENT }} cleanup
     - name: Running samples in CI setup
       run: |
         python3 -m pip install boto3
@@ -161,6 +180,14 @@ jobs:
     - name: run PubSub sample
       run: |
         python3 ./utils/run_sample_ci.py --language Java --sample_file 'samples/BasicPubSub' --sample_region ${{ env.AWS_DEFAULT_REGION }} --sample_secret_endpoint 'ci/endpoint' --sample_secret_certificate 'ci/PubSub/cert' --sample_secret_private_key 'ci/PubSub/key' --sample_main_class 'pubsub.PubSub'
+    - name: configure AWS credentials (MQTT5)
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        role-to-assume: ${{ env.CI_MQTT5_ROLE }}
+        aws-region: ${{ env.AWS_DEFAULT_REGION }}
+    - name: run MQTT5 PubSub sample
+      run: |
+        python3 ./utils/run_sample_ci.py --language Java --sample_file 'samples/Mqtt5/PubSub' --sample_region ${{ env.AWS_DEFAULT_REGION }} --sample_secret_endpoint 'ci/endpoint' --sample_secret_certificate 'ci/mqtt5/us/mqtt5_thing/cert' --sample_secret_private_key 'ci/mqtt5/us/mqtt5_thing/key' --sample_main_class 'mqtt5.pubsub.PubSub'
     - name: configure AWS credentials (Device Advisor)
       uses: aws-actions/configure-aws-credentials@v1
       with:
@@ -195,6 +222,11 @@ jobs:
           java -version
           mvn -B test -Daws.crt.debugnative=true
           mvn install -Dmaven.test.skip
+      - name: MQTT5 tests
+        run: |
+          source utils/mqtt5_test_setup.sh ${{ env.AWS_MQTT5_TESTS_ENVIRONMENT }}
+          mvn test -Dtest=Mqtt5BuilderTest -DfailIfNoTests=false
+          source utils/mqtt5_test_setup.sh ${{ env.AWS_MQTT5_TESTS_ENVIRONMENT }} cleanup
       - name: Running samples in CI setup
         run: |
           python3 -m pip install boto3
@@ -206,6 +238,14 @@ jobs:
       - name: run PubSub sample
         run: |
           python3 ./utils/run_sample_ci.py --language Java --sample_file 'samples/BasicPubSub' --sample_region ${{ env.AWS_DEFAULT_REGION }} --sample_secret_endpoint 'ci/endpoint' --sample_secret_certificate 'ci/PubSub/cert' --sample_secret_private_key 'ci/PubSub/key' --sample_main_class 'pubsub.PubSub'
+      - name: configure AWS credentials (MQTT5)
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ env.CI_MQTT5_ROLE }}
+          aws-region: ${{ env.AWS_DEFAULT_REGION }}
+      - name: run MQTT5 PubSub sample
+        run: |
+          python3 ./utils/run_sample_ci.py --language Java --sample_file 'samples/Mqtt5/PubSub' --sample_region ${{ env.AWS_DEFAULT_REGION }} --sample_secret_endpoint 'ci/endpoint' --sample_secret_certificate 'ci/mqtt5/us/mqtt5_thing/cert' --sample_secret_private_key 'ci/mqtt5/us/mqtt5_thing/key' --sample_main_class 'mqtt5.pubsub.PubSub'
       - name: configure AWS credentials (Device Advisor)
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -331,3 +371,11 @@ jobs:
           Sample_UUID=$(python3  -c "import uuid; print (uuid.uuid4())")
           python3 ./utils/run_sample_ci.py --language Java --sample_file 'samples/Identity' --sample_region ${{ env.AWS_DEFAULT_REGION }} --sample_secret_endpoint 'ci/endpoint' --sample_secret_certificate 'ci/FleetProvisioning/cert' --sample_secret_private_key 'ci/FleetProvisioning/key' --sample_arguments "--template_name CI_FleetProvisioning_Template --template_parameters '{SerialNumber:${Sample_UUID}}'" --sample_main_class 'identity.FleetProvisioningSample'
           python3 utils/delete_iot_thing_ci.py --thing_name "Fleet_Thing_${Sample_UUID}" --region "us-east-1"
+      - name: configure AWS credentials (MQTT5)
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ env.CI_MQTT5_ROLE }}
+          aws-region: ${{ env.AWS_DEFAULT_REGION }}
+      - name: run MQTT5 PubSub sample
+        run: |
+          python3 ./utils/run_sample_ci.py --language Java --sample_file 'samples/Mqtt5/PubSub' --sample_region ${{ env.AWS_DEFAULT_REGION }} --sample_secret_endpoint 'ci/endpoint' --sample_secret_certificate 'ci/mqtt5/us/mqtt5_thing/cert' --sample_secret_private_key 'ci/mqtt5/us/mqtt5_thing/key' --sample_main_class 'mqtt5.pubsub.PubSub'

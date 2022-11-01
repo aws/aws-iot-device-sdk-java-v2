@@ -13,7 +13,10 @@ import java.io.UnsupportedEncodingException;
 import software.amazon.awssdk.crt.*;
 import software.amazon.awssdk.crt.io.*;
 import software.amazon.awssdk.crt.mqtt.*;
+import software.amazon.awssdk.crt.mqtt5.*;
+import software.amazon.awssdk.crt.mqtt5.packets.*;
 import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
+import software.amazon.awssdk.iot.AwsIotMqtt5ClientBuilder;
 import software.amazon.awssdk.crt.http.HttpProxyOptions;
 import software.amazon.awssdk.crt.auth.credentials.X509CredentialsProvider;
 import software.amazon.awssdk.crt.Log;
@@ -167,7 +170,7 @@ public class CommandLineUtils {
             buildConnectionSetupCAFileDefaults(builder);
             buildConnectionSetupConnectionDefaults(builder, callbacks);
             buildConnectionSetupProxyDefaults(builder);
-            
+
             MqttClientConnection conn = builder.build();
             builder.close();
             return conn;
@@ -314,6 +317,55 @@ public class CommandLineUtils {
             return conn;
         }
         catch (CrtRuntimeException | UnsupportedEncodingException ex) {
+            return null;
+        }
+    }
+
+    public Mqtt5Client buildWebsocketMQTT5Connection(
+        Mqtt5ClientOptions.LifecycleEvents lifecycleEvents, Mqtt5ClientOptions.PublishEvents publishEvents) {
+        try {
+
+            AwsIotMqtt5ClientBuilder.WebsocketSigv4Config websocketConfig = new AwsIotMqtt5ClientBuilder.WebsocketSigv4Config();
+            if (hasCommand("region")) {
+                websocketConfig.region = getCommandOrDefault("region", "us-east-1");
+            }
+            AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newWebsocketMqttBuilderWithSigv4Auth(
+                getCommandRequired("endpoint", ""), websocketConfig);
+
+            ConnectPacket.ConnectPacketBuilder connectProperties = new ConnectPacket.ConnectPacketBuilder();
+            connectProperties.withClientId(getCommandOrDefault("client_id", "test-" + UUID.randomUUID().toString()));
+            builder.withConnectProperties(connectProperties);
+
+            builder.withLifeCycleEvents(lifecycleEvents);
+            builder.withPublishEvents(publishEvents);
+
+            Mqtt5Client returnClient = builder.build();
+            builder.close();
+            return returnClient;
+
+        } catch (CrtRuntimeException ex) {
+            return null;
+        }
+    }
+
+    public Mqtt5Client buildDirectMQTT5Connection(
+        Mqtt5ClientOptions.LifecycleEvents lifecycleEvents, Mqtt5ClientOptions.PublishEvents publishEvents) {
+        try {
+            AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newDirectMqttBuilderWithMtlsFromPath(
+                getCommandRequired("endpoint", ""), getCommandRequired("cert", ""), getCommandRequired("key", ""));
+
+            ConnectPacket.ConnectPacketBuilder connectProperties = new ConnectPacket.ConnectPacketBuilder();
+            connectProperties.withClientId(getCommandOrDefault("client_id", "test-" + UUID.randomUUID().toString()));
+            builder.withConnectProperties(connectProperties);
+
+            builder.withLifeCycleEvents(lifecycleEvents);
+            builder.withPublishEvents(publishEvents);
+
+            Mqtt5Client returnClient = builder.build();
+            builder.close();
+            return returnClient;
+        }
+        catch (CrtRuntimeException ex) {
             return null;
         }
     }
