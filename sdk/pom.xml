@@ -42,31 +42,31 @@
     <dependency>
       <groupId>software.amazon.awssdk.crt</groupId>
       <artifactId>aws-crt</artifactId>
-      <version>0.19.4</version>
+      <version>1.0.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
       <version>1.7.30</version>
-      <scope>test</scope>
+      <!-- <scope>test</scope> -->
     </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
       <version>5.8.1</version>
-      <scope>test</scope>
+      <!-- <scope>test</scope> -->
     </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-engine</artifactId>
       <version>5.8.1</version>
-      <scope>test</scope>
+      <!-- <scope>test</scope> -->
     </dependency>
     <dependency>
       <groupId>org.json</groupId>
       <artifactId>json</artifactId>
       <version>20200518</version>
-      <scope>test</scope>
+      <!-- <scope>test</scope> -->
     </dependency>
     <dependency>
       <groupId>com.google.code.gson</groupId>
@@ -100,6 +100,14 @@
                 <source>greengrass/event-stream-rpc-client/src/main/java</source>
                 <source>greengrass/greengrass-client/src/event-stream-rpc-java/client</source>
                 <source>greengrass/greengrass-client/src/event-stream-rpc-java/model</source>
+
+                <!-- REQUIRED FOR RUNNING THE SBA TEST SAMPLE -->
+                <source>greengrass/event-stream-rpc-model/src/test/java</source>
+                <source>greengrass/event-stream-rpc-client/src/test/java</source>
+                <source>greengrass/event-stream-rpc-server/src/main/java</source>
+                <source>greengrass/event-stream-rpc-server/src/test/java</source>
+                <source>greengrass/greengrass-client/src/test/java</source>
+                <source>tests/iot</source>
               </sources>
             </configuration>
           </execution>

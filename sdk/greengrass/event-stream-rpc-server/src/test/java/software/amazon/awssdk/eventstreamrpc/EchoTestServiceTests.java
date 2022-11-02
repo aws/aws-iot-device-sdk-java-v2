@@ -25,6 +25,7 @@ import software.amazon.awssdk.eventstreamrpc.model.EventStreamOperationError;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -93,33 +94,50 @@ public class EchoTestServiceTests {
 
         CrtResource.waitForNoResources();
     }
-    
+
     @Test //this test takes too long to complete so turn it off by default
     public void testLongRunningServerOperations() throws Exception {
-        final int numIterations = Integer.parseInt(System.getProperty("numIterations", "10"));
-        final int threadPoolSize = Integer.parseInt(System.getProperty("threadPoolSize", "16"));          //max threads, since tasks are IO intense, doesn't need to be large 
+        // final int numIterations = Integer.parseInt(System.getProperty("numIterations", "10"));
+        // final int threadPoolSize = Integer.parseInt(System.getProperty("threadPoolSize", "16"));          //max threads, since tasks are IO intense, doesn't need to be large
+        // final int parallelTaskMultiplyFactor = Integer.parseInt(System.getProperty("parallelTaskFactor", "10"));  //however many tasks to run in parallel
+        // final int taskLengthMultiplyFactor = Integer.parseInt(System.getProperty("taskLengthFactor", "10")); //whatever work each task does (very small), do it this many times within a single run with a short sleep in between
+        // final long taskRepeatSleepDelayMs = 10; //time to sleep before repeating a tasks' impl
+
+        // Sleep for 10 seconds so we can see which branch we are using and setup the record
+        Thread.sleep(1000 * 400);
+
+        final int numIterations = Integer.parseInt(System.getProperty("numIterations", "6000"));
+        final int threadPoolSize = Integer.parseInt(System.getProperty("threadPoolSize", "16"));          //max threads, since tasks are IO intense, doesn't need to be large
         final int parallelTaskMultiplyFactor = Integer.parseInt(System.getProperty("parallelTaskFactor", "10"));  //however many tasks to run in parallel
-        final int taskLengthMultiplyFactor = Integer.parseInt(System.getProperty("taskLengthFactor", "10")); //whatever work each task does (very small), do it this many times within a single run with a short sleep in between
-        final long taskRepeatSleepDelayMs = 10; //time to sleep before repeating a tasks' impl
-        
+        final int taskLengthMultiplyFactor = Integer.parseInt(System.getProperty("taskLengthFactor", "100")); //whatever work each task does (very small), do it this many times within a single run with a short sleep in between
+        final long taskRepeatSleepDelayMs = 5; //time to sleep before repeating a tasks' impl
+
         final ArrayList<BiConsumer<EventStreamRPCConnection, EchoTestRPC>> tasks = new ArrayList<>();
         final ExecutorService service = Executors.newFixedThreadPool(threadPoolSize);
-        
+
+        // final char[] characters = new char[1024 * 1000];
+        final char[] characters = new char[256 * 1000];
+        Arrays.fill(characters, 'f');
+
         tasks.add((connection, client) -> {
             final MessageData data = new MessageData();
-            data.setEnumMessage(FruitEnum.PINEAPPLE);
-            DO_ECHO_FN.accept(client, data);
+            // data.setEnumMessage(FruitEnum.PINEAPPLE);
+            // DO_ECHO_FN.accept(client, data);
 
-            data.setStringMessage("Hello EventStream RPC world");
-            DO_ECHO_FN.accept(client, data);
+            // data.setStringMessage("Hello EventStream RPC world");
+            // DO_ECHO_FN.accept(client, data);
 
-            data.setBooleanMessage(true);
-            DO_ECHO_FN.accept(client, data);
+            // data.setBooleanMessage(true);
+            // DO_ECHO_FN.accept(client, data);
 
-            data.setBlobMessage(new byte[] {23, 42, -120, -3, 53});
-            DO_ECHO_FN.accept(client, data);
+            // data.setBlobMessage(new byte[] {23, 42, -120, -3, 53});
+            // DO_ECHO_FN.accept(client, data);
 
-            data.setTimeMessage(Instant.ofEpochSecond(1606173648));
+            // data.setTimeMessage(Instant.ofEpochSecond(1606173648));
+            // DO_ECHO_FN.accept(client, data);
+
+            // 1 MB string
+            data.setStringMessage(new String(characters));
             DO_ECHO_FN.accept(client, data);
         });
 

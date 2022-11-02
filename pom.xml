@@ -22,6 +22,7 @@
         <module>samples/WindowsCertConnect</module>
         <module>samples/Shadow</module>
         <module>samples/Identity</module>
+        <module>samples/SBA_Sample</module>
     </modules>
 
     <build>
