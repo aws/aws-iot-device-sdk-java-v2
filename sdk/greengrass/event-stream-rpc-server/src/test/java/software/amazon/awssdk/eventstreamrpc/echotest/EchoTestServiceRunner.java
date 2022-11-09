@@ -152,7 +152,7 @@ public class EchoTestServiceRunner implements AutoCloseable {
     /**
      * Enables a bit of a performance/load test by reconnecting the client to the same running server multiple times
      * and each time the client connects, it runs the test logic for the number of times.
-     * 
+     *
      * !!! WARNING SocketOptions.SocketDomain is LOCAL for this server. Test client must match
      */
     public static void runLocalEchoTestServerClientLoopUnixDomain(final String domainSocket,
@@ -206,7 +206,8 @@ public class EchoTestServiceRunner implements AutoCloseable {
                     final CompletableFuture<Object> runClientOrError =
                             CompletableFuture.anyOf(clientErrorFuture, CompletableFuture.runAsync(
                                     () -> testClientLogic.accept(connection, client), Executors.newSingleThreadExecutor()));
-                    runClientOrError.get(240, TimeUnit.SECONDS);
+                    // 20 minutes - should be long enough to run the SBA sample
+                    runClientOrError.get(1200, TimeUnit.SECONDS);
                 }
             }
         }
