@@ -68,6 +68,7 @@ public class SBA_Sample {
         } else {
             System.out.println("ERROR: Exception found! Exception: " + ex.toString());
         }
+        ex.printStackTrace();
         System.exit(1);
     }
     static CommandLineUtils cmdUtils;
@@ -109,7 +110,8 @@ public class SBA_Sample {
         final EchoMessageRequest request = new EchoMessageRequest().setMessage(data);
         final EchoMessageResponseHandler responseHandler = client.echoMessage(request, Optional.empty());
         try {
-            responseHandler.getResponse().get(10, TimeUnit.SECONDS);
+            // Allow higher margins to avoid timeouts
+            responseHandler.getResponse().get(120, TimeUnit.SECONDS);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             PrintExceptionAndExit(e, "Running DO_ECHO_FN!");
         }
