@@ -7,7 +7,11 @@ phases:
       - sudo add-apt-repository ppa:ubuntu-toolchain-r/test
       - sudo apt-get update -y
       - sudo apt-get install softhsm -y
-      - softhsm2-util --version
+      - echo "\nBuild version data:"
+      - echo "\nJava Version:"; java -version
+      - echo "\nMaven Version:"; mvn --version
+      - echo "\nSoftHSM (PKCS11) version:"; softhsm2-util --version
+      - echo "\n"
   build:
     commands:
       - echo Build started on `date`
