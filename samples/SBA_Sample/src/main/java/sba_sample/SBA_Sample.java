@@ -80,7 +80,7 @@ public class SBA_Sample {
         cmdUtils.registerCommand("thread_size", "<int>", "The maximum number of threads (default=1)");
         cmdUtils.registerCommand("task_factor", "<int>", "The number of tasks run in parallel (default=10)");
         cmdUtils.registerCommand("task_length", "<int>", "The amount of times a task does work (default=6000)");
-        cmdUtils.registerCommand("task_delay", "<int>", "The amount of time (in ms) to sleep before repeating a tasks' implementation (default=5)");
+        cmdUtils.registerCommand("task_delay", "<int>", "The amount of time (in ms) to sleep before repeating a tasks' implementation (default=2)");
         cmdUtils.registerCommand("max_time", "<int>", "The maximum amount of time (in seconds) the sample can run for (default=300 or 5 minutes)");
         cmdUtils.registerCommand("payload_size", "<int>", "The size of the payload sent in kb (default=256)");
         cmdUtils.sendArguments(args);
@@ -89,7 +89,7 @@ public class SBA_Sample {
         int thread_size = Integer.parseInt(cmdUtils.getCommandOrDefault("thread_size", String.valueOf(1)));
         int task_factor = Integer.parseInt(cmdUtils.getCommandOrDefault("task_factor", String.valueOf(10)));
         int task_length = Integer.parseInt(cmdUtils.getCommandOrDefault("task_length", String.valueOf(6000)));
-        long task_delay = Long.parseLong(cmdUtils.getCommandOrDefault("task_delay", String.valueOf(1)));
+        long task_delay = Long.parseLong(cmdUtils.getCommandOrDefault("task_delay", String.valueOf(2)));
         long max_time = Long.parseLong(cmdUtils.getCommandOrDefault("max_time", String.valueOf(500)));
         int payload_size = Integer.parseInt(cmdUtils.getCommandOrDefault("payload_size", String.valueOf(256)));
 
