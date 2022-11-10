@@ -75,12 +75,7 @@ def setup_json_arguments_list(parsed_commands):
                     str(current_folder) + argument['windows_cert_certificate_path'],
                     str(current_folder) + argument['windows_cert_key_path'],
                     str(current_folder) + argument['windows_cert_pfx_key_path'])
-
-                if isinstance(certificate_path, str):
-                    config_json_arguments_list.append(certificate_path)
-                else:
-                    print ("ERROR with Windows Cert Connect!")
-                    return certificate_path
+                config_json_arguments_list.append(certificate_path)
 
             # Raw data? just add it directly!
             elif 'data' in argument:
