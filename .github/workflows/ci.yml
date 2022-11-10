@@ -114,7 +114,7 @@ jobs:
         python ./utils/run_sample_ci.py --file ./.github/workflows/ci_run_pubsub_cfg.json
     - name: run Windows Certificate Connect sample
       run: |
-        python ./utils/run_sample_ci.py --file ./.github/workflows/ci_run_windows_cert_connect.json
+        python ./utils/run_sample_ci.py --file ./.github/workflows/ci_run_windows_cert_connect_cfg.json
     - name: configure AWS credentials (Device Advisor)
       uses: aws-actions/configure-aws-credentials@v1
       with:
