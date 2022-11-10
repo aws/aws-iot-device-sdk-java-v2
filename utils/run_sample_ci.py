@@ -51,8 +51,8 @@ def setup_json_arguments_list(parsed_commands):
                 else:
                     config_json_arguments_list.append(secret_data)
 
-                if ('pkcs11_key' in argument):
-                    pkcs11_result = make_softhsm_key(argument['filename'])
+                if 'pkcs11_key' in argument:
+                    pkcs11_result = make_softhsm_key(str(current_folder) + argument['filename'])
                     if (pkcs11_result != 0):
                         print ("ERROR with PKCS11!")
                         return pkcs11_result
@@ -76,7 +76,7 @@ def setup_json_arguments_list(parsed_commands):
                     str(current_folder) + argument['windows_cert_key_path'],
                     str(current_folder) + argument['windows_cert_pfx_key_path'])
 
-                if isinstance(certificate_path):
+                if isinstance(certificate_path, str):
                     config_json_arguments_list.append(certificate_path)
                 else:
                     print ("ERROR with Windows Cert Connect!")
