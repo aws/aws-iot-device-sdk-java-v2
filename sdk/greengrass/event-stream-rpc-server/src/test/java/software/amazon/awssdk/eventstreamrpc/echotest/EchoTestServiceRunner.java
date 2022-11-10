@@ -206,8 +206,8 @@ public class EchoTestServiceRunner implements AutoCloseable {
                     final CompletableFuture<Object> runClientOrError =
                             CompletableFuture.anyOf(clientErrorFuture, CompletableFuture.runAsync(
                                     () -> testClientLogic.accept(connection, client), Executors.newSingleThreadExecutor()));
-                    // 20 minutes - should be long enough to run the SBA sample
-                    runClientOrError.get(1200, TimeUnit.SECONDS);
+                    // Take as long as it takes! On slower machines it MAY take a really long time
+                    runClientOrError.get();
                 }
             }
         }
