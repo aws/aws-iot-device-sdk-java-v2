@@ -86,7 +86,8 @@ def setup_json_arguments_list(parsed_commands):
             elif 'data' in argument:
                 tmp_value = argument['data']
                 if isinstance(tmp_value, str) and 'input_uuid' in parsed_commands:
-                    tmp_value.replace("$INPUT_UUID", parsed_commands['input_uuid'])
+                    if ("$INPUT_UUID" in tmp_value):
+                        tmp_value = tmp_value.replace("$INPUT_UUID", parsed_commands['input_uuid'])
                 config_json_arguments_list.append(tmp_value)
 
             # None of the above? Just print an error
