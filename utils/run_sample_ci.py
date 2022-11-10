@@ -82,7 +82,7 @@ def setup_json_arguments_list(parsed_commands):
                 tmp_value = argument['data']
                 if isinstance(tmp_value, str) and 'input_uuid' in parsed_commands:
                     if ("$INPUT_UUID" in tmp_value):
-                        tmp_value = tmp_value.replace("$INPUT_UUID", parsed_commands['input_uuid'])
+                        tmp_value = tmp_value.replace("$INPUT_UUID", parsed_commands.input_uuid)
                 config_json_arguments_list.append(tmp_value)
 
             # None of the above? Just print an error
@@ -146,7 +146,7 @@ def make_windows_pfx_file(certificate_file_path, private_key_path, pfx_file_path
 
         # Import the PFX into the Windows Certificate Store
         # (Passing '$mypwd' is required even though it is empty and our certificate has no password. It fails CI otherwise)
-        import_pfx_arguments = ["powershell.exe", "Import-PfxCertificate", "-FilePath", pfx_file_path, "-CertStoreLocation", "Cert:\\" + tmp_pfx_certificate_store_location, "-Password", "$mypwd"]
+        import_pfx_arguments = ["powershell.exe", "Import-PfxCertificate", "-FilePath", pfx_file_path, "-CertStoreLocation", "Cert:\\" + pfx_certificate_store_location, "-Password", "$mypwd"]
         import_pfx_run = subprocess.run(args=import_pfx_arguments, shell=True, stdout=subprocess.PIPE)
         if (import_pfx_run.returncode != 0):
             print ("ERROR: Could not import PFX certificate into Windows store!")
@@ -179,7 +179,7 @@ def make_windows_pfx_file(certificate_file_path, private_key_path, pfx_file_path
 
         # Construct the certificate path
         print ("PFX certificate created and imported successfully!")
-        return tmp_pfx_certificate_store_location + "\\" + thumbprint
+        return pfx_certificate_store_location + "\\" + thumbprint
 
     else:
         print("ERROR - Windows PFX file can only be created on a Windows platform!")
