@@ -240,6 +240,7 @@ public class PubSubStress {
 
                         if (count % PROGRESS_OP_COUNT == 0) {
                             System.out.println(String.format("(Main Thread) Message publish count: %d", count));
+                            Thread.sleep(10); // this should keep the aggregate publish rate under 10K/s
                         }
                     }
 
