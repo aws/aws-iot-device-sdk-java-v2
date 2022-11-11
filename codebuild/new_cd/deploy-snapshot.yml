@@ -1,7 +1,10 @@
-# Assumes are running using the Ubuntu 16.04:x64 image
-# Runs third - Makes a test deployment to the SNAPSHOT repository in the package manager
+# Assumes are running using the Ubuntu Codebuild standard image
+# Makes a test deployment to the SNAPSHOT repository in the package manager
 # This job is responsible for artifacting the JAR which will have all of the other shared libs stuffed
 # into it once all platforms are built and artifacted
+#
+# NOTE: This script assumes that the AWS CLI-V2 is pre-installed!
+# - AWS CLI-V2 is a requirement to run this script.
 
 version: 0.2
 phases:
@@ -10,6 +13,10 @@ phases:
       - sudo add-apt-repository ppa:openjdk-r/ppa
       - sudo apt-get update -y
       - sudo apt-get install openjdk-8-jdk-headless maven -y -f
+      - echo "\nBuild version data:"
+      - echo "\nJava Version:"; java -version
+      - echo "\nMaven Version:"; mvn --version
+      - echo "\n"
 
   pre_build:
     commands:

@@ -1,8 +1,9 @@
 # Assumes are running using the Ubuntu 16.04:x64 image
-# Runs second - makes sure the version in CD has not already been released.
+# Makes sure the version in CD has not already been released.
 # Will fail the build and stop the pipeline if the version has already been released.
 #
-# (The first step is to download source and does not have a YAML file associated with it at this time)
+# NOTE: This script assumes that the AWS CLI-V2 is pre-installed!
+# - AWS CLI-V2 is a requirement to run this script.
 
 version: 0.2
 phases:
