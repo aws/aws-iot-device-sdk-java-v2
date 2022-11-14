@@ -74,43 +74,6 @@ def main():
             preceded_by=r"Replace .* in `software.amazon.awssdk.crt:android:",
             followed_by=r"` with the latest version of the CRT.")
 
-    """
-    if args.update_samples == None and args.update_sdk_text == None:
-        update(filepath='sdk/pom.xml',
-            preceded_by=r'<artifactId>aws-crt</artifactId>\s*<version>',
-            followed_by=r'</version>')
-
-        update(filepath='README.md',
-            preceded_by=r'--branch v',
-            followed_by=r' .*aws-crt-java.git')
-
-        update(filepath='README.md',
-            preceded_by=r"implementation 'software.amazon.awssdk.crt:android:",
-            followed_by=r"'")
-
-        update(filepath='android/iotdevicesdk/build.gradle',
-            preceded_by=r"api 'software.amazon.awssdk.crt:aws-crt-android:",
-            followed_by=r"'")
-    elif args.update_sdk_text == None:
-        update_samples()
-    else:
-        print ("HELLO WORLD")
-        sdk_version = get_latest_github_version("https://github.com/aws/aws-iot-device-sdk-java-v2.git")
-        print (f"Latest SDK version: {sdk_version}")
-        update(filepath='README.md',
-            preceded_by=r'<artifactId>aws-iot-device-sdk</artifactId>\s*<version>',
-            followed_by=r'</version>',
-            force_version=sdk_version)
-        update(filepath='README.md',
-            preceded_by=r"Replace `",
-            followed_by=r"` in `<version>.*</version>` with the latest release version for the SDK.",
-            force_version=sdk_version)
-        update(filepath='README.md',
-            preceded_by=r"Replace .* in `<version>",
-            followed_by=r"</version>` with the latest release version for the SDK.",
-            force_version=sdk_version)
-    """
-
 
 def update(*, filepath, preceded_by, followed_by, force_version=None):
     """
@@ -149,6 +112,7 @@ def update(*, filepath, preceded_by, followed_by, force_version=None):
             f.seek(0)
             f.write(txt_new)
             f.truncate()
+
 
 def update_samples():
     sdk_version = get_latest_github_version("https://github.com/aws/aws-iot-device-sdk-java-v2.git")
