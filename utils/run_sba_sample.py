@@ -2,6 +2,7 @@
 import subprocess
 import time
 import argparse
+import os
 
 parser = argparse.ArgumentParser(
     prog="SBA sample launcher")
@@ -16,6 +17,10 @@ print ("\nPYTHON HELPER START\n")
 
 # Install the SDK
 subprocess.Popen("mvn clean install -Dmaven.test.skip=true", shell=True).wait(timeout=60)
+
+# Set maximum Java heap size to 100 MB in both Maven and Java itself
+os.environ["MAVEN_OPTS"] = "-Xmx100M"
+os.environ["JAVA_OPTS"] = "-Xmx100M"
 
 application_command = "mvn compile exec:java -pl samples/SBA_Sample -Dexec.mainClass=sba_sample.SBA_Sample -Dexec.args="
 # Add 2 to the duration to account for the sleep time
