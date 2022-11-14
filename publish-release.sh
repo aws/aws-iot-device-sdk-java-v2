@@ -71,7 +71,7 @@ find . -name "pom.xml" -maxdepth 3 -mindepth 3 -exec git add {} +
 git commit -m "[v$new_version] $RELEASE_TITLE"
 
 # # push the commit and create a PR
-git push -u "https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/aws/aws-iot-device-sdk-java-v2.git.git" ${new_version_branch}
+git push -u "https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/aws/aws-iot-device-sdk-java-v2.git" ${new_version_branch}
 gh pr create --title "AutoTag PR for v${new_version}" --body "AutoTag PR for v${new_version}" --head ${new_version_branch}
 
 # # Merge the PR
