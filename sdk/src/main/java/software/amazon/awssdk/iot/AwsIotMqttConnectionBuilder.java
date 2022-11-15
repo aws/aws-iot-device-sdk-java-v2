@@ -182,7 +182,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      *
      * Note: function assumes the passed keystore has already been loaded from a file by calling "keystore.load(file, password)"
      *
-     * @param keystore The Java keystore to use. Assumed to be loaded with certificates and keys
+     * @param keyStore The Java keystore to use. Assumed to be loaded with certificates and keys
      * @param certificateAlias The alias of the certificate and key to use with the builder.
      * @param certificatePassword The password of the certificate and key to use with the builder.
      * @return {@link AwsIotMqttConnectionBuilder}
