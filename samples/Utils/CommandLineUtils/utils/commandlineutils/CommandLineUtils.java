@@ -324,11 +324,7 @@ public class CommandLineUtils {
             String keystoreFormat = getCommandOrDefault(m_cmd_javakeystore_format, "PKCS12");
             java.security.KeyStore keyStore;
             try {
-                if (keystoreFormat.toLowerCase() == "default") {
-                    keyStore = java.security.KeyStore.getInstance(java.security.KeyStore.getDefaultType());
-                } else {
-                    keyStore = java.security.KeyStore.getInstance(keystoreFormat);
-                }
+                keyStore = java.security.KeyStore.getInstance(keystoreFormat);
             } catch (java.security.KeyStoreException ex) {
                 throw new CrtRuntimeException("Could not get instance of Java keystore with format " + keystoreFormat);
             }
@@ -352,7 +348,6 @@ public class CommandLineUtils {
             return conn;
         }
         catch (CrtRuntimeException ex) {
-            ex.printStackTrace();
             return null;
         }
     }

@@ -185,28 +185,15 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      * @param keyStore The Java keystore to use. Assumed to be loaded with certificates and keys
      * @param certificateAlias The alias of the certificate and key to use with the builder.
      * @param certificatePassword The password of the certificate and key to use with the builder.
+     * @throws CrtRuntimeException if an error occurs, like the keystore cannot be opened or the certificate is not found.
      * @return {@link AwsIotMqttConnectionBuilder}
      */
-    public static AwsIotMqttConnectionBuilder newJavaKeystoreBuilder(java.security.KeyStore keyStore, String certificateAlias, String certificatePassword) {
-        String certificate;
-        try {
-            java.security.cert.Certificate certificateData = keyStore.getCertificate(certificateAlias);
-            certificate = "-----BEGIN CERTIFICATE-----\n" + java.util.Base64.getEncoder().encodeToString(certificateData.getEncoded()) + "-----END CERTIFICATE-----\n";
-        } catch (java.security.KeyStoreException | java.security.cert.CertificateEncodingException ex) {
-            throw new CrtRuntimeException("Could not get certificate from Java keystore");
+    public static AwsIotMqttConnectionBuilder newJavaKeystoreBuilder(
+        java.security.KeyStore keyStore, String certificateAlias, String certificatePassword) throws CrtRuntimeException {
+        try (TlsContextOptions tlsContextOptions = TlsContextOptions
+                .createWithMtlsJavaKeystore(keyStore, certificateAlias, certificatePassword)) {
+            return new AwsIotMqttConnectionBuilder(tlsContextOptions);
         }
-
-        String privateKey;
-        try {
-            java.security.Key keyData = keyStore.getKey(certificateAlias, certificatePassword.toCharArray());
-            privateKey = "-----BEGIN RSA PRIVATE KEY-----\n" + java.util.Base64.getEncoder().encodeToString(keyData.getEncoded()) + "-----END RSA PRIVATE KEY-----\n";
-        } catch (java.security.KeyStoreException | java.security.NoSuchAlgorithmException ex) {
-            throw new CrtRuntimeException("Could not get key from Java keystore");
-        } catch (java.security.UnrecoverableKeyException ex) {
-            throw new CrtRuntimeException("Could not get key from Java keystore due to key being unrecoverable");
-        }
-
-        return newMtlsBuilder(certificate, privateKey);
     }
 
     /**
