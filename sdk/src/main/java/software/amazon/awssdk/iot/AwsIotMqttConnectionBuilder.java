@@ -178,36 +178,16 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     }
 
     /**
-     * Create a new builder with mTLS, using a certificate and key stored in a Java keystore.
+     * Create a new builder with mTLS, using a certificate and key stored in the passed-in Java keystore.
      *
-     * @param keystorePath Path to the Java keystore on the file system.
-     * @param keystorePassword The password for the Java keystore.
-     * @param keystoreFormat The format of the Java keystore. Set to 'default' to use the default Java keystore type.
+     * Note: function assumes the passed keystore has already been loaded from a file by calling "keystore.load(file, password)"
+     *
+     * @param keystore The Java keystore to use. Assumed to be loaded with certificates and keys
      * @param certificateAlias The alias of the certificate and key to use with the builder.
      * @param certificatePassword The password of the certificate and key to use with the builder.
      * @return {@link AwsIotMqttConnectionBuilder}
      */
-    public static AwsIotMqttConnectionBuilder newJavaKeystoreBuilder(String keystorePath, String keystorePassword, String keystoreFormat, String certificateAlias, String certificatePassword) {
-        java.security.KeyStore keyStore;
-        try {
-            if (keystoreFormat.toLowerCase() == "default") {
-                keyStore = java.security.KeyStore.getInstance(java.security.KeyStore.getDefaultType());
-            } else {
-                keyStore = java.security.KeyStore.getInstance(keystoreFormat);
-            }
-        } catch (java.security.KeyStoreException ex) {
-            throw new CrtRuntimeException("Could not get instance of Java keystore with format " + keystoreFormat);
-        }
-
-        try {
-            java.io.FileInputStream fileInputStream = new java.io.FileInputStream(keystorePath);
-            keyStore.load(fileInputStream, keystorePassword.toCharArray());
-        } catch (java.io.FileNotFoundException ex) {
-            throw new CrtRuntimeException("Could not open Java keystore file");
-        } catch (java.io.IOException | java.security.NoSuchAlgorithmException | java.security.cert.CertificateException ex) {
-            throw new CrtRuntimeException("Could not load Java keystore");
-        }
-
+    public static AwsIotMqttConnectionBuilder newJavaKeystoreBuilder(java.security.KeyStore keyStore, String certificateAlias, String certificatePassword) {
         String certificate;
         try {
             java.security.cert.Certificate certificateData = keyStore.getCertificate(certificateAlias);

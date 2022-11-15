@@ -321,10 +321,28 @@ public class CommandLineUtils {
     public MqttClientConnection buildDirectMQTTConnectionWithJavaKeystore(MqttClientConnectionEvents callbacks)
     {
         try {
+            String keystoreFormat = getCommandOrDefault(m_cmd_javakeystore_format, "PKCS12");
+            java.security.KeyStore keyStore;
+            try {
+                if (keystoreFormat.toLowerCase() == "default") {
+                    keyStore = java.security.KeyStore.getInstance(java.security.KeyStore.getDefaultType());
+                } else {
+                    keyStore = java.security.KeyStore.getInstance(keystoreFormat);
+                }
+            } catch (java.security.KeyStoreException ex) {
+                throw new CrtRuntimeException("Could not get instance of Java keystore with format " + keystoreFormat);
+            }
+
+            try (java.io.FileInputStream fileInputStream = new java.io.FileInputStream(getCommandRequired(m_cmd_javakeystore_path, ""))) {
+                keyStore.load(fileInputStream, getCommandRequired(m_cmd_javakeystore_password, "").toCharArray());
+            } catch (java.io.FileNotFoundException ex) {
+                throw new CrtRuntimeException("Could not open Java keystore file");
+            } catch (java.io.IOException | java.security.NoSuchAlgorithmException | java.security.cert.CertificateException ex) {
+                throw new CrtRuntimeException("Could not load Java keystore");
+            }
+
             AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newJavaKeystoreBuilder(
-                getCommandRequired(m_cmd_javakeystore_path, ""),
-                getCommandRequired(m_cmd_javakeystore_password, ""),
-                getCommandOrDefault(m_cmd_javakeystore_format, "PKCS12"),
+                keyStore,
                 getCommandRequired(m_cmd_javakeystore_certificate, ""),
                 getCommandRequired(m_cmd_javakeystore_key_password, ""));
             buildConnectionSetupCAFileDefaults(builder);
