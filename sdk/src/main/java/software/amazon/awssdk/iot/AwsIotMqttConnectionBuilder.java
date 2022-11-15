@@ -7,10 +7,22 @@ package software.amazon.awssdk.iot;
 
 import software.amazon.awssdk.crt.utils.PackageInfo;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableEntryException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateEncodingException;
+import java.security.cert.CertificateException;
+import java.util.Base64;
 import java.util.function.Consumer;
 
 import software.amazon.awssdk.crt.CrtResource;
+import software.amazon.awssdk.crt.CrtRuntimeException;
 import software.amazon.awssdk.crt.Log;
 import software.amazon.awssdk.crt.Log.LogLevel;
 import software.amazon.awssdk.crt.Log.LogSubject;
@@ -174,6 +186,58 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
                 .createWithMtlsWindowsCertStorePath(certificatePath)) {
             return new AwsIotMqttConnectionBuilder(tlsContextOptions);
         }
+    }
+
+    /**
+     * Create a new builder with mTLS, using a certificate and key stored in a Java keystore.
+     *
+     * @param keystorePath Path to the Java keystore on the file system.
+     * @param keystorePassword The password for the Java keystore.
+     * @param keystoreFormat The format of the Java keystore. Set to 'default' to use the default Java keystore type.
+     * @param certificateAlias The alias of the certificate and key to use with the builder.
+     * @param certificatePassword The password of the certificate and key to use with the builder.
+     * @return {@link AwsIotMqttConnectionBuilder}
+     */
+    public static AwsIotMqttConnectionBuilder newJavaKeystoreBuilder(String keystorePath, String keystorePassword, String keystoreFormat, String certificateAlias, String certificatePassword) {
+        KeyStore keyStore;
+        try {
+            if (keystoreFormat.toLowerCase() == "default") {
+                keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+            } else {
+                keyStore = KeyStore.getInstance(keystoreFormat);
+            }
+        } catch (KeyStoreException ex) {
+            throw new CrtRuntimeException("Could not get instance of Java keystore with format " + keystoreFormat);
+        }
+
+        try {
+            FileInputStream fileInputStream = new FileInputStream(keystorePath);
+            keyStore.load(fileInputStream, keystorePassword.toCharArray());
+        } catch (FileNotFoundException ex) {
+            throw new CrtRuntimeException("Could not open Java keystore file");
+        } catch (IOException | NoSuchAlgorithmException | CertificateException ex) {
+            throw new CrtRuntimeException("Could not load Java keystore");
+        }
+
+        String certificate;
+        try {
+            java.security.cert.Certificate certificateData = keyStore.getCertificate(certificateAlias);
+            certificate = "-----BEGIN CERTIFICATE-----\n" + Base64.getEncoder().encodeToString(certificateData.getEncoded()) + "-----END CERTIFICATE-----\n";
+        } catch (KeyStoreException | CertificateEncodingException ex) {
+            throw new CrtRuntimeException("Could not get certificate from Java keystore");
+        }
+
+        String privateKey;
+        try {
+            java.security.Key keyData = keyStore.getKey(certificateAlias, certificatePassword.toCharArray());
+            privateKey = "-----BEGIN RSA PRIVATE KEY-----\n" + Base64.getEncoder().encodeToString(keyData.getEncoded()) + "-----END RSA PRIVATE KEY-----\n";
+        } catch (KeyStoreException | NoSuchAlgorithmException ex) {
+            throw new CrtRuntimeException("Could not get key from Java keystore");
+        } catch (UnrecoverableKeyException ex) {
+            throw new CrtRuntimeException("Could not get key from Java keystore due to key being unrecoverable");
+        }
+
+        return newMtlsBuilder(certificate, privateKey);
     }
 
     /**

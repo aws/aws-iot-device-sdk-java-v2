@@ -167,7 +167,7 @@ public class CommandLineUtils {
             buildConnectionSetupCAFileDefaults(builder);
             buildConnectionSetupConnectionDefaults(builder, callbacks);
             buildConnectionSetupProxyDefaults(builder);
-            
+
             MqttClientConnection conn = builder.build();
             builder.close();
             return conn;
@@ -318,6 +318,27 @@ public class CommandLineUtils {
         }
     }
 
+    public MqttClientConnection buildDirectMQTTConnectionWithJavaKeystore(MqttClientConnectionEvents callbacks)
+    {
+        try {
+            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newJavaKeystoreBuilder(
+                getCommandRequired(m_cmd_javakeystore_path, ""),
+                getCommandRequired(m_cmd_javakeystore_password, ""),
+                getCommandOrDefault(m_cmd_javakeystore_format, "PKCS12"),
+                getCommandRequired(m_cmd_javakeystore_certificate, ""),
+                getCommandRequired(m_cmd_javakeystore_key_password, ""));
+            buildConnectionSetupCAFileDefaults(builder);
+            buildConnectionSetupConnectionDefaults(builder, callbacks);
+            MqttClientConnection conn = builder.build();
+            builder.close();
+            return conn;
+        }
+        catch (CrtRuntimeException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
     private void buildConnectionSetupCAFileDefaults(AwsIotMqttConnectionBuilder builder)
     {
         if (hasCommand(m_cmd_ca_file)) {
@@ -419,6 +440,11 @@ public class CommandLineUtils {
     private static final String m_cmd_custom_auth_authorizer_name = "custom_auth_authorizer_name";
     private static final String m_cmd_custom_auth_authorizer_signature = "custom_auth_authorizer_signature";
     private static final String m_cmd_custom_auth_password = "custom_auth_password";
+    private static final String m_cmd_javakeystore_path = "keystore";
+    private static final String m_cmd_javakeystore_password = "keystore_password";
+    private static final String m_cmd_javakeystore_format = "keystore_format";
+    private static final String m_cmd_javakeystore_certificate = "certificate_alias";
+    private static final String m_cmd_javakeystore_key_password = "certificate_password";
 }
 
 class CommandLineOption {

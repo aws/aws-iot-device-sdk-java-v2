@@ -7,6 +7,7 @@
 * [Raw Connect](#raw-connect)
 * [WindowsCert Connect](#windowscert-connect)
 * [CustomAuthorizer Connect](#custom-authorizer-connect)
+* [JavaKeystore Connect](#java-keystore-connect)
 * [CustomKeyOperationPubSub](#custom-key-operations-pubsub)
 * [Shadow](#shadow)
 * [Jobs](#jobs)
@@ -410,6 +411,58 @@ mvn -P latest-release compile exec:java -pl samples/CustomAuthorizerConnect -Dex
 ```
 
 You will need to setup your Custom Authorizer so that the lambda function returns a policy document. See [this page on the documentation](https://docs.aws.amazon.com/iot/latest/developerguide/config-custom-auth.html) for more details and example return result.
+
+## Java Keystore Connect
+
+This sample makes an MQTT connection using a certificate and key file stored in a Java keystore file.
+
+Source: `samples/JavaKeystoreConnect`
+
+To use the certificate and key files provided by AWS IoT Core, you will need to convert them into PKCS12 format and then import them into your Java keystore. You can convert the certificate and key file to PKCS12 using the following command:
+
+```sh
+openssl pkcs12 -export -in <my-certificate.pem.crt> -inkey <my-private-key.pem.key> -out my-pkcs12-key.p12 -name <alias here>
+```
+
+Once you have a PKCS12 certificate and key, you can import it into a Java keystore using the following:
+
+```sh
+keytool -importkeystore -srckeystore my-pkcs12-key.p12 -destkeystore <destination keystore> -srcstoretype pkcs12 -alias <alias here> -srcstorepass <keystore password>
+```
+
+Your Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-policies.html) must provide privileges for this sample to connect. Make sure your policy allows a client ID of `test-*` to connect or use `--client_id <client ID here>` to send the client ID your policy supports.
+
+<details>
+<summary>(see sample policy)</summary>
+<pre>
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iot:Connect"
+      ],
+      "Resource": [
+        "arn:aws:iot:<b>region</b>:<b>account</b>:client/test-*"
+      ]
+    }
+  ]
+}
+</pre>
+</details>
+
+To run the Java keystore connect sample use the following command:
+
+```sh
+mvn compile exec:java -pl samples/JavaKeystoreConnect -Dexec.mainClass=javakeystoreconnect.JavaKeystoreConnect -Dexec.args='--endpoint <endpoint> --keystore <path to Java keystore file> --keystore_password <password for Java keystore> --certificate_alias <alias of PKCS12 certificate> --certificate_password <password for PKCS12 certificate>'
+```
+
+To run this sample using the latest SDK release, use the following command:
+
+```sh
+mvn -P latest-release compile exec:java -pl samples/JavaKeystoreConnect -Dexec.mainClass=javakeystoreconnect.JavaKeystoreConnect -Dexec.args='--endpoint <endpoint> --keystore <path to Java keystore file> --keystore_password <password for Java keystore> --certificate_alias <alias of PKCS12 certificate> --certificate_password <password for PKCS12 certificate>'
+```
 
 ## Custom Key Operations PubSub
 
