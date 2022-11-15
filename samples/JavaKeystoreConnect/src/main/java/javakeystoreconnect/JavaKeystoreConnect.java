@@ -37,7 +37,7 @@ public class JavaKeystoreConnect {
      */
     static void onApplicationFailure(Throwable cause) {
         if (isCI) {
-            throw new RuntimeException("BasicConnect execution failure", cause);
+            throw new RuntimeException("JavaKeystoreConnect execution failure", cause);
         } else if (cause != null) {
             System.out.println("Exception encountered: " + cause.toString());
         }

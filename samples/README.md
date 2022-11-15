@@ -421,13 +421,13 @@ Source: `samples/JavaKeystoreConnect`
 To use the certificate and key files provided by AWS IoT Core, you will need to convert them into PKCS12 format and then import them into your Java keystore. You can convert the certificate and key file to PKCS12 using the following command:
 
 ```sh
-openssl pkcs12 -export -in <my-certificate.pem.crt> -inkey <my-private-key.pem.key> -out my-pkcs12-key.p12 -name <alias here>
+openssl pkcs12 -export -in <my-certificate.pem.crt> -inkey <my-private-key.pem.key> -out my-pkcs12-key.p12 -name <alias here> -password pass:<password here>
 ```
 
 Once you have a PKCS12 certificate and key, you can import it into a Java keystore using the following:
 
 ```sh
-keytool -importkeystore -srckeystore my-pkcs12-key.p12 -destkeystore <destination keystore> -srcstoretype pkcs12 -alias <alias here> -srcstorepass <keystore password>
+keytool -importkeystore -srckeystore my-pkcs12-key.p12 -destkeystore <destination keystore> -srcstoretype pkcs12 -alias <alias here> -srcstorepass <PKCS12 password> -deststorepass <keystore password>
 ```
 
 Your Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-policies.html) must provide privileges for this sample to connect. Make sure your policy allows a client ID of `test-*` to connect or use `--client_id <client ID here>` to send the client ID your policy supports.
