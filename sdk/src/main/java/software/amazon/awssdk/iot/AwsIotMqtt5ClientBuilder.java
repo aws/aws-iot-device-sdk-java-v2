@@ -409,12 +409,12 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
      * Overrides the time interval to wait for an ack after sending a QoS 1+ PUBLISH, SUBSCRIBE, or UNSUBSCRIBE before
      * failing the operation.  Defaults to no timeout.
      *
-     * @param operationTimeoutSeconds - the time interval to wait for an ack after sending a QoS 1+ PUBLISH, SUBSCRIBE,
+     * @param ackTimeoutSeconds - the time interval to wait for an ack after sending a QoS 1+ PUBLISH, SUBSCRIBE,
      * or UNSUBSCRIBE before failing the operation
      * @return - The AwsIotMqtt5ClientBuilder
      */
-    public AwsIotMqtt5ClientBuilder withOperationTimeoutSeconds(Long operationTimeoutSeconds) {
-        this.config.withOperationTimeoutSeconds(operationTimeoutSeconds);
+    public AwsIotMqtt5ClientBuilder withAckTimeoutSeconds(Long ackTimeoutSeconds) {
+        this.config.withAckTimeoutSeconds(ackTimeoutSeconds);
         return this;
     }
 
