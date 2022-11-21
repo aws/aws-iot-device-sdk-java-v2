@@ -28,6 +28,13 @@ import software.amazon.awssdk.crt.mqtt5.Mqtt5ClientOptions.Mqtt5ClientOptionsBui
 import software.amazon.awssdk.crt.mqtt5.packets.ConnectPacket.ConnectPacketBuilder;
 import software.amazon.awssdk.crt.utils.PackageInfo;
 
+/**
+ * Builders for making MQTT5 clients with different connection methods for AWS IoT Core.
+ *
+ * !! Developer Preview !! - This class is currently in developer preview.
+ * The interface is not guaranteed to be stable yet.
+ * Please report any issues or make suggestions in https://github.com/aws/aws-iot-device-sdk-java-v2/issues
+ */
 public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtResource {
     private static Long DEFAULT_WEBSOCKET_MQTT_PORT = 443L;
     private static Long DEFAULT_DIRECT_MQTT_PORT = 8883L;
@@ -51,8 +58,6 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
         return true;
     }
     protected void releaseNativeHandle() {}
-
-    /* Builders for different connection methods to AWS IoT Core */
 
     /**
      * Creates a new MQTT5 client builder with mTLS file paths.

@@ -326,11 +326,11 @@ public class CommandLineUtils {
         try {
 
             AwsIotMqtt5ClientBuilder.WebsocketSigv4Config websocketConfig = new AwsIotMqtt5ClientBuilder.WebsocketSigv4Config();
-            if (hasCommand("region")) {
-                websocketConfig.region = getCommandOrDefault("region", "us-east-1");
+            if (hasCommand(m_cmd_signing_region)) {
+                websocketConfig.region = getCommandRequired(m_cmd_signing_region, "");
             }
             AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newWebsocketMqttBuilderWithSigv4Auth(
-                getCommandRequired("endpoint", ""), websocketConfig);
+                getCommandRequired(m_cmd_endpoint, ""), websocketConfig);
 
             ConnectPacket.ConnectPacketBuilder connectProperties = new ConnectPacket.ConnectPacketBuilder();
             connectProperties.withClientId(getCommandOrDefault("client_id", "test-" + UUID.randomUUID().toString()));
@@ -352,7 +352,7 @@ public class CommandLineUtils {
         Mqtt5ClientOptions.LifecycleEvents lifecycleEvents, Mqtt5ClientOptions.PublishEvents publishEvents) {
         try {
             AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newDirectMqttBuilderWithMtlsFromPath(
-                getCommandRequired("endpoint", ""), getCommandRequired("cert", ""), getCommandRequired("key", ""));
+                getCommandRequired(m_cmd_endpoint, ""), getCommandRequired(m_cmd_cert_file, ""), getCommandRequired(m_cmd_key_file, ""));
 
             ConnectPacket.ConnectPacketBuilder connectProperties = new ConnectPacket.ConnectPacketBuilder();
             connectProperties.withClientId(getCommandOrDefault("client_id", "test-" + UUID.randomUUID().toString()));

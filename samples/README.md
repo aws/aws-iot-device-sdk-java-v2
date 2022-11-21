@@ -12,6 +12,7 @@
 * [Jobs](#jobs)
 * [fleet provisioning](#fleet-provisioning)
 * [Greengrass](#greengrass-discovery)
+* [MQTT5 PubSub](#mqtt5-pubsub)
 
 **Additional sample apps not described below:**
 
@@ -908,3 +909,64 @@ This sample is intended for use with the following tutorials in the AWS IoT Gree
 * [Connect and test client devices](https://docs.aws.amazon.com/greengrass/v2/developerguide/client-devices-tutorial.html) (Greengrass V2)
 * [Test client device communications](https://docs.aws.amazon.com/greengrass/v2/developerguide/test-client-device-communications.html) (Greengrass V2)
 * [Getting Started with AWS IoT Greengrass](https://docs.aws.amazon.com/greengrass/latest/developerguide/gg-gs.html) (Greengrass V1)
+
+## MQTT5 PubSub
+
+This sample uses the
+[Message Broker](https://docs.aws.amazon.com/iot/latest/developerguide/iot-message-broker.html)
+for AWS IoT to send and receive messages through an MQTT connection using MQTT5.
+
+MQTT5 has a bunch of additional features and enhancements that improve the development experience for MQTT. You can read more about MQTT5 and the differences compared to MQTT311 by checking out the [MQTT5 user guide](../documents/MQTT5_Userguide.md).
+
+source: `samples/Mqtt5/PubSub`
+
+Your Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-policies.html) must provide privileges for this sample to connect. Make sure your policy allows a client ID of `test-*` to connect or use `--client_id <client ID here>` to send the client ID your policy supports.
+
+<details>
+<summary>(see sample policy)</summary>
+<pre>
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iot:Publish",
+        "iot:Receive"
+      ],
+      "Resource": [
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/test/topic"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iot:Subscribe"
+      ],
+      "Resource": [
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topicfilter/test/topic"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iot:Connect"
+      ],
+      "Resource": [
+        "arn:aws:iot:<b>region</b>:<b>account</b>:client/test-*"
+      ]
+    }
+  ]
+}
+</pre>
+</details>
+
+To Run this sample, use the following command:
+```sh
+mvn compile exec:java -pl samples/mqtt5/PubSub -Dexec.mainClass=mqtt5.pubsub.PubSub -Dexec.args='--endpoint <endpoint> --cert <path to certificate> --key <path to private key> --ca_file <path to root CA>'
+```
+
+To Run this sample using websockets, use the following command:
+```sh
+mvn compile exec:java -pl samples/mqtt5/PubSub -Dexec.mainClass=mqtt5.pubsub.PubSub -Dexec.args='--endpoint <endpoint> --region us-east-1'
+```
