@@ -188,13 +188,13 @@ Your Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-
 To run the websocket connect use the following command:
 
 ```sh
-mvn compile exec:java -pl samples/WebsocketConnect -Dexec.mainClass=websocketconnect.WebsocketConnect -Dexec.args='--endpoint <endpoint> --signing_region <signing region> --ca_file <path to root CA>'
+mvn compile exec:java -pl samples/WebsocketConnect -Dexec.mainClass=websocketconnect.WebsocketConnect -Dexec.args='--endpoint <endpoint> --signing_region <signing region>'
 ```
 
 To run this sample using the latest SDK release, use the following command:
 
 ```sh
-mvn -P latest-release compile exec:java -pl samples/WebsocketConnect -Dexec.mainClass=websocketconnect.WebsocketConnect -Dexec.args='--endpoint <endpoint> --signing_region <signing region> --ca_file <path to root CA>'
+mvn -P latest-release compile exec:java -pl samples/WebsocketConnect -Dexec.mainClass=websocketconnect.WebsocketConnect -Dexec.args='--endpoint <endpoint> --signing_region <signing region>'
 ```
 
 Note that using Websockets will attempt to fetch the AWS credentials from your environment variables or local files.
@@ -401,13 +401,13 @@ Your Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-
 To run the custom authorizer connect use the following command:
 
 ```sh
-mvn compile exec:java -pl samples/CustomAuthorizerConnect -Dexec.mainClass=customauthorizerconnect.CustomAuthorizerConnect -Dexec.args='--endpoint <endpoint> --ca_file <path to root CA> --custom_auth_authorizer_name <custom authorizer name>'
+mvn compile exec:java -pl samples/CustomAuthorizerConnect -Dexec.mainClass=customauthorizerconnect.CustomAuthorizerConnect -Dexec.args='--endpoint <endpoint> --custom_auth_authorizer_name <custom authorizer name>'
 ```
 
 To run this sample using the latest SDK release, use the following command:
 
 ```sh
-mvn -P latest-release compile exec:java -pl samples/CustomAuthorizerConnect -Dexec.mainClass=customauthorizerconnect.CustomAuthorizerConnect -Dexec.args='--endpoint <endpoint> --ca_file <path to root CA> --custom_auth_authorizer_name <custom authorizer name>'
+mvn -P latest-release compile exec:java -pl samples/CustomAuthorizerConnect -Dexec.mainClass=customauthorizerconnect.CustomAuthorizerConnect -Dexec.args='--endpoint <endpoint> --custom_auth_authorizer_name <custom authorizer name>'
 ```
 
 You will need to setup your Custom Authorizer so that the lambda function returns a policy document. See [this page on the documentation](https://docs.aws.amazon.com/iot/latest/developerguide/config-custom-auth.html) for more details and example return result.
@@ -916,7 +916,7 @@ This sample uses the
 [Message Broker](https://docs.aws.amazon.com/iot/latest/developerguide/iot-message-broker.html)
 for AWS IoT to send and receive messages through an MQTT connection using MQTT5.
 
-MQTT5 has a bunch of additional features and enhancements that improve the development experience for MQTT. You can read more about MQTT5 and the differences compared to MQTT311 by checking out the [MQTT5 user guide](../documents/MQTT5_Userguide.md).
+MQTT5 introduces additional features and enhancements that improve the development experience with MQTT. You can read more about MQTT5 in the Java V2 SDK by checking out the [MQTT5 user guide](../documents/MQTT5_Userguide.md).
 
 source: `samples/Mqtt5/PubSub`
 
@@ -961,12 +961,14 @@ Your Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-
 </pre>
 </details>
 
-To Run this sample, use the following command:
+To Run this sample using a direct MQTT connection with a key and certificate, use the following command:
 ```sh
 mvn compile exec:java -pl samples/mqtt5/PubSub -Dexec.mainClass=mqtt5.pubsub.PubSub -Dexec.args='--endpoint <endpoint> --cert <path to certificate> --key <path to private key> --ca_file <path to root CA>'
 ```
 
-To Run this sample using websockets, use the following command:
+To Run this sample using Websockets, use the following command:
 ```sh
-mvn compile exec:java -pl samples/mqtt5/PubSub -Dexec.mainClass=mqtt5.pubsub.PubSub -Dexec.args='--endpoint <endpoint> --region us-east-1'
+mvn compile exec:java -pl samples/mqtt5/PubSub -Dexec.mainClass=mqtt5.pubsub.PubSub -Dexec.args='--endpoint <endpoint> --signing_region <region>'
 ```
+
+Note that to run this sample using Websockets, you will need to set your AWS credentials in your environment variables or local files. See the [authorizing direct AWS](https://docs.aws.amazon.com/iot/latest/developerguide/authorizing-direct-aws.html) page for documentation on how to get the AWS credentials, which then you can set to the `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS`, and `AWS_SESSION_TOKEN` environment variables.

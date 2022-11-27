@@ -319,7 +319,7 @@ LifecycleEvents include the following:
 * **onStopped**
     * Invoked once the client has shutdown any associated network connection and entered an idle state where it will no longer attempt to reconnect. Only emitted after an invocation of stop() on the client. A stopped client may always be started again.
 
-If the MQTT5 client is going to subscribe and receive packets, it is also important to setup the Publish callback so the client can process publish packets that are received on subscribed topics. To setup a publish callback, see the following code:
+If the MQTT5 client is going to subscribe and receive packets from the MQTT broker, it is important to also setup the PublishEvents callback. This callback is invoked whenever the server sends a message to the client because the server received a message on a topic the client is subscribed to. For example, if you subscribe to `test/topic` and a packet is published to `test/topic`, then the `onMessageReceived` function in the PublishEvents callback will be invoked with the packet that was published to `test/topic`. With this callback, you can process messages made to subscribed topics. To setup a publish callback, see the following code:
 
 ~~~ java
 class MyPublishEvents implements Mqtt5ClientOptions.PublishEvents {
