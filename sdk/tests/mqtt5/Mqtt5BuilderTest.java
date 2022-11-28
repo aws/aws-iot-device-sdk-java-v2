@@ -127,7 +127,7 @@ public class Mqtt5BuilderTest {
         // Connect
         try {
             client.start();
-            lifecycleEvents.connectedFuture.get(60, TimeUnit.SECONDS);
+            lifecycleEvents.connectedFuture.get(120, TimeUnit.SECONDS);
         } catch (Exception ex) {
             fail("Exception in connecting: " + ex.toString());
         }
@@ -137,7 +137,7 @@ public class Mqtt5BuilderTest {
         SubscribePacket.SubscribePacketBuilder subBuilder = new SubscribePacket.SubscribePacketBuilder();
         subBuilder.withSubscription("test/topic/" + topic_uuid, QOS.AT_LEAST_ONCE);
         try {
-            client.subscribe(subBuilder.build()).get(60, TimeUnit.SECONDS);
+            client.subscribe(subBuilder.build()).get(120, TimeUnit.SECONDS);
         } catch (Exception ex) {
             fail("Exception in subscribing: " + ex.toString());
         }
@@ -147,8 +147,8 @@ public class Mqtt5BuilderTest {
         String publishPayload = "Hello World";
         pubBuilder.withTopic("test/topic/" + topic_uuid).withQOS(QOS.AT_LEAST_ONCE).withPayload(publishPayload.getBytes());
         try {
-            client.publish(pubBuilder.build()).get(60, TimeUnit.SECONDS);
-            publishEvents.publishReceivedFuture.get(60, TimeUnit.SECONDS);
+            client.publish(pubBuilder.build()).get(120, TimeUnit.SECONDS);
+            publishEvents.publishReceivedFuture.get(120, TimeUnit.SECONDS);
             String resultStr = new String(publishEvents.publishPacket.getPayload());
             System.out.println("Payload Result: " + resultStr);
             assertTrue(resultStr.equals(publishPayload));
@@ -160,7 +160,7 @@ public class Mqtt5BuilderTest {
         UnsubscribePacket.UnsubscribePacketBuilder unsubBuilder = new UnsubscribePacket.UnsubscribePacketBuilder();
         unsubBuilder.withSubscription("test/topic/" + topic_uuid);
         try {
-            client.unsubscribe(unsubBuilder.build()).get(60, TimeUnit.SECONDS);
+            client.unsubscribe(unsubBuilder.build()).get(120, TimeUnit.SECONDS);
         } catch (Exception ex) {
             fail("Exception in unsubscribing: " + ex.toString());
         }
@@ -168,7 +168,7 @@ public class Mqtt5BuilderTest {
         // Disconnect/Stop
         try {
             client.stop(new DisconnectPacket.DisconnectPacketBuilder().build());
-            lifecycleEvents.stopFuture.get(60, TimeUnit.SECONDS);
+            lifecycleEvents.stopFuture.get(120, TimeUnit.SECONDS);
         } catch (Exception ex) {
             fail("Exception in stopping: " + ex.toString());
         }
