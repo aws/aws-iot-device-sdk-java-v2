@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Get the S3 URL containing all of the MQTT5 testing environment variables passed in to the bash script
 testing_env_bucket=$1
@@ -18,7 +18,7 @@ else
     echo ""
     echo "Example: mqtt5_test_setup.sh s3://<bucket>/<file> cleanup"
     echo ""
-    return 1
+    exit 1
 fi
 
 # Is this just a request to clean up?
@@ -41,7 +41,7 @@ else
     rm "${PWD}/iot_privatekey.pem"
 
     echo "Success!"
-    return 0
+    exit 0
 fi
 
 # Get the file from S3
@@ -52,7 +52,7 @@ if [ "${testing_env_file}" != "" ]; then
     echo "Environment variables secret found"
 else
     echo "Could not get environment variables from secrets!"
-    return 1
+    exit 1
 fi
 
 # Make all the variables in mqtt5_environment_variables.txt exported
@@ -75,7 +75,7 @@ else
     rm "${PWD}/crt_certificate.pem"
     rm "${PWD}/crt_privatekey.pem"
 
-    return 1
+    exit 1
 fi
 # Does the private key file have data? If not, then abort!
 if [ "${crt_key_file}" != "" ]; then
@@ -89,7 +89,7 @@ else
     rm "${PWD}/crt_certificate.pem"
     rm "${PWD}/crt_privatekey.pem"
 
-    return 1
+    exit 1
 fi
 # Set the certificate and key paths (absolute paths for best compatbility)
 export AWS_TEST_MQTT5_CERTIFICATE_FILE="${PWD}/crt_certificate.pem"
@@ -116,7 +116,7 @@ else
     rm "${PWD}/iot_certificate.pem"
     rm "${PWD}/iot_privatekey.pem"
 
-    return 1
+    exit 1
 fi
 # Does the private key file have data? If not, then abort!
 if [ "${iot_key_file}" != "" ]; then
@@ -134,7 +134,7 @@ else
     rm "${PWD}/iot_certificate.pem"
     rm "${PWD}/iot_privatekey.pem"
 
-    return 1
+    exit 1
 fi
 # Set IoT certificate and key paths
 export AWS_TEST_MQTT5_IOT_CERTIFICATE_PATH="${PWD}/iot_certificate.pem"
@@ -142,4 +142,4 @@ export AWS_TEST_MQTT5_IOT_KEY_PATH="${PWD}/iot_privatekey.pem"
 
 # Everything is set
 echo "Success: Environment variables set!"
-return 0
+exit 0
