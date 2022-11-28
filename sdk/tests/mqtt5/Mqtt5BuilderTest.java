@@ -249,10 +249,8 @@ public class Mqtt5BuilderTest {
     {
         assumeTrue(mqtt5IoTCoreHost != null);
 
-        WebsocketSigv4Config test = new WebsocketSigv4Config();
-        test.region = "us-east-1";
         AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newWebsocketMqttBuilderWithSigv4Auth(
-            mqtt5IoTCoreHost, test);
+            mqtt5IoTCoreHost, null);
 
         LifecycleEvents_Futured lifecycleEvents = new LifecycleEvents_Futured();
         builder.withLifeCycleEvents(lifecycleEvents);
