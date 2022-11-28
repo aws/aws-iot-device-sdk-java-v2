@@ -42,12 +42,15 @@ def main():
                 # On Windows, we use setx - not because it is the best solution, but because it
                 # persists and that is what we need.
                 # NOTE: There is a 1024 character limit, but we do not have anything that long (usually)
+                # EDIT: Use Chocolatey to see if that works
                 if (sys.platform == "win32"):
                     if (parsed_commands.cleanup == "true"):
                         # Set it to EMPTY to clear it
-                        os.system(f"setx {data[0]} EMPTY")
+                        # os.system(f"setx {data[0]} EMPTY")
+                        os.system(f"Install-ChocolateyEnvironmentVariable {data[0]} EMPTY")
                     else:
-                        os.system(f"setx {data[0]} {data[1]}")
+                        # os.system(f"setx {data[0]} {data[1]}")
+                        os.system(f"Install-ChocolateyEnvironmentVariable {data[0]} {data[1]}")
                 else:
                     # untested...
                     if (parsed_commands.cleanup == "true"):
