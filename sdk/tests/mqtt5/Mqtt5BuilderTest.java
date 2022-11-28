@@ -122,6 +122,8 @@ public class Mqtt5BuilderTest {
     }
 
     private void TestSubPubUnsub(Mqtt5Client client, LifecycleEvents_Futured lifecycleEvents, PublishEvents_Futured publishEvents) {
+        String topic_uuid = UUID.randomUUID().toString();
+
         // Connect
         try {
             client.start();
@@ -133,7 +135,7 @@ public class Mqtt5BuilderTest {
 
         // Sub
         SubscribePacket.SubscribePacketBuilder subBuilder = new SubscribePacket.SubscribePacketBuilder();
-        subBuilder.withSubscription("test/topic", QOS.AT_LEAST_ONCE);
+        subBuilder.withSubscription("test/topic/" + topic_uuid, QOS.AT_LEAST_ONCE);
         try {
             client.subscribe(subBuilder.build()).get(60, TimeUnit.SECONDS);
         } catch (Exception ex) {
@@ -143,7 +145,7 @@ public class Mqtt5BuilderTest {
         // Pub
         PublishPacket.PublishPacketBuilder pubBuilder = new PublishPacket.PublishPacketBuilder();
         String publishPayload = "Hello World";
-        pubBuilder.withTopic("test/topic").withQOS(QOS.AT_LEAST_ONCE).withPayload(publishPayload.getBytes());
+        pubBuilder.withTopic("test/topic/" + topic_uuid).withQOS(QOS.AT_LEAST_ONCE).withPayload(publishPayload.getBytes());
         try {
             client.publish(pubBuilder.build()).get(60, TimeUnit.SECONDS);
             publishEvents.publishReceivedFuture.get(60, TimeUnit.SECONDS);
@@ -156,7 +158,7 @@ public class Mqtt5BuilderTest {
 
         // Unsub
         UnsubscribePacket.UnsubscribePacketBuilder unsubBuilder = new UnsubscribePacket.UnsubscribePacketBuilder();
-        unsubBuilder.withSubscription("test/topic");
+        unsubBuilder.withSubscription("test/topic/" + topic_uuid);
         try {
             client.unsubscribe(unsubBuilder.build()).get(60, TimeUnit.SECONDS);
         } catch (Exception ex) {
