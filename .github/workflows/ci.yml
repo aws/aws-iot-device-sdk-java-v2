@@ -97,7 +97,7 @@ jobs:
         distribution: temurin
         java-version: ${{ matrix.version }}
         cache: maven
-    - name: TMP: Build the CRT from source for testing
+    - name: TMP - Build the CRT from source for testing
       run: |
         git clone https://github.com/awslabs/aws-crt-java.git --branch main_sync
         cd aws-crt-java
@@ -171,7 +171,7 @@ jobs:
         distribution: temurin
         java-version: ${{ matrix.version }}
         cache: maven
-    - name: TMP: Build the CRT from source for testing
+    - name: TMP - Build the CRT from source for testing
       run: |
         git clone https://github.com/awslabs/aws-crt-java.git --branch main_sync
         cd aws-crt-java
@@ -242,7 +242,7 @@ jobs:
           distribution: temurin
           java-version: ${{ matrix.version }}
           cache: maven
-      - name: TMP: Build the CRT from source for testing
+      - name: TMP - Build the CRT from source for testing
         run: |
           git clone https://github.com/awslabs/aws-crt-java.git --branch main_sync
           cd aws-crt-java
@@ -340,7 +340,7 @@ jobs:
           distribution: temurin
           java-version: ${{ matrix.version }}
           cache: maven
-      - name: TMP: Build the CRT from source for testing
+      - name: TMP - Build the CRT from source for testing
         run: |
           git clone https://github.com/awslabs/aws-crt-java.git --branch main_sync
           cd aws-crt-java
