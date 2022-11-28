@@ -55,10 +55,6 @@ def main():
                     else:
                         os.system(f"{data[0]}={data[1]}")
 
-    # On Windows we need to refresh the ENV to get the new environment variables
-    if (sys.platform == "win32" and parsed_commands.cleanup != "true"):
-        os.system("call RefreshEnv.cmd")
-
     if (parsed_commands.cleanup == "true"):
         os.remove("environment_files.txt")
 
