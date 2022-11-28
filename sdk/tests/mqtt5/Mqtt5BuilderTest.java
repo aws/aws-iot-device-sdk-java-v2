@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import org.junit.jupiter.api.Test;
 
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -147,6 +148,7 @@ public class Mqtt5BuilderTest {
             client.publish(pubBuilder.build()).get(60, TimeUnit.SECONDS);
             publishEvents.publishReceivedFuture.get(60, TimeUnit.SECONDS);
             String resultStr = new String(publishEvents.publishPacket.getPayload());
+            System.out.println("Payload Result: " + resultStr);
             assertTrue(resultStr.equals(publishPayload));
         } catch (Exception ex) {
             fail("Exception in publishing: " + ex.toString());
