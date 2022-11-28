@@ -116,9 +116,9 @@ jobs:
     - name: MQTT5 tests
       run: |
         python -m pip install boto3
-        python utils/mqtt5_test_setup.py --s3_bucket aws-crt-test-stuff --s3_file CodeBuildIotProdMQTT5EnvironmentVariables.txt --cleanup false
+        python utils/mqtt5_test_setup.py --s3_bucket iot-sdk-ci-bucket-us-east1 --s3_file IotUsProdMqtt5EnvironmentVariables.txt --cleanup false
         mvn test -Dtest=Mqtt5BuilderTest -DfailIfNoTests=false
-        python utils/mqtt5_test_setup.py --s3_bucket aws-crt-test-stuff --s3_file CodeBuildIotProdMQTT5EnvironmentVariables.txt --cleanup true
+        python utils/mqtt5_test_setup.py --s3_bucket iot-sdk-ci-bucket-us-east1 --s3_file IotUsProdMqtt5EnvironmentVariables.txt --cleanup true
     - name: Running samples in CI setup
       run: |
         python -m pip install boto3
@@ -190,9 +190,9 @@ jobs:
         aws-region: ${{ env.AWS_DEFAULT_REGION }}
     - name: MQTT5 tests
       run: |
-        source utils/mqtt5_test_setup.sh s3://aws-crt-test-stuff/CodeBuildIotProdMQTT5EnvironmentVariables.txt us-east-1
+        source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt us-east-1
         mvn test -Dtest=Mqtt5BuilderTest -DfailIfNoTests=false
-        source utils/mqtt5_test_setup.sh s3://aws-crt-test-stuff/CodeBuildIotProdMQTT5EnvironmentVariables.txt cleanup
+        source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt cleanup
     - name: Running samples in CI setup
       run: |
         python3 -m pip install boto3
@@ -261,9 +261,9 @@ jobs:
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
       - name: MQTT5 tests
         run: |
-          source utils/mqtt5_test_setup.sh s3://aws-crt-test-stuff/CodeBuildIotProdMQTT5EnvironmentVariables.txt us-east-1
+          source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt us-east-1
           mvn test -Dtest=Mqtt5BuilderTest -DfailIfNoTests=false
-          source utils/mqtt5_test_setup.sh s3://aws-crt-test-stuff/CodeBuildIotProdMQTT5EnvironmentVariables.txt cleanup
+          source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt cleanup
       - name: Running samples in CI setup
         run: |
           python3 -m pip install boto3
