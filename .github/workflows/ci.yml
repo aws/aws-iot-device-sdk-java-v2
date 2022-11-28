@@ -102,7 +102,7 @@ jobs:
         git clone https://github.com/awslabs/aws-crt-java.git --branch main_sync
         cd aws-crt-java
         git submodule update --init --recursive
-        mvn clean install -Dmaven.test.skip=true
+        mvn install -Dmaven.test.skip=true
         cd ..
     - name: Build ${{ env.PACKAGE_NAME }} + consumers
       run: |
@@ -176,7 +176,7 @@ jobs:
         git clone https://github.com/awslabs/aws-crt-java.git --branch main_sync
         cd aws-crt-java
         git submodule update --init --recursive
-        mvn clean install -Dmaven.test.skip=true
+        mvn install -Dmaven.test.skip=true
         cd ..
     - name: Build ${{ env.PACKAGE_NAME }} + consumers
       run: |
@@ -247,7 +247,7 @@ jobs:
           git clone https://github.com/awslabs/aws-crt-java.git --branch main_sync
           cd aws-crt-java
           git submodule update --init --recursive
-          mvn clean install -Dmaven.test.skip=true
+          mvn install -Dmaven.test.skip=true
           cd ..
       - name: Build ${{ env.PACKAGE_NAME }} + consumers
         run: |
@@ -345,7 +345,7 @@ jobs:
           git clone https://github.com/awslabs/aws-crt-java.git --branch main_sync
           cd aws-crt-java
           git submodule update --init --recursive
-          mvn clean install -Dmaven.test.skip=true
+          mvn install -Dmaven.test.skip=true
           cd ..
       - name: Build ${{ env.PACKAGE_NAME }} + consumers
         run: |
