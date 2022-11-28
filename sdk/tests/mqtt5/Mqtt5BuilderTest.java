@@ -148,12 +148,15 @@ public class Mqtt5BuilderTest {
         pubBuilder.withTopic("test/topic/" + topic_uuid).withQOS(QOS.AT_LEAST_ONCE).withPayload(publishPayload.getBytes());
         try {
             client.publish(pubBuilder.build()).get(120, TimeUnit.SECONDS);
-            publishEvents.publishReceivedFuture.get(120, TimeUnit.SECONDS);
-            String resultStr = new String(publishEvents.publishPacket.getPayload());
-            System.out.println("Payload Result: " + resultStr);
-            assertTrue(resultStr.equals(publishPayload));
         } catch (Exception ex) {
             fail("Exception in publishing: " + ex.toString());
+        }
+        try {
+            publishEvents.publishReceivedFuture.get(120, TimeUnit.SECONDS);
+            String resultStr = new String(publishEvents.publishPacket.getPayload());
+            assertTrue(resultStr.equals(publishPayload));
+        } catch (Exception ex) {
+            fail("Exception in getting publish: " + ex.toString());
         }
 
         // Unsub
