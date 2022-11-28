@@ -22,6 +22,8 @@ import software.amazon.awssdk.crt.mqtt5.packets.DisconnectPacket;
 import software.amazon.awssdk.crt.mqtt5.packets.PublishPacket;
 import software.amazon.awssdk.crt.mqtt5.packets.SubscribePacket;
 import software.amazon.awssdk.crt.mqtt5.packets.UnsubscribePacket;
+import software.amazon.awssdk.crt.mqtt5.packets.ConnectPacket.ConnectPacketBuilder;
+import software.amazon.aws.sdk.crt.mqtt5.packets.ConnectPacket;
 import software.amazon.awssdk.iot.AwsIotMqtt5ClientBuilder;
 
 public class Mqtt5BuilderTest {
@@ -195,6 +197,11 @@ public class Mqtt5BuilderTest {
         AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newDirectMqttBuilderWithMtlsFromPath(
             mqtt5IoTCoreHost, mqtt5IoTCoreCertificatePath, mqtt5IoTCoreKeyPath);
 
+        // Use a random ClientID
+        ConnectPacketBuilder connectProperties = new ConnectPacketBuilder();
+        connectProperties.withClientId(UUID.randomUUID().toString());
+        builder.withConnectProperties(connectProperties);
+
         LifecycleEvents_Futured lifecycleEvents = new LifecycleEvents_Futured();
         builder.withLifeCycleEvents(lifecycleEvents);
 
@@ -222,6 +229,11 @@ public class Mqtt5BuilderTest {
         PublishEvents_Futured publishEvents = new PublishEvents_Futured();
         builder.withPublishEvents(publishEvents);
 
+        // Use a random ClientID
+        ConnectPacketBuilder connectProperties = new ConnectPacketBuilder();
+        connectProperties.withClientId(UUID.randomUUID().toString());
+        builder.withConnectProperties(connectProperties);
+
         Mqtt5Client client = builder.build();
         TestSubPubUnsub(client, lifecycleEvents, publishEvents);
         client.close();
@@ -231,6 +243,8 @@ public class Mqtt5BuilderTest {
         builder.withLifeCycleEvents(lifecycleEventsTwo);
         PublishEvents_Futured publishEventsTwo = new PublishEvents_Futured();
         builder.withPublishEvents(publishEventsTwo);
+        connectProperties.withClientId(UUID.randomUUID().toString());
+        builder.withConnectProperties(connectProperties);
         Mqtt5Client clientTwo = builder.build();
         TestSubPubUnsub(clientTwo, lifecycleEventsTwo, publishEventsTwo);
         clientTwo.close();
@@ -253,6 +267,11 @@ public class Mqtt5BuilderTest {
 
         PublishEvents_Futured publishEvents = new PublishEvents_Futured();
         builder.withPublishEvents(publishEvents);
+
+        // Use a random ClientID
+        ConnectPacketBuilder connectProperties = new ConnectPacketBuilder();
+        connectProperties.withClientId(UUID.randomUUID().toString());
+        builder.withConnectProperties(connectProperties);
 
         Mqtt5Client client = builder.build();
         TestSubPubUnsub(client, lifecycleEvents, publishEvents);
@@ -281,6 +300,11 @@ public class Mqtt5BuilderTest {
 
         PublishEvents_Futured publishEvents = new PublishEvents_Futured();
         builder.withPublishEvents(publishEvents);
+
+        // Use a random ClientID
+        ConnectPacketBuilder connectProperties = new ConnectPacketBuilder();
+        connectProperties.withClientId(UUID.randomUUID().toString());
+        builder.withConnectProperties(connectProperties);
 
         Mqtt5Client client = builder.build();
         TestSubPubUnsub(client, lifecycleEvents, publishEvents);
@@ -315,6 +339,11 @@ public class Mqtt5BuilderTest {
 
         PublishEvents_Futured publishEvents = new PublishEvents_Futured();
         builder.withPublishEvents(publishEvents);
+
+        // Use a random ClientID
+        ConnectPacketBuilder connectProperties = new ConnectPacketBuilder();
+        connectProperties.withClientId(UUID.randomUUID().toString());
+        builder.withConnectProperties(connectProperties);
 
         Mqtt5Client client = builder.build();
         TestSubPubUnsub(client, lifecycleEvents, publishEvents);
