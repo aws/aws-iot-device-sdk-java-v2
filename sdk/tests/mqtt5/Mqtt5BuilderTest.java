@@ -44,8 +44,8 @@ public class Mqtt5BuilderTest {
         mqtt5IoTCoreHost = System.getenv("AWS_TEST_MQTT5_IOT_CORE_HOST");
         // mqtt5IoTCoreCertificatePath = System.getenv("AWS_TEST_MQTT5_IOT_CERTIFICATE_PATH");
         // mqtt5IoTCoreKeyPath = System.getenv("AWS_TEST_MQTT5_IOT_KEY_PATH");
-        mqtt5IoTCoreCertificatePath = "./iot_certificate.pem";
-        mqtt5IoTCoreKeyPath = "./iot_privatekey.pem";
+        mqtt5IoTCoreCertificatePath = "iot_certificate.pem";
+        mqtt5IoTCoreKeyPath = "iot_privatekey.pem";
 
         mqtt5IoTCoreNoSigningAuthorizerName = System.getenv("AWS_TEST_MQTT5_IOT_CORE_NO_SIGNING_AUTHORIZER_NAME");
         mqtt5IoTCoreNoSigningAuthorizerUsername = System.getenv("AWS_TEST_MQTT5_IOT_CORE_NO_SIGNING_AUTHORIZER_USERNAME");
