@@ -23,7 +23,6 @@ import software.amazon.awssdk.crt.mqtt5.packets.PublishPacket;
 import software.amazon.awssdk.crt.mqtt5.packets.SubscribePacket;
 import software.amazon.awssdk.crt.mqtt5.packets.UnsubscribePacket;
 import software.amazon.awssdk.crt.mqtt5.packets.ConnectPacket.ConnectPacketBuilder;
-import software.amazon.aws.sdk.crt.mqtt5.packets.ConnectPacket;
 import software.amazon.awssdk.iot.AwsIotMqtt5ClientBuilder;
 
 public class Mqtt5BuilderTest {
