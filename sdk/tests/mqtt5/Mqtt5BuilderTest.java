@@ -133,7 +133,7 @@ public class Mqtt5BuilderTest {
         } catch (Exception ex) {
             fail("Exception in connecting: " + ex.toString());
         }
-        // assertTrue(client.getIsConnected() == true); // TMP - disable this
+        assertTrue(client.getIsConnected() == true);
 
         // Sub
         SubscribePacket.SubscribePacketBuilder subBuilder = new SubscribePacket.SubscribePacketBuilder();
@@ -150,8 +150,6 @@ public class Mqtt5BuilderTest {
         pubBuilder.withTopic("test/topic/" + topic_uuid).withQOS(QOS.AT_LEAST_ONCE).withPayload(publishPayload.getBytes());
         try {
             PublishResult result = client.publish(pubBuilder.build()).get(120, TimeUnit.SECONDS);
-            System.out.println(result);
-            System.out.println(result.getResultPubAck().getReasonCode());
         } catch (Exception ex) {
             fail("Exception in publishing: " + ex.toString());
         }
