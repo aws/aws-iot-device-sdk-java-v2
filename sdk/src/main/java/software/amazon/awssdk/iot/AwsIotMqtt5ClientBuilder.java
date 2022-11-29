@@ -31,9 +31,9 @@ import software.amazon.awssdk.crt.utils.PackageInfo;
 /**
  * Builders for making MQTT5 clients with different connection methods for AWS IoT Core.
  *
- * !! Developer Preview !! - This class is currently in developer preview.
- * The interface is not guaranteed to be stable yet.
- * Please report any issues or make suggestions in https://github.com/aws/aws-iot-device-sdk-java-v2/issues
+ * MQTT5 support is currently in <b>developer preview</b>.  We encourage feedback at all times, but feedback during the
+ * preview window is especially valuable in shaping the final product.  During the preview period we may make
+ * backwards-incompatible changes to the public API, but in general, this is something we will try our best to avoid.
  */
 public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtResource {
     private static Long DEFAULT_WEBSOCKET_MQTT_PORT = 443L;
@@ -236,6 +236,29 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
             return null;
         }
 
+        return builder;
+    }
+
+    /**
+     * Creates a new MQTT5 client builder using a certificate and key stored in the passed-in Java keystore.
+     *
+     * Note: This function assumes the passed-in keystore has already been loaded from a
+     * file by calling <code>keystore.load(file, password)</code>.
+     *
+     * @param hostName AWS IoT endpoint to connect to
+     * @param keyStore The Java keystore to use. Assumed to be loaded with certificates and keys
+     * @param certificateAlias The alias of the certificate and key to use with the builder.
+     * @param certificatePassword The password of the certificate and key to use with the builder.
+     * @return A new AwsIotMqtt5ClientBuilder
+     */
+    public static AwsIotMqtt5ClientBuilder newDirectMqttBuilderWithJavaKeystore(
+        String hostName, java.security.KeyStore keyStore, String certificateAlias, String certificatePassword) {
+        TlsContextOptions options = TlsContextOptions.createWithMtlsJavaKeystore(keyStore, certificateAlias, certificatePassword);
+        AwsIotMqtt5ClientBuilder builder = new AwsIotMqtt5ClientBuilder(hostName, DEFAULT_DIRECT_MQTT_PORT, options);
+        options.close();
+        if (TlsContextOptions.isAlpnSupported()) {
+            builder.configTls.withAlpnList("x-amzn-mqtt-ca");
+        }
         return builder;
     }
 

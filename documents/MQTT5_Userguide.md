@@ -8,12 +8,13 @@
     * [Not Supported](#not-supported)
 * [Getting Started with MQTT5](#getting-started-with-mqtt5)
     * [How to setup a MQTT5 builder based on desired connection method](#how-to-setup-mqtt5-builder-based-on-desired-connection-method)
-        * [Direct Connection with X509-based Mutual TLS Method](#direct-connection-with-x509-based-mutual-tls-method)
+        * [Direct MQTT with X509-based Mutual TLS Method](#direct-mqtt-with-x509-based-mutual-tls-method)
         * [Websocket Connection with Sigv4 Authentication Method](#websocket-connection-with-sigv4-authentication-method)
         * [Direct MQTT with Custom Authorizer Method](#direct-mqtt-with-custom-authorizer-method)
-        * [Direct Connection with PKCS11 Method](#direct-mqtt-with-pkcs11-method)
-        * [Direct Connection with Custom Key Operations Method](#direct-mqtt-with-custom-key-operation-method)
-        * [Windows Certificate Store Method](#windows-certificate-store-method)
+        * [Direct MQTT with PKCS11 Method](#direct-mqtt-with-pkcs11-method)
+        * [Direct MQTT with Custom Key Operations Method](#direct-mqtt-with-custom-key-operation-method)
+        * [Direct MQTT with Windows Certificate Store Method](#direct-mqtt-with-windows-certificate-store-method)
+        * [Direct MQTT with Java Keystore Method](#direct-mqtt-with-java-keystore-method)
         * [HTTP Proxy](#http-proxy)
     * [How to create a MQTT5 client](#how-to-create-a-mqtt5-client)
     * [How to Start and Stop](#how-to-start-and-stop)
@@ -86,7 +87,7 @@ aws iot describe-endpoint --endpoint-type "iot:Data-ATS"
 
 Note that some MQTT client builders may also take file paths as inputs. These file paths can be either relative paths, like `../file.txt`, or full paths, like `C:\file.txt`. When possible, it is recommended to use full paths to these files to avoid issues when the application is moved to a different directory. Relative paths can be used for better portability across operating systems and files, but you will need to ensure the files are in the correct locations.
 
-### **Direct Connection with X509-based Mutual TLS Method**
+### **Direct MQTT with X509-based Mutual TLS Method**
 
 A direct MQTT5 connection requires a valid endpoint, a client certificate in X.509 format, and a PEM encoded private key. To create a MQTT5 builder configured for this connection, see the following code:
 
@@ -239,7 +240,7 @@ AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newDirectMtlsCustomK
 
 **Note**: Currently, Custom Key Operation support is only available on Linux devices.
 
-### **Windows Certificate Store Method**
+### **Direct MQTT with Windows Certificate Store Method**
 
 A MQTT5 direct connection can be made with mutual TLS with the certificate and private key in the [Windows certificate store](https://docs.microsoft.com/en-us/windows-hardware/drivers/install/certificate-stores), rather than simply being files on disk. To create a MQTT5 builder configured for this connection, see the following code:
 
@@ -251,6 +252,48 @@ AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newDirectMqttBuilder
 ~~~
 
 **Note**: Windows Certificate Store connection support is only available on Windows devices.
+
+### **Direct MQTT with Java Keystore Method**
+
+A MQTT5 direct connection can be made with mutual TLS using the certificate and private key in a Java Keystore file.
+
+To use the certificate and key files provided by AWS IoT Core, you will need to convert them into PKCS12 format and then import them into your Java keystore. You can convert the certificate and key file to PKCS12 using the following command:
+
+```sh
+openssl pkcs12 -export -in <my-certificate.pem.crt> -inkey <my-private-key.pem.key> -out my-pkcs12-key.p12 -name <certificate_alias> -password pass:<PKCS12_password>
+```
+
+Once you have a PKCS12 certificate and key, you can import it into a Java keystore using the following:
+
+```sh
+keytool -importkeystore -srckeystore my-pkcs12-key.p12 -destkeystore <destination_keystore.keys> -srcstoretype pkcs12 -alias <certificate_alias> -srcstorepass <PKCS12_password> -deststorepass <keystore_password>
+```
+
+~~~ java
+java.security.KeyStore keyStore;
+try {
+    keyStore = java.security.KeyStore.getInstance("PKCS12");
+} catch (java.security.KeyStoreException ex) {
+    throw new CrtRuntimeException("Could not get instance of Java keystore with format PKCS12");
+}
+
+String keyStorePath = "destination_keystore.keys";
+String keyStorePassword = "keystore_password";
+
+try (java.io.FileInputStream fileInputStream = new java.io.FileInputStream(keyStorePath)) {
+    keyStore.load(fileInputStream, keyStorePassword.toCharArray());
+} catch (java.io.FileNotFoundException ex) {
+    throw new CrtRuntimeException("Could not open Java keystore file");
+} catch (java.io.IOException | java.security.NoSuchAlgorithmException | java.security.cert.CertificateException ex) {
+    throw new CrtRuntimeException("Could not load Java keystore");
+}
+
+String keyStoreCertificateAlias = "certificate_alias";
+String keyStoreCertificatePassword = "PKCS12_password";
+
+String clientEndpoint = "<prefix>-ats.iot.<region>.amazonaws.com";
+AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newDirectMqttBuilderWithJavaKeystore(clientEndpoint, keyStore, keyStoreCertificateAlias, keyStoreCertificatePassword)
+~~~
 
 ### **HTTP Proxy**
 
