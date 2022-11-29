@@ -7,7 +7,6 @@
         "mvn -B compile"
     ],
     "test_steps": [
-        "aws s3 cp s3://aws-crt-test-stuff/TestIotProdMQTT5EnvironmentVariables.txt ./environment_files.txt",
         "source utils/mqtt5_test_setup.sh s3://aws-crt-test-stuff/TestIotProdMQTT5EnvironmentVariables.txt readonly",
         "mvn test -Dtest=Mqtt5BuilderTest -DfailIfNoTests=false",
         "source utils/mqtt5_test_setup.sh s3://aws-crt-test-stuff/TestIotProdMQTT5EnvironmentVariables.txt cleanup"
