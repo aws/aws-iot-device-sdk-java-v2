@@ -16,7 +16,13 @@ import software.amazon.awssdk.crt.CrtResource;
 import software.amazon.awssdk.crt.mqtt5.Mqtt5Client;
 import software.amazon.awssdk.crt.mqtt5.Mqtt5ClientOptions;
 import software.amazon.awssdk.crt.mqtt5.NegotiatedSettings;
+import software.amazon.awssdk.crt.mqtt5.OnAttemptingConnectReturn;
+import software.amazon.awssdk.crt.mqtt5.OnConnectionFailureReturn;
+import software.amazon.awssdk.crt.mqtt5.OnConnectionSuccessReturn;
+import software.amazon.awssdk.crt.mqtt5.OnDisconnectionReturn;
+import software.amazon.awssdk.crt.mqtt5.OnStoppedReturn;
 import software.amazon.awssdk.crt.mqtt5.PublishResult;
+import software.amazon.awssdk.crt.mqtt5.PublishReturn;
 import software.amazon.awssdk.crt.mqtt5.QOS;
 import software.amazon.awssdk.crt.mqtt5.packets.ConnAckPacket;
 import software.amazon.awssdk.crt.mqtt5.packets.DisconnectPacket;
@@ -84,30 +90,30 @@ public class Mqtt5BuilderTest {
         DisconnectPacket disconnectPacket = null;
 
         @Override
-        public void onAttemptingConnect(Mqtt5Client client) {}
+        public void onAttemptingConnect(Mqtt5Client client, OnAttemptingConnectReturn onAttemptingConnectReturn) {}
 
         @Override
-        public void onConnectionSuccess(Mqtt5Client client, ConnAckPacket connAckData, NegotiatedSettings negotiatedSettings) {
-            connectSuccessPacket = connAckData;
-            connectSuccessSettings = negotiatedSettings;
+        public void onConnectionSuccess(Mqtt5Client client, OnConnectionSuccessReturn onConnectionSuccessReturn) {
+            connectSuccessPacket = onConnectionSuccessReturn.getConnAckPacket();
+            connectSuccessSettings = onConnectionSuccessReturn.getNegotiatedSettings();
             connectedFuture.complete(null);
         }
 
         @Override
-        public void onConnectionFailure(Mqtt5Client client, int failureCode, ConnAckPacket connAckData) {
-            connectFailureCode = failureCode;
-            connectFailurePacket = connAckData;
+        public void onConnectionFailure(Mqtt5Client client, OnConnectionFailureReturn onConnectionFailureReturn) {
+            connectFailureCode = onConnectionFailureReturn.getErrorCode();
+            connectFailurePacket = onConnectionFailureReturn.getConnAckPacket();
             connectedFuture.completeExceptionally(new Exception("Could not connect! Failure code: " + CRT.awsErrorString(connectFailureCode)));
         }
 
         @Override
-        public void onDisconnection(Mqtt5Client client, int failureCode, DisconnectPacket disconnectData) {
-            disconnectFailureCode = failureCode;
-            disconnectPacket = disconnectData;
+        public void onDisconnection(Mqtt5Client client, OnDisconnectionReturn onDisconnectionReturn) {
+            disconnectFailureCode = onDisconnectionReturn.getErrorCode();
+            disconnectPacket = onDisconnectionReturn.getDisconnectPacket();
         }
 
         @Override
-        public void onStopped(Mqtt5Client client) {
+        public void onStopped(Mqtt5Client client, OnStoppedReturn onStoppedReturn) {
             stopFuture.complete(null);
         }
     }
@@ -117,8 +123,8 @@ public class Mqtt5BuilderTest {
         PublishPacket publishPacket = null;
 
         @Override
-        public void onMessageReceived(Mqtt5Client client, PublishPacket result) {
-            publishPacket = result;
+        public void onMessageReceived(Mqtt5Client client, PublishReturn publishReturn) {
+            publishPacket = publishReturn.getPublishPacket();
             publishReceivedFuture.complete(null);
         }
     }
@@ -133,8 +139,7 @@ public class Mqtt5BuilderTest {
         } catch (Exception ex) {
             fail("Exception in connecting: " + ex.toString());
         }
-        // TODO - fix getIsConnected not being set to true correctly...
-        // assertTrue(client.getIsConnected() == true);
+        assertTrue(client.getIsConnected() == true);
 
         // Sub
         SubscribePacket.SubscribePacketBuilder subBuilder = new SubscribePacket.SubscribePacketBuilder();

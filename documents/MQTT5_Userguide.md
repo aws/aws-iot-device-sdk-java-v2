@@ -323,23 +323,23 @@ For almost every MQTT5 client, it is extremely important to setup LifecycleEvent
 ~~~ java
 class MyLifecycleEvents implements Mqtt5ClientOptions.LifecycleEvents {
     @Override
-    public void onAttemptingConnect(Mqtt5Client client) {
+    public void onAttemptingConnect(Mqtt5Client client, OnAttemptingConnectReturn onAttemptingConnectReturn) {
         System.out.println("Attempting to connect...");
     }
     @Override
-    public void onConnectionSuccess(Mqtt5Client client, ConnAckPacket connAckData, NegotiatedSettings negotiatedSettings) {
+    public void onConnectionSuccess(Mqtt5Client client, OnConnectionSuccessReturn onConnectionSuccessReturn) {
         System.out.println("Connection success!");
     }
     @Override
-    public void onConnectionFailure(Mqtt5Client client, int failureCode, ConnAckPacket connAckData) {
+    public void onConnectionFailure(Mqtt5Client client, OnConnectionFailureReturn onConnectionFailureReturn) {
         System.out.println("Connection failed!");
     }
     @Override
-    public void onDisconnection(Mqtt5Client client, int failureCode, DisconnectPacket disconnectData) {
+    public void onDisconnection(Mqtt5Client client, OnDisconnectionReturn onDisconnectionReturn) {
         System.out.println("Disconnected!");
     }
     @Override
-    public void onStopped(Mqtt5Client client) {
+    public void onStopped(Mqtt5Client client, OnStoppedReturn onStoppedReturn) {
         System.out.println("Stopped!");
     }
 }
@@ -354,22 +354,22 @@ builder.withLifeCycleEvents(lifecycleEvents);
 LifecycleEvents include the following:
 
 * **onAttemptingConnect**
-    * Invoked when the client begins to open a connection to the configured endpoint
+    * Invoked when the client begins to open a connection to the configured endpoint. A AttemptingConnection event will return a `OnAttemptingConnectionReturn`, which currently is empty but may include additional data in the future.
 * **onConnectionSuccess**
-    * Invoked when a connection attempt succeeds based on receipt of an affirmative CONNACK packet from the MQTT broker. A ConnectionSuccess event includes the MQTT broker's CONNACK packet, as well as a NegotiatedSettings structure which contains the final values for all variable MQTT session settings (based on protocol defaults, client wishes, and server response).
+    * Invoked when a connection attempt succeeds based on receipt of an affirmative CONNACK packet from the MQTT broker. A ConnectionSuccess event includes a `OnConnectionSuccessReturn`, which includes the MQTT broker's CONNACK packet, as well as a `NegotiatedSettings` structure which contains the final values for all variable MQTT session settings (based on protocol defaults, client wishes, and server response).
 * **onConnectionFailure**
-    * Invoked when a connection attempt fails at any point between DNS resolution and CONNACK receipt. In addition to an error code, additional data may be present in the event based on the context. For example, if the remote endpoint sent a CONNACK with a failing reason code, the CONNACK packet will be included in the event data.
+    * Invoked when a connection attempt fails at any point between DNS resolution and CONNACK receipt. A ConnectionFailure event includes a `OnConnectionFailureReturn`, which includes an error code and may also include a CONNACK if one was sent. If the remote endpoint sent a CONNACK with a failing reason code, the CONNACK packet will be included in the OnConnectionFailureReturn.
 * **onDisconnection**
-    * Invoked when the client's network connection is shut down, either by a local action, event, or a remote close or reset. Only emitted after a ConnectionSuccess event: a network connection that is shut down during the connecting process manifests as a ConnectionFailure event. A Disconnect event will always include an error code. If the Disconnect event is due to the receipt of a server-sent DISCONNECT packet, the packet will be included with the event data.
+    * Invoked when the client's network connection is shut down, either by a local action, event, or a remote close or reset. Only emitted after a ConnectionSuccess event: a network connection that is shut down during the connecting process manifests as a ConnectionFailure event. A Disconnection event includes a `OnDisconnectionReturn` which will always include an error code, and if the Disconnect event is due to the receipt of a server-sent DISCONNECT packet, the packet will be included with the event data.
 * **onStopped**
-    * Invoked once the client has shutdown any associated network connection and entered an idle state where it will no longer attempt to reconnect. Only emitted after an invocation of stop() on the client. A stopped client may always be started again.
+    * Invoked once the client has shutdown any associated network connection and entered an idle state where it will no longer attempt to reconnect. Only emitted after an invocation of `stop()` on the client. A stopped client may always be started again. A Stopped event will return a `OnStoppedReturn`, which currently is empty but may include additional data in the future.
 
-If the MQTT5 client is going to subscribe and receive packets from the MQTT broker, it is important to also setup the PublishEvents callback. This callback is invoked whenever the server sends a message to the client because the server received a message on a topic the client is subscribed to. For example, if you subscribe to `test/topic` and a packet is published to `test/topic`, then the `onMessageReceived` function in the PublishEvents callback will be invoked with the packet that was published to `test/topic`. With this callback, you can process messages made to subscribed topics. To setup a publish callback, see the following code:
+If the MQTT5 client is going to subscribe and receive packets from the MQTT broker, it is important to also setup the PublishEvents callback. This callback is invoked whenever the server sends a message to the client because the server received a message on a topic the client is subscribed to. For example, if you subscribe to `test/topic` and a packet is published to `test/topic`, then the `onMessageReceived` function in the PublishEvents callback will be invoked with a `PublishReturn` that includes the packet that was published to `test/topic`. With this callback, you can process messages made to subscribed topics. To setup the PublishEvents callback, see the following code:
 
 ~~~ java
 class MyPublishEvents implements Mqtt5ClientOptions.PublishEvents {
     @Override
-    public void onMessageReceived(Mqtt5Client client, PublishPacket result) {
+    public void onMessageReceived(Mqtt5Client client, PublishReturn result) {
         System.out.println("Message received!");
     }
 }
@@ -381,8 +381,12 @@ MyPublishEvents publishEvents = new MyPublishEvents();
 builder.withPublishEvents(publishEvents);
 ~~~
 
+PublishEvents include the following:
+
 * **onMessageReceived**
-  * Invoked when a publish is received on a subscribed topic.
+  * Invoked when a publish is received on a subscribed topic. A MessageReceived event includes a `PublishReturn`, which will include the `PublishPacket` that was sent from the MQTT broker.
+
+_________
 
 Once fully setup and configured, the MQTT5 client builder can create a MQTT5 client using the following code:
 

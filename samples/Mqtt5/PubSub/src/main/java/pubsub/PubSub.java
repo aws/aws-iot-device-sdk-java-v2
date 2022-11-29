@@ -12,7 +12,13 @@ import software.amazon.awssdk.crt.io.ClientBootstrap;
 import software.amazon.awssdk.crt.mqtt5.Mqtt5Client;
 import software.amazon.awssdk.crt.mqtt5.Mqtt5ClientOptions;
 import software.amazon.awssdk.crt.mqtt5.NegotiatedSettings;
+import software.amazon.awssdk.crt.mqtt5.OnAttemptingConnectReturn;
+import software.amazon.awssdk.crt.mqtt5.OnConnectionFailureReturn;
+import software.amazon.awssdk.crt.mqtt5.OnConnectionSuccessReturn;
+import software.amazon.awssdk.crt.mqtt5.OnDisconnectionReturn;
+import software.amazon.awssdk.crt.mqtt5.OnStoppedReturn;
 import software.amazon.awssdk.crt.mqtt5.PublishResult;
+import software.amazon.awssdk.crt.mqtt5.PublishReturn;
 import software.amazon.awssdk.crt.mqtt5.QOS;
 import software.amazon.awssdk.crt.mqtt5.Mqtt5ClientOptions.LifecycleEvents;
 import software.amazon.awssdk.crt.mqtt5.packets.ConnAckPacket;
@@ -64,26 +70,28 @@ public class PubSub {
         CompletableFuture<Void> stoppedFuture = new CompletableFuture<>();
 
         @Override
-        public void onAttemptingConnect(Mqtt5Client client) {
+        public void onAttemptingConnect(Mqtt5Client client, OnAttemptingConnectReturn onAttemptingConnectReturn) {
             System.out.println("Mqtt5 Client: Attempting connection...");
         }
 
         @Override
-        public void onConnectionSuccess(Mqtt5Client client, ConnAckPacket connAckPacket, NegotiatedSettings settings) {
-            System.out.println("Mqtt5 Client: Connection success, client ID: " + settings.getAssignedClientID());
+        public void onConnectionSuccess(Mqtt5Client client, OnConnectionSuccessReturn onConnectionSuccessReturn) {
+            System.out.println("Mqtt5 Client: Connection success, client ID: "
+                + onConnectionSuccessReturn.getNegotiatedSettings().getAssignedClientID());
             connectedFuture.complete(null);
         }
 
         @Override
-        public void onConnectionFailure(Mqtt5Client client, int errorCode, ConnAckPacket connAckPacket) {
-            String errorString = CRT.awsErrorString(errorCode);
+        public void onConnectionFailure(Mqtt5Client client, OnConnectionFailureReturn onConnectionFailureReturn) {
+            String errorString = CRT.awsErrorString(onConnectionFailureReturn.getErrorCode());
             System.out.println("Mqtt5 Client: Connection failed with error: " + errorString);
             connectedFuture.completeExceptionally(new Exception("Could not connect: " + errorString));
         }
 
         @Override
-        public void onDisconnection(Mqtt5Client client, int errorCode, DisconnectPacket disconnectPacket) {
+        public void onDisconnection(Mqtt5Client client, OnDisconnectionReturn onDisconnectionReturn) {
             System.out.println("Mqtt5 Client: Disconnected");
+            DisconnectPacket disconnectPacket = onDisconnectionReturn.getDisconnectPacket();
             if (disconnectPacket != null) {
                 System.out.println("\tDisconnection packet code: " + disconnectPacket.getReasonCode());
                 System.out.println("\tDisconnection packet reason: " + disconnectPacket.getReasonString());
@@ -91,7 +99,7 @@ public class PubSub {
         }
 
         @Override
-        public void onStopped(Mqtt5Client client) {
+        public void onStopped(Mqtt5Client client, OnStoppedReturn onStoppedReturn) {
             System.out.println("Mqtt5 Client: Stopped");
             stoppedFuture.complete(null);
         }
@@ -105,16 +113,17 @@ public class PubSub {
         }
 
         @Override
-        public void onMessageReceived(Mqtt5Client client, PublishPacket packet) {
-            if (packet == null) {
+        public void onMessageReceived(Mqtt5Client client, PublishReturn publishReturn) {
+            PublishPacket publishPacket = publishReturn.getPublishPacket();
+            if (publishPacket == null) {
                 messagesReceived.countDown();
                 return;
             }
 
-            System.out.println("Publish received on topic: " + packet.getTopic());
-            System.out.println("Message: " + new String(packet.getPayload()));
+            System.out.println("Publish received on topic: " + publishPacket.getTopic());
+            System.out.println("Message: " + new String(publishPacket.getPayload()));
 
-            List<UserProperty> packetProperties = packet.getUserProperties();
+            List<UserProperty> packetProperties = publishPacket.getUserProperties();
             if (packetProperties != null) {
                 for (int i = 0; i < packetProperties.size(); i++) {
                     UserProperty property = packetProperties.get(i);
