@@ -7,6 +7,9 @@
         "mvn -B compile"
     ],
     "test_steps": [
+        "source utils/mqtt5_test_setup.sh s3://aws-crt-test-stuff/TestIotProdMQTT5EnvironmentVariables.txt us-east-1",
+        "mvn test -Dtest=Mqtt5BuilderTest -DfailIfNoTests=false",
+        "source utils/mqtt5_test_setup.sh s3://aws-crt-test-stuff/TestIotProdMQTT5EnvironmentVariables.txt cleanup"
     ],
     "imports": [
         "JDK8"
