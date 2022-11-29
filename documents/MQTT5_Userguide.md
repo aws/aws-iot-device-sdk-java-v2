@@ -269,6 +269,8 @@ Once you have a PKCS12 certificate and key, you can import it into a Java keysto
 keytool -importkeystore -srckeystore my-pkcs12-key.p12 -destkeystore <destination_keystore.keys> -srcstoretype pkcs12 -alias <certificate_alias> -srcstorepass <PKCS12_password> -deststorepass <keystore_password>
 ```
 
+With those steps completed and the PKCS12 key in the Java keystore, you can use the following code to load the certificate and private key from the Java keystore in the Java V2 SDK:
+
 ~~~ java
 java.security.KeyStore keyStore;
 try {
