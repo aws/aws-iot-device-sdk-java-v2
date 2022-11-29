@@ -44,12 +44,8 @@ else
     exit 0
 fi
 
-# Is this a normal request or a readonly one? If normal, download the file, otherwise just assume it is there.
-if [ "${region}" != "readonly" ]; then
-    # Get the file from S3
-    aws s3 cp ${testing_env_bucket} ${PWD}/environment_files.txt
-fi
-
+# Get the file from S3
+aws s3 cp ${testing_env_bucket} ${PWD}/environment_files.txt
 testing_env_file=$( cat environment_files.txt )
 # Make sure we have data of some form
 if [ "${testing_env_file}" != "" ]; then
