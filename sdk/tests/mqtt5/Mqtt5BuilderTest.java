@@ -213,6 +213,7 @@ public class Mqtt5BuilderTest {
         Mqtt5Client client = builder.build();
         TestSubPubUnsub(client, lifecycleEvents, publishEvents);
         client.close();
+        builder.close();
     }
 
     /* Testing direct connect with mTLS (cert and key) - but with two clients from same builder */
@@ -268,6 +269,7 @@ public class Mqtt5BuilderTest {
         Mqtt5Client client = builder.build();
         TestSubPubUnsub(client, lifecycleEvents, publishEvents);
         client.close();
+        builder.close();
     }
 
     /* Custom Auth (no signing) connect */
@@ -297,6 +299,7 @@ public class Mqtt5BuilderTest {
         Mqtt5Client client = builder.build();
         TestSubPubUnsub(client, lifecycleEvents, publishEvents);
         client.close();
+        builder.close();
     }
 
     /* Custom Auth (with signing) connect */
@@ -332,5 +335,6 @@ public class Mqtt5BuilderTest {
         Mqtt5Client client = builder.build();
         TestSubPubUnsub(client, lifecycleEvents, publishEvents);
         client.close();
+        builder.close();
     }
 }
