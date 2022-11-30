@@ -12,7 +12,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 import software.amazon.awssdk.crt.CRT;
-import software.amazon.awssdk.crt.CrtResource;
 import software.amazon.awssdk.crt.mqtt5.Mqtt5Client;
 import software.amazon.awssdk.crt.mqtt5.Mqtt5ClientOptions;
 import software.amazon.awssdk.crt.mqtt5.NegotiatedSettings;
@@ -30,7 +29,6 @@ import software.amazon.awssdk.crt.mqtt5.packets.PublishPacket;
 import software.amazon.awssdk.crt.mqtt5.packets.SubscribePacket;
 import software.amazon.awssdk.crt.mqtt5.packets.UnsubscribePacket;
 import software.amazon.awssdk.iot.AwsIotMqtt5ClientBuilder;
-import software.amazon.awssdk.iot.AwsIotMqtt5ClientBuilder.WebsocketSigv4Config;
 
 public class Mqtt5BuilderTest {
 
@@ -199,7 +197,6 @@ public class Mqtt5BuilderTest {
         assumeTrue(mqtt5IoTCoreHost != null);
         assumeTrue(mqtt5IoTCoreCertificatePath != null);
         assumeTrue(mqtt5IoTCoreKeyPath != null);
-        System.out.println("Starting test ConnIoT_DirectConnect_UC1");
 
         AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newDirectMqttBuilderWithMtlsFromPath(
             mqtt5IoTCoreHost, mqtt5IoTCoreCertificatePath, mqtt5IoTCoreKeyPath);
@@ -214,7 +211,6 @@ public class Mqtt5BuilderTest {
         TestSubPubUnsub(client, lifecycleEvents, publishEvents);
         client.close();
         builder.close();
-        System.out.println("Finished test ConnIoT_DirectConnect_UC1");
     }
 
     /* Testing direct connect with mTLS (cert and key) - but with two clients from same builder */
@@ -224,7 +220,6 @@ public class Mqtt5BuilderTest {
         assumeTrue(mqtt5IoTCoreHost != null);
         assumeTrue(mqtt5IoTCoreCertificatePath != null);
         assumeTrue(mqtt5IoTCoreKeyPath != null);
-        System.out.println("Starting test ConnIoT_DirectConnect_UC1_ALT");
 
         AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newDirectMqttBuilderWithMtlsFromPath(
             mqtt5IoTCoreHost, mqtt5IoTCoreCertificatePath, mqtt5IoTCoreKeyPath);
@@ -249,7 +244,6 @@ public class Mqtt5BuilderTest {
 
         // Builder must be closed to free everything
         builder.close();
-        System.out.println("Finish test ConnIoT_DirectConnect_UC1_ALT");
     }
 
     /* Websocket connect */
@@ -257,7 +251,6 @@ public class Mqtt5BuilderTest {
     public void ConnIoT_WebsocketConnect_UC1()
     {
         assumeTrue(mqtt5IoTCoreHost != null);
-        System.out.println("Starting test ConnIoT_WebsocketConnect_UC1");
 
         AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newWebsocketMqttBuilderWithSigv4Auth(
             mqtt5IoTCoreHost, null);
@@ -272,7 +265,6 @@ public class Mqtt5BuilderTest {
         TestSubPubUnsub(client, lifecycleEvents, publishEvents);
         client.close();
         builder.close();
-        System.out.println("Finish test ConnIoT_WebsocketConnect_UC1");
     }
 
     /* Custom Auth (no signing) connect */
@@ -283,7 +275,6 @@ public class Mqtt5BuilderTest {
         assumeTrue(mqtt5IoTCoreNoSigningAuthorizerName != null);
         assumeTrue(mqtt5IoTCoreNoSigningAuthorizerUsername != null);
         assumeTrue(mqtt5IoTCoreNoSigningAuthorizerPassword != null);
-        System.out.println("Starting test ConnIoT_CustomAuth_UC1");
 
         AwsIotMqtt5ClientBuilder.MqttConnectCustomAuthConfig customAuthConfig = new AwsIotMqtt5ClientBuilder.MqttConnectCustomAuthConfig();
         customAuthConfig.authorizerName = mqtt5IoTCoreNoSigningAuthorizerName;
@@ -303,7 +294,6 @@ public class Mqtt5BuilderTest {
         TestSubPubUnsub(client, lifecycleEvents, publishEvents);
         client.close();
         builder.close();
-        System.out.println("Finish test ConnIoT_CustomAuth_UC1");
     }
 
     /* Custom Auth (with signing) connect */
@@ -317,7 +307,6 @@ public class Mqtt5BuilderTest {
         assumeTrue(mqtt5IoTCoreSigningAuthorizerToken != null);
         assumeTrue(mqtt5IoTCoreSigningAuthorizerTokenKeyName != null);
         assumeTrue(mqtt5IoTCoreSigningAuthorizerTokenSignature != null);
-        System.out.println("Starting test ConnIoT_CustomAuth_UC2");
 
         AwsIotMqtt5ClientBuilder.MqttConnectCustomAuthConfig customAuthConfig = new AwsIotMqtt5ClientBuilder.MqttConnectCustomAuthConfig();
         customAuthConfig.authorizerName = mqtt5IoTCoreNoSigningAuthorizerName;
@@ -340,6 +329,5 @@ public class Mqtt5BuilderTest {
         TestSubPubUnsub(client, lifecycleEvents, publishEvents);
         client.close();
         builder.close();
-        System.out.println("Finish test ConnIoT_CustomAuth_UC2");
     }
 }
