@@ -199,6 +199,7 @@ public class Mqtt5BuilderTest {
         assumeTrue(mqtt5IoTCoreHost != null);
         assumeTrue(mqtt5IoTCoreCertificatePath != null);
         assumeTrue(mqtt5IoTCoreKeyPath != null);
+        System.out.println("Starting test ConnIoT_DirectConnect_UC1");
 
         AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newDirectMqttBuilderWithMtlsFromPath(
             mqtt5IoTCoreHost, mqtt5IoTCoreCertificatePath, mqtt5IoTCoreKeyPath);
@@ -221,6 +222,7 @@ public class Mqtt5BuilderTest {
         assumeTrue(mqtt5IoTCoreHost != null);
         assumeTrue(mqtt5IoTCoreCertificatePath != null);
         assumeTrue(mqtt5IoTCoreKeyPath != null);
+        System.out.println("Starting test ConnIoT_DirectConnect_UC1_ALT");
 
         AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newDirectMqttBuilderWithMtlsFromPath(
             mqtt5IoTCoreHost, mqtt5IoTCoreCertificatePath, mqtt5IoTCoreKeyPath);
@@ -252,6 +254,7 @@ public class Mqtt5BuilderTest {
     public void ConnIoT_WebsocketConnect_UC1()
     {
         assumeTrue(mqtt5IoTCoreHost != null);
+        System.out.println("Starting test ConnIoT_DirectConnect_UC1_ALT");
 
         AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newWebsocketMqttBuilderWithSigv4Auth(
             mqtt5IoTCoreHost, null);
@@ -275,6 +278,7 @@ public class Mqtt5BuilderTest {
         assumeTrue(mqtt5IoTCoreNoSigningAuthorizerName != null);
         assumeTrue(mqtt5IoTCoreNoSigningAuthorizerUsername != null);
         assumeTrue(mqtt5IoTCoreNoSigningAuthorizerPassword != null);
+        System.out.println("Starting test ConnIoT_CustomAuth_UC1");
 
         AwsIotMqtt5ClientBuilder.MqttConnectCustomAuthConfig customAuthConfig = new AwsIotMqtt5ClientBuilder.MqttConnectCustomAuthConfig();
         customAuthConfig.authorizerName = mqtt5IoTCoreNoSigningAuthorizerName;
@@ -306,6 +310,7 @@ public class Mqtt5BuilderTest {
         assumeTrue(mqtt5IoTCoreSigningAuthorizerToken != null);
         assumeTrue(mqtt5IoTCoreSigningAuthorizerTokenKeyName != null);
         assumeTrue(mqtt5IoTCoreSigningAuthorizerTokenSignature != null);
+        System.out.println("Starting test ConnIoT_CustomAuth_UC2");
 
         AwsIotMqtt5ClientBuilder.MqttConnectCustomAuthConfig customAuthConfig = new AwsIotMqtt5ClientBuilder.MqttConnectCustomAuthConfig();
         customAuthConfig.authorizerName = mqtt5IoTCoreNoSigningAuthorizerName;
