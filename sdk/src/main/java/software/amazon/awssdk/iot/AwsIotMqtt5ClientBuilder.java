@@ -563,6 +563,7 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
      *
      * @param endpoint - The endpoint to compute the region for.
      * @return The region associated with the endpoint.
+     * @throws Exception When AWS region cannot be extracted from endpoint.
      */
     public static String extractRegionFromEndpoint(String endpoint) throws Exception {
         Pattern regexPattern = Pattern.compile("^[\\w\\-]+\\.[\\w\\-]+\\.([\\w+\\-]+)\\.");
@@ -602,11 +603,11 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
          *
          * For example, if you set this to:
          *
-         * <code>MyUsername?someKey=someValue</code>
+         * <code>MyUsername{@literal ?}someKey=someValue</code>
          *
          * and use authorizerName to specify the authorizer, the final username would look like:
          *
-         * <code>MyUsername?someKey=someValue&x-amz-customauthorizer-name=<your authorizer's name>&...</code>
+         * <code>MyUsername{@literal ?}someKey=someValue{@literal &}x-amz-customauthorizer-name=<your authorizer's name>{@literal &}...</code>
          */
         public String username;
 
@@ -666,6 +667,7 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
      *
      * @param paramList The parameter list to use for creating the username.
      * @return A string formatted from the parameter list.
+     * @throws Exception When parameters cannot be added to username due to parameters list being uneven
      */
     private String formUsernameFromParam(List<String> paramList) throws Exception {
         boolean firstAddition = true;
