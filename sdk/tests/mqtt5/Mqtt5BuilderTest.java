@@ -167,7 +167,7 @@ public class Mqtt5BuilderTest {
             fail("Exception in getting publish: " + ex.toString());
         }
 
-        // Unsub
+        // Unsubscribe
         UnsubscribePacket.UnsubscribePacketBuilder unsubBuilder = new UnsubscribePacket.UnsubscribePacketBuilder();
         unsubBuilder.withSubscription("test/topic/" + topic_uuid);
         try {
