@@ -603,11 +603,11 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
          *
          * For example, if you set this to:
          *
-         * <code>MyUsername{@literal ?}someKey=someValue</code>
+         * <code>{@literal MyUsername?someKey=someValue}</code>
          *
          * and use authorizerName to specify the authorizer, the final username would look like:
          *
-         * <code>MyUsername{@literal ?}someKey=someValue{@literal &}x-amz-customauthorizer-name=<your authorizer's name>{@literal &}...</code>
+         * <code>{@literal MyUsername?someKey=someValue&x-amz-customauthorizer-name=<your authorizer's name >&...}</code>
          */
         public String username;
 
