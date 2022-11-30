@@ -214,6 +214,7 @@ public class Mqtt5BuilderTest {
         TestSubPubUnsub(client, lifecycleEvents, publishEvents);
         client.close();
         builder.close();
+        System.out.println("Finished test ConnIoT_DirectConnect_UC1");
     }
 
     /* Testing direct connect with mTLS (cert and key) - but with two clients from same builder */
@@ -248,6 +249,7 @@ public class Mqtt5BuilderTest {
 
         // Builder must be closed to free everything
         builder.close();
+        System.out.println("Finish test ConnIoT_DirectConnect_UC1_ALT");
     }
 
     /* Websocket connect */
@@ -255,7 +257,7 @@ public class Mqtt5BuilderTest {
     public void ConnIoT_WebsocketConnect_UC1()
     {
         assumeTrue(mqtt5IoTCoreHost != null);
-        System.out.println("Starting test ConnIoT_DirectConnect_UC1_ALT");
+        System.out.println("Starting test ConnIoT_WebsocketConnect_UC1");
 
         AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newWebsocketMqttBuilderWithSigv4Auth(
             mqtt5IoTCoreHost, null);
@@ -270,6 +272,7 @@ public class Mqtt5BuilderTest {
         TestSubPubUnsub(client, lifecycleEvents, publishEvents);
         client.close();
         builder.close();
+        System.out.println("Finish test ConnIoT_WebsocketConnect_UC1");
     }
 
     /* Custom Auth (no signing) connect */
@@ -300,6 +303,7 @@ public class Mqtt5BuilderTest {
         TestSubPubUnsub(client, lifecycleEvents, publishEvents);
         client.close();
         builder.close();
+        System.out.println("Finish test ConnIoT_CustomAuth_UC1");
     }
 
     /* Custom Auth (with signing) connect */
@@ -336,5 +340,6 @@ public class Mqtt5BuilderTest {
         TestSubPubUnsub(client, lifecycleEvents, publishEvents);
         client.close();
         builder.close();
+        System.out.println("Finish test ConnIoT_CustomAuth_UC2");
     }
 }
