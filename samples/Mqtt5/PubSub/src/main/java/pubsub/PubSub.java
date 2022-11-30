@@ -39,6 +39,11 @@ import java.util.concurrent.TimeUnit;
 
 import utils.commandlineutils.CommandLineUtils;
 
+/**
+ * MQTT5 support is currently in <b>developer preview</b>.  We encourage feedback at all times, but feedback during the
+ * preview window is especially valuable in shaping the final product.  During the preview period we may make
+ * backwards-incompatible changes to the public API, but in general, this is something we will try our best to avoid.
+ */
 public class PubSub {
 
     // When run normally, we want to exit nicely even if something goes wrong
