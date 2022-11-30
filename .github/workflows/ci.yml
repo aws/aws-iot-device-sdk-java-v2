@@ -97,13 +97,6 @@ jobs:
         distribution: temurin
         java-version: ${{ matrix.version }}
         cache: maven
-    - name: TMP - Build the CRT from source for testing
-      run: |
-        git clone https://github.com/awslabs/aws-crt-java.git --branch main_sync
-        cd aws-crt-java
-        git submodule update --init --recursive
-        mvn install
-        cd ..
     - name: Build ${{ env.PACKAGE_NAME }} + consumers
       run: |
         python -c "from urllib.request import urlretrieve; urlretrieve('${{ env.BUILDER_HOST }}/${{ env.BUILDER_SOURCE }}/${{ env.BUILDER_VERSION }}/builder.pyz?run=${{ env.RUN }}', 'builder.pyz')"
@@ -171,13 +164,6 @@ jobs:
         distribution: temurin
         java-version: ${{ matrix.version }}
         cache: maven
-    - name: TMP - Build the CRT from source for testing
-      run: |
-        git clone https://github.com/awslabs/aws-crt-java.git --branch main_sync
-        cd aws-crt-java
-        git submodule update --init --recursive
-        mvn install -Dmaven.test.skip=true
-        cd ..
     - name: Build ${{ env.PACKAGE_NAME }} + consumers
       run: |
         python3 -c "from urllib.request import urlretrieve; urlretrieve('${{ env.BUILDER_HOST }}/${{ env.BUILDER_SOURCE }}/${{ env.BUILDER_VERSION }}/builder.pyz?run=${{ env.RUN }}', 'builder')"
@@ -242,13 +228,6 @@ jobs:
           distribution: temurin
           java-version: ${{ matrix.version }}
           cache: maven
-      - name: TMP - Build the CRT from source for testing
-        run: |
-          git clone https://github.com/awslabs/aws-crt-java.git --branch main_sync
-          cd aws-crt-java
-          git submodule update --init --recursive
-          mvn install -Dmaven.test.skip
-          cd ..
       - name: Build ${{ env.PACKAGE_NAME }} + consumers
         run: |
           java -version
@@ -340,13 +319,6 @@ jobs:
           distribution: temurin
           java-version: ${{ matrix.version }}
           cache: maven
-      - name: TMP - Build the CRT from source for testing
-        run: |
-          git clone https://github.com/awslabs/aws-crt-java.git --branch main_sync
-          cd aws-crt-java
-          git submodule update --init --recursive
-          mvn install -Dmaven.test.skip
-          cd ..
       - name: Build ${{ env.PACKAGE_NAME }} + consumers
         run: |
           java -version
