@@ -160,7 +160,7 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
      *
      * @param hostName - AWS IoT endpoint to connect to
      * @param customAuthConfig - AWS IoT custom auth configuration
-     * @return
+     * @return - A new AwsIotMqtt5ClientBuilder
      */
     public static AwsIotMqtt5ClientBuilder newDirectMqttBuilderWithCustomAuth(String hostName, MqttConnectCustomAuthConfig customAuthConfig) {
         TlsContextOptions options = TlsContextOptions.createDefaultClient();
@@ -602,11 +602,11 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
          *
          * For example, if you set this to:
          *
-         * 'MyUsername?someKey=someValue'
+         * <code>MyUsername?someKey=someValue</code>
          *
          * and use authorizerName to specify the authorizer, the final username would look like:
          *
-         * `MyUsername?someKey=someValue&x-amz-customauthorizer-name=<your authorizer's name>&...`
+         * <code>MyUsername?someKey=someValue&x-amz-customauthorizer-name=<your authorizer's name>&...</code>
          */
         public String username;
 
@@ -659,7 +659,7 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
 
     /**
      * Takes a list of strings and returns a formatted username. Will correctly handle adding
-     * `?` or `&` to append the strings together.
+     * <code>?</code> or <code>&</code> to append the strings together.
      *
      * Note: The paramList is expected to have either zero elements or an even amount. Will throw if uneven.
      * Will correctly handle if the parameter name is null but the parameter value is not null.

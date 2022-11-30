@@ -18,7 +18,7 @@ else
     echo ""
     echo "Example: mqtt5_test_setup.sh s3://<bucket>/<file> cleanup"
     echo ""
-    exit 1
+    return 1
 fi
 
 # Is this just a request to clean up?
@@ -41,7 +41,7 @@ else
     rm "${PWD}/iot_privatekey.pem"
 
     echo "Success!"
-    exit 0
+    return 0
 fi
 
 # Get the file from S3
@@ -52,7 +52,7 @@ if [ "${testing_env_file}" != "" ]; then
     echo "Environment variables secret found"
 else
     echo "Could not get environment variables from secrets!"
-    exit 1
+    return 1
 fi
 
 # Make all the variables in mqtt5_environment_variables.txt exported
@@ -75,7 +75,7 @@ else
     rm "${PWD}/crt_certificate.pem"
     rm "${PWD}/crt_privatekey.pem"
 
-    exit 1
+    return 1
 fi
 # Does the private key file have data? If not, then abort!
 if [ "${crt_key_file}" != "" ]; then
@@ -89,7 +89,7 @@ else
     rm "${PWD}/crt_certificate.pem"
     rm "${PWD}/crt_privatekey.pem"
 
-    exit 1
+    return 1
 fi
 # Set the certificate and key paths (absolute paths for best compatbility)
 export AWS_TEST_MQTT5_CERTIFICATE_FILE="${PWD}/crt_certificate.pem"
@@ -98,8 +98,8 @@ export AWS_TEST_MQTT5_KEY_FILE="${PWD}/crt_privatekey.pem"
 
 # IoT/Builder certificate and key processing
 # Get the certificate and key secrets (dumps straight to a file)
-iot_cert_file=$(aws secretsmanager get-secret-value --secret-id "${AWS_TEST_MQTT5_IOT_CERTIFICATE_PATH_SECRET}" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$iot_cert_file" > ${PWD}/iot_certificate.pem
-iot_key_file=$(aws secretsmanager get-secret-value --secret-id "${AWS_TEST_MQTT5_IOT_KEY_PATH_SECRET}" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$iot_key_file" > ${PWD}/iot_privatekey.pem
+iot_cert_file=$(aws secretsmanager get-secret-value --secret-id "${AWS_TEST_MQTT5_IOT_CERTIFICATE_PATH_SECRET}" --region ${region} --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$iot_cert_file" > ${PWD}/iot_certificate.pem
+iot_key_file=$(aws secretsmanager get-secret-value --secret-id "${AWS_TEST_MQTT5_IOT_KEY_PATH_SECRET}" --region ${region} --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$iot_key_file" > ${PWD}/iot_privatekey.pem
 # Does the certificate file have data? If not, then abort!
 if [ "${iot_cert_file}" != "" ]; then
     echo "IoT Certificate secret found"
@@ -116,7 +116,7 @@ else
     rm "${PWD}/iot_certificate.pem"
     rm "${PWD}/iot_privatekey.pem"
 
-    exit 1
+    return 1
 fi
 # Does the private key file have data? If not, then abort!
 if [ "${iot_key_file}" != "" ]; then
@@ -134,7 +134,7 @@ else
     rm "${PWD}/iot_certificate.pem"
     rm "${PWD}/iot_privatekey.pem"
 
-    exit 1
+    return 1
 fi
 # Set IoT certificate and key paths
 export AWS_TEST_MQTT5_IOT_CERTIFICATE_PATH="${PWD}/iot_certificate.pem"
