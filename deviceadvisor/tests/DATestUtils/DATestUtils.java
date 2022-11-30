@@ -34,22 +34,18 @@ public class DATestUtils {
         thing_name = System.getenv(ENV_THING_NAME);
         shadowProperty = System.getenv(ENV_SHADOW_PROPERTY);
         shadowValue = System.getenv(ENV_SHADOW_VALUE_SET);
-
         if (endpoint.isEmpty() || certificatePath.isEmpty() || keyPath.isEmpty())
         {
             return false;
         }
-
         if (topic.isEmpty() && type == TestType.SUB_PUB)
         {
             return false;
         }
-
         if ((thing_name.isEmpty() || shadowProperty.isEmpty() || shadowValue.isEmpty()) && type == TestType.SHADOW)
         {
             return false;
         }
-
         return true;
 
     }

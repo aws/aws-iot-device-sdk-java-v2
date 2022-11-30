@@ -131,7 +131,6 @@ for test_name in DATestConfig['tests']:
         create_cert_response = client.create_keys_and_certificate(
             setAsActive=True
         )
-
         # write certificate to file
         f = open(certificate_path, "w")
         f.write(create_cert_response['certificatePem'])
@@ -255,7 +254,6 @@ for test_name in DATestConfig['tests']:
                 suiteDefinitionId=DATestConfig['test_suite_ids'][test_name],
                 suiteRunId=test_start_response['suiteRunId']
             )
-
             # If the status is PENDING or the responds does not loaded, the test suite is still loading
             if (test_result_responds['status'] == 'PENDING' or
             len(test_result_responds['testResult']['groups']) == 0 or # test group has not been loaded

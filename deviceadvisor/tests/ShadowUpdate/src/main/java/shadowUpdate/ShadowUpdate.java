@@ -35,7 +35,6 @@ public class ShadowUpdate {
         UpdateShadowRequest request = new UpdateShadowRequest();
         request.thingName = DATestUtils.thing_name;
         request.state = new ShadowState();
-
         request.state.reported = new HashMap<String, Object>() {{
            put(DATestUtils.shadowProperty, DATestUtils.shadowValue);
         }};
