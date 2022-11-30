@@ -52,16 +52,16 @@ MQTT5 support in the Java SDK comes from a separate client implementation. In do
 * The set of client lifecycle events is expanded and contains more detailed information whenever possible. All protocol data is exposed to the user.
 * MQTT operations are completed with fully associated ACK packets when possible.
 * New, optional behavior configuration:
-    * IoT Core specific validation - will validate and fail operations that break IoT Core specific restrictions
-    * IoT Core specific flow control - will apply flow control to honor IoT Core specific per-connection limits and quotas
-    * Flexible queue control - provides a number of options to control what happens to incomplete operations on a disconnection event.
-* A new API has been added to query the internal state of the client’s operation queue. This API allows the user to make more informed flow control decisions before submitting operations to the client.
+    * [IoT Core specific validation](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5ClientOptions.ExtendedValidationAndFlowControlOptions.html) - will validate and fail operations that break IoT Core specific restrictions
+    * [IoT Core specific flow control](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5ClientOptions.ExtendedValidationAndFlowControlOptions.html) - will apply flow control to honor IoT Core specific per-connection limits and quotas
+    * [Flexible queue control](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5ClientOptions.ClientOfflineQueueBehavior.html) - provides a number of options to control what happens to incomplete operations on a disconnection event.
+* A [new API](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5Client.html#getOperationStatistics()) has been added to query the internal state of the client’s operation queue. This API allows the user to make more informed flow control decisions before submitting operations to the client.
 * Data can no longer back up on the socket. At most one frame of data is every pending-write on the socket.
 * The MQTT5 client has a single message-received callback. Per-subscription callbacks are not supported.
 
 ## Minor Changes
 
-* Public API terminology has changed. You *start* or *stop* the MQTT5 client rather than *Connect* or *Disconnect* like in MQTT311. This removes the semantic confusion with the connect/disconnect as the client-level controls vs. internal recurrent networking events.
+* Public API terminology has changed. You `start()` or `stop()` the MQTT5 client rather than `Connect` or `Disconnect` like in MQTT311. This removes the semantic confusion with the connect/disconnect as the client-level controls vs. internal recurrent networking events.
 * With the MQTT311 implementation, there were two separate objects: a client and a connection. With MQTT5, there is only the client.
 
 ## Not Supported
@@ -316,9 +316,9 @@ SDK Proxy support also includes support for basic authentication and TLS-to-prox
 
 ## How to create a MQTT5 client
 
-Once a MQTT5 client builder has been created, it is ready to make a MQTT5 client. Something important to note is that once a MQTT5 client is built and finalized, the resulting MQTT5 client cannot have its settings modified! Further, modifications to the MQTT5 client builder will not change the settings of already created the MQTT5 clients. Before building a MQTT5 client from a MQTT5 client builder, make sure to have everything fully setup.
+Once a MQTT5 client builder has been created, it is ready to make a [MQTT5 client](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5Client.html). Something important to note is that once a MQTT5 client is built and finalized, the resulting MQTT5 client cannot have its settings modified! Further, modifications to the MQTT5 client builder will not change the settings of already created the MQTT5 clients. Before building a MQTT5 client from a MQTT5 client builder, make sure to have everything fully setup.
 
-For almost every MQTT5 client, it is extremely important to setup LifecycleEvents callbacks. LifecycleEvents are invoked when the MQTT5 client connects, fails to connect, disconnects, and is stopped. Without these callbacks setup, it will be incredibly hard to determine the state of the MQTT5 client. To setup LifecycleEvent callbacks, see the following code:
+For almost every MQTT5 client, it is extremely important to setup [LifecycleEvents](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5ClientOptions.LifecycleEvents.html) callbacks. [LifecycleEvents](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5ClientOptions.LifecycleEvents.html) are invoked when the MQTT5 client connects, fails to connect, disconnects, and is stopped. Without these callbacks setup, it will be incredibly hard to determine the state of the MQTT5 client. To setup [LifecycleEvents](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5ClientOptions.LifecycleEvents.html) callbacks, see the following code:
 
 ~~~ java
 class MyLifecycleEvents implements Mqtt5ClientOptions.LifecycleEvents {
@@ -351,7 +351,7 @@ MyLifecycleEvents lifecycleEvents = new MyLifecycleEvents();
 builder.withLifeCycleEvents(lifecycleEvents);
 ~~~
 
-LifecycleEvents include the following:
+[LifecycleEvents](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5ClientOptions.LifecycleEvents.html) include the following:
 
 * **onAttemptingConnect**
     * Invoked when the client begins to open a connection to the configured endpoint. A AttemptingConnection event will return a `OnAttemptingConnectionReturn`, which currently is empty but may include additional data in the future.
@@ -364,7 +364,7 @@ LifecycleEvents include the following:
 * **onStopped**
     * Invoked once the client has shutdown any associated network connection and entered an idle state where it will no longer attempt to reconnect. Only emitted after an invocation of `stop()` on the client. A stopped client may always be started again. A Stopped event will return a `OnStoppedReturn`, which currently is empty but may include additional data in the future.
 
-If the MQTT5 client is going to subscribe and receive packets from the MQTT broker, it is important to also setup the PublishEvents callback. This callback is invoked whenever the server sends a message to the client because the server received a message on a topic the client is subscribed to. For example, if you subscribe to `test/topic` and a packet is published to `test/topic`, then the `onMessageReceived` function in the PublishEvents callback will be invoked with a `PublishReturn` that includes the packet that was published to `test/topic`. With this callback, you can process messages made to subscribed topics. To setup the PublishEvents callback, see the following code:
+If the MQTT5 client is going to subscribe and receive packets from the MQTT broker, it is important to also setup the [PublishEvents](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5ClientOptions.PublishEvents.html) callback. This callback is invoked whenever the server sends a message to the client because the server received a message on a topic the client is subscribed to. For example, if you subscribe to `test/topic` and a packet is published to `test/topic`, then the `onMessageReceived` function in the PublishEvents callback will be invoked with a `PublishReturn` that includes the packet that was published to `test/topic`. With this callback, you can process messages made to subscribed topics. To setup the [PublishEvents](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5ClientOptions.PublishEvents.html) callback, see the following code:
 
 ~~~ java
 class MyPublishEvents implements Mqtt5ClientOptions.PublishEvents {
@@ -381,7 +381,7 @@ MyPublishEvents publishEvents = new MyPublishEvents();
 builder.withPublishEvents(publishEvents);
 ~~~
 
-PublishEvents include the following:
+[PublishEvents](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5ClientOptions.PublishEvents.html) include the following:
 
 * **onMessageReceived**
   * Invoked when a publish is received on a subscribed topic. A MessageReceived event includes a `PublishReturn`, which will include the `PublishPacket` that was sent from the MQTT broker.
@@ -415,7 +415,7 @@ Once a MQTT5 client is created, it is ready to perform operations, which are des
 
 ## How to Start and Stop
 
-A MQTT5 client can start and stop a session as needed. Once started, the MQTT5 client will open the connection and allow packets to be sent and received. Likewise, once stopped, the MQTT5 client will close the connection and terminate the session. A closed client can be started  again by calling `start()`.
+A MQTT5 client can [start](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5Client.html#start()) and stop a session as needed. Once started, the MQTT5 client will open the connection and allow packets to be sent and received. Likewise, once stopped, the MQTT5 client will close the connection and terminate the session. A closed client can be started  again by calling [start](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5Client.html#start()).
 
 To start a MQTT5 client, see the following code:
 
@@ -426,7 +426,7 @@ client.start();
 
 _________
 
-The `stop()` API supports a DISCONNECT packet as an optional parameter. If supplied, the DISCONNECT packet will be sent to the server prior to closing the socket. To stop a MQTT5 client, see the following code:
+The [stop](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5Client.html#stop(software.amazon.awssdk.crt.mqtt5.packets.DisconnectPacket)) API supports a [DisconnectPacket](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/packets/DisconnectPacket.html) as an optional parameter. If supplied, the [DisconnectPacket](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/packets/DisconnectPacket.html) will be sent to the server prior to closing the socket. To stop a MQTT5 client, see the following code:
 
 ~~~ java
 DisconnectPacketBuilder disconnectBuilder = new DisconnectPacketBuilder();
@@ -434,7 +434,7 @@ disconnectBuilder.withReasonCode(DisconnectPacket.DisconnectReasonCode.NORMAL_DI
 client.stop(disconnectBuilder.build());
 ~~~
 
-There is no promise returned by a call to `stop()`, but you may listen for the `onStopped` LifecycleEvent on the client.
+There is no promise returned by a call to [stop](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5Client.html#stop(software.amazon.awssdk.crt.mqtt5.packets.DisconnectPacket)), but you may listen for the [onStopped](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5ClientOptions.LifecycleEvents.html#onStopped(software.amazon.awssdk.crt.mqtt5.Mqtt5Client,software.amazon.awssdk.crt.mqtt5.OnStoppedReturn)) LifecycleEvent on the client.
 
 Note that in the Java SDK, the MQTT5 client will automatically attempt to reconnect should it become disconnected for some reason, like the internet on the device going out for example, that is not a user initiated stop. This re-connection will happen automatically and can be configured in the MQTT5 client builder via the connection settings.
 
@@ -451,13 +451,13 @@ client.close();
 
 ## How to Publish
 
-The Publish operation takes a description of the PUBLISH packet you wish to send and returns a promise containing a `PublishResult`. The returned `PublishResult` will contain different data depending on the QoS used in the publish.
+The [publish](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5Client.html#publish(software.amazon.awssdk.crt.mqtt5.packets.PublishPacket)) operation takes a description of the PUBLISH packet you wish to send and returns a promise containing a [PublishResult](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/PublishResult.html). The returned [PublishResult](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/PublishResult.html) will contain different data depending on the QoS used in the publish.
 
 * For QoS 0: Calling `getValue` will return `null` and the promise will be complete as soon as the packet has been written to the socket.
-* For QoS 1: Calling `getValue` will return a `PubAck` and the promise will be complete as soon as the PUBACK is received from the broker.
+* For QoS 1: Calling `getValue` will return a [PubAckPacket](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/packets/PubAckPacket.html) and the promise will be complete as soon as the PUBACK is received from the broker.
 
 If the operation fails for any reason before these respective completion events, the promise is rejected with a descriptive error.
-You should always check the reason code of a PUBACK completion to determine if a QoS 1 publish operation actually succeeded.
+You should always check the reason code of a [PubAckPacket](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/packets/PubAckPacket.html) completion to determine if a QoS 1 publish operation actually succeeded.
 
 Once connected, the MQTT5 client can publish to a topic using the following code:
 
@@ -487,8 +487,8 @@ Note that publishes made while a MQTT5 client is disconnected and offline will b
 
 ## How to Subscribe and Unsubscribe
 
-The Subscribe operation takes a description of the SUBSCRIBE packet you wish to send and returns a promise that resolves successfully with the corresponding SUBACK returned by the broker; the promise is rejected with an error if anything goes wrong before the SUBACK is received.
-You should always check the reason codes of a SUBACK completion to determine if the subscribe operation actually succeeded.
+The [subscribe](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5Client.html#subscribe(software.amazon.awssdk.crt.mqtt5.packets.SubscribePacket)) operation takes a description of the [SubscribePacket](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/packets/SubscribePacket.html) you wish to send and returns a promise that resolves successfully with the corresponding [SubAckPacket](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/packets/SubAckPacket.html) returned by the broker; the promise is rejected with an error if anything goes wrong before the [SubAckPacket](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/packets/SubAckPacket.html) is received.
+You should always check the reason codes of a [SubAckPacket](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/packets/SubAckPacket.html) completion to determine if the subscribe operation actually succeeded.
 
 Once connected, the MQTT5 client can subscribe to one or more topics using the following code:
 
@@ -503,8 +503,8 @@ Once a MQTT5 client is subscribed, if a publish packet is received on a subscrib
 
 _________
 
-The Unsubscribe operation takes a description of the UNSUBSCRIBE packet you wish to send and returns a promise that resolves successfully with the corresponding UNSUBACK returned by the broker; the promise is rejected with an error if anything goes wrong before the UNSUBACK is received.
-You should always check the reason codes of a UNSUBACK completion to determine if the unsubscription operation actually succeeded.
+The [unsubscribe](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5Client.html#unsubscribe(software.amazon.awssdk.crt.mqtt5.packets.UnsubscribePacket)) operation takes a description of the [UnsubscribePacket](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/packets/UnsubscribePacket.html) you wish to send and returns a promise that resolves successfully with the corresponding [UnsubAckPacket](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/packets/UnsubAckPacket.html) returned by the broker; the promise is rejected with an error if anything goes wrong before the [UnsubAckPacket](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/packets/UnsubAckPacket.html) is received.
+You should always check the reason codes of a [UnsubAckPacket](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/packets/UnsubAckPacket.html) completion to determine if the unsubscribe operation actually succeeded.
 
 The MQTT5 client can unsubscribe from one or more topics using the following:
 
@@ -523,4 +523,4 @@ Below are some best practices for the MQTT5 client that are recommended to follo
 * Use the minimum QoS you can get away with for the lowest latency and bandwidth costs. For example, if you are sending data consistently multiple times per second and do not have to have a guarantee the server got each and every publish, using QoS 0 may be ideal compared to QoS 1. Of course, this heavily depends on your use case but generally it is recommended to use the lowest QoS possible.
 * If you are getting unexpected disconnects when trying to connect to AWS IoT Core, make sure to check your IoT Core Thing’s policy and permissions to make sure your device is has the permissions it needs to connect!
 * Make sure to always call `close()` when finished a MQTT5 client to avoid native resource leaks!
-* For Publish, Subscribe, and Unsubscribe, make sure to check the reason codes in the ACK (PUBACK, SUBACK, and UNSUBACK respectively) to see if the operation actually succeeded.
+* For [publish](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5Client.html#publish(software.amazon.awssdk.crt.mqtt5.packets.PublishPacket)), [subscribe](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5Client.html#subscribe(software.amazon.awssdk.crt.mqtt5.packets.SubscribePacket)), and [unsubscribe](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5Client.html#unsubscribe(software.amazon.awssdk.crt.mqtt5.packets.UnsubscribePacket)), make sure to check the reason codes in the ACK ([PubAckPacket](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/packets/PubAckPacket.html), [SubAckPacket](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/packets/SubAckPacket.html), and [UnsubAckPacket](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/packets/UnsubAckPacket.html) respectively) to see if the operation actually succeeded.
