@@ -32,7 +32,7 @@ def main():
 
     os.chdir(os.path.dirname(__file__))
 
-    if args.update_samples == None:
+    if args.update_samples == False:
         update(filepath='sdk/pom.xml',
             preceded_by=r'<artifactId>aws-crt</artifactId>\s*<version>',
             followed_by=r'</version>')

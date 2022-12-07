@@ -26,4 +26,3 @@ final public class IpcServer extends RpcServer {
         LOGGER.warn("IpcServer class is DEPRECATED. Use RpcServer");
     }
 }
-
