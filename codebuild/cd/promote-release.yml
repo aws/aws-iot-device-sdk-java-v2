@@ -1,31 +1,44 @@
-version: 0.2
-#this buildspec assumes the ubuntu 16.04:x64 image
+# Assumes are running using the Ubuntu Codebuild standard image
+# Makes the full release deployment.
 # This job is responsible for artifacting the JAR which will have all of the other shared libs stuffed
 # into it once all platforms are built and artifacted
+#
+# NOTE: This script assumes that the AWS CLI-V2 is pre-installed!
+# - AWS CLI-V2 is a requirement to run this script.
+
+version: 0.2
 phases:
   install:
     commands:
       - sudo add-apt-repository ppa:openjdk-r/ppa
       - sudo apt-get update -y
       - sudo apt-get install openjdk-8-jdk-headless maven -y -f
-      # need latest awscli for secretsmanager
-      - sudo pip3 install awscli --upgrade
+      - echo "\nBuild version data:"
+      - echo "\nJava Version:"; java -version
+      - echo "\nMaven Version:"; mvn --version
+      - echo "\n"
 
   pre_build:
     commands:
       - cd $CODEBUILD_SRC_DIR/aws-iot-device-sdk-java-v2
-      - export PKG_VERSION=$(git describe --tags | cut -f2 -dv)
+      - export PKG_VERSION=$(cat $CODEBUILD_SRC_DIR/VERSION)
       - echo PKG_VERSION=$PKG_VERSION
+
       # install settings.xml to ~/.m2/settings.xml
       - mkdir -p $HOME/.m2
-      - aws s3 cp s3://code-sharing-aws-crt/aws-crt-java.settings.xml $HOME/.m2/settings.xml
-      - export ST_PASSWORD=$(aws --query "SecretString" secretsmanager get-secret-value --secret-id Sonatype/JIRA/Password | cut -f2 -d":" | sed -e 's/[\\\"\}]//g')
+      - export CD_SETTINGS=$(aws secretsmanager get-secret-value --secret-id cd/aws-crt-java-settings --query "SecretString" | cut -f2 -d\")
+      - echo $CD_SETTINGS > $HOME/.m2/settings.xml
+
+      - export ST_PASSWORD=$(aws --query "SecretString" secretsmanager get-secret-value --secret-id cd/Sonatype/JIRA/Password | cut -f2 -d":" | sed -e 's/[\\\"\}]//g')
       # Use the password from secret manager to update the settings
       - sed -i 's/password-to-replace/'"$ST_PASSWORD"'/g' $HOME/.m2/settings.xml
+
       # import gpg key
-      - aws s3 cp s3://code-sharing-aws-crt/aws-sdk-common-runtime.key.asc /tmp/aws-sdk-common-runtime.key.asc
-      - gpg --import /tmp/aws-sdk-common-runtime.key.asc
-      - export GPG_PASSPHRASE=$(aws --query "SecretString" secretsmanager get-secret-value --secret-id aws-sdk-common-runtime.key.asc/password | cut -f2 -d":" | sed -e 's/[\\\"\}]//g')
+      - export CD_KEY=$(aws secretsmanager get-secret-value --secret-id cd/aws-crt-java-key --query "SecretString" | cut -f2 -d\")
+      - echo $CD_KEY > /tmp/aws-sdk-common-runtime.key.asc
+
+      - gpg --batch --import /tmp/aws-sdk-common-runtime.key.asc
+      - export GPG_PASSPHRASE=$(aws --query "SecretString" secretsmanager get-secret-value --secret-id cd/aws-crt-java-key/password | cut -f2 -d":" | sed -e 's/[\\\"\}]//g')
       - export REPOSITORY_ID=$(cat $CODEBUILD_SRC_DIR_aws_iot_device_sdk_java_v2_jar/repositoryId.txt)
   build:
     commands:
