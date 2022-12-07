@@ -45,17 +45,17 @@ to Java by the [aws-crt-java](https://github.com/awslabs/aws-crt-java) package.
 
 ### Consuming IoT Device SDK from Maven
 
-Consuming this SDK via Maven is the preferred method of consuming it. Add the following to your pom.xml depedencies:
+Consuming this SDK via Maven is the preferred method of consuming it. Add the following to your pom.xml dependencies:
 
 ``` xml
 <dependency>
   <groupId>software.amazon.awssdk.iotdevicesdk</groupId>
   <artifactId>aws-iot-device-sdk</artifactId>
-  <version>1.8.5</version>
+  <version>1.10.5</version>
 </dependency>
 ```
 
-Replace `1.8.5` in `<version>1.17.0</version>` with the latest release version for the SDK.
+Replace `1.10.5` in `<version>1.10.5</version>` with the latest release version for the SDK.
 Look up the latest SDK version here: https://github.com/aws/aws-iot-device-sdk-java-v2/releases
 
 ### Build IoT Device SDK from source
@@ -172,3 +172,4 @@ We need your help in making this SDK great. Please participate in the community 
 
 This library is licensed under the Apache 2.0 License.
 
+Latest released version: v1.11.0

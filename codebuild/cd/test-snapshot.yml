@@ -1,18 +1,30 @@
+# Assumes are running using the Ubuntu Codebuild standard image
+# Tests the snapshot deployment to make sure it works as expected.
+#
+# NOTE: This script assumes that the AWS CLI-V2 is pre-installed!
+# - AWS CLI-V2 is a requirement to run this script.
+
 version: 0.2
-#this buildspec assumes the ubuntu 16.04:x64 image
-# This job is responsible for artifacting the JAR which will have all of the other shared libs stuffed
-# into it once all platforms are built and artifacted
 phases:
   install:
     commands:
       - sudo add-apt-repository ppa:openjdk-r/ppa
       - sudo apt-get update -y
       - sudo apt-get install openjdk-8-jdk-headless maven -y -f
+      - echo "\nBuild version data:"
+      - echo "\nJava Version:"; java -version
+      - echo "\nMaven Version:"; mvn --version
+      - echo "\n"
 
   pre_build:
     commands:
       - cd $CODEBUILD_SRC_DIR/aws-iot-device-sdk-java-v2
-      - export PKG_VERSION=$(git describe --tags | sed -e s/^v//)
+      - export PKG_VERSION=$(cat $CODEBUILD_SRC_DIR/VERSION)
+      # Material for PubSub sample
+      - curl https://www.amazontrust.com/repository/AmazonRootCA1.pem --output /tmp/AmazonRootCA1.pem
+      - cert=$(aws secretsmanager get-secret-value --secret-id "ci/PubSub/cert" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo "$cert" > /tmp/certificate.pem
+      - key=$(aws secretsmanager get-secret-value --secret-id "ci/PubSub/key" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo "$key" > /tmp/privatekey.pem
+      - ENDPOINT=$(aws secretsmanager get-secret-value --secret-id "ci/endpoint" --query "SecretString" | cut -f2 -d":" | sed -e 's/[\\\"\}]//g')
 
   build:
     commands:
@@ -20,6 +32,10 @@ phases:
       # note that this uses an ancient version of maven and the maven dependency plugin because we're on trusty
       # http://maven.apache.org/plugins-archives/maven-dependency-plugin-2.1/get-mojo.html
       - mvn -B dependency:get -DrepoUrl=https://aws.oss.sonatype.org/content/repositories/snapshots -Dartifact=software.amazon.awssdk.iotdevicesdk:aws-iot-device-sdk:${PKG_VERSION}-SNAPSHOT -Dtransitive=false
+
+      # Run PubSub sample
+      - mvn install -Dmaven.test.skip=true
+      - mvn compile exec:java -pl samples/BasicPubSub -Dexec.mainClass=pubsub.PubSub -Dexec.args="--endpoint ${ENDPOINT} --cert /tmp/certificate.pem --key /tmp/privatekey.pem --ca_file /tmp/AmazonRootCA1.pem"
 
 cache:
   paths:
