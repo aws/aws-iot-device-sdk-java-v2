@@ -321,6 +321,39 @@ public class CommandLineUtils {
         }
     }
 
+    public MqttClientConnection buildDirectMQTTConnectionWithJavaKeystore(MqttClientConnectionEvents callbacks)
+    {
+        try {
+            String keystoreFormat = getCommandOrDefault(m_cmd_javakeystore_format, "PKCS12");
+            java.security.KeyStore keyStore;
+            try {
+                keyStore = java.security.KeyStore.getInstance(keystoreFormat);
+            } catch (java.security.KeyStoreException ex) {
+                throw new CrtRuntimeException("Could not get instance of Java keystore with format " + keystoreFormat);
+            }
+
+            try (java.io.FileInputStream fileInputStream = new java.io.FileInputStream(getCommandRequired(m_cmd_javakeystore_path, ""))) {
+                keyStore.load(fileInputStream, getCommandRequired(m_cmd_javakeystore_password, "").toCharArray());
+            } catch (java.io.FileNotFoundException ex) {
+                throw new CrtRuntimeException("Could not open Java keystore file");
+            } catch (java.io.IOException | java.security.NoSuchAlgorithmException | java.security.cert.CertificateException ex) {
+                throw new CrtRuntimeException("Could not load Java keystore");
+            }
+
+            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newJavaKeystoreBuilder(
+                keyStore,
+                getCommandRequired(m_cmd_javakeystore_certificate, ""),
+                getCommandRequired(m_cmd_javakeystore_key_password, ""));
+            buildConnectionSetupCAFileDefaults(builder);
+            buildConnectionSetupConnectionDefaults(builder, callbacks);
+            MqttClientConnection conn = builder.build();
+            builder.close();
+            return conn;
+        } catch (CrtRuntimeException ex) {
+            return null;
+        }
+    }
+
     public Mqtt5Client buildWebsocketMQTT5Connection(
         Mqtt5ClientOptions.LifecycleEvents lifecycleEvents, Mqtt5ClientOptions.PublishEvents publishEvents) {
         try {
@@ -471,6 +504,11 @@ public class CommandLineUtils {
     private static final String m_cmd_custom_auth_authorizer_name = "custom_auth_authorizer_name";
     private static final String m_cmd_custom_auth_authorizer_signature = "custom_auth_authorizer_signature";
     private static final String m_cmd_custom_auth_password = "custom_auth_password";
+    private static final String m_cmd_javakeystore_path = "keystore";
+    private static final String m_cmd_javakeystore_password = "keystore_password";
+    private static final String m_cmd_javakeystore_format = "keystore_format";
+    private static final String m_cmd_javakeystore_certificate = "certificate_alias";
+    private static final String m_cmd_javakeystore_key_password = "certificate_password";
 }
 
 class CommandLineOption {
