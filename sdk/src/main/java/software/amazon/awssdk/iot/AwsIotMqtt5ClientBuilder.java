@@ -6,6 +6,7 @@ package software.amazon.awssdk.iot;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,6 +25,7 @@ import software.amazon.awssdk.crt.io.TlsContextPkcs11Options;
 import software.amazon.awssdk.crt.io.ExponentialBackoffRetryOptions.JitterMode;
 import software.amazon.awssdk.crt.mqtt5.Mqtt5Client;
 import software.amazon.awssdk.crt.mqtt5.Mqtt5ClientOptions;
+import software.amazon.awssdk.crt.mqtt5.Mqtt5WebsocketHandshakeTransformArgs;
 import software.amazon.awssdk.crt.mqtt5.Mqtt5ClientOptions.Mqtt5ClientOptionsBuilder;
 import software.amazon.awssdk.crt.mqtt5.packets.ConnectPacket.ConnectPacketBuilder;
 import software.amazon.awssdk.crt.utils.PackageInfo;
@@ -167,7 +169,7 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
         options.alpnList.clear();
         options.alpnList.add("mqtt");
 
-        AwsIotMqtt5ClientBuilder builder = new AwsIotMqtt5ClientBuilder(hostName, DEFAULT_WEBSOCKET_MQTT_PORT, options);
+        AwsIotMqtt5ClientBuilder builder = new AwsIotMqtt5ClientBuilder(hostName, DEFAULT_DIRECT_MQTT_PORT, options);
         builder.configCustomAuth = customAuthConfig;
         options.close();
 
@@ -235,6 +237,32 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
             ex.printStackTrace();
             return null;
         }
+
+        return builder;
+    }
+
+    /**
+     * Creates a new MQTT5 client builder that will use websocket connection and a custom authenticator controlled by the
+     * username and password values.
+     *
+     * @param hostName - AWS IoT endpoint to connect to
+     * @param customAuthConfig - AWS IoT custom auth configuration
+     * @return - A new AwsIotMqtt5ClientBuilder
+     */
+    public static AwsIotMqtt5ClientBuilder newWebsocketMqttBuilderWithCustomAuth(String hostName, MqttConnectCustomAuthConfig customAuthConfig) {
+        TlsContextOptions options = TlsContextOptions.createDefaultClient();
+
+        AwsIotMqtt5ClientBuilder builder = new AwsIotMqtt5ClientBuilder(hostName, DEFAULT_WEBSOCKET_MQTT_PORT, options);
+        builder.configCustomAuth = customAuthConfig;
+        options.close();
+
+        Consumer<Mqtt5WebsocketHandshakeTransformArgs> websocketTransform = new Consumer<Mqtt5WebsocketHandshakeTransformArgs>() {
+            @Override
+            public void accept(Mqtt5WebsocketHandshakeTransformArgs t) {
+                t.complete(t.getHttpRequest());
+            }
+        };
+        builder.config.withWebsocketHandshakeTransform(websocketTransform);
 
         return builder;
     }

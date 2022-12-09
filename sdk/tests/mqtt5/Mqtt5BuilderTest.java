@@ -330,4 +330,68 @@ public class Mqtt5BuilderTest {
         client.close();
         builder.close();
     }
+
+    /* Custom Auth (no signing) connect - Websockets */
+    @Test
+    public void ConnIoT_CustomAuth_UC3()
+    {
+        assumeTrue(mqtt5IoTCoreHost != null);
+        assumeTrue(mqtt5IoTCoreNoSigningAuthorizerName != null);
+        assumeTrue(mqtt5IoTCoreNoSigningAuthorizerUsername != null);
+        assumeTrue(mqtt5IoTCoreNoSigningAuthorizerPassword != null);
+
+        AwsIotMqtt5ClientBuilder.MqttConnectCustomAuthConfig customAuthConfig = new AwsIotMqtt5ClientBuilder.MqttConnectCustomAuthConfig();
+        customAuthConfig.authorizerName = mqtt5IoTCoreNoSigningAuthorizerName;
+        customAuthConfig.username = mqtt5IoTCoreNoSigningAuthorizerUsername;
+        customAuthConfig.password = mqtt5IoTCoreNoSigningAuthorizerPassword.getBytes();
+
+        AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newWebsocketMqttBuilderWithCustomAuth(
+            mqtt5IoTCoreHost, customAuthConfig);
+
+        LifecycleEvents_Futured lifecycleEvents = new LifecycleEvents_Futured();
+        builder.withLifeCycleEvents(lifecycleEvents);
+
+        PublishEvents_Futured publishEvents = new PublishEvents_Futured();
+        builder.withPublishEvents(publishEvents);
+
+        Mqtt5Client client = builder.build();
+        TestSubPubUnsub(client, lifecycleEvents, publishEvents);
+        client.close();
+        builder.close();
+    }
+
+    /* Custom Auth (with signing) connect - Websockets */
+    @Test
+    public void ConnIoT_CustomAuth_UC4()
+    {
+        assumeTrue(mqtt5IoTCoreHost != null);
+        assumeTrue(mqtt5IoTCoreSigningAuthorizerName != null);
+        assumeTrue(mqtt5IoTCoreSigningAuthorizerUsername != null);
+        assumeTrue(mqtt5IoTCoreSigningAuthorizerPassword != null);
+        assumeTrue(mqtt5IoTCoreSigningAuthorizerToken != null);
+        assumeTrue(mqtt5IoTCoreSigningAuthorizerTokenKeyName != null);
+        assumeTrue(mqtt5IoTCoreSigningAuthorizerTokenSignature != null);
+
+        AwsIotMqtt5ClientBuilder.MqttConnectCustomAuthConfig customAuthConfig = new AwsIotMqtt5ClientBuilder.MqttConnectCustomAuthConfig();
+        customAuthConfig.authorizerName = mqtt5IoTCoreNoSigningAuthorizerName;
+        customAuthConfig.username = mqtt5IoTCoreNoSigningAuthorizerUsername;
+        customAuthConfig.password = mqtt5IoTCoreNoSigningAuthorizerPassword.getBytes();
+        customAuthConfig.tokenValue = mqtt5IoTCoreSigningAuthorizerToken;
+        customAuthConfig.tokenKeyName = mqtt5IoTCoreSigningAuthorizerTokenKeyName;
+        customAuthConfig.tokenSignature = mqtt5IoTCoreSigningAuthorizerTokenSignature;
+
+        AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newWebsocketMqttBuilderWithCustomAuth(
+            mqtt5IoTCoreHost, customAuthConfig);
+
+        LifecycleEvents_Futured lifecycleEvents = new LifecycleEvents_Futured();
+        builder.withLifeCycleEvents(lifecycleEvents);
+
+        PublishEvents_Futured publishEvents = new PublishEvents_Futured();
+        builder.withPublishEvents(publishEvents);
+
+        Mqtt5Client client = builder.build();
+        TestSubPubUnsub(client, lifecycleEvents, publishEvents);
+        client.close();
+        builder.close();
+    }
 }
