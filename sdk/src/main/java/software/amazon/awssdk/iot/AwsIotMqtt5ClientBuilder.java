@@ -169,7 +169,7 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
         options.alpnList.clear();
         options.alpnList.add("mqtt");
 
-        AwsIotMqtt5ClientBuilder builder = new AwsIotMqtt5ClientBuilder(hostName, DEFAULT_DIRECT_MQTT_PORT, options);
+        AwsIotMqtt5ClientBuilder builder = new AwsIotMqtt5ClientBuilder(hostName, DEFAULT_WEBSOCKET_MQTT_PORT, options);
         builder.configCustomAuth = customAuthConfig;
         options.close();
 

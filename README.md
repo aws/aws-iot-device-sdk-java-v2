@@ -24,7 +24,11 @@ to Java by the [aws-crt-java](https://github.com/awslabs/aws-crt-java) package.
 * [Getting Help](#Getting-Help)
 * [FAQ](./documents/FAQ.md)
 * [Giving Feedback and Contributions](#Giving-Feedback-and-Contributions)
+* [MQTT5 User Guide](./documents/MQTT5_Userguide.md)
 
+## What's New
+
+The SDK now supports MQTT5. See the [MQTT5 User Guide](./documents/MQTT5_Userguide.md) or the [API Documentation](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/package-summary.html) for more information. There is also a [MQTT5 sample here](https://github.com/aws/aws-iot-device-sdk-java-v2/tree/main/samples#mqtt5-pubsub).
 
 ## Installation
 
