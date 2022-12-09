@@ -2,7 +2,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>software.amazon.awssdk.iotdevicesdk</groupId>
-    <artifactId>Identity</artifactId>
+    <artifactId>Mqtt5PubSub</artifactId>
     <packaging>jar</packaging>
     <version>1.0-SNAPSHOT</version>
     <name>${project.groupId}:${project.artifactId}</name>
@@ -13,6 +13,13 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+    <dependencies>
+        <dependency>
+            <groupId>software.amazon.awssdk.iotdevicesdk</groupId>
+            <artifactId>aws-iot-device-sdk</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
     <profiles>
         <profile>
             <id>latest-release</id>
@@ -38,21 +45,16 @@
             </dependencies>
         </profile>
     </profiles>
-    <dependencies>
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.9.0</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-            <version>2.10.3</version>
-        </dependency>
-    </dependencies>
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.4.0</version>
+                <configuration>
+                    <mainclass>main</mainclass>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
@@ -66,7 +68,7 @@
                         </goals>
                         <configuration>
                             <sources>
-                                <source>../Utils/CommandLineUtils</source>
+                                <source>../../Utils/CommandLineUtils</source>
                             </sources>
                         </configuration>
                     </execution>

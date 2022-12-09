@@ -42,7 +42,7 @@
     <dependency>
       <groupId>software.amazon.awssdk.crt</groupId>
       <artifactId>aws-crt</artifactId>
-      <version>0.19.4</version>
+      <version>0.20.0</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -121,6 +121,8 @@
                 <source>greengrass/greengrass-client/src/test/java</source>
                 <!-- IOT tests -->
                 <source>tests/iot</source>
+                <!-- MQTT5 tests -->
+                <source>tests/mqtt5</source>
               </sources>
             </configuration>
           </execution>
