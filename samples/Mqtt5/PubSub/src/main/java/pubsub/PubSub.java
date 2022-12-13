@@ -191,7 +191,7 @@ public class PubSub {
             int count = 0;
             try {
                 while (count++ < messagesToPublish) {
-                    publishBuilder.withPayload((message + ": " + String.valueOf(count)).getBytes());
+                    publishBuilder.withPayload(("\"" + message + ": " + String.valueOf(count) + "\"").getBytes());
                     CompletableFuture<PublishResult> published = client.publish(publishBuilder.build());
                     published.get(60, TimeUnit.SECONDS);
                     Thread.sleep(1000);

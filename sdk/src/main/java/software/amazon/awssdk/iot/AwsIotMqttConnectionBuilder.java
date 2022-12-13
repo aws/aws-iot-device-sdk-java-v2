@@ -598,9 +598,12 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
         if (password != null) {
             config.setPassword(password);
         }
+
+        if (config.getUseWebsockets() == false) {
+            tlsOptions.alpnList.clear();
+            tlsOptions.alpnList.add("mqtt");
+        }
         config.setPort(443);
-        tlsOptions.alpnList.clear();
-        tlsOptions.alpnList.add("mqtt");
 
         return this;
     }
@@ -637,14 +640,16 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
                 if (config.getPort() != 443) {
                     Log.log(LogLevel.Warn, LogSubject.MqttClient,"Attempting to connect to authorizer with unsupported port. Port is not 443...");
                 }
-                if (tlsOptions.alpnList.size() == 1) {
-                    if (tlsOptions.alpnList.get(0) != "mqtt") {
+                if (config.getUseWebsockets() == false) {
+                    if (tlsOptions.alpnList.size() == 1) {
+                        if (tlsOptions.alpnList.get(0) != "mqtt") {
+                            tlsOptions.alpnList.clear();
+                            tlsOptions.alpnList.add("mqtt");
+                        }
+                    } else {
                         tlsOptions.alpnList.clear();
                         tlsOptions.alpnList.add("mqtt");
                     }
-                } else {
-                    tlsOptions.alpnList.clear();
-                    tlsOptions.alpnList.add("mqtt");
                 }
             }
 
