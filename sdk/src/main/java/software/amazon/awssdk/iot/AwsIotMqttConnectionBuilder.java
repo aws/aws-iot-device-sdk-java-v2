@@ -600,10 +600,10 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
         }
 
         if (config.getUseWebsockets() == false) {
-            config.setPort(443);
             tlsOptions.alpnList.clear();
             tlsOptions.alpnList.add("mqtt");
         }
+        config.setPort(443);
 
         return this;
     }
