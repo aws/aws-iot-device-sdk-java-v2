@@ -47,9 +47,9 @@ The SDK now supports MQTT5. See the [MQTT5 User Guide](./documents/MQTT5_Usergui
 
 [Step-by-step instructions](./documents/PREREQUISITES.md)
 
-### Consuming IoT Device SDK from Maven
+### Consuming IoT Device SDK from Maven in your application
 
-Consuming this SDK via Maven is the preferred method of consuming it. Add the following to your pom.xml dependencies:
+Consuming this SDK via Maven is the preferred method of consuming it and using it within your application. To consume the Java V2 SDK in your application, add the following to your `pom.xml` dependencies:
 
 ``` xml
 <dependency>
@@ -72,10 +72,16 @@ mkdir sdk-workspace
 cd sdk-workspace
 # Clone the repository
 git clone https://github.com/awslabs/aws-iot-device-sdk-java-v2.git
-# Update the version of the CRT being used, compile, and install
-mvn versions:use-latest-versions -Dincludes="software.amazon.awssdk.crt*"
+# Compile and install
 mvn clean install
 ```
+
+If you wish to use the latest CRT release, rather than the latest tested with the IoT SDK, you can run the following before running `mvn clean install`:
+
+~~~ sh
+# Update the version of the CRT being used
+mvn versions:use-latest-versions -Dincludes="software.amazon.awssdk.crt*"
+~~~
 
 ### Build IoT Device SDK and CRT from source
 
@@ -113,9 +119,10 @@ cd aws-crt-java/android
 ./gradlew connectedCheck # optional, will run the unit tests on any connected devices/emulators
 ./gradlew publishToMavenLocal
 # Clone the SDK repository
+cd ../..
 git clone https://github.com/awslabs/aws-iot-device-sdk-java-v2.git
-cd ../aws-iot-device-sdk-java-v2/android
 # Compile and install
+cd aws-iot-device-sdk-java-v2/android
 ./gradlew publishToMavenLocal
 ./gradlew installDebug # optional, will install the IoTSamples app to any connected devices/emulators
 ```
