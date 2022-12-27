@@ -36,7 +36,7 @@ The SDK now supports MQTT5. See the [MQTT5 User Guide](./documents/MQTT5_Usergui
 
 * Java 8+ ([Download and Install Java](https://www.java.com/en/download/help/download_options.html))
 * Java JDK 8+ ([Download and Install JDK](https://docs.oracle.com/en/java/javase/18/install/overview-jdk-installation.html#GUID-8677A77F-231A-40F7-98B9-1FD0B48C346A))
-  * [Set JAVA_HOME](./PREREQUISITES.md/##SetJAVA_HOME)
+  * [Set JAVA_HOME](./documents/PREREQUISITES.md/##SetJAVA_HOME)
 
 [Step-by-step instructions](./documents/PREREQUISITES.md)
 
