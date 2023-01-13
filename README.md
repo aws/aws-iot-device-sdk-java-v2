@@ -55,11 +55,11 @@ Consuming this SDK via Maven is the preferred method of consuming it and using i
 <dependency>
   <groupId>software.amazon.awssdk.iotdevicesdk</groupId>
   <artifactId>aws-iot-device-sdk</artifactId>
-  <version>1.10.5</version>
+  <version>1.11.0</version>
 </dependency>
 ```
 
-Replace `1.10.5` in `<version>1.10.5</version>` with the latest release version for the SDK.
+Replace `1.11.0` in `<version>1.11.0</version>` with the latest release version for the SDK.
 Look up the latest SDK version here: https://github.com/aws/aws-iot-device-sdk-java-v2/releases
 
 ### Build IoT Device SDK from source
@@ -90,8 +90,8 @@ mvn versions:use-latest-versions -Dincludes="software.amazon.awssdk.crt*"
 mkdir sdk-workspace
 cd sdk-workspace
 # Clone the CRT repository
-#     (Use the latest version of the CRT here instead of "v0.20.0")
-git clone --branch v0.20.0 --recurse-submodules https://github.com/awslabs/aws-crt-java.git
+#     (Use the latest version of the CRT here instead of "v0.21.1")
+git clone --branch v0.21.1 --recurse-submodules https://github.com/awslabs/aws-crt-java.git
 cd aws-crt-java
 # Compile and install the CRT
 mvn install -Dmaven.test.skip=true
@@ -112,8 +112,8 @@ NOTE: The shadow sample does not currently complete on android due to its depend
 mkdir sdk-workspace
 cd sdk-workspace
 # Clone the CRT repository
-#     (Use the latest version of the CRT here instead of "v0.20.0")
-git clone --branch v0.20.0 --recurse-submodules https://github.com/awslabs/aws-crt-java.git
+#     (Use the latest version of the CRT here instead of "v0.21.1")
+git clone --branch v0.21.1 --recurse-submodules https://github.com/awslabs/aws-crt-java.git
 # Compile and install the CRT for Android
 cd aws-crt-java/android
 ./gradlew connectedCheck # optional, will run the unit tests on any connected devices/emulators
@@ -138,11 +138,11 @@ repositories {
 }
 
 dependencies {
-    implementation 'software.amazon.awssdk.crt:android:0.20.0'
+    implementation 'software.amazon.awssdk.crt:android:0.21.1'
 }
 ```
 
-Replace `0.20.0` in `software.amazon.awssdk.crt:android:0.20.0` with the latest version of the CRT.
+Replace `0.21.1` in `software.amazon.awssdk.crt:android:0.21.1` with the latest version of the CRT.
 Look up the latest CRT version here: https://github.com/awslabs/aws-crt-java/releases
 
 #### Caution
