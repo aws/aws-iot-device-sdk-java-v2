@@ -32,7 +32,7 @@ def main():
         if re.fullmatch(VERSION_PATTERN, args.version) is None:
             exit(f'Invalid version: "{args.version}". Must look like "0.1.2"')
 
-    os.chdir(os.path.dirname(__file__))
+    os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
     if args.update_samples == True:
         update_samples()
