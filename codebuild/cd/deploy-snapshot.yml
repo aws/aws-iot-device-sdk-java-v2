@@ -57,6 +57,8 @@ phases:
       - mvn -B versions:set -DnewVersion=${PKG_VERSION}
       - mvn -B deploy -Prelease -Dmaven.test.skip=true -Dgpg.passphrase=$GPG_PASSPHRASE | tee /tmp/deploy.log
       - cat /tmp/deploy.log | grep "Created staging repository with ID" | cut -d\" -f2 | tee /tmp/repositoryId.txt
+      # Store the repository ID in a secret for use later
+      - aws secretsmanager update-secret --secret-id cd/aws-iot-device-sdk-java-v2/repository-id --secret-string "$(cat /tmp/repositoryId.txt)" --region us-east-1
 
 artifacts:
   discard-paths: yes
