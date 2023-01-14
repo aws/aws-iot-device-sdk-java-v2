@@ -20,10 +20,6 @@ phases:
 
   pre_build:
     commands:
-      # Will avoid "gpg: signing failed: Inappropriate ioctl for device" errors
-      # Reference: https://www.gnupg.org/documentation/manuals/gnupg/Invoking-GPG_002dAGENT.html
-      - export GPG_TTY=$(tty)
-
       - cd $CODEBUILD_SRC_DIR/aws-iot-device-sdk-java-v2
       - export PKG_VERSION=$(cat $CODEBUILD_SRC_DIR/VERSION)
 
