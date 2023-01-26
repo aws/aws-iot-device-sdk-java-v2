@@ -609,6 +609,18 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     }
 
     /**
+     * Converts a AwsIotMqttConnectionBuilder to a AwsIotMqtt5ClientBuilder, converting as much as possible.
+     * See AwsIotMqtt5ClientBuilder.newMqttBuilderFromMqtt311ConnectionConfig for more information on what can
+     * be converted, the quirks, etc.
+     *
+     * @return A AwsIotMqtt5ClientBuilder using AwsIotMqttConnectionBuilder settings
+     * @throws Exception If an unsupported option is present
+     */
+    public AwsIotMqtt5ClientBuilder toAwsIotMqtt5ClientBuilder() throws Exception {
+        return AwsIotMqtt5ClientBuilder.newMqttBuilderFromMqtt311ConnectionConfig(config, tlsOptions);
+    }
+
+    /**
      * Builds a new mqtt connection from the configuration stored in the builder.  Because some objects are created
      * lazily, certain properties should not be modified after this is first invoked (tls options, bootstrap).
      *

@@ -29,6 +29,7 @@ import software.amazon.awssdk.crt.mqtt5.packets.PublishPacket;
 import software.amazon.awssdk.crt.mqtt5.packets.SubscribePacket;
 import software.amazon.awssdk.crt.mqtt5.packets.UnsubscribePacket;
 import software.amazon.awssdk.iot.AwsIotMqtt5ClientBuilder;
+import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
 
 public class Mqtt5BuilderTest {
 
@@ -382,6 +383,34 @@ public class Mqtt5BuilderTest {
 
         AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newWebsocketMqttBuilderWithCustomAuth(
             mqtt5IoTCoreHost, customAuthConfig);
+
+        LifecycleEvents_Futured lifecycleEvents = new LifecycleEvents_Futured();
+        builder.withLifeCycleEvents(lifecycleEvents);
+
+        PublishEvents_Futured publishEvents = new PublishEvents_Futured();
+        builder.withPublishEvents(publishEvents);
+
+        Mqtt5Client client = builder.build();
+        TestSubPubUnsub(client, lifecycleEvents, publishEvents);
+        client.close();
+        builder.close();
+    }
+
+    /* MQTT311 builder to MQTT5 builder - simple direct connection */
+    @Test
+    public void ConnIoT_DirectConnect_MQTT311_to_MQTT5_UC1()
+    {
+        assumeTrue(mqtt5IoTCoreHost != null);
+        assumeTrue(mqtt5IoTCoreCertificatePath != null);
+        assumeTrue(mqtt5IoTCoreKeyPath != null);
+
+        // Make a simple MQTT311 builder
+        AwsIotMqttConnectionBuilder mqtt311Builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(mqtt5IoTCoreCertificatePath, mqtt5IoTCoreKeyPath)
+        mqtt311Builder.withEndpoint(mqtt5IoTCoreHost);
+        // CONVERT
+        AwsIotMqtt5ClientBuilder builder = mqtt311Builder.toAwsIotMqtt5ClientBuilder();
+        // Close the MQTT311 builder
+        mqtt311Builder.close();
 
         LifecycleEvents_Futured lifecycleEvents = new LifecycleEvents_Futured();
         builder.withLifeCycleEvents(lifecycleEvents);
