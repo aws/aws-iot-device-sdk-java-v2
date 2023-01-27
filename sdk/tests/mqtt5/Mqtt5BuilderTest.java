@@ -405,10 +405,16 @@ public class Mqtt5BuilderTest {
         assumeTrue(mqtt5IoTCoreKeyPath != null);
 
         // Make a simple MQTT311 builder
-        AwsIotMqttConnectionBuilder mqtt311Builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(mqtt5IoTCoreCertificatePath, mqtt5IoTCoreKeyPath)
+        AwsIotMqttConnectionBuilder mqtt311Builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(
+            mqtt5IoTCoreCertificatePath, mqtt5IoTCoreKeyPath);
         mqtt311Builder.withEndpoint(mqtt5IoTCoreHost);
+        AwsIotMqtt5ClientBuilder builder = null;
         // CONVERT
-        AwsIotMqtt5ClientBuilder builder = mqtt311Builder.toAwsIotMqtt5ClientBuilder();
+        try {
+            builder = mqtt311Builder.toAwsIotMqtt5ClientBuilder();
+        } catch (Exception ex) {
+            fail("Exception occurred making AwsIotMqtt5ClientBuilder from MQTT311 config!");
+        }
         // Close the MQTT311 builder
         mqtt311Builder.close();
 
