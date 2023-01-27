@@ -61,6 +61,15 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
     }
     protected void releaseNativeHandle() {}
 
+    static AwsIotMqtt5ClientBuilder newDirectMqttBuilderWithMtlsFromOptions(String hostName, TlsContextOptions options) {
+        AwsIotMqtt5ClientBuilder builder = new AwsIotMqtt5ClientBuilder(hostName, DEFAULT_DIRECT_MQTT_PORT, options);
+        options.close();
+        if (TlsContextOptions.isAlpnSupported()) {
+            builder.configTls.withAlpnList("x-amzn-mqtt-ca");
+        }
+        return builder;
+    }
+
     /**
      * Creates a new MQTT5 client builder with mTLS file paths.
      *

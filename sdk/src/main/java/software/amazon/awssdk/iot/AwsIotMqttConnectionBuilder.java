@@ -5,11 +5,6 @@
  */
 package software.amazon.awssdk.iot;
 
-import software.amazon.awssdk.crt.utils.PackageInfo;
-
-import java.io.UnsupportedEncodingException;
-import java.util.function.Consumer;
-
 import software.amazon.awssdk.crt.CrtResource;
 import software.amazon.awssdk.crt.CrtRuntimeException;
 import software.amazon.awssdk.crt.Log;
@@ -33,6 +28,14 @@ import software.amazon.awssdk.crt.mqtt.MqttException;
 import software.amazon.awssdk.crt.mqtt.MqttMessage;
 import software.amazon.awssdk.crt.mqtt.QualityOfService;
 import software.amazon.awssdk.crt.mqtt.WebsocketHandshakeTransformArgs;
+import software.amazon.awssdk.crt.mqtt5.Mqtt5ClientOptions;
+import software.amazon.awssdk.crt.mqtt5.QOS;
+import software.amazon.awssdk.crt.mqtt5.packets.ConnectPacket;
+import software.amazon.awssdk.crt.mqtt5.packets.PublishPacket;
+import software.amazon.awssdk.crt.utils.PackageInfo;
+
+import java.io.UnsupportedEncodingException;
+import java.util.function.Consumer;
 
 /**
  * A central class for building Mqtt connections without manually managing a large variety of native objects (some
@@ -92,6 +95,45 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      */
     @Override
     protected boolean canReleaseReferencesImmediately() { return true; }
+
+    /**
+     * Create a new AwsIotMqtt5ClientBuilder by copying the configuration from this MQTT 3 client builder.
+     * Connection callback events are not copied.
+     * Cannot copy websocket connections or connections using a custom authorizer.
+     *
+     * @return {@link AwsIotMqtt5ClientBuilder}
+     */
+    public AwsIotMqtt5ClientBuilder toMqtt5ClientBuilder() {
+        PublishPacket will = null;
+        if (config.getWillMessage() != null) {
+            MqttMessage oldWill = config.getWillMessage();
+            will = new PublishPacket.PublishPacketBuilder()
+                    .withTopic(oldWill.getTopic())
+                    .withPayload(oldWill.getPayload())
+                    .withQOS(QOS.getEnumValueFromInteger(oldWill.getQos().getValue()))
+                    .withRetain(oldWill.getRetain())
+                    .build();
+        }
+
+        return AwsIotMqtt5ClientBuilder.newDirectMqttBuilderWithMtlsFromOptions(config.getEndpoint(), tlsOptions)
+                .withPort(config.getPort() == 0 ? null : (long) config.getPort())
+                .withConnectProperties(new ConnectPacket.ConnectPacketBuilder()
+                        .withClientId(config.getClientId())
+                        .withKeepAliveIntervalSeconds(config.getKeepAliveSecs() == 0 ? null : (long) config.getKeepAliveSecs())
+                        .withUsername(config.getUsername())
+                        .withPassword(config.getPassword().getBytes())
+                        .withWill(will)
+                    )
+                .withSessionBehavior(config.getCleanSession() ? Mqtt5ClientOptions.ClientSessionBehavior.CLEAN :
+                        Mqtt5ClientOptions.ClientSessionBehavior.REJOIN_POST_SUCCESS)
+                .withPingTimeoutMs(config.getPingTimeoutMs() == 0 ? null : (long) config.getPingTimeoutMs())
+                .withAckTimeoutSeconds(config.getProtocolOperationTimeoutMs() == 0 ? null : (long) (config.getProtocolOperationTimeoutMs() / 1000.0))
+                .withMinReconnectDelayMs(config.getMinReconnectTimeoutSecs() == 0 ? null : (config.getMinReconnectTimeoutSecs()) * 1000)
+                .withMaxReconnectDelayMs(config.getMaxReconnectTimeoutSecs() == 0 ? null :
+                        (config.getMaxReconnectTimeoutSecs() * 1000))
+                .withSocketOptions(config.getSocketOptions())
+                .withHttpProxyOptions(config.getHttpProxyOptions());
+    }
 
 
     /**
