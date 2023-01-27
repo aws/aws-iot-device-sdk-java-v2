@@ -341,10 +341,16 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
         }
 
         ConnectPacketBuilder connectPacket = new ConnectPacketBuilder();
-        connectPacket.withClientId(mqtt311Config.getClientId());
+        if (mqtt311Config.getClientId() != null) {
+            connectPacket.withClientId(mqtt311Config.getClientId());
+        }
         connectPacket.withKeepAliveIntervalSeconds((long)mqtt311Config.getKeepAliveSecs());
-        connectPacket.withUsername(mqtt311Config.getUsername());
-        connectPacket.withPassword(mqtt311Config.getPassword().getBytes());
+        if (mqtt311Config.getUsername() != null) {
+            connectPacket.withUsername(mqtt311Config.getUsername());
+        }
+        if (mqtt311Config.getPassword() != null) {
+            connectPacket.withPassword(mqtt311Config.getPassword().getBytes());
+        }
         builder.withConnectProperties(connectPacket);
 
         builder.withHttpProxyOptions(mqtt311Config.getHttpProxyOptions());
