@@ -413,7 +413,7 @@ public class Mqtt5BuilderTest {
         try {
             builder = mqtt311Builder.toAwsIotMqtt5ClientBuilder();
         } catch (Exception ex) {
-            fail("Exception occurred making AwsIotMqtt5ClientBuilder from MQTT311 config!");
+            fail("Exception occurred making AwsIotMqtt5ClientBuilder from MQTT311 config! Exception: " + ex.getMessage());
         }
         // Close the MQTT311 builder
         mqtt311Builder.close();
