@@ -8,11 +8,13 @@
 * [WindowsCert Connect](#windowscert-connect)
 * [X509 Connect](#x509-credentials-provider-connect)
 * [CustomAuthorizer Connect](#custom-authorizer-connect)
+* [JavaKeystore Connect](#java-keystore-connect)
 * [CustomKeyOperationPubSub](#custom-key-operations-pubsub)
 * [Shadow](#shadow)
 * [Jobs](#jobs)
 * [fleet provisioning](#fleet-provisioning)
 * [Greengrass](#greengrass-discovery)
+* [MQTT5 PubSub](#mqtt5-pubsub)
 
 **Additional sample apps not described below:**
 
@@ -188,13 +190,13 @@ Your Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-
 To run the websocket connect use the following command:
 
 ```sh
-mvn compile exec:java -pl samples/WebsocketConnect -Dexec.mainClass=websocketconnect.WebsocketConnect -Dexec.args='--endpoint <endpoint> --signing_region <signing region> --ca_file <path to root CA>'
+mvn compile exec:java -pl samples/WebsocketConnect -Dexec.mainClass=websocketconnect.WebsocketConnect -Dexec.args='--endpoint <endpoint> --signing_region <signing region>'
 ```
 
 To run this sample using the latest SDK release, use the following command:
 
 ```sh
-mvn -P latest-release compile exec:java -pl samples/WebsocketConnect -Dexec.mainClass=websocketconnect.WebsocketConnect -Dexec.args='--endpoint <endpoint> --signing_region <signing region> --ca_file <path to root CA>'
+mvn -P latest-release compile exec:java -pl samples/WebsocketConnect -Dexec.mainClass=websocketconnect.WebsocketConnect -Dexec.args='--endpoint <endpoint> --signing_region <signing region>'
 ```
 
 Note that using Websockets will attempt to fetch the AWS credentials from your environment variables or local files.
@@ -449,16 +451,68 @@ Your Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-
 To run the custom authorizer connect use the following command:
 
 ```sh
-mvn compile exec:java -pl samples/CustomAuthorizerConnect -Dexec.mainClass=customauthorizerconnect.CustomAuthorizerConnect -Dexec.args='--endpoint <endpoint> --ca_file <path to root CA> --custom_auth_authorizer_name <custom authorizer name>'
+mvn compile exec:java -pl samples/CustomAuthorizerConnect -Dexec.mainClass=customauthorizerconnect.CustomAuthorizerConnect -Dexec.args='--endpoint <endpoint> --custom_auth_authorizer_name <custom authorizer name>'
 ```
 
 To run this sample using the latest SDK release, use the following command:
 
 ```sh
-mvn -P latest-release compile exec:java -pl samples/CustomAuthorizerConnect -Dexec.mainClass=customauthorizerconnect.CustomAuthorizerConnect -Dexec.args='--endpoint <endpoint> --ca_file <path to root CA> --custom_auth_authorizer_name <custom authorizer name>'
+mvn -P latest-release compile exec:java -pl samples/CustomAuthorizerConnect -Dexec.mainClass=customauthorizerconnect.CustomAuthorizerConnect -Dexec.args='--endpoint <endpoint> --custom_auth_authorizer_name <custom authorizer name>'
 ```
 
 You will need to setup your Custom Authorizer so that the lambda function returns a policy document. See [this page on the documentation](https://docs.aws.amazon.com/iot/latest/developerguide/config-custom-auth.html) for more details and example return result.
+
+## Java Keystore Connect
+
+This sample makes an MQTT connection using a certificate and key file stored in a Java keystore file.
+
+Source: `samples/JavaKeystoreConnect`
+
+To use the certificate and key files provided by AWS IoT Core, you will need to convert them into PKCS12 format and then import them into your Java keystore. You can convert the certificate and key file to PKCS12 using the following command:
+
+```sh
+openssl pkcs12 -export -in <my-certificate.pem.crt> -inkey <my-private-key.pem.key> -out my-pkcs12-key.p12 -name <alias here> -password pass:<password here>
+```
+
+Once you have a PKCS12 certificate and key, you can import it into a Java keystore using the following:
+
+```sh
+keytool -importkeystore -srckeystore my-pkcs12-key.p12 -destkeystore <destination keystore> -srcstoretype pkcs12 -alias <alias here> -srcstorepass <PKCS12 password> -deststorepass <keystore password>
+```
+
+Your Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-policies.html) must provide privileges for this sample to connect. Make sure your policy allows a client ID of `test-*` to connect or use `--client_id <client ID here>` to send the client ID your policy supports.
+
+<details>
+<summary>(see sample policy)</summary>
+<pre>
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iot:Connect"
+      ],
+      "Resource": [
+        "arn:aws:iot:<b>region</b>:<b>account</b>:client/test-*"
+      ]
+    }
+  ]
+}
+</pre>
+</details>
+
+To run the Java keystore connect sample use the following command:
+
+```sh
+mvn compile exec:java -pl samples/JavaKeystoreConnect -Dexec.mainClass=javakeystoreconnect.JavaKeystoreConnect -Dexec.args='--endpoint <endpoint> --keystore <path to Java keystore file> --keystore_password <password for Java keystore> --certificate_alias <alias of PKCS12 certificate> --certificate_password <password for PKCS12 certificate>'
+```
+
+To run this sample using the latest SDK release, use the following command:
+
+```sh
+mvn -P latest-release compile exec:java -pl samples/JavaKeystoreConnect -Dexec.mainClass=javakeystoreconnect.JavaKeystoreConnect -Dexec.args='--endpoint <endpoint> --keystore <path to Java keystore file> --keystore_password <password for Java keystore> --certificate_alias <alias of PKCS12 certificate> --certificate_password <password for PKCS12 certificate>'
+```
 
 ## Custom Key Operations PubSub
 
@@ -957,3 +1011,68 @@ This sample is intended for use with the following tutorials in the AWS IoT Gree
 * [Connect and test client devices](https://docs.aws.amazon.com/greengrass/v2/developerguide/client-devices-tutorial.html) (Greengrass V2)
 * [Test client device communications](https://docs.aws.amazon.com/greengrass/v2/developerguide/test-client-device-communications.html) (Greengrass V2)
 * [Getting Started with AWS IoT Greengrass](https://docs.aws.amazon.com/greengrass/latest/developerguide/gg-gs.html) (Greengrass V1)
+
+## MQTT5 PubSub
+
+This sample uses the
+[Message Broker](https://docs.aws.amazon.com/iot/latest/developerguide/iot-message-broker.html)
+for AWS IoT to send and receive messages through an MQTT connection using MQTT5.
+
+MQTT5 introduces additional features and enhancements that improve the development experience with MQTT. You can read more about MQTT5 in the Java V2 SDK by checking out the [MQTT5 user guide](../documents/MQTT5_Userguide.md).
+
+Note: MQTT5 support is currently in **developer preview**. We encourage feedback at all times, but feedback during the preview window is especially valuable in shaping the final product. During the preview period we may make backwards-incompatible changes to the public API, but in general, this is something we will try our best to avoid.
+
+source: `samples/Mqtt5/PubSub`
+
+Your Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-policies.html) must provide privileges for this sample to connect. Make sure your policy allows a client ID of `test-*` to connect or use `--client_id <client ID here>` to send the client ID your policy supports.
+
+<details>
+<summary>(see sample policy)</summary>
+<pre>
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iot:Publish",
+        "iot:Receive"
+      ],
+      "Resource": [
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/test/topic"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iot:Subscribe"
+      ],
+      "Resource": [
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topicfilter/test/topic"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iot:Connect"
+      ],
+      "Resource": [
+        "arn:aws:iot:<b>region</b>:<b>account</b>:client/test-*"
+      ]
+    }
+  ]
+}
+</pre>
+</details>
+
+To Run this sample using a direct MQTT connection with a key and certificate, use the following command:
+```sh
+mvn compile exec:java -pl samples/Mqtt5/PubSub -Dexec.mainClass=mqtt5.pubsub.PubSub -Dexec.args='--endpoint <endpoint> --cert <path to certificate> --key <path to private key> --ca_file <path to root CA>'
+```
+
+To Run this sample using Websockets, use the following command:
+```sh
+mvn compile exec:java -pl samples/Mqtt5/PubSub -Dexec.mainClass=mqtt5.pubsub.PubSub -Dexec.args='--endpoint <endpoint> --signing_region <region>'
+```
+
+Note that to run this sample using Websockets, you will need to set your AWS credentials in your environment variables or local files. See the [authorizing direct AWS](https://docs.aws.amazon.com/iot/latest/developerguide/authorizing-direct-aws.html) page for documentation on how to get the AWS credentials, which then you can set to the `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS`, and `AWS_SESSION_TOKEN` environment variables.

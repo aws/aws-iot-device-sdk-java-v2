@@ -15,6 +15,7 @@
         <module>samples/RawConnect</module>
         <module>samples/Pkcs11Connect</module>
         <module>samples/CustomAuthorizerConnect</module>
+        <module>samples/JavaKeystoreConnect</module>
         <module>samples/Greengrass</module>
         <module>samples/Jobs</module>
         <module>samples/PubSubStress</module>
@@ -22,6 +23,7 @@
         <module>samples/WindowsCertConnect</module>
         <module>samples/Shadow</module>
         <module>samples/Identity</module>
+        <module>samples/Mqtt5/PubSub</module>
     </modules>
 
     <build>

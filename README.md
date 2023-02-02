@@ -24,7 +24,11 @@ to Java by the [aws-crt-java](https://github.com/awslabs/aws-crt-java) package.
 * [Getting Help](#Getting-Help)
 * [FAQ](./documents/FAQ.md)
 * [Giving Feedback and Contributions](#Giving-Feedback-and-Contributions)
+* [MQTT5 User Guide](./documents/MQTT5_Userguide.md)
 
+## What's New
+
+The SDK now supports MQTT5. See the [MQTT5 User Guide](./documents/MQTT5_Userguide.md) or the [API Documentation](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/package-summary.html) for more information. There is also a [MQTT5 sample here](https://github.com/aws/aws-iot-device-sdk-java-v2/tree/main/samples#mqtt5-pubsub).
 
 ## Installation
 
@@ -43,19 +47,19 @@ to Java by the [aws-crt-java](https://github.com/awslabs/aws-crt-java) package.
 
 [Step-by-step instructions](./documents/PREREQUISITES.md)
 
-### Consuming IoT Device SDK from Maven
+### Consuming IoT Device SDK from Maven in your application
 
-Consuming this SDK via Maven is the preferred method of consuming it. Add the following to your pom.xml depedencies:
+Consuming this SDK via Maven is the preferred method of consuming it and using it within your application. To consume the Java V2 SDK in your application, add the following to your `pom.xml` dependencies:
 
 ``` xml
 <dependency>
   <groupId>software.amazon.awssdk.iotdevicesdk</groupId>
   <artifactId>aws-iot-device-sdk</artifactId>
-  <version>1.8.5</version>
+  <version>1.11.2</version>
 </dependency>
 ```
 
-Replace `1.8.5` in `<version>1.17.0</version>` with the latest release version for the SDK.
+Replace `1.11.2` in `<version>1.11.2</version>` with the latest release version for the SDK.
 Look up the latest SDK version here: https://github.com/aws/aws-iot-device-sdk-java-v2/releases
 
 ### Build IoT Device SDK from source
@@ -68,10 +72,16 @@ mkdir sdk-workspace
 cd sdk-workspace
 # Clone the repository
 git clone https://github.com/awslabs/aws-iot-device-sdk-java-v2.git
-# Update the version of the CRT being used, compile, and install
-mvn versions:use-latest-versions -Dincludes="software.amazon.awssdk.crt*"
+# Compile and install
 mvn clean install
 ```
+
+If you wish to use the latest CRT release, rather than the latest tested with the IoT SDK, you can run the following before running `mvn clean install`:
+
+~~~ sh
+# Update the version of the CRT being used
+mvn versions:use-latest-versions -Dincludes="software.amazon.awssdk.crt*"
+~~~
 
 ### Build IoT Device SDK and CRT from source
 
@@ -80,8 +90,8 @@ mvn clean install
 mkdir sdk-workspace
 cd sdk-workspace
 # Clone the CRT repository
-#     (Use the latest version of the CRT here instead of "v0.18.0")
-git clone --branch v0.19.3 --recurse-submodules https://github.com/awslabs/aws-crt-java.git
+#     (Use the latest version of the CRT here instead of "v0.21.4")
+git clone --branch v0.21.4 --recurse-submodules https://github.com/awslabs/aws-crt-java.git
 cd aws-crt-java
 # Compile and install the CRT
 mvn install -Dmaven.test.skip=true
@@ -102,16 +112,17 @@ NOTE: The shadow sample does not currently complete on android due to its depend
 mkdir sdk-workspace
 cd sdk-workspace
 # Clone the CRT repository
-#     (Use the latest version of the CRT here instead of "v0.18.0")
-git clone --branch v0.19.3 --recurse-submodules https://github.com/awslabs/aws-crt-java.git
+#     (Use the latest version of the CRT here instead of "v0.21.4")
+git clone --branch v0.21.4 --recurse-submodules https://github.com/awslabs/aws-crt-java.git
 # Compile and install the CRT for Android
 cd aws-crt-java/android
 ./gradlew connectedCheck # optional, will run the unit tests on any connected devices/emulators
 ./gradlew publishToMavenLocal
 # Clone the SDK repository
+cd ../..
 git clone https://github.com/awslabs/aws-iot-device-sdk-java-v2.git
-cd ../aws-iot-device-sdk-java-v2/android
 # Compile and install
+cd aws-iot-device-sdk-java-v2/android
 ./gradlew publishToMavenLocal
 ./gradlew installDebug # optional, will install the IoTSamples app to any connected devices/emulators
 ```
@@ -127,11 +138,11 @@ repositories {
 }
 
 dependencies {
-    implementation 'software.amazon.awssdk.crt:android:0.19.3'
+    implementation 'software.amazon.awssdk.crt:android:0.21.4'
 }
 ```
 
-Replace `0.18.0` in `software.amazon.awssdk.crt:android:0.18.0` with the latest version of the CRT.
+Replace `0.21.4` in `software.amazon.awssdk.crt:android:0.21.4` with the latest version of the CRT.
 Look up the latest CRT version here: https://github.com/awslabs/aws-crt-java/releases
 
 #### Caution
@@ -149,6 +160,7 @@ Please make sure to check out our resources too before opening an issue:
 
 * Our [FAQ](./documents/FAQ.md)
 * Our [Developer Guide](https://docs.aws.amazon.com/iot/latest/developerguide/what-is-aws-iot.html) ([source](https://github.com/awsdocs/aws-iot-docs))
+* [MQTT5 User Guide](./documents/MQTT5_Userguide.md)
 * Check for similar [Issues](https://github.com/aws/aws-iot-device-sdk-java-v2/issues)
 * [AWS IoT Core Documentation](https://docs.aws.amazon.com/iot/)
 * [Dev Blog](https://aws.amazon.com/blogs/?awsf.blog-master-iot=category-internet-of-things%23amazon-freertos%7Ccategory-internet-of-things%23aws-greengrass%7Ccategory-internet-of-things%23aws-iot-analytics%7Ccategory-internet-of-things%23aws-iot-button%7Ccategory-internet-of-things%23aws-iot-device-defender%7Ccategory-internet-of-things%23aws-iot-device-management%7Ccategory-internet-of-things%23aws-iot-platform)
@@ -171,3 +183,4 @@ We need your help in making this SDK great. Please participate in the community 
 
 This library is licensed under the Apache 2.0 License.
 
+Latest released version: v1.11.3

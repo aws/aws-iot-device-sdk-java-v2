@@ -13,7 +13,10 @@ import java.io.UnsupportedEncodingException;
 import software.amazon.awssdk.crt.*;
 import software.amazon.awssdk.crt.io.*;
 import software.amazon.awssdk.crt.mqtt.*;
+import software.amazon.awssdk.crt.mqtt5.*;
+import software.amazon.awssdk.crt.mqtt5.packets.*;
 import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
+import software.amazon.awssdk.iot.AwsIotMqtt5ClientBuilder;
 import software.amazon.awssdk.crt.http.HttpProxyOptions;
 import software.amazon.awssdk.crt.auth.credentials.X509CredentialsProvider;
 import software.amazon.awssdk.crt.Log;
@@ -319,6 +322,88 @@ public class CommandLineUtils {
         }
     }
 
+    public MqttClientConnection buildDirectMQTTConnectionWithJavaKeystore(MqttClientConnectionEvents callbacks)
+    {
+        try {
+            String keystoreFormat = getCommandOrDefault(m_cmd_javakeystore_format, "PKCS12");
+            java.security.KeyStore keyStore;
+            try {
+                keyStore = java.security.KeyStore.getInstance(keystoreFormat);
+            } catch (java.security.KeyStoreException ex) {
+                throw new CrtRuntimeException("Could not get instance of Java keystore with format " + keystoreFormat);
+            }
+
+            try (java.io.FileInputStream fileInputStream = new java.io.FileInputStream(getCommandRequired(m_cmd_javakeystore_path, ""))) {
+                keyStore.load(fileInputStream, getCommandRequired(m_cmd_javakeystore_password, "").toCharArray());
+            } catch (java.io.FileNotFoundException ex) {
+                throw new CrtRuntimeException("Could not open Java keystore file");
+            } catch (java.io.IOException | java.security.NoSuchAlgorithmException | java.security.cert.CertificateException ex) {
+                throw new CrtRuntimeException("Could not load Java keystore");
+            }
+
+            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newJavaKeystoreBuilder(
+                keyStore,
+                getCommandRequired(m_cmd_javakeystore_certificate, ""),
+                getCommandRequired(m_cmd_javakeystore_key_password, ""));
+            buildConnectionSetupCAFileDefaults(builder);
+            buildConnectionSetupConnectionDefaults(builder, callbacks);
+            MqttClientConnection conn = builder.build();
+            builder.close();
+            return conn;
+        } catch (CrtRuntimeException ex) {
+            return null;
+        }
+    }
+
+    public Mqtt5Client buildWebsocketMQTT5Connection(
+        Mqtt5ClientOptions.LifecycleEvents lifecycleEvents, Mqtt5ClientOptions.PublishEvents publishEvents) {
+        try {
+
+            AwsIotMqtt5ClientBuilder.WebsocketSigv4Config websocketConfig = new AwsIotMqtt5ClientBuilder.WebsocketSigv4Config();
+            if (hasCommand(m_cmd_signing_region)) {
+                websocketConfig.region = getCommandRequired(m_cmd_signing_region, "");
+            }
+            AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newWebsocketMqttBuilderWithSigv4Auth(
+                getCommandRequired(m_cmd_endpoint, ""), websocketConfig);
+
+            ConnectPacket.ConnectPacketBuilder connectProperties = new ConnectPacket.ConnectPacketBuilder();
+            connectProperties.withClientId(getCommandOrDefault("client_id", "test-" + UUID.randomUUID().toString()));
+            builder.withConnectProperties(connectProperties);
+
+            builder.withLifeCycleEvents(lifecycleEvents);
+            builder.withPublishEvents(publishEvents);
+
+            Mqtt5Client returnClient = builder.build();
+            builder.close();
+            return returnClient;
+
+        } catch (CrtRuntimeException ex) {
+            return null;
+        }
+    }
+
+    public Mqtt5Client buildDirectMQTT5Connection(
+        Mqtt5ClientOptions.LifecycleEvents lifecycleEvents, Mqtt5ClientOptions.PublishEvents publishEvents) {
+        try {
+            AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newDirectMqttBuilderWithMtlsFromPath(
+                getCommandRequired(m_cmd_endpoint, ""), getCommandRequired(m_cmd_cert_file, ""), getCommandRequired(m_cmd_key_file, ""));
+
+            ConnectPacket.ConnectPacketBuilder connectProperties = new ConnectPacket.ConnectPacketBuilder();
+            connectProperties.withClientId(getCommandOrDefault("client_id", "test-" + UUID.randomUUID().toString()));
+            builder.withConnectProperties(connectProperties);
+
+            builder.withLifeCycleEvents(lifecycleEvents);
+            builder.withPublishEvents(publishEvents);
+
+            Mqtt5Client returnClient = builder.build();
+            builder.close();
+            return returnClient;
+        }
+        catch (CrtRuntimeException ex) {
+            return null;
+        }
+    }
+
     private void buildConnectionSetupCAFileDefaults(AwsIotMqttConnectionBuilder builder)
     {
         if (hasCommand(m_cmd_ca_file)) {
@@ -420,6 +505,11 @@ public class CommandLineUtils {
     private static final String m_cmd_custom_auth_authorizer_name = "custom_auth_authorizer_name";
     private static final String m_cmd_custom_auth_authorizer_signature = "custom_auth_authorizer_signature";
     private static final String m_cmd_custom_auth_password = "custom_auth_password";
+    private static final String m_cmd_javakeystore_path = "keystore";
+    private static final String m_cmd_javakeystore_password = "keystore_password";
+    private static final String m_cmd_javakeystore_format = "keystore_format";
+    private static final String m_cmd_javakeystore_certificate = "certificate_alias";
+    private static final String m_cmd_javakeystore_key_password = "certificate_password";
 }
 
 class CommandLineOption {

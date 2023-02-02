@@ -76,7 +76,6 @@ public class MQTTPublish {
         } catch (CrtRuntimeException | InterruptedException | ExecutionException ex) {
             onApplicationFailure(ex);
         }
-
         System.exit(0);
     }
 }

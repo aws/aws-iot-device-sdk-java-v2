@@ -11,6 +11,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.function.Consumer;
 
 import software.amazon.awssdk.crt.CrtResource;
+import software.amazon.awssdk.crt.CrtRuntimeException;
 import software.amazon.awssdk.crt.Log;
 import software.amazon.awssdk.crt.Log.LogLevel;
 import software.amazon.awssdk.crt.Log.LogSubject;
@@ -172,6 +173,25 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     public static AwsIotMqttConnectionBuilder newMtlsWindowsCertStorePathBuilder(String certificatePath) {
         try (TlsContextOptions tlsContextOptions = TlsContextOptions
                 .createWithMtlsWindowsCertStorePath(certificatePath)) {
+            return new AwsIotMqttConnectionBuilder(tlsContextOptions);
+        }
+    }
+
+    /**
+     * Create a new builder with mTLS, using a certificate and key stored in the passed-in Java keystore.
+     *
+     * Note: function assumes the passed keystore has already been loaded from a file by calling "keystore.load(file, password)"
+     *
+     * @param keyStore The Java keystore to use. Assumed to be loaded with certificates and keys
+     * @param certificateAlias The alias of the certificate and key to use with the builder.
+     * @param certificatePassword The password of the certificate and key to use with the builder.
+     * @throws CrtRuntimeException if an error occurs, like the keystore cannot be opened or the certificate is not found.
+     * @return {@link AwsIotMqttConnectionBuilder}
+     */
+    public static AwsIotMqttConnectionBuilder newJavaKeystoreBuilder(
+        java.security.KeyStore keyStore, String certificateAlias, String certificatePassword) throws CrtRuntimeException {
+        try (TlsContextOptions tlsContextOptions = TlsContextOptions
+                .createWithMtlsJavaKeystore(keyStore, certificateAlias, certificatePassword)) {
             return new AwsIotMqttConnectionBuilder(tlsContextOptions);
         }
     }
@@ -578,9 +598,12 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
         if (password != null) {
             config.setPassword(password);
         }
+
+        if (config.getUseWebsockets() == false) {
+            tlsOptions.alpnList.clear();
+            tlsOptions.alpnList.add("mqtt");
+        }
         config.setPort(443);
-        tlsOptions.alpnList.clear();
-        tlsOptions.alpnList.add("mqtt");
 
         return this;
     }
@@ -617,14 +640,16 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
                 if (config.getPort() != 443) {
                     Log.log(LogLevel.Warn, LogSubject.MqttClient,"Attempting to connect to authorizer with unsupported port. Port is not 443...");
                 }
-                if (tlsOptions.alpnList.size() == 1) {
-                    if (tlsOptions.alpnList.get(0) != "mqtt") {
+                if (config.getUseWebsockets() == false) {
+                    if (tlsOptions.alpnList.size() == 1) {
+                        if (tlsOptions.alpnList.get(0) != "mqtt") {
+                            tlsOptions.alpnList.clear();
+                            tlsOptions.alpnList.add("mqtt");
+                        }
+                    } else {
                         tlsOptions.alpnList.clear();
                         tlsOptions.alpnList.add("mqtt");
                     }
-                } else {
-                    tlsOptions.alpnList.clear();
-                    tlsOptions.alpnList.add("mqtt");
                 }
             }
 
