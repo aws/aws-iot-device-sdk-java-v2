@@ -134,7 +134,7 @@ jobs:
         aws-region: ${{ env.AWS_DEFAULT_REGION }}
     - name: run MQTT5 PubSub sample
       run: |
-        python ./utils/run_sample_ci.py --language Java --sample_file 'samples/Mqtt5/PubSub' --sample_region ${{ env.AWS_DEFAULT_REGION }} --sample_secret_endpoint 'ci/endpoint' --sample_secret_certificate 'ci/mqtt5/us/mqtt5_thing/cert' --sample_secret_private_key 'ci/mqtt5/us/mqtt5_thing/key' --sample_main_class 'mqtt5.pubsub.PubSub'
+        python3 ./utils/run_sample_ci.py --file ./.github/workflows/ci_run_mqtt5_pubsub_cfg.json
     - name: configure AWS credentials (Device Advisor)
       uses: aws-actions/configure-aws-credentials@v1
       with:
@@ -198,7 +198,7 @@ jobs:
         aws-region: ${{ env.AWS_DEFAULT_REGION }}
     - name: run MQTT5 PubSub sample
       run: |
-        python3 ./utils/run_sample_ci.py --language Java --sample_file 'samples/Mqtt5/PubSub' --sample_region ${{ env.AWS_DEFAULT_REGION }} --sample_secret_endpoint 'ci/endpoint' --sample_secret_certificate 'ci/mqtt5/us/mqtt5_thing/cert' --sample_secret_private_key 'ci/mqtt5/us/mqtt5_thing/key' --sample_main_class 'mqtt5.pubsub.PubSub'
+        python3 ./utils/run_sample_ci.py --file ./.github/workflows/ci_run_mqtt5_pubsub_cfg.json
     - name: configure AWS credentials (Device Advisor)
       uses: aws-actions/configure-aws-credentials@v1
       with:
@@ -261,7 +261,7 @@ jobs:
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
       - name: run MQTT5 PubSub sample
         run: |
-          python3 ./utils/run_sample_ci.py --language Java --sample_file 'samples/Mqtt5/PubSub' --sample_region ${{ env.AWS_DEFAULT_REGION }} --sample_secret_endpoint 'ci/endpoint' --sample_secret_certificate 'ci/mqtt5/us/mqtt5_thing/cert' --sample_secret_private_key 'ci/mqtt5/us/mqtt5_thing/key' --sample_main_class 'mqtt5.pubsub.PubSub'
+          python3 ./utils/run_sample_ci.py --file ./.github/workflows/ci_run_mqtt5_pubsub_cfg.json
       - name: configure AWS credentials (Device Advisor)
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -358,9 +358,8 @@ jobs:
           key=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/PubSub/key" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$key" > /tmp/privatekey.pem
           pkcs12_password=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/PubSub/key_pkcs12_password" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\")
           openssl pkcs12 -export -in /tmp/certificate.pem -inkey /tmp/privatekey.pem -out /tmp/pkcs12-key.p12 -name PubSub_Thing_Alias -password pass:$pkcs12_password
-
           keytool -importkeystore -srckeystore /tmp/pkcs12-key.p12 -destkeystore ./java_keystore.keys -srcstoretype PKCS12 -alias PubSub_Thing_Alias -srcstorepass $pkcs12_password -deststorepass $pkcs12_password
-          python3 ./utils/run_sample_ci.py --language Java --sample_file 'samples/JavaKeystoreConnect' --sample_region ${{ env.AWS_DEFAULT_REGION }} --sample_secret_endpoint 'ci/endpoint' --sample_arguments "--keystore ./java_keystore.keys --keystore_password $pkcs12_password --certificate_alias PubSub_Thing_Alias --certificate_password $pkcs12_password" --sample_main_class 'javakeystoreconnect.JavaKeystoreConnect'
+          python3 ./utils/run_sample_ci.py --file ./.github/workflows/ci_run_keystore_connect_cfg.json
       - name: configure AWS credentials (Custom Authorizer)
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -411,4 +410,4 @@ jobs:
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
       - name: run MQTT5 PubSub sample
         run: |
-          python3 ./utils/run_sample_ci.py --language Java --sample_file 'samples/Mqtt5/PubSub' --sample_region ${{ env.AWS_DEFAULT_REGION }} --sample_secret_endpoint 'ci/endpoint' --sample_secret_certificate 'ci/mqtt5/us/mqtt5_thing/cert' --sample_secret_private_key 'ci/mqtt5/us/mqtt5_thing/key' --sample_main_class 'mqtt5.pubsub.PubSub'
+          python3 ./utils/run_sample_ci.py --file ./.github/workflows/ci_run_mqtt5_pubsub_cfg.json
