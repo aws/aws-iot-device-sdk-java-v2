@@ -138,7 +138,7 @@ public class CommandLineUtils {
     {
         registerCommand(
             m_cmd_x509_role, "<str>", "Role alias to use with the x509 credentials provider (required for x509)");
-        registerCommand(m_cmd_x509_endpoint, "<str>", "Endpoint to fetch x509 credentials from (required for x509)");
+        registerCommand(m_cmd_x509_endpoint, "<str>", "The credentials endpoint to fetch x509 credentials from (required for x509)");
         registerCommand(
             m_cmd_x509_thing_name, "<str>", "Thing name to fetch x509 credentials on behalf of (required for x509)");
         registerCommand(
@@ -253,6 +253,7 @@ public class CommandLineUtils {
 
             MqttClientConnection conn = builder.build();
             builder.close();
+            provider.close();
             return conn;
 
         } catch (CrtRuntimeException ex) {
