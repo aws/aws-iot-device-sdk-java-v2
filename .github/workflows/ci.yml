@@ -53,7 +53,6 @@ jobs:
         ./linux-container-ci.sh ${{ env.BUILDER_VERSION }} aws-crt-${{ matrix.image }} build -p ${{ env.PACKAGE_NAME }}
     # NOTE: we cannot run samples or DeviceAdvisor here due to container restrictions
 
-
   raspberry:
     runs-on: ubuntu-20.04 # latest
     strategy:
