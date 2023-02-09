@@ -23,6 +23,7 @@ import software.amazon.awssdk.crt.io.TlsContextCustomKeyOperationOptions;
 import software.amazon.awssdk.crt.io.TlsContextOptions;
 import software.amazon.awssdk.crt.io.TlsContextPkcs11Options;
 import software.amazon.awssdk.crt.io.ExponentialBackoffRetryOptions.JitterMode;
+import software.amazon.awssdk.crt.mqtt.MqttConnectionConfig;
 import software.amazon.awssdk.crt.mqtt5.Mqtt5Client;
 import software.amazon.awssdk.crt.mqtt5.Mqtt5ClientOptions;
 import software.amazon.awssdk.crt.mqtt5.Mqtt5WebsocketHandshakeTransformArgs;
@@ -304,6 +305,67 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
         if (TlsContextOptions.isAlpnSupported()) {
             builder.configTls.withAlpnList("x-amzn-mqtt-ca");
         }
+        return builder;
+    }
+
+    /**
+     * Creates a new MQTT5 client builder using a MqttConnectionConfig.
+     *
+     * This does NOT support all MqttConnectionConfig options and will throw
+     * an exception should it encounter options it does not support.
+     *
+     * Known unsupported options/cases:
+     * <p>- <b>Custom Authorizer</b>: Will not be properly detected nor setup
+     * <p>- <b>Websockets</b>: Is not supported and will throw an exception
+     * <p>- <b>Will Message</b>: Is not supported and will throw an exception
+     * <p>- <b>All Callbacks</b>: Connection callbacks are not supported and will be ignored
+     *
+     * @param mqtt311Config The MqttConnectionConfig to create a MQTT5 client builder from
+     * @param tlsOptions The TLS options to use alongside the MqttConnectionConfig
+     * @return A new AwsIotMqtt5ClientBuilder
+     * @throws Exception If an unsupported option is passed
+     */
+    public static AwsIotMqtt5ClientBuilder newMqttBuilderFromMqtt311ConnectionConfig(MqttConnectionConfig mqtt311Config, TlsContextOptions tlsOptions) throws Exception {
+
+        if (mqtt311Config.getEndpoint() == null) {
+            throw new Exception("MQTT311 to MQTT5 builder requires MQTT311 to have a endpoint set");
+        }
+        if (tlsOptions == null) {
+            throw new Exception("MQTT311 to MQTT5 builder requires MQTT311 to TLS options passed");
+        }
+
+        AwsIotMqtt5ClientBuilder builder = new AwsIotMqtt5ClientBuilder(mqtt311Config.getEndpoint(), (long)mqtt311Config.getPort(), tlsOptions);
+        if (tlsOptions.isAlpnSupported()) {
+            builder.configTls.withAlpnList("x-amzn-mqtt-ca");
+        }
+
+        if (mqtt311Config.getUseWebsockets() == true) {
+            throw new Exception("MQTT311 to MQTT5 builder does not support MQTT311 websockets");
+        }
+        if (mqtt311Config.getWillMessage() != null) {
+            throw new Exception("MQTT311 to MQTT5 builder does not support MQTT311 Will messages");
+        }
+
+        ConnectPacketBuilder connectPacket = new ConnectPacketBuilder();
+        if (mqtt311Config.getClientId() != null) {
+            connectPacket.withClientId(mqtt311Config.getClientId());
+        }
+        connectPacket.withKeepAliveIntervalSeconds((long)mqtt311Config.getKeepAliveSecs());
+        if (mqtt311Config.getUsername() != null) {
+            connectPacket.withUsername(mqtt311Config.getUsername());
+        }
+        if (mqtt311Config.getPassword() != null) {
+            connectPacket.withPassword(mqtt311Config.getPassword().getBytes());
+        }
+        builder.withConnectProperties(connectPacket);
+
+        builder.withHttpProxyOptions(mqtt311Config.getHttpProxyOptions());
+        builder.withMaxReconnectDelayMs(mqtt311Config.getMaxReconnectTimeoutSecs() * 1000); // Seconds to milliseconds
+        builder.withMinReconnectDelayMs(mqtt311Config.getMinReconnectTimeoutSecs() * 1000); // Seconds to milliseconds
+        builder.withPingTimeoutMs((long)mqtt311Config.getPingTimeoutMs());
+        builder.withAckTimeoutSeconds((long)mqtt311Config.getProtocolOperationTimeoutMs() * 1000); // Seconds to milliseconds
+        builder.withSocketOptions(mqtt311Config.getSocketOptions());
+
         return builder;
     }
 
