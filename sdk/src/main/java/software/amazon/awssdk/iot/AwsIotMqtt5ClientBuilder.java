@@ -309,16 +309,16 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
     }
 
     /**
-     * Creates a new MQTT5 client builder using a MqttConnectionConfig. This does NOT support all MqttConnectionConfig options and will throw
+     * Creates a new MQTT5 client builder using a MqttConnectionConfig.
+     *
+     * This does NOT support all MqttConnectionConfig options and will throw
      * an exception should it encounter options it does not support.
      *
      * Known unsupported options/cases:
-     * - Custom Authorizer: Will not be properly detected
-     * - Websockets: Not supported and will throw an exception
-     * - Will Message: Not supported and will throw an exception
-     * - Callbacks: Connection callbacks are not supported and will be ignored
-     *
-     * ALSO: This does NOT setup the callbacks nor can it detect Custom Authorizer usage.
+     * <p>- <b>Custom Authorizer</b>: Will not be properly detected nor setup
+     * <p>- <b>Websockets</b>: Is not supported and will throw an exception
+     * <p>- <b>Will Message</b>: Is not supported and will throw an exception
+     * <p>- <b>All Callbacks</b>: Connection callbacks are not supported and will be ignored
      *
      * @param mqtt311Config The MqttConnectionConfig to create a MQTT5 client builder from
      * @param tlsOptions The TLS options to use alongside the MqttConnectionConfig
@@ -327,7 +327,13 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
      */
     public static AwsIotMqtt5ClientBuilder newMqttBuilderFromMqtt311ConnectionConfig(MqttConnectionConfig mqtt311Config, TlsContextOptions tlsOptions) throws Exception {
 
-        // We'll blindly assume that you have it setup correctly.
+        if (mqtt311Config.getEndpoint() == null) {
+            throw new Exception("MQTT311 to MQTT5 builder requires MQTT311 to have a endpoint set");
+        }
+        if (tlsOptions == null) {
+            throw new Exception("MQTT311 to MQTT5 builder requires MQTT311 to TLS options passed");
+        }
+
         AwsIotMqtt5ClientBuilder builder = new AwsIotMqtt5ClientBuilder(mqtt311Config.getEndpoint(), (long)mqtt311Config.getPort(), tlsOptions);
         if (tlsOptions.isAlpnSupported()) {
             builder.configTls.withAlpnList("x-amzn-mqtt-ca");
@@ -337,7 +343,7 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
             throw new Exception("MQTT311 to MQTT5 builder does not support MQTT311 websockets");
         }
         if (mqtt311Config.getWillMessage() != null) {
-            throw new Exception("MQTT311 to MQTT5 builder does not support MQTT311 will messages");
+            throw new Exception("MQTT311 to MQTT5 builder does not support MQTT311 Will messages");
         }
 
         ConnectPacketBuilder connectPacket = new ConnectPacketBuilder();
