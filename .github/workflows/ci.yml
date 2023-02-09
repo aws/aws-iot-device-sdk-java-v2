@@ -24,6 +24,7 @@ env:
   CI_JOBS_ROLE: ${{ secrets.AWS_CI_JOBS_ROLE }}
   CI_FLEET_PROVISIONING_ROLE: ${{ secrets.AWS_CI_FLEET_PROVISIONING_ROLE }}
   CI_DEVICE_ADVISOR: ${{ secrets.AWS_CI_DEVICE_ADVISOR_ROLE }}
+  CI_X509_ROLE: ${{ secrets.AWS_CI_X509_ROLE }}
   CI_MQTT5_ROLE: ${{ secrets.AWS_CI_MQTT5_ROLE }}
 
 jobs:
@@ -52,7 +53,6 @@ jobs:
         ./linux-container-ci.sh ${{ env.BUILDER_VERSION }} aws-crt-${{ matrix.image }} build -p ${{ env.PACKAGE_NAME }}
     # NOTE: we cannot run samples or DeviceAdvisor here due to container restrictions
 
-
   raspberry:
     runs-on: ubuntu-20.04 # latest
     strategy:
@@ -75,7 +75,6 @@ jobs:
       run: |
         aws s3 cp s3://aws-crt-test-stuff/ci/${{ env.BUILDER_VERSION }}/linux-container-ci.sh ./linux-container-ci.sh && chmod a+x ./linux-container-ci.sh
         ./linux-container-ci.sh ${{ env.BUILDER_VERSION }} aws-crt-${{ matrix.image }} build -p ${{ env.PACKAGE_NAME }}
-
 
   windows:
     runs-on: windows-latest
@@ -110,7 +109,7 @@ jobs:
       shell: bash
       run: |
         source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt us-east-1
-        mvn test -Dtest=Mqtt5BuilderTest -DfailIfNoTests=false
+        mvn test -Dtest=Mqtt5BuilderTest -Dsurefire.failIfNoSpecifiedTests=false
         source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt cleanup
     - name: Running samples in CI setup
       run: |
@@ -123,10 +122,10 @@ jobs:
         aws-region: ${{ env.AWS_DEFAULT_REGION }}
     - name: run PubSub sample
       run: |
-        python ./utils/run_sample_ci.py --language Java --sample_file 'samples/BasicPubSub' --sample_region ${{ env.AWS_DEFAULT_REGION }} --sample_secret_endpoint 'ci/endpoint' --sample_secret_certificate 'ci/PubSub/cert' --sample_secret_private_key 'ci/PubSub/key' --sample_main_class 'pubsub.PubSub'
+        python ./utils/run_sample_ci.py --file ./.github/workflows/ci_run_pubsub_cfg.json
     - name: run Windows Certificate Connect sample
       run: |
-        python ./utils/run_sample_ci.py --language Java --sample_file 'samples/WindowsCertConnect' --sample_region ${{ env.AWS_DEFAULT_REGION }} --sample_secret_endpoint 'ci/endpoint' --sample_secret_certificate 'ci/PubSub/cert' --sample_secret_private_key 'ci/PubSub/key' --sample_run_certutil true --sample_main_class 'windowscertconnect.WindowsCertConnect'
+        python ./utils/run_sample_ci.py --file ./.github/workflows/ci_run_windows_cert_connect_cfg.json
     - name: configure AWS credentials (MQTT5)
       uses: aws-actions/configure-aws-credentials@v1
       with:
@@ -134,7 +133,7 @@ jobs:
         aws-region: ${{ env.AWS_DEFAULT_REGION }}
     - name: run MQTT5 PubSub sample
       run: |
-        python ./utils/run_sample_ci.py --language Java --sample_file 'samples/Mqtt5/PubSub' --sample_region ${{ env.AWS_DEFAULT_REGION }} --sample_secret_endpoint 'ci/endpoint' --sample_secret_certificate 'ci/mqtt5/us/mqtt5_thing/cert' --sample_secret_private_key 'ci/mqtt5/us/mqtt5_thing/key' --sample_main_class 'mqtt5.pubsub.PubSub'
+        python3 ./utils/run_sample_ci.py --file ./.github/workflows/ci_run_mqtt5_pubsub_cfg.json
     - name: configure AWS credentials (Device Advisor)
       uses: aws-actions/configure-aws-credentials@v1
       with:
@@ -190,7 +189,7 @@ jobs:
         aws-region: ${{ env.AWS_DEFAULT_REGION }}
     - name: run PubSub sample
       run: |
-        python3 ./utils/run_sample_ci.py --language Java --sample_file 'samples/BasicPubSub' --sample_region ${{ env.AWS_DEFAULT_REGION }} --sample_secret_endpoint 'ci/endpoint' --sample_secret_certificate 'ci/PubSub/cert' --sample_secret_private_key 'ci/PubSub/key' --sample_main_class 'pubsub.PubSub'
+        python3 ./utils/run_sample_ci.py --file ./.github/workflows/ci_run_pubsub_cfg.json
     - name: configure AWS credentials (MQTT5)
       uses: aws-actions/configure-aws-credentials@v1
       with:
@@ -198,7 +197,7 @@ jobs:
         aws-region: ${{ env.AWS_DEFAULT_REGION }}
     - name: run MQTT5 PubSub sample
       run: |
-        python3 ./utils/run_sample_ci.py --language Java --sample_file 'samples/Mqtt5/PubSub' --sample_region ${{ env.AWS_DEFAULT_REGION }} --sample_secret_endpoint 'ci/endpoint' --sample_secret_certificate 'ci/mqtt5/us/mqtt5_thing/cert' --sample_secret_private_key 'ci/mqtt5/us/mqtt5_thing/key' --sample_main_class 'mqtt5.pubsub.PubSub'
+        python3 ./utils/run_sample_ci.py --file ./.github/workflows/ci_run_mqtt5_pubsub_cfg.json
     - name: configure AWS credentials (Device Advisor)
       uses: aws-actions/configure-aws-credentials@v1
       with:
@@ -253,7 +252,7 @@ jobs:
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
       - name: run PubSub sample
         run: |
-          python3 ./utils/run_sample_ci.py --language Java --sample_file 'samples/BasicPubSub' --sample_region ${{ env.AWS_DEFAULT_REGION }} --sample_secret_endpoint 'ci/endpoint' --sample_secret_certificate 'ci/PubSub/cert' --sample_secret_private_key 'ci/PubSub/key' --sample_main_class 'pubsub.PubSub'
+          python3 ./utils/run_sample_ci.py --file ./.github/workflows/ci_run_pubsub_cfg.json
       - name: configure AWS credentials (MQTT5)
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -261,7 +260,7 @@ jobs:
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
       - name: run MQTT5 PubSub sample
         run: |
-          python3 ./utils/run_sample_ci.py --language Java --sample_file 'samples/Mqtt5/PubSub' --sample_region ${{ env.AWS_DEFAULT_REGION }} --sample_secret_endpoint 'ci/endpoint' --sample_secret_certificate 'ci/mqtt5/us/mqtt5_thing/cert' --sample_secret_private_key 'ci/mqtt5/us/mqtt5_thing/key' --sample_main_class 'mqtt5.pubsub.PubSub'
+          python3 ./utils/run_sample_ci.py --file ./.github/workflows/ci_run_mqtt5_pubsub_cfg.json
       - name: configure AWS credentials (Device Advisor)
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -336,31 +335,30 @@ jobs:
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
       - name: run Basic Connect sample
         run: |
-          python3 ./utils/run_sample_ci.py --language Java --sample_file 'samples/BasicConnect' --sample_region ${{ env.AWS_DEFAULT_REGION }} --sample_secret_endpoint 'ci/endpoint' --sample_secret_certificate 'ci/PubSub/cert' --sample_secret_private_key 'ci/PubSub/key' --sample_main_class 'basicconnect.BasicConnect'
+          python3 ./utils/run_sample_ci.py --file ./.github/workflows/ci_run_basic_connect_cfg.json
       - name: run Websocket Connect sample
         run: |
-          python3 ./utils/run_sample_ci.py --language Java --sample_file 'samples/WebsocketConnect' --sample_region ${{ env.AWS_DEFAULT_REGION }} --sample_secret_endpoint 'ci/endpoint' --sample_arguments '--signing_region us-east-1' --sample_main_class 'websocketconnect.WebsocketConnect'
+          python3 ./utils/run_sample_ci.py --file ./.github/workflows/ci_run_websocket_connect_cfg.json
       - name: run PubSub sample
         run: |
-          python3 ./utils/run_sample_ci.py --language Java --sample_file 'samples/BasicPubSub' --sample_region ${{ env.AWS_DEFAULT_REGION }} --sample_secret_endpoint 'ci/endpoint' --sample_secret_certificate 'ci/PubSub/cert' --sample_secret_private_key 'ci/PubSub/key' --sample_main_class 'pubsub.PubSub'
+          python3 ./utils/run_sample_ci.py --file ./.github/workflows/ci_run_pubsub_cfg.json
       - name: run CustomKeyOperations sample
         run: |
-          python3 ./utils/run_sample_ci.py --language Java --sample_file 'samples/CustomKeyOpsPubSub' --sample_region ${{ env.AWS_DEFAULT_REGION }} --sample_secret_endpoint 'ci/endpoint' --sample_secret_certificate 'ci/PubSub/cert' --sample_secret_private_key 'ci/PubSub/keyp8' --sample_main_class 'customkeyopspubsub.CustomKeyOpsPubSub'
+          python3 ./utils/run_sample_ci.py --file ./.github/workflows/ci_run_custom_key_ops_cfg.json
       - name: run PKCS11 Connect sample
         run: |
           mkdir -p /tmp/tokens
           export SOFTHSM2_CONF=/tmp/softhsm2.conf
           echo "directories.tokendir = /tmp/tokens" > /tmp/softhsm2.conf
-          python3 ./utils/run_sample_ci.py --language Java --sample_file 'samples/Pkcs11Connect' --sample_region ${{ env.AWS_DEFAULT_REGION }} --sample_secret_endpoint 'ci/endpoint' --sample_secret_certificate 'ci/PubSub/cert' --sample_secret_private_key 'ci/PubSub/keyp8' --sample_run_softhsm 'true' --sample_arguments '--pkcs11_lib "/usr/lib/softhsm/libsofthsm2.so" --pin 0000 --token_label "my-token" --key_label "my-key"' --sample_main_class 'pkcs11connect.Pkcs11Connect'
+          python3 ./utils/run_sample_ci.py --file ./.github/workflows/ci_run_pkcs11_connect_cfg.json
       - name: run Java keystore Connect sample
         run: |
           cert=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/PubSub/cert" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$cert" > /tmp/certificate.pem
           key=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/PubSub/key" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$key" > /tmp/privatekey.pem
           pkcs12_password=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/PubSub/key_pkcs12_password" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\")
           openssl pkcs12 -export -in /tmp/certificate.pem -inkey /tmp/privatekey.pem -out /tmp/pkcs12-key.p12 -name PubSub_Thing_Alias -password pass:$pkcs12_password
-
           keytool -importkeystore -srckeystore /tmp/pkcs12-key.p12 -destkeystore ./java_keystore.keys -srcstoretype PKCS12 -alias PubSub_Thing_Alias -srcstorepass $pkcs12_password -deststorepass $pkcs12_password
-          python3 ./utils/run_sample_ci.py --language Java --sample_file 'samples/JavaKeystoreConnect' --sample_region ${{ env.AWS_DEFAULT_REGION }} --sample_secret_endpoint 'ci/endpoint' --sample_arguments "--keystore ./java_keystore.keys --keystore_password $pkcs12_password --certificate_alias PubSub_Thing_Alias --certificate_password $pkcs12_password" --sample_main_class 'javakeystoreconnect.JavaKeystoreConnect'
+          python3 ./utils/run_sample_ci.py --file ./.github/workflows/ci_run_keystore_connect_cfg.json
       - name: configure AWS credentials (Custom Authorizer)
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -368,7 +366,7 @@ jobs:
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
       - name: run CustomAuthorizerConnect sample
         run: |
-          python3 ./utils/run_sample_ci.py --language Java --sample_file 'samples/CustomAuthorizerConnect' --sample_region ${{ env.AWS_DEFAULT_REGION }} --sample_secret_endpoint 'ci/endpoint' --sample_secret_custom_authorizer_name 'ci/CustomAuthorizer/name' --sample_secret_custom_authorizer_password 'ci/CustomAuthorizer/password' --sample_main_class 'customauthorizerconnect.CustomAuthorizerConnect'
+          python3 ./utils/run_sample_ci.py --file ./.github/workflows/ci_run_custom_authorizer_connect_cfg.json
       - name: configure AWS credentials (Shadow)
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -376,7 +374,7 @@ jobs:
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
       - name: run Shadow sample
         run: |
-          python3 ./utils/run_sample_ci.py --language Java --sample_file 'samples/Shadow' --sample_region ${{ env.AWS_DEFAULT_REGION }} --sample_secret_endpoint 'ci/endpoint' --sample_secret_certificate 'ci/Shadow/cert' --sample_secret_private_key 'ci/Shadow/key' --sample_arguments '--thing_name CI_Shadow_Thing' --sample_main_class 'shadow.ShadowSample'
+          python3 ./utils/run_sample_ci.py --file ./.github/workflows/ci_run_shadow_cfg.json
       - name: configure AWS credentials (Jobs)
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -384,7 +382,7 @@ jobs:
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
       - name: run Jobs sample
         run: |
-          python3 ./utils/run_sample_ci.py --language Java --sample_file 'samples/Jobs' --sample_region ${{ env.AWS_DEFAULT_REGION }} --sample_secret_endpoint 'ci/endpoint' --sample_secret_certificate 'ci/Jobs/cert' --sample_secret_private_key 'ci/Jobs/key' --sample_arguments '--thing_name CI_Jobs_Thing' --sample_main_class 'jobs.JobsSample'
+          python3 ./utils/run_sample_ci.py --file ./.github/workflows/ci_run_jobs_cfg.json
       - name: configure AWS credentials (Fleet provisioning)
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -394,8 +392,16 @@ jobs:
         run: |
           echo "Generating UUID for IoT thing"
           Sample_UUID=$(python3  -c "import uuid; print (uuid.uuid4())")
-          python3 ./utils/run_sample_ci.py --language Java --sample_file 'samples/Identity' --sample_region ${{ env.AWS_DEFAULT_REGION }} --sample_secret_endpoint 'ci/endpoint' --sample_secret_certificate 'ci/FleetProvisioning/cert' --sample_secret_private_key 'ci/FleetProvisioning/key' --sample_arguments "--template_name CI_FleetProvisioning_Template --template_parameters '{SerialNumber:${Sample_UUID}}'" --sample_main_class 'identity.FleetProvisioningSample'
+          python3 ./utils/run_sample_ci.py --file ./.github/workflows/ci_run_fleet_provisioning_cfg.json --input_uuid ${Sample_UUID}
           python3 utils/delete_iot_thing_ci.py --thing_name "Fleet_Thing_${Sample_UUID}" --region "us-east-1"
+      - name: configure AWS credentials (X509)
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ env.CI_X509_ROLE }}
+          aws-region: ${{ env.AWS_DEFAULT_REGION }}
+      - name: run X509 sample
+        run: |
+          python3 ./utils/run_sample_ci.py --file ./.github/workflows/ci_run_x509_connect_cfg.json
       - name: configure AWS credentials (MQTT5)
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -403,4 +409,4 @@ jobs:
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
       - name: run MQTT5 PubSub sample
         run: |
-          python3 ./utils/run_sample_ci.py --language Java --sample_file 'samples/Mqtt5/PubSub' --sample_region ${{ env.AWS_DEFAULT_REGION }} --sample_secret_endpoint 'ci/endpoint' --sample_secret_certificate 'ci/mqtt5/us/mqtt5_thing/cert' --sample_secret_private_key 'ci/mqtt5/us/mqtt5_thing/key' --sample_main_class 'mqtt5.pubsub.PubSub'
+          python3 ./utils/run_sample_ci.py --file ./.github/workflows/ci_run_mqtt5_pubsub_cfg.json

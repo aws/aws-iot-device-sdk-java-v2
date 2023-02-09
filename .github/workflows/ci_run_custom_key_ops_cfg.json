@@ -1,0 +1,22 @@
+{
+    "language": "Java",
+    "sample_file": "samples/CustomKeyOpsPubSub",
+    "sample_region": "us-east-1",
+    "sample_main_class": "customkeyopspubsub.CustomKeyOpsPubSub",
+    "arguments": [
+        {
+            "name": "--endpoint",
+            "secret": "ci/endpoint"
+        },
+        {
+            "name": "--cert",
+            "secret": "ci/PubSub/cert",
+            "filename": "tmp_certificate.pem"
+        },
+        {
+            "name": "--key",
+            "secret": "ci/PubSub/keyp8",
+            "filename": "tmp_key.pem"
+        }
+    ]
+}

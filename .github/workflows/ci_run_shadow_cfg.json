@@ -1,0 +1,26 @@
+{
+    "language": "Java",
+    "sample_file": "samples/Shadow",
+    "sample_region": "us-east-1",
+    "sample_main_class": "shadow.ShadowSample",
+    "arguments": [
+        {
+            "name": "--endpoint",
+            "secret": "ci/endpoint"
+        },
+        {
+            "name": "--cert",
+            "secret": "ci/Shadow/cert",
+            "filename": "tmp_certificate.pem"
+        },
+        {
+            "name": "--key",
+            "secret": "ci/Shadow/key",
+            "filename": "tmp_key.pem"
+        },
+        {
+            "name": "--thing_name",
+            "data": "CI_Shadow_Thing"
+        }
+    ]
+}

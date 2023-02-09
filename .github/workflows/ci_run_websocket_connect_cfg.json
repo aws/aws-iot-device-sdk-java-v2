@@ -1,0 +1,16 @@
+{
+    "language": "Java",
+    "sample_file": "samples/WebsocketConnect",
+    "sample_region": "us-east-1",
+    "sample_main_class": "websocketconnect.WebsocketConnect",
+    "arguments": [
+        {
+            "name": "--endpoint",
+            "secret": "ci/endpoint"
+        },
+        {
+            "name": "--signing_region",
+            "data": "us-east-1"
+        }
+    ]
+}
