@@ -17,6 +17,7 @@
         <module>samples/CustomAuthorizerConnect</module>
         <module>samples/JavaKeystoreConnect</module>
         <module>samples/Greengrass</module>
+        <module>samples/GreengrassIPC</module>
         <module>samples/Jobs</module>
         <module>samples/PubSubStress</module>
         <module>samples/CustomKeyOpsPubSub</module>
