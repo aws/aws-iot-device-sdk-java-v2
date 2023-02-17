@@ -45,7 +45,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>1.4.0</version>
                 <configuration>
-                    <mainclass>main</mainclass>
+                    <mainClass>pkcs11connect.Pkcs11Connect</mainClass>
                 </configuration>
             </plugin>
             <plugin>

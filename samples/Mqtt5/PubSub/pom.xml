@@ -52,7 +52,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>1.4.0</version>
                 <configuration>
-                    <mainclass>main</mainclass>
+                    <mainClass>mqtt5.pubsub.PubSub</mainClass>
                 </configuration>
             </plugin>
             <plugin>
