@@ -45,7 +45,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>1.4.0</version>
                 <configuration>
-                    <mainClass>main</mainClass>
+                    <mainClass>basicconnect.BasicConnect</mainClass>
                 </configuration>
             </plugin>
             <plugin>
