@@ -1,0 +1,20 @@
+{
+    "language": "Java",
+    "sample_file": "samples/CognitoConnect",
+    "sample_region": "us-east-1",
+    "sample_main_class": "cognitoconnect.CognitoConnect",
+    "arguments": [
+        {
+            "name": "--endpoint",
+            "secret": "ci/endpoint"
+        },
+        {
+            "name": "--signing_region",
+            "data": "us-east-1"
+        },
+        {
+            "name": "--cognito_identity",
+            "secret": "ci/Cognito/identity_id"
+        }
+    ]
+}

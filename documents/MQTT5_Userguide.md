@@ -15,6 +15,7 @@
         * [Direct MQTT with Custom Key Operations Method](#direct-mqtt-with-custom-key-operation-method)
         * [Direct MQTT with Windows Certificate Store Method](#direct-mqtt-with-windows-certificate-store-method)
         * [Direct MQTT with Java Keystore Method](#direct-mqtt-with-java-keystore-method)
+        * [Websocket Connection with Cognito Authentication Method](#websocket-connection-with-cognito-authentication-method)
         * [HTTP Proxy](#http-proxy)
     * [How to create a MQTT5 client](#how-to-create-a-mqtt5-client)
     * [How to Start and Stop](#how-to-start-and-stop)
@@ -296,6 +297,32 @@ String keyStoreCertificatePassword = "PKCS12_password";
 String clientEndpoint = "<prefix>-ats.iot.<region>.amazonaws.com";
 AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newDirectMqttBuilderWithJavaKeystore(clientEndpoint, keyStore, keyStoreCertificateAlias, keyStoreCertificatePassword)
 ~~~
+
+### **Websocket Connection with Cognito Authentication Method**
+
+A MQTT5 websocket connection can be made using Cognito to authenticate rather than the AWS credentials located on the device or via key and certificate. Instead, Cognito can authenticate the connection using a valid Cognito identity ID. This requires a valid Cognito identity ID, which can be retrieved from a Cognito identity pool. A Cognito identity pool can be created from the AWS console.
+
+To create a MQTT5 builder configured for this connection, see the following code:
+
+~~~ java
+WebsocketSigv4Config websocketConfig = new WebsocketSigv4Config();
+
+CognitoCredentialsProvider.CognitoCredentialsProviderBuilder cognitoBuilder = new CognitoCredentialsProvider.CognitoCredentialsProviderBuilder();
+// See https://docs.aws.amazon.com/general/latest/gr/cognito_identity.html for Cognito endpoints
+String cognitoEndpoint = "cognito-identity.<region>.amazonaws.com";
+cognitoBuilder.withEndpoint(cognitoEndpoint).withIdentity("<Cognito identity ID>");
+cognitoBuilder.withClientBootstrap(ClientBootstrap.getOrCreateStaticDefault());
+TlsContextOptions cognitoTlsContextOptions = TlsContextOptions.createDefaultClient();
+ClientTlsContext cognitoTlsContext = new ClientTlsContext(cognitoTlsContextOptions);
+cognitoTlsContextOptions.close();
+cognitoBuilder.withTlsContext(cognitoTlsContext);
+websocketConfig.credentialsProvider = cognitoBuilder.build();
+
+String clientEndpoint = "<prefix>-ats.iot.<region>.amazonaws.com";
+AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newWebsocketMqttBuilderWithSigv4Auth(clientEndpoint, websocketConfig);
+~~~
+
+**Note**: A Cognito identity ID is different from a Cognito identity pool ID and trying to connect with a Cognito identity pool ID will not work. If you are unable to connect, make sure you are passing a Cognito identity ID rather than a Cognito identity pool ID.
 
 ### **HTTP Proxy**
 

@@ -65,7 +65,7 @@ public class CustomAuthorizerConnect {
 
         try {
 
-            // Create a connection using a certificate and key, but through a custom authorizer.
+            // Create a connection authenticated via a custom authorizer.
             // Note: The data for the connection is gotten from cmdUtils.
             // (see buildDirectMQTTConnectionWithCustomAuthorizer for implementation)
             MqttClientConnection connection = cmdUtils.buildDirectMQTTConnectionWithCustomAuthorizer(callbacks);

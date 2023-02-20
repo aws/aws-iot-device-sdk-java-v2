@@ -19,6 +19,7 @@ import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
 import software.amazon.awssdk.iot.AwsIotMqtt5ClientBuilder;
 import software.amazon.awssdk.crt.http.HttpProxyOptions;
 import software.amazon.awssdk.crt.auth.credentials.X509CredentialsProvider;
+import software.amazon.awssdk.crt.auth.credentials.CognitoCredentialsProvider;
 import software.amazon.awssdk.crt.Log;
 import software.amazon.awssdk.crt.Log.LogLevel;
 
@@ -355,6 +356,42 @@ public class CommandLineUtils {
         }
     }
 
+    public MqttClientConnection buildCognitoMQTTConnection(MqttClientConnectionEvents callbacks)
+    {
+        try {
+
+            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(null, null);
+            buildConnectionSetupCAFileDefaults(builder);
+            buildConnectionSetupConnectionDefaults(builder, callbacks);
+            buildConnectionSetupProxyDefaults(builder);
+
+            builder.withWebsockets(true);
+            builder.withWebsocketSigningRegion(getCommandRequired(m_cmd_signing_region, ""));
+
+            CognitoCredentialsProvider.CognitoCredentialsProviderBuilder cognitoBuilder = new CognitoCredentialsProvider.CognitoCredentialsProviderBuilder();
+            String cognitoEndpoint = "cognito-identity." + getCommandRequired(m_cmd_signing_region, "") + ".amazonaws.com";
+            cognitoBuilder.withEndpoint(cognitoEndpoint).withIdentity(getCommandRequired(m_cmd_cognito_identity, ""));
+            cognitoBuilder.withClientBootstrap(ClientBootstrap.getOrCreateStaticDefault());
+
+            TlsContextOptions cognitoTlsContextOptions = TlsContextOptions.createDefaultClient();
+            ClientTlsContext cognitoTlsContext = new ClientTlsContext(cognitoTlsContextOptions);
+            cognitoTlsContextOptions.close();
+            cognitoBuilder.withTlsContext(cognitoTlsContext);
+
+            CognitoCredentialsProvider cognitoCredentials = cognitoBuilder.build();
+            builder.withWebsocketCredentialsProvider(cognitoCredentials);
+
+            MqttClientConnection conn = builder.build();
+            builder.close();
+            cognitoCredentials.close();
+            cognitoTlsContext.close();
+            return conn;
+
+        } catch (CrtRuntimeException ex) {
+            return null;
+        }
+    }
+
     public Mqtt5Client buildWebsocketMQTT5Connection(
         Mqtt5ClientOptions.LifecycleEvents lifecycleEvents, Mqtt5ClientOptions.PublishEvents publishEvents) {
         try {
@@ -510,6 +547,7 @@ public class CommandLineUtils {
     private static final String m_cmd_javakeystore_format = "keystore_format";
     private static final String m_cmd_javakeystore_certificate = "certificate_alias";
     private static final String m_cmd_javakeystore_key_password = "certificate_password";
+    private static final String m_cmd_cognito_identity = "cognito_identity";
 }
 
 class CommandLineOption {

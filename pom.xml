@@ -16,6 +16,7 @@
         <module>samples/Pkcs11Connect</module>
         <module>samples/CustomAuthorizerConnect</module>
         <module>samples/JavaKeystoreConnect</module>
+        <module>samples/CognitoConnect</module>
         <module>samples/Greengrass</module>
         <module>samples/GreengrassIPC</module>
         <module>samples/Jobs</module>
