@@ -74,9 +74,9 @@ public class JavaKeystoreConnect {
 
         try {
 
-            // Create a connection using a certificate and key
+            // Create a connection using a certificate and key stored in the Java keystore
             // Note: The data for the connection is gotten from cmdUtils.
-            // (see buildDirectMQTTConnection for implementation)
+            // (see buildDirectMQTTConnectionWithJavaKeystore for implementation)
             MqttClientConnection connection = cmdUtils.buildDirectMQTTConnectionWithJavaKeystore(callbacks);
             if (connection == null)
             {

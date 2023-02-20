@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0.
  */
 
-package websocketconnect;
+package cognitoconnect;
 
 import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.crt.CrtResource;
@@ -16,7 +16,7 @@ import java.util.concurrent.ExecutionException;
 
 import utils.commandlineutils.CommandLineUtils;
 
-public class WebsocketConnect {
+public class CognitoConnect {
     // When run normally, we want to exit nicely even if something goes wrong
     // When run from CI, we want to let an exception escape which in turn causes the
     // exec:java task to return a non-zero exit code
@@ -31,7 +31,7 @@ public class WebsocketConnect {
      */
     static void onApplicationFailure(Throwable cause) {
         if (isCI) {
-            throw new RuntimeException("WebsocketConnect execution failure", cause);
+            throw new RuntimeException("CognitoConnect execution failure", cause);
         } else if (cause != null) {
             System.out.println("Exception encountered: " + cause.toString());
         }
@@ -40,12 +40,12 @@ public class WebsocketConnect {
     public static void main(String[] args) {
 
         cmdUtils = new CommandLineUtils();
-        cmdUtils.registerProgramName("WebsocketConnect");
+        cmdUtils.registerProgramName("CognitoConnect");
         cmdUtils.addCommonMQTTCommands();
         cmdUtils.addCommonProxyCommands();
         cmdUtils.registerCommand("signing_region", "<str>", "AWS IoT service region.");
         cmdUtils.registerCommand("client_id", "<int>", "Client id to use (optional, default='test-*').");
-        cmdUtils.registerCommand("port", "<int>", "Port to connect to on the endpoint (optional, default='8883').");
+        cmdUtils.registerCommand("cognito_identity", "<str>", "");
         cmdUtils.sendArguments(args);
 
         MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
@@ -64,11 +64,17 @@ public class WebsocketConnect {
 
         try {
             /**
-             * Creates a websocket connection using AWS credentials on the device.
+             * Creates a connection using Cognito credentials.
              * Note: The data for the connection is gotten from cmdUtils.
-             * (see buildWebsocketMQTTConnection for implementation)
+             * (see buildCognitoMQTTConnection for implementation)
+             *
+             * Note: This sample and code assumes that you are using a Cognito identity
+             * in the same region as you pass to "--signing_region".
+             * If not, you may need to adjust the Cognito endpoint in the cmdUtils.
+             * See https://docs.aws.amazon.com/general/latest/gr/cognito_identity.html
+             * for all Cognito endpoints.
              */
-            MqttClientConnection connection = cmdUtils.buildWebsocketMQTTConnection(callbacks);
+            MqttClientConnection connection = cmdUtils.buildCognitoMQTTConnection(callbacks);
             if (connection == null)
             {
                 onApplicationFailure(new RuntimeException("MQTT connection creation failed!"));

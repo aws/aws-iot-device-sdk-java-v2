@@ -9,6 +9,7 @@
 * [X509 Connect](#x509-credentials-provider-connect)
 * [CustomAuthorizer Connect](#custom-authorizer-connect)
 * [JavaKeystore Connect](#java-keystore-connect)
+* [Cognito Connect](#cognito-connect)
 * [CustomKeyOperationPubSub](#custom-key-operations-pubsub)
 * [Shadow](#shadow)
 * [Jobs](#jobs)
@@ -513,6 +514,61 @@ To run this sample using the latest SDK release, use the following command:
 
 ```sh
 mvn -P latest-release compile exec:java -pl samples/JavaKeystoreConnect -Dexec.mainClass=javakeystoreconnect.JavaKeystoreConnect -Dexec.args='--endpoint <endpoint> --keystore <path to Java keystore file> --keystore_password <password for Java keystore> --certificate_alias <alias of PKCS12 certificate> --certificate_password <password for PKCS12 certificate>'
+```
+
+## Cognito Connect
+
+This sample makes an MQTT websocket connection and connects through a [Cognito](https://aws.amazon.com/cognito/) identity. On startup, the device connects to the server and then disconnects. This sample is for reference on connecting using Cognito.
+
+Source: `samples/CognitoConnect`
+
+To run this sample, you need to have a Cognito identifier ID. You can get a Cognito identifier ID by creating a Cognito identity pool. For creating Cognito identity pools, please see the following page on the AWS documentation: [Tutorial: Creating an identity pool](https://docs.aws.amazon.com/cognito/latest/developerguide/tutorial-create-identity-pool.html)
+
+**Note:** This sample assumes using an identity pool with unauthenticated identity access for the sake of convenience. Please follow best practices in a real world application based on the needs of your application and the intended use case.
+
+Once you have a Cognito identity pool, you can run the following CLI command to get the Cognito identity pool ID:
+```sh
+aws cognito-identity get-id --identity-pool-id <cognito identity pool id>
+# result from above command
+{
+    "IdentityId": "<cognito identity ID>"
+}
+```
+
+You can then use the returned ID in the `IdentityId` result as the input for the `--cognito_identity` argument. Please note that the Cognito identity pool ID is **not** the same as a Cognito identity ID and the sample will not work if you pass a Cognito pool id.
+
+Your IoT Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-policies.html) must provide privileges for this sample to connect. Make sure your policy allows a client ID of `test-*` to connect or use `--client_id <client ID here>` to send the client ID your policy supports.
+
+<details>
+<summary>(see sample policy)</summary>
+<pre>
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iot:Connect"
+      ],
+      "Resource": [
+        "arn:aws:iot:<b>region</b>:<b>account</b>:client/test-*"
+      ]
+    }
+  ]
+}
+</pre>
+</details>
+
+To run the Cognito connect sample use the following command:
+
+```sh
+mvn compile exec:java -pl samples/CognitoConnect -Dexec.mainClass=cognitoconnect.CognitoConnect -Dexec.args='--endpoint <endpoint> --signing_region <signing region> --cognito_identity <cognito identity ID>
+```
+
+To run this sample using the latest SDK release, use the following command:
+
+```sh
+mvn -P latest-release compile exec:java -pl samples/CognitoConnect -Dexec.mainClass=cognitoconnect.CognitoConnect -Dexec.args='--endpoint <endpoint> --signing_region <signing region> --cognito_identity <cognito identity ID>
 ```
 
 ## Custom Key Operations PubSub
