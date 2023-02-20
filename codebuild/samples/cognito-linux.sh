@@ -13,6 +13,6 @@ COGNITO_IDENTITY=$(aws secretsmanager get-secret-value --secret-id "ci/Cognito/i
 mvn compile
 
 echo "Cognito Connect test"
-mvn exec:java -Dexec.mainClass="cognitoconnect.CognitoConnect" -Daws.crt.ci="True" -Dexec.arguments="--endpoint,$ENDPOINT,--cognito_identity,$COGNITO_IDENTITY,--signing_region,us-east-1"
+mvn exec:java -Dexec.mainClass="cognitoconnect.CognitoConnect" -Daws.crt.ci="True" -Dexec.arguments="--endpoint,$ENDPOINT,--cognito_identity,$COGNITO_IDENTITY,--signing_region,us-east-1,--port,443"
 
 popd
