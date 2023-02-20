@@ -45,7 +45,7 @@ public class CognitoConnect {
         cmdUtils.addCommonProxyCommands();
         cmdUtils.registerCommand("signing_region", "<str>", "AWS IoT service region.");
         cmdUtils.registerCommand("client_id", "<int>", "Client id to use (optional, default='test-*').");
-        cmdUtils.registerCommand("cognito_identity", "<str>", "");
+        cmdUtils.registerCommand("cognito_identity", "<str>", "The Cognito identity ID to use to connect via Cognito");
         cmdUtils.sendArguments(args);
 
         MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
