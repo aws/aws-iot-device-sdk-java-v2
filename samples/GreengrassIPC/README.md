@@ -1,5 +1,7 @@
 # Greengrass IPC
 
+[**Return to main sample list**](../README.md)
+
 This sample uses [AWS IoT Greengrass V2](https://docs.aws.amazon.com/greengrass/index.html) to publish messages from the Greengrass device to the AWS IoT MQTT broker.
 
 This sample can be deployed as a Greengrass V2 component and it will publish 10 MQTT messages over the course of 10 seconds. The IPC integration with Greengrass V2 allows this code to run without additional IoT certificates or secrets, because it directly communicates with the Greengrass core running on the device. As such, to run this sample you need Greengrass Core running.

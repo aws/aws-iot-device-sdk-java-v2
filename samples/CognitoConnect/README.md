@@ -1,5 +1,7 @@
 ## Cognito Connect
 
+[**Return to main sample list**](../README.md)
+
 This sample is similar to the Websocket Connect sample, but instead of sourcing the AWS credentials from the environment files or local files, it instead uses a [Cognito](https://aws.amazon.com/cognito/) identity to authorize the connection. This has the advantage of not requiring the needing to store AWS credentials on the device itself with permissions to perform the IoT actions your device requires, but instead just having AWS credentials for the [Cognito](https://aws.amazon.com/cognito/) identity instead. This provides a layer of security and indirection that gives you better security.
 
 On startup, the device connects to the server and then disconnects. This sample is for reference on connecting using Cognito.

@@ -1,5 +1,7 @@
 # Raw Connect
 
+[**Return to main sample list**](../README.md)
+
 This sample is exactly like [Basic Connect](../BasicConnect/README.md) in terms of functionality, but it sets up the connection manually in a "raw" way rather than using helper classes that make creating the connection easier. On startup, the device connects to the server using the certificate and key files, and then disconnects. This sample is for reference on connecting via certificate and key files.
 
 Your IoT Core Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-policies.html) must provide privileges for this sample to connect. Below is a sample policy that can be used on your IoT Core Thing that will allow this sample to run as intended.

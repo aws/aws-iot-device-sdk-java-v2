@@ -1,5 +1,7 @@
 # x509 Credentials Provider Connect
 
+[**Return to main sample list**](../README.md)
+
 This sample is similar to the [Basic Connect](../BasicConnect/README.md), but the connection uses a X.509 certificate
 to source the AWS credentials when connecting.
 

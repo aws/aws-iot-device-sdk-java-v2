@@ -1,5 +1,7 @@
 # Java Keystore Connect
 
+[**Return to main sample list**](../README.md)
+
 This sample is similar to the [Basic Connect](../BasicConnect/README.md) sample, in that it connects via Mutual TLS (mTLS) using a certificate and key file.  However, unlike the Basic Connect where the certificate and private key file are stored on disk, this sample uses the Java Keystore to get the certificate and private key files. This adds a layer of security because the private key and certificate files is not just sitting on the computer and instead is hidden securely away in the Java Keystore.
 
 Your IoT Core Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-policies.html) must provide privileges for this sample to connect. Below is a sample policy that can be used on your IoT Core Thing that will allow this sample to run as intended.

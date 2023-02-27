@@ -1,5 +1,7 @@
 # Basic Connect
 
+[**Return to main sample list**](../README.md)
+
 This sample makes an MQTT connection using a certificate and key file using Mutual TLS (mTLS). On startup, the device connects to the server using the certificate and key files, and then disconnects. This sample is for reference on connecting via certificate and key files. Using a certificate and key file pair is the easiest and most straightforward way to authenticate a connection to AWS IoT Core.
 
 Your IoT Core Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-policies.html) must provide privileges for this sample to connect. Below is a sample policy that can be used on your IoT Core Thing that will allow this sample to run as intended.

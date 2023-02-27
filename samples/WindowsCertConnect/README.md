@@ -1,5 +1,7 @@
 # WindowsCert Connect
 
+[**Return to main sample list**](../README.md)
+
 This sample is similar to the [Basic Connect](../BasicConnect/README.md) sample, in that it connects via Mutual TLS (mTLS) using a certificate and key file.  However, unlike the Basic Connect where the certificate and private key file are stored on disk, this sample uses a PKCS#12 file stored in the [Windows certificate store](https://docs.microsoft.com/en-us/windows-hardware/drivers/install/certificate-stores). This adds a layer of security because the private key file is not just sitting on the computer and instead is hidden securely away in the [Windows certificate store](https://docs.microsoft.com/en-us/windows-hardware/drivers/install/certificate-stores).
 
 **WARNING: Windows only**
