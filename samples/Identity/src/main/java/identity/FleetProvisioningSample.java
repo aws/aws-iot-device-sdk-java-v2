@@ -50,7 +50,7 @@ public class FleetProvisioningSample {
     static CreateCertificateFromCsrResponse createCertificateFromCsrResponse = null;
     static RegisterThingResponse registerThingResponse = null;
 
-    static long responseWaitTimeMs = 2000L;
+    static long responseWaitTimeMs = 5000L; // 5 seconds
 
     static CommandLineUtils cmdUtils;
 
