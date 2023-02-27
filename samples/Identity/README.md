@@ -59,7 +59,6 @@ Your IoT Core Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerg
   ]
 }
 </pre>
-</details>
 
 Replace with the following with the data from your AWS account:
 * `<region>`: The AWS IoT Core region where you created your AWS IoT Core thing you wish to use with this sample. For example `us-east-1`.
@@ -67,6 +66,8 @@ Replace with the following with the data from your AWS account:
 * `<templatename>`: The name of your AWS Fleet Provisioning template you want to use to create new AWS IoT Core Things.
 
 Note that in a real application, you may want to avoid the use of wildcards in your ClientID or use them selectively. Please follow best practices when working with AWS on production applications using the SDK. Also, for the purposes of this sample, please make sure your policy allows a client ID of `test-*` to connect or use `--client_id <client ID here>` to send the client ID your policy supports.
+
+</details>
 
 ## How to run
 
