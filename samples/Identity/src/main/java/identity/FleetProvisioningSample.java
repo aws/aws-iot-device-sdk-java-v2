@@ -33,6 +33,8 @@ import com.google.gson.Gson;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import utils.commandlineutils.CommandLineUtils;
 
@@ -44,9 +46,11 @@ public class FleetProvisioningSample {
     static CompletableFuture<Void> gotResponse;
     static IotIdentityClient iotIdentityClient;
 
-    static CreateKeysAndCertificateResponse createKeysAndCertificateResponse;
-    static CreateCertificateFromCsrResponse createCertificateFromCsrResponse;
-    static RegisterThingResponse registerThingResponse;
+    static CreateKeysAndCertificateResponse createKeysAndCertificateResponse = null;
+    static CreateCertificateFromCsrResponse createCertificateFromCsrResponse = null;
+    static RegisterThingResponse registerThingResponse = null;
+
+    static long responseWaitTimeMs = 2000L;
 
     static CommandLineUtils cmdUtils;
 
@@ -56,7 +60,6 @@ public class FleetProvisioningSample {
                 ", statusCode: " + response.statusCode);
 
         gotResponse.complete(null);
-        System.exit(1);
     }
 
     static void onRejectedCsr(ErrorResponse response) {
@@ -65,7 +68,6 @@ public class FleetProvisioningSample {
                 ", statusCode: " + response.statusCode);
 
         gotResponse.complete(null);
-        System.exit(1);
     }
 
     static void onRejectedRegister(ErrorResponse response) {
@@ -75,13 +77,14 @@ public class FleetProvisioningSample {
                 ", statusCode: " + response.statusCode);
 
         gotResponse.complete(null);
-        System.exit(1);
     }
 
     static void onCreateKeysAndCertificateAccepted(CreateKeysAndCertificateResponse response) {
-        System.out.println("CreateKeysAndCertificate response certificateId: " + response.certificateId);
         if (response != null) {
-            createKeysAndCertificateResponse = response;
+            System.out.println("CreateKeysAndCertificate response certificateId: " + response.certificateId);
+            if (createKeysAndCertificateResponse == null) {
+                createKeysAndCertificateResponse = response;
+            }
         } else {
             System.out.println("CreateKeysAndCertificate response is null");
         }
@@ -89,9 +92,11 @@ public class FleetProvisioningSample {
     }
 
     static void onCreateCertificateFromCsrResponseAccepted(CreateCertificateFromCsrResponse response) {
-        System.out.println("CreateCertificateFromCsr response certificateId: " + response.certificateId);
         if (response != null) {
-            createCertificateFromCsrResponse = response;
+            System.out.println("CreateCertificateFromCsr response certificateId: " + response.certificateId);
+            if (createCertificateFromCsrResponse == null) {
+                createCertificateFromCsrResponse = response;
+            }
         } else {
             System.out.println("CreateCertificateFromCsr response is null");
         }
@@ -99,13 +104,15 @@ public class FleetProvisioningSample {
     }
 
     static void onRegisterThingAccepted(RegisterThingResponse response) {
-        System.out.println("RegisterThing response thingName: " + response.thingName);
         if (response != null) {
-            gotResponse.complete(null);
-            registerThingResponse = response;
+            System.out.println("RegisterThing response thingName: " + response.thingName);
+            if (registerThingResponse == null) {
+                registerThingResponse = response;
+            }
         } else {
             System.out.println("RegisterThing response is null");
         }
+        gotResponse.complete(null);
     }
 
     static void onException(Exception e) {
@@ -145,62 +152,48 @@ public class FleetProvisioningSample {
             }
         };
 
-        try {
+        MqttClientConnection connection = null;
+        boolean exitWithError = false;
 
-            MqttClientConnection connection = cmdUtils.buildMQTTConnection(callbacks);
+        try {
+            connection = cmdUtils.buildMQTTConnection(callbacks);
             iotIdentityClient = new IotIdentityClient(connection);
 
             CompletableFuture<Boolean> connected = connection.connect();
-            try {
-                boolean sessionPresent = connected.get();
-                System.out.println("Connected to " + (!sessionPresent ? "new" : "existing") + " session!");
-            } catch (Exception ex) {
-                throw new RuntimeException("Exception occurred during connect", ex);
-            }
+            boolean sessionPresent = connected.get(responseWaitTimeMs, TimeUnit.MILLISECONDS);
+            System.out.println("Connected to " + (!sessionPresent ? "new" : "existing") + " session!");
 
-            try {
-                if (csrPath == null) {
-                    createKeysAndCertificateWorkflow();
-                } else {
-                    createCertificateFromCsrWorkflow();
-                }
-            } catch (Exception e) {
-                throw new RuntimeException("Exception occurred during connect", e);
+            if (csrPath == null) {
+                createKeysAndCertificateWorkflow();
+            } else {
+                createCertificateFromCsrWorkflow();
             }
 
             CompletableFuture<Void> disconnected = connection.disconnect();
-            disconnected.get();
+            disconnected.get(responseWaitTimeMs, TimeUnit.MILLISECONDS);
 
+        } catch (Exception ex) {
+            System.out.println("Exception encountered! " + "\n");
+            ex.printStackTrace();
+            exitWithError = true;
+        }
+
+        if (connection != null) {
             // Close the connection now that we are completely done with it.
             connection.close();
-
-        } catch (CrtRuntimeException | InterruptedException | ExecutionException ex) {
-            System.out.println("Exception encountered: " + ex.toString());
         }
 
         CrtResource.waitForNoResources();
-        System.out.println("Complete!");
+        System.out.println("Sample complete!");
+
+        if (exitWithError) {
+            System.exit(1);
+        } else {
+            System.exit(0);
+        }
     }
 
-    private static void createKeysAndCertificateWorkflow() throws Exception {
-        CreateKeysAndCertificateSubscriptionRequest createKeysAndCertificateSubscriptionRequest = new CreateKeysAndCertificateSubscriptionRequest();
-        CompletableFuture<Integer> keysSubscribedAccepted = iotIdentityClient.SubscribeToCreateKeysAndCertificateAccepted(
-                createKeysAndCertificateSubscriptionRequest,
-                QualityOfService.AT_LEAST_ONCE,
-                FleetProvisioningSample::onCreateKeysAndCertificateAccepted);
-
-        keysSubscribedAccepted.get();
-        System.out.println("Subscribed to CreateKeysAndCertificateAccepted");
-
-        CompletableFuture<Integer> keysSubscribedRejected = iotIdentityClient.SubscribeToCreateKeysAndCertificateRejected(
-                createKeysAndCertificateSubscriptionRequest,
-                QualityOfService.AT_LEAST_ONCE,
-                FleetProvisioningSample::onRejectedKeys);
-
-        keysSubscribedRejected.get();
-        System.out.println("Subscribed to CreateKeysAndCertificateRejected");
-
-
+    private static void SubscribeToRegisterThing() throws Exception {
         RegisterThingSubscriptionRequest registerThingSubscriptionRequest = new RegisterThingSubscriptionRequest();
         registerThingSubscriptionRequest.templateName = templateName;
 
@@ -210,7 +203,7 @@ public class FleetProvisioningSample {
                 FleetProvisioningSample::onRegisterThingAccepted,
                 FleetProvisioningSample::onException);
 
-        subscribedRegisterAccepted.get();
+        subscribedRegisterAccepted.get(responseWaitTimeMs, TimeUnit.MILLISECONDS);
         System.out.println("Subscribed to SubscribeToRegisterThingAccepted");
 
         CompletableFuture<Integer> subscribedRegisterRejected = iotIdentityClient.SubscribeToRegisterThingRejected(
@@ -219,20 +212,47 @@ public class FleetProvisioningSample {
                 FleetProvisioningSample::onRejectedRegister,
                 FleetProvisioningSample::onException);
 
-        subscribedRegisterRejected.get();
+        subscribedRegisterRejected.get(responseWaitTimeMs, TimeUnit.MILLISECONDS);
         System.out.println("Subscribed to SubscribeToRegisterThingRejected");
+    }
+
+    private static void createKeysAndCertificateWorkflow() throws Exception {
+        CreateKeysAndCertificateSubscriptionRequest createKeysAndCertificateSubscriptionRequest = new CreateKeysAndCertificateSubscriptionRequest();
+        CompletableFuture<Integer> keysSubscribedAccepted = iotIdentityClient.SubscribeToCreateKeysAndCertificateAccepted(
+                createKeysAndCertificateSubscriptionRequest,
+                QualityOfService.AT_LEAST_ONCE,
+                FleetProvisioningSample::onCreateKeysAndCertificateAccepted);
+
+        keysSubscribedAccepted.get(responseWaitTimeMs, TimeUnit.MILLISECONDS);
+        System.out.println("Subscribed to CreateKeysAndCertificateAccepted");
+
+        CompletableFuture<Integer> keysSubscribedRejected = iotIdentityClient.SubscribeToCreateKeysAndCertificateRejected(
+                createKeysAndCertificateSubscriptionRequest,
+                QualityOfService.AT_LEAST_ONCE,
+                FleetProvisioningSample::onRejectedKeys);
+
+        keysSubscribedRejected.get(responseWaitTimeMs, TimeUnit.MILLISECONDS);
+        System.out.println("Subscribed to CreateKeysAndCertificateRejected");
+
+        // Subscribes to the register thing accepted and rejected topics
+        SubscribeToRegisterThing();
 
         CompletableFuture<Integer> publishKeys = iotIdentityClient.PublishCreateKeysAndCertificate(
                 new CreateKeysAndCertificateRequest(),
                 QualityOfService.AT_LEAST_ONCE);
 
-        publishKeys.get();
+        gotResponse = new CompletableFuture<>();
+        publishKeys.get(responseWaitTimeMs, TimeUnit.MILLISECONDS);
         System.out.println("Published to CreateKeysAndCertificate");
+        gotResponse.get(responseWaitTimeMs, TimeUnit.MILLISECONDS);
+        System.out.println("Got response at CreateKeysAndCertificate");
 
-        waitForKeysRequest();
+        // Verify the response is good
+        if (createKeysAndCertificateResponse == null) {
+            throw new Exception("Got invalid/error createKeysAndCertificateResponse");
+        }
 
         gotResponse = new CompletableFuture<>();
-
         System.out.println("RegisterThing now....");
         RegisterThingRequest registerThingRequest = new RegisterThingRequest();
         registerThingRequest.certificateOwnershipToken = createKeysAndCertificateResponse.certificateOwnershipToken;
@@ -246,14 +266,10 @@ public class FleetProvisioningSample {
                 registerThingRequest,
                 QualityOfService.AT_LEAST_ONCE);
 
-        try {
-            publishRegister.get();
-            System.out.println("Published to RegisterThing");
-        } catch(Exception ex) {
-            throw new RuntimeException("Exception occurred during publish", ex);
-        }
-        gotResponse.get();
-        waitForRegisterRequest();
+        publishRegister.get(responseWaitTimeMs, TimeUnit.MILLISECONDS);
+        System.out.println("Published to RegisterThing");
+        gotResponse.get(responseWaitTimeMs, TimeUnit.MILLISECONDS);
+        System.out.println("Got response at RegisterThing");
     }
 
     private static void createCertificateFromCsrWorkflow() throws Exception {
@@ -263,7 +279,7 @@ public class FleetProvisioningSample {
                 QualityOfService.AT_LEAST_ONCE,
                 FleetProvisioningSample::onCreateCertificateFromCsrResponseAccepted);
 
-        csrSubscribedAccepted.get();
+        csrSubscribedAccepted.get(responseWaitTimeMs, TimeUnit.MILLISECONDS);
         System.out.println("Subscribed to CreateCertificateFromCsrAccepted");
 
         CompletableFuture<Integer> csrSubscribedRejected = iotIdentityClient.SubscribeToCreateCertificateFromCsrRejected(
@@ -271,45 +287,32 @@ public class FleetProvisioningSample {
                 QualityOfService.AT_LEAST_ONCE,
                 FleetProvisioningSample::onRejectedCsr);
 
-        csrSubscribedRejected.get();
+        csrSubscribedRejected.get(responseWaitTimeMs, TimeUnit.MILLISECONDS);
         System.out.println("Subscribed to CreateCertificateFromCsrRejected");
 
-        RegisterThingSubscriptionRequest registerThingSubscriptionRequest = new RegisterThingSubscriptionRequest();
-        registerThingSubscriptionRequest.templateName = templateName;
-
-        CompletableFuture<Integer> subscribedRegisterAccepted = iotIdentityClient.SubscribeToRegisterThingAccepted(
-                registerThingSubscriptionRequest,
-                QualityOfService.AT_LEAST_ONCE,
-                FleetProvisioningSample::onRegisterThingAccepted,
-                FleetProvisioningSample::onException);
-
-        subscribedRegisterAccepted.get();
-        System.out.println("Subscribed to SubscribeToRegisterThingAccepted");
-
-        CompletableFuture<Integer> subscribedRegisterRejected = iotIdentityClient.SubscribeToRegisterThingRejected(
-                registerThingSubscriptionRequest,
-                QualityOfService.AT_LEAST_ONCE,
-                FleetProvisioningSample::onRejectedRegister,
-                FleetProvisioningSample::onException);
-
-        subscribedRegisterRejected.get();
-        System.out.println("Subscribed to SubscribeToRegisterThingRejected");
+        // Subscribes to the register thing accepted and rejected topics
+        SubscribeToRegisterThing();
 
         String csrContents = new String(Files.readAllBytes(Paths.get(csrPath)));
-
         CreateCertificateFromCsrRequest createCertificateFromCsrRequest = new CreateCertificateFromCsrRequest();
         createCertificateFromCsrRequest.certificateSigningRequest = csrContents;
         CompletableFuture<Integer> publishCsr = iotIdentityClient.PublishCreateCertificateFromCsr(
                 createCertificateFromCsrRequest,
                 QualityOfService.AT_LEAST_ONCE);
 
-        publishCsr.get();
+        gotResponse = new CompletableFuture<>();
+        publishCsr.get(responseWaitTimeMs, TimeUnit.MILLISECONDS);
         System.out.println("Published to CreateCertificateFromCsr");
+        gotResponse.get(responseWaitTimeMs, TimeUnit.MILLISECONDS);
+        System.out.println("Got response at CreateCertificateFromCsr");
 
-        waitForCsrRequest();
+        // Verify the response is good
+        if (createCertificateFromCsrResponse == null) {
+            throw new Exception("Got invalid/error createCertificateFromCsrResponse");
+        }
 
         gotResponse = new CompletableFuture<>();
-
+        System.out.println("RegisterThing now....");
         RegisterThingRequest registerThingRequest = new RegisterThingRequest();
         registerThingRequest.certificateOwnershipToken = createCertificateFromCsrResponse.certificateOwnershipToken;
         registerThingRequest.templateName = templateName;
@@ -318,60 +321,9 @@ public class FleetProvisioningSample {
                 registerThingRequest,
                 QualityOfService.AT_LEAST_ONCE);
 
-        publishRegister.get();
+        publishRegister.get(responseWaitTimeMs, TimeUnit.MILLISECONDS);
         System.out.println("Published to RegisterThing");
-
-        waitForRegisterRequest();
-    }
-
-    public static void waitForCsrRequest() {
-        try {
-            // Wait for the response.
-            int loopCount = 0;
-            while (loopCount < 30 && createCertificateFromCsrResponse == null) {
-                if (createCertificateFromCsrResponse != null) {
-                    break;
-                }
-                System.out.println("Waiting...for CreateCertificateFromCsrResponse");
-                loopCount += 1;
-                Thread.sleep(50L);
-            }
-        } catch (InterruptedException e) {
-            System.out.println("Exception occured");
-        }
-    }
-
-    public static void waitForKeysRequest() {
-        try {
-            // Wait for the response.
-            int loopCount = 0;
-            while (loopCount < 30 && createKeysAndCertificateResponse == null) {
-                if (createKeysAndCertificateResponse != null) {
-                    break;
-                }
-                System.out.println("Waiting...for CreateKeysAndCertificateResponse");
-                loopCount += 1;
-                Thread.sleep(50L);
-            }
-        } catch (InterruptedException e) {
-            System.out.println("Exception occured");
-        }
-    }
-
-    public static void waitForRegisterRequest() {
-        try {
-            // Wait for the response.
-            int loopCount = 0;
-            while (loopCount < 30 && registerThingResponse == null) {
-                if (registerThingResponse != null) {
-                    break;
-                }
-                System.out.println("Waiting...for registerThingResponse");
-                loopCount += 1;
-                Thread.sleep(50L);
-            }
-        } catch (InterruptedException e) {
-            System.out.println("Exception occured");
-        }
+        gotResponse.get(responseWaitTimeMs, TimeUnit.MILLISECONDS);
+        System.out.println("Got response at RegisterThing");
     }
 }
