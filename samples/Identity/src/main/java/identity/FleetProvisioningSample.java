@@ -84,6 +84,8 @@ public class FleetProvisioningSample {
             System.out.println("CreateKeysAndCertificate response certificateId: " + response.certificateId);
             if (createKeysAndCertificateResponse == null) {
                 createKeysAndCertificateResponse = response;
+            } else {
+                System.out.println("CreateKeysAndCertificate response received after having already gotten a response!");
             }
         } else {
             System.out.println("CreateKeysAndCertificate response is null");
@@ -96,6 +98,8 @@ public class FleetProvisioningSample {
             System.out.println("CreateCertificateFromCsr response certificateId: " + response.certificateId);
             if (createCertificateFromCsrResponse == null) {
                 createCertificateFromCsrResponse = response;
+            } else {
+                System.out.println("CreateCertificateFromCsr response received after having already gotten a response!");
             }
         } else {
             System.out.println("CreateCertificateFromCsr response is null");
@@ -108,6 +112,8 @@ public class FleetProvisioningSample {
             System.out.println("RegisterThing response thingName: " + response.thingName);
             if (registerThingResponse == null) {
                 registerThingResponse = response;
+            } else {
+                System.out.println("RegisterThing response received after having already gotten a response!");
             }
         } else {
             System.out.println("RegisterThing response is null");
