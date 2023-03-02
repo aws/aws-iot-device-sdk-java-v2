@@ -9,9 +9,10 @@ import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.crt.CrtResource;
 import software.amazon.awssdk.crt.CrtRuntimeException;
 import software.amazon.awssdk.crt.Log;
-import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
-import software.amazon.awssdk.crt.mqtt.MqttClientConnectionEvents;
-import software.amazon.awssdk.crt.mqtt.QualityOfService;
+import software.amazon.awssdk.crt.mqtt5.*;
+import software.amazon.awssdk.crt.mqtt5.packets.*;
+import software.amazon.awssdk.crt.mqtt5.Mqtt5Client;
+import software.amazon.awssdk.crt.mqtt5.QOS;
 import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
 import software.amazon.awssdk.iot.iotshadow.IotShadowClient;
 import software.amazon.awssdk.iot.iotshadow.model.ErrorResponse;
@@ -25,6 +26,7 @@ import software.amazon.awssdk.iot.iotshadow.model.UpdateShadowRequest;
 import software.amazon.awssdk.iot.iotshadow.model.UpdateShadowResponse;
 import software.amazon.awssdk.iot.iotshadow.model.UpdateShadowSubscriptionRequest;
 
+import java.util.List;
 import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -44,7 +46,7 @@ public class ShadowSample {
     final static String SHADOW_PROPERTY = "color";
     final static String SHADOW_VALUE_DEFAULT = "off";
 
-    static MqttClientConnection connection;
+    static Mqtt5Client client;
     static IotShadowClient shadow;
     static String localValue = null;
     static CompletableFuture<Void> gotResponse;
@@ -177,13 +179,74 @@ public class ShadowSample {
         }
 
         // Publish the request
-        return shadow.PublishUpdateShadow(request, QualityOfService.AT_LEAST_ONCE).thenRun(() -> {
+        return shadow.PublishUpdateShadow(request, QOS.AT_LEAST_ONCE).thenRun(() -> {
             System.out.println("Update request published");
         }).exceptionally((ex) -> {
             System.out.println("Update request failed: " + ex.getMessage());
             System.exit(3);
             return null;
         });
+    }
+
+    static final class SampleLifecycleEvents implements Mqtt5ClientOptions.LifecycleEvents {
+        CompletableFuture<Void> connectedFuture = new CompletableFuture<>();
+        CompletableFuture<Void> stoppedFuture = new CompletableFuture<>();
+
+        @Override
+        public void onAttemptingConnect(Mqtt5Client client, OnAttemptingConnectReturn onAttemptingConnectReturn) {
+            System.out.println("Mqtt5 Client: Attempting connection...");
+        }
+
+        @Override
+        public void onConnectionSuccess(Mqtt5Client client, OnConnectionSuccessReturn onConnectionSuccessReturn) {
+            System.out.println("Mqtt5 Client: Connection success, client ID: "
+                + onConnectionSuccessReturn.getNegotiatedSettings().getAssignedClientID());
+            connectedFuture.complete(null);
+        }
+
+        @Override
+        public void onConnectionFailure(Mqtt5Client client, OnConnectionFailureReturn onConnectionFailureReturn) {
+            String errorString = CRT.awsErrorString(onConnectionFailureReturn.getErrorCode());
+            System.out.println("Mqtt5 Client: Connection failed with error: " + errorString);
+            connectedFuture.completeExceptionally(new Exception("Could not connect: " + errorString));
+        }
+
+        @Override
+        public void onDisconnection(Mqtt5Client client, OnDisconnectionReturn onDisconnectionReturn) {
+            System.out.println("Mqtt5 Client: Disconnected");
+            DisconnectPacket disconnectPacket = onDisconnectionReturn.getDisconnectPacket();
+            if (disconnectPacket != null) {
+                System.out.println("\tDisconnection packet code: " + disconnectPacket.getReasonCode());
+                System.out.println("\tDisconnection packet reason: " + disconnectPacket.getReasonString());
+            }
+        }
+
+        @Override
+        public void onStopped(Mqtt5Client client, OnStoppedReturn onStoppedReturn) {
+            System.out.println("Mqtt5 Client: Stopped");
+            stoppedFuture.complete(null);
+        }
+    }
+
+    static final class SamplePublishEvents implements Mqtt5ClientOptions.PublishEvents {
+        @Override
+        public void onMessageReceived(Mqtt5Client client, PublishReturn publishReturn) {
+            PublishPacket publishPacket = publishReturn.getPublishPacket();
+            if (publishPacket == null) {
+                return;
+            }
+
+            System.out.println("Publish received on topic: " + publishPacket.getTopic());
+            System.out.println("Message: " + new String(publishPacket.getPayload()));
+
+            List<UserProperty> packetProperties = publishPacket.getUserProperties();
+            if (packetProperties != null) {
+                for (int i = 0; i < packetProperties.size(); i++) {
+                    UserProperty property = packetProperties.get(i);
+                    System.out.println("\twith UserProperty: (" + property.key + ", " + property.value + ")");
+                }
+            }
+        }
     }
 
     public static void main(String[] args) {
@@ -199,56 +262,47 @@ public class ShadowSample {
 
         thingName = cmdUtils.getCommandRequired("thing_name", "");
 
-        MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
-            @Override
-            public void onConnectionInterrupted(int errorCode) {
-                if (errorCode != 0) {
-                    System.out.println("Connection interrupted: " + errorCode + ": " + CRT.awsErrorString(errorCode));
-                }
-            }
-
-            @Override
-            public void onConnectionResumed(boolean sessionPresent) {
-                System.out.println("Connection resumed: " + (sessionPresent ? "existing session" : "clean session"));
-            }
-        };
-
         try {
 
-            MqttClientConnection connection = cmdUtils.buildMQTTConnection(callbacks);
-
-            shadow = new IotShadowClient(connection);
-
-            CompletableFuture<Boolean> connected = connection.connect();
-            try {
-                boolean sessionPresent = connected.get();
-                System.out.println("Connected to " + (!sessionPresent ? "clean" : "existing") + " session!");
-            } catch (Exception ex) {
-                throw new RuntimeException("Exception occurred during connect", ex);
+            /* Create a client based on desired connection type */
+            SampleLifecycleEvents lifecycleEvents = new SampleLifecycleEvents();
+            SamplePublishEvents publishEvents = new SamplePublishEvents();
+            Mqtt5Client client;
+            if (cmdUtils.hasCommand("cert") || cmdUtils.hasCommand("key")) {
+                client = cmdUtils.buildDirectMQTT5Connection(lifecycleEvents, publishEvents);
+            } else {
+                client = cmdUtils.buildWebsocketMQTT5Connection(lifecycleEvents, publishEvents);
             }
+
+
+            shadow = new IotShadowClient(client);
+
+
+            /* Connect */
+            client.start();
 
             System.out.println("Subscribing to shadow delta events...");
             ShadowDeltaUpdatedSubscriptionRequest requestShadowDeltaUpdated = new ShadowDeltaUpdatedSubscriptionRequest();
             requestShadowDeltaUpdated.thingName = thingName;
-            CompletableFuture<Integer> subscribedToDeltas =
-                    shadow.SubscribeToShadowDeltaUpdatedEvents(
+            CompletableFuture<SubAckPacket> subscribedToDeltas =
+                    shadow.Mqtt5SubscribeToShadowDeltaUpdatedEvents(
                             requestShadowDeltaUpdated,
-                            QualityOfService.AT_LEAST_ONCE,
+                            QOS.AT_LEAST_ONCE,
                             ShadowSample::onShadowDeltaUpdated);
             subscribedToDeltas.get();
 
             System.out.println("Subscribing to update responses...");
             UpdateShadowSubscriptionRequest requestUpdateShadow = new UpdateShadowSubscriptionRequest();
             requestUpdateShadow.thingName = thingName;
-            CompletableFuture<Integer> subscribedToUpdateAccepted =
-                    shadow.SubscribeToUpdateShadowAccepted(
+            CompletableFuture<SubAckPacket> subscribedToUpdateAccepted =
+                    shadow.Mqtt5SubscribeToUpdateShadowAccepted(
                             requestUpdateShadow,
-                            QualityOfService.AT_LEAST_ONCE,
+                            QOS.AT_LEAST_ONCE,
                             ShadowSample::onUpdateShadowAccepted);
-            CompletableFuture<Integer> subscribedToUpdateRejected =
-                    shadow.SubscribeToUpdateShadowRejected(
+            CompletableFuture<SubAckPacket> subscribedToUpdateRejected =
+                    shadow.Mqtt5SubscribeToUpdateShadowRejected(
                             requestUpdateShadow,
-                            QualityOfService.AT_LEAST_ONCE,
+                            QOS.AT_LEAST_ONCE,
                             ShadowSample::onUpdateShadowRejected);
             subscribedToUpdateAccepted.get();
             subscribedToUpdateRejected.get();
@@ -256,15 +310,15 @@ public class ShadowSample {
             System.out.println("Subscribing to get responses...");
             GetShadowSubscriptionRequest requestGetShadow = new GetShadowSubscriptionRequest();
             requestGetShadow.thingName = thingName;
-            CompletableFuture<Integer> subscribedToGetShadowAccepted =
-                    shadow.SubscribeToGetShadowAccepted(
+            CompletableFuture<SubAckPacket> subscribedToGetShadowAccepted =
+                    shadow.Mqtt5SubscribeToGetShadowAccepted(
                             requestGetShadow,
-                            QualityOfService.AT_LEAST_ONCE,
+                            QOS.AT_LEAST_ONCE,
                             ShadowSample::onGetShadowAccepted);
-            CompletableFuture<Integer> subscribedToGetShadowRejected =
-                    shadow.SubscribeToGetShadowRejected(
+            CompletableFuture<SubAckPacket> subscribedToGetShadowRejected =
+                    shadow.Mqtt5SubscribeToGetShadowRejected(
                             requestGetShadow,
-                            QualityOfService.AT_LEAST_ONCE,
+                            QOS.AT_LEAST_ONCE,
                             ShadowSample::onGetShadowRejected);
             subscribedToGetShadowAccepted.get();
             subscribedToGetShadowRejected.get();
@@ -274,9 +328,9 @@ public class ShadowSample {
             System.out.println("Requesting current shadow state...");
             GetShadowRequest getShadowRequest = new GetShadowRequest();
             getShadowRequest.thingName = thingName;
-            CompletableFuture<Integer> publishedGetShadow = shadow.PublishGetShadow(
+            CompletableFuture<PublishResult> publishedGetShadow = shadow.PublishGetShadow(
                     getShadowRequest,
-                    QualityOfService.AT_LEAST_ONCE);
+                    QOS.AT_LEAST_ONCE);
             publishedGetShadow.get();
             gotResponse.get();
 
@@ -310,11 +364,8 @@ public class ShadowSample {
                 }
             }
 
-            CompletableFuture<Void> disconnected = connection.disconnect();
-            disconnected.get();
-
             // Close the connection now that we are completely done with it.
-            connection.close();
+            client.close();
 
         } catch (CrtRuntimeException | InterruptedException | ExecutionException ex) {
             System.out.println("Exception encountered: " + ex.toString());

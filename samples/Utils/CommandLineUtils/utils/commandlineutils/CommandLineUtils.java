@@ -437,6 +437,7 @@ public class CommandLineUtils {
             return returnClient;
         }
         catch (CrtRuntimeException ex) {
+            System.out.println("Exception encountered: " + ex.toString());
             return null;
         }
     }

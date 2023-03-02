@@ -37,6 +37,15 @@ import software.amazon.awssdk.iot.iotshadow.model.UpdateShadowSubscriptionReques
 
 import java.nio.charset.StandardCharsets;
 
+import software.amazon.awssdk.crt.mqtt5.packets.*;
+import software.amazon.awssdk.crt.mqtt5.packets.PublishPacket.PublishPacketBuilder;
+import software.amazon.awssdk.crt.mqtt5.packets.SubscribePacket.SubscribePacketBuilder;
+import software.amazon.awssdk.crt.mqtt5.QOS;
+import software.amazon.awssdk.crt.mqtt5.Mqtt5Client;
+import software.amazon.awssdk.crt.mqtt5.Mqtt5Listener;
+import software.amazon.awssdk.crt.mqtt5.Mqtt5ListenerOptions;
+import software.amazon.awssdk.crt.mqtt5.PublishReturn;
+import software.amazon.awssdk.crt.mqtt5.PublishResult;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
 import software.amazon.awssdk.crt.mqtt.QualityOfService;
 import software.amazon.awssdk.crt.mqtt.MqttException;
@@ -62,7 +71,30 @@ import java.util.function.Consumer;
  *
 */
 public class IotShadowClient {
+
+    static final class ShadowPublishEvents implements Mqtt5ListenerOptions.ListenerPublishEvents {
+        HashMap<String, Consumer<PublishReturn>> callbacks = new HashMap<>();
+        ShadowPublishEvents(HashMap<String, Consumer<PublishReturn>> callbacks)
+        {
+            this.callbacks = callbacks;
+        }
+
+        @Override
+        public boolean onMessageReceived(Mqtt5Client client, PublishReturn result) {
+            String topic = result.getPublishPacket().getTopic();
+            if(callbacks.containsKey(topic))
+            {
+                callbacks.get(topic).accept(result);
+                return true;
+            }
+            return false;
+        }
+    };
+
+    HashMap<String, Consumer<PublishReturn>> mqtt5_callbacks = new HashMap<>();
     private MqttClientConnection connection = null;
+    private Mqtt5Client clientV5 = null;
+    private Mqtt5Listener clientV5Listener = null;
     private final Gson gson = getGson();
 
     /**
@@ -71,6 +103,19 @@ public class IotShadowClient {
      */
     public IotShadowClient(MqttClientConnection connection) {
         this.connection = connection;
+    }
+
+    /**
+     * Constructs a new IotShadowClient
+     * @param client The connection to use
+     */
+    public IotShadowClient(Mqtt5Client client) {
+        // Remove the previous listener and client
+        this.clientV5 = client;
+        Mqtt5ListenerOptions.Mqtt5ListenerOptionsBuilder listenerBuilder = new Mqtt5ListenerOptions.Mqtt5ListenerOptionsBuilder();
+        ShadowPublishEvents publishEvents = new ShadowPublishEvents(mqtt5_callbacks);
+        listenerBuilder.withListenerPublishEvents(publishEvents);
+        this.clientV5Listener = new Mqtt5Listener(listenerBuilder.build(), this.clientV5);
     }
 
     private Gson getGson() {
@@ -115,6 +160,13 @@ public class IotShadowClient {
             result.completeExceptionally(new MqttException("UpdateShadowSubscriptionRequest must have a non-null thingName"));
             return result;
         }
+        if(connection == null)
+        {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("SubscribeToUpdateShadowRejected must have a mqttconnection setup, would you mean to use " +
+            "\"Mqtt5SubscribeToUpdateShadowRejected\""));
+            return result;
+        }
         topic = topic.replace("{thingName}", request.thingName);
         Consumer<MqttMessage> messageHandler = (message) -> {
             try {
@@ -127,8 +179,49 @@ public class IotShadowClient {
                 }
             }
         };
+
         return connection.subscribe(topic, qos, messageHandler);
     }
+
+    public CompletableFuture<SubAckPacket> Mqtt5SubscribeToUpdateShadowRejected(
+        UpdateShadowSubscriptionRequest request,
+        QOS qos,
+        Consumer<ErrorResponse> handler,
+        Consumer<Exception> exceptionHandler) {
+        String topic = "$aws/things/{thingName}/shadow/update/rejected";
+        if (request.thingName == null) {
+            CompletableFuture<SubAckPacket> result = new CompletableFuture<SubAckPacket>();
+            result.completeExceptionally(new MqttException("Mqtt5SubscribeToUpdateShadowRejected must have a non-null thingName"));
+            return result;
+        }
+        if(clientV5 == null)
+        {
+            CompletableFuture<SubAckPacket> result = new CompletableFuture<SubAckPacket>();
+            result.completeExceptionally(new MqttException("Mqtt5SubscribeToUpdateShadowRejected must have a mqtt5 client setup, would you mean to use " +
+            "\"SubscribeToUpdateShadowRejected\" for mqtt v3?"));
+            return result;
+        }
+        topic = topic.replace("{thingName}", request.thingName);
+
+        Consumer<PublishReturn> mqtt5MessageHandler = (returnData) -> {
+            try {
+                String payload = new String(returnData.getPublishPacket().getPayload(), StandardCharsets.UTF_8);
+                ErrorResponse response = gson.fromJson(payload, ErrorResponse.class);
+                handler.accept(response);
+            } catch (Exception e) {
+                if (exceptionHandler != null) {
+                    exceptionHandler.accept(e);
+                }
+            }
+        };
+
+        mqtt5_callbacks.put(topic,mqtt5MessageHandler);
+
+        SubscribePacketBuilder subscribePacketBuilder = new SubscribePacketBuilder();
+        subscribePacketBuilder.withSubscription(topic, qos);
+        return clientV5.subscribe(subscribePacketBuilder.build());
+    }
+
 
     /**
      * Subscribes to the rejected topic for the UpdateShadow operation
@@ -146,6 +239,13 @@ public class IotShadowClient {
      *
      * @return a future containing the MQTT packet id used to perform the subscribe operation
      */
+    public CompletableFuture<SubAckPacket> Mqtt5SubscribeToUpdateShadowRejected(
+        UpdateShadowSubscriptionRequest request,
+        QOS qos,
+        Consumer<ErrorResponse> handler) {
+        return Mqtt5SubscribeToUpdateShadowRejected(request, qos, handler, null);
+    }
+
     public CompletableFuture<Integer> SubscribeToUpdateShadowRejected(
         UpdateShadowSubscriptionRequest request,
         QualityOfService qos,
@@ -196,6 +296,45 @@ public class IotShadowClient {
         return connection.subscribe(topic, qos, messageHandler);
     }
 
+    public CompletableFuture<SubAckPacket> Mqtt5SubscribeToShadowDeltaUpdatedEvents(
+        ShadowDeltaUpdatedSubscriptionRequest request,
+        QOS qos,
+        Consumer<ShadowDeltaUpdatedEvent> handler,
+        Consumer<Exception> exceptionHandler) {
+        String topic = "$aws/things/{thingName}/shadow/update/delta";
+        if (request.thingName == null) {
+            CompletableFuture<SubAckPacket> result = new CompletableFuture<SubAckPacket>();
+            result.completeExceptionally(new MqttException("Mqtt5SubscribeToShadowDeltaUpdatedEvents must have a non-null thingName"));
+            return result;
+        }
+        if(clientV5 == null)
+        {
+            CompletableFuture<SubAckPacket> result = new CompletableFuture<SubAckPacket>();
+            result.completeExceptionally(new MqttException("Mqtt5SubscribeToShadowDeltaUpdatedEvents must have a mqtt5 client setup, would you mean to use " +
+            "\"SubscribeToShadowDeltaUpdatedEvents\" for mqtt v3?"));
+            return result;
+        }
+        topic = topic.replace("{thingName}", request.thingName);
+
+        Consumer<PublishReturn> mqtt5MessageHandler = (returnData) -> {
+            try {
+                String payload = new String(returnData.getPublishPacket().getPayload(), StandardCharsets.UTF_8);
+                ShadowDeltaUpdatedEvent response = gson.fromJson(payload, ShadowDeltaUpdatedEvent.class);
+                handler.accept(response);
+            } catch (Exception e) {
+                if (exceptionHandler != null) {
+                    exceptionHandler.accept(e);
+                }
+            }
+        };
+
+        mqtt5_callbacks.put(topic,mqtt5MessageHandler);
+
+        SubscribePacketBuilder subscribePacketBuilder = new SubscribePacketBuilder();
+        subscribePacketBuilder.withSubscription(topic, qos);
+        return clientV5.subscribe(subscribePacketBuilder.build());
+    }
+
     /**
      * Subscribe to ShadowDelta events for the (classic) shadow of an AWS IoT thing.
      *
@@ -217,6 +356,13 @@ public class IotShadowClient {
         QualityOfService qos,
         Consumer<ShadowDeltaUpdatedEvent> handler) {
         return SubscribeToShadowDeltaUpdatedEvents(request, qos, handler, null);
+    }
+
+    public CompletableFuture<SubAckPacket> Mqtt5SubscribeToShadowDeltaUpdatedEvents(
+        ShadowDeltaUpdatedSubscriptionRequest request,
+        QOS qos,
+        Consumer<ShadowDeltaUpdatedEvent> handler) {
+        return Mqtt5SubscribeToShadowDeltaUpdatedEvents(request, qos, handler, null);
     }
 
     /**
@@ -538,6 +684,45 @@ public class IotShadowClient {
         return connection.subscribe(topic, qos, messageHandler);
     }
 
+    public CompletableFuture<SubAckPacket> Mqtt5SubscribeToGetShadowAccepted(
+        GetShadowSubscriptionRequest request,
+        QOS qos,
+        Consumer<GetShadowResponse> handler,
+        Consumer<Exception> exceptionHandler) {
+        String topic = "$aws/things/{thingName}/shadow/get/accepted";
+        if (request.thingName == null) {
+            CompletableFuture<SubAckPacket> result = new CompletableFuture<SubAckPacket>();
+            result.completeExceptionally(new MqttException("Mqtt5SubscribeToGetShadowAccepted must have a non-null thingName"));
+            return result;
+        }
+        if(clientV5 == null)
+        {
+            CompletableFuture<SubAckPacket> result = new CompletableFuture<SubAckPacket>();
+            result.completeExceptionally(new MqttException("Mqtt5SubscribeToGetShadowAccepted must have a mqtt5 client setup, would you mean to use " +
+            "\"SubscribeToGetShadowAccepted\" for mqtt v3?"));
+            return result;
+        }
+        topic = topic.replace("{thingName}", request.thingName);
+
+        Consumer<PublishReturn> mqtt5MessageHandler = (returnData) -> {
+            try {
+                String payload = new String(returnData.getPublishPacket().getPayload(), StandardCharsets.UTF_8);
+                GetShadowResponse response = gson.fromJson(payload, GetShadowResponse.class);
+                handler.accept(response);
+            } catch (Exception e) {
+                if (exceptionHandler != null) {
+                    exceptionHandler.accept(e);
+                }
+            }
+        };
+
+        mqtt5_callbacks.put(topic,mqtt5MessageHandler);
+
+        SubscribePacketBuilder subscribePacketBuilder = new SubscribePacketBuilder();
+        subscribePacketBuilder.withSubscription(topic, qos);
+        return clientV5.subscribe(subscribePacketBuilder.build());
+    }
+
     /**
      * Subscribes to the accepted topic for the GetShadow operation.
      *
@@ -559,6 +744,13 @@ public class IotShadowClient {
         QualityOfService qos,
         Consumer<GetShadowResponse> handler) {
         return SubscribeToGetShadowAccepted(request, qos, handler, null);
+    }
+
+    public CompletableFuture<SubAckPacket> Mqtt5SubscribeToGetShadowAccepted(
+        GetShadowSubscriptionRequest request,
+        QOS qos,
+        Consumer<GetShadowResponse> handler) {
+        return Mqtt5SubscribeToGetShadowAccepted(request, qos, handler, null);
     }
 
     /**
@@ -988,6 +1180,45 @@ public class IotShadowClient {
         return connection.subscribe(topic, qos, messageHandler);
     }
 
+    public CompletableFuture<SubAckPacket> Mqtt5SubscribeToGetShadowRejected(
+        GetShadowSubscriptionRequest request,
+        QOS qos,
+        Consumer<ErrorResponse> handler,
+        Consumer<Exception> exceptionHandler) {
+        String topic = "$aws/things/{thingName}/shadow/get/rejected";
+        if (request.thingName == null) {
+            CompletableFuture<SubAckPacket> result = new CompletableFuture<SubAckPacket>();
+            result.completeExceptionally(new MqttException("Mqtt5SubscribeToGetShadowRejected must have a non-null thingName"));
+            return result;
+        }
+        if(clientV5 == null)
+        {
+            CompletableFuture<SubAckPacket> result = new CompletableFuture<SubAckPacket>();
+            result.completeExceptionally(new MqttException("Mqtt5SubscribeToGetShadowRejected must have a mqtt5 client setup, would you mean to use " +
+            "\"SubscribeToGetShadowRejected\" for mqtt v3?"));
+            return result;
+        }
+        topic = topic.replace("{thingName}", request.thingName);
+
+        Consumer<PublishReturn> mqtt5MessageHandler = (returnData) -> {
+            try {
+                String payload = new String(returnData.getPublishPacket().getPayload(), StandardCharsets.UTF_8);
+                ErrorResponse response = gson.fromJson(payload, ErrorResponse.class);
+                handler.accept(response);
+            } catch (Exception e) {
+                if (exceptionHandler != null) {
+                    exceptionHandler.accept(e);
+                }
+            }
+        };
+
+        mqtt5_callbacks.put(topic,mqtt5MessageHandler);
+
+        SubscribePacketBuilder subscribePacketBuilder = new SubscribePacketBuilder();
+        subscribePacketBuilder.withSubscription(topic, qos);
+        return clientV5.subscribe(subscribePacketBuilder.build());
+    }
+
     /**
      * Subscribes to the rejected topic for the GetShadow operation.
      *
@@ -1009,6 +1240,13 @@ public class IotShadowClient {
         QualityOfService qos,
         Consumer<ErrorResponse> handler) {
         return SubscribeToGetShadowRejected(request, qos, handler, null);
+    }
+
+    public CompletableFuture<SubAckPacket> Mqtt5SubscribeToGetShadowRejected(
+        GetShadowSubscriptionRequest request,
+        QOS qos,
+        Consumer<ErrorResponse> handler) {
+        return Mqtt5SubscribeToGetShadowRejected(request, qos, handler, null);
     }
 
     /**
@@ -1041,6 +1279,23 @@ public class IotShadowClient {
         return connection.publish(message, qos, false);
     }
 
+    public CompletableFuture<PublishResult> PublishUpdateShadow(
+        UpdateShadowRequest request,
+        QOS qos) {
+        String topic = "$aws/things/{thingName}/shadow/update";
+        if (request.thingName == null) {
+            CompletableFuture<PublishResult> result = new CompletableFuture<PublishResult>();
+            result.completeExceptionally(new MqttException("UpdateShadowRequest must have a non-null thingName"));
+            return result;
+        }
+        topic = topic.replace("{thingName}", request.thingName);
+        String payloadJson = gson.toJson(request);
+
+        PublishPacket.PublishPacketBuilder publishBuilder = new PublishPacket.PublishPacketBuilder();
+        publishBuilder.withTopic(topic).withQOS(qos).withPayload(payloadJson.getBytes(StandardCharsets.UTF_8));
+        return clientV5.publish(publishBuilder.build());
+    }
+
     /**
      * Gets the (classic) shadow for an AWS IoT thing.
      *
@@ -1069,6 +1324,23 @@ public class IotShadowClient {
         String payloadJson = gson.toJson(request);
         MqttMessage message = new MqttMessage(topic, payloadJson.getBytes(StandardCharsets.UTF_8));
         return connection.publish(message, qos, false);
+    }
+
+    public CompletableFuture<PublishResult> PublishGetShadow(
+        GetShadowRequest request,
+        QOS qos) {
+        String topic = "$aws/things/{thingName}/shadow/get";
+        if (request.thingName == null) {
+            CompletableFuture<PublishResult> result = new CompletableFuture<PublishResult>();
+            result.completeExceptionally(new MqttException("GetShadowRequest must have a non-null thingName"));
+            return result;
+        }
+        topic = topic.replace("{thingName}", request.thingName);
+        String payloadJson = gson.toJson(request);
+
+        PublishPacket.PublishPacketBuilder publishBuilder = new PublishPacket.PublishPacketBuilder();
+        publishBuilder.withTopic(topic).withQOS(qos).withPayload(payloadJson.getBytes(StandardCharsets.UTF_8));
+        return clientV5.publish(publishBuilder.build());
     }
 
     /**
@@ -1114,6 +1386,45 @@ public class IotShadowClient {
         return connection.subscribe(topic, qos, messageHandler);
     }
 
+    public CompletableFuture<SubAckPacket> Mqtt5SubscribeToUpdateShadowAccepted(
+        UpdateShadowSubscriptionRequest request,
+        QOS qos,
+        Consumer<UpdateShadowResponse> handler,
+        Consumer<Exception> exceptionHandler) {
+        String topic = "$aws/things/{thingName}/shadow/update/accepted";
+        if (request.thingName == null) {
+            CompletableFuture<SubAckPacket> result = new CompletableFuture<SubAckPacket>();
+            result.completeExceptionally(new MqttException("Mqtt5SubscribeToUpdateShadowAccepted must have a non-null thingName"));
+            return result;
+        }
+        if(clientV5 == null)
+        {
+            CompletableFuture<SubAckPacket> result = new CompletableFuture<SubAckPacket>();
+            result.completeExceptionally(new MqttException("Mqtt5SubscribeToUpdateShadowAccepted must have a mqtt5 client setup, would you mean to use " +
+            "\"SubscribeToUpdateShadowAccepted\" for mqtt v3?"));
+            return result;
+        }
+        topic = topic.replace("{thingName}", request.thingName);
+
+        Consumer<PublishReturn> mqtt5MessageHandler = (returnData) -> {
+            try {
+                String payload = new String(returnData.getPublishPacket().getPayload(), StandardCharsets.UTF_8);
+                UpdateShadowResponse response = gson.fromJson(payload, UpdateShadowResponse.class);
+                handler.accept(response);
+            } catch (Exception e) {
+                if (exceptionHandler != null) {
+                    exceptionHandler.accept(e);
+                }
+            }
+        };
+
+        mqtt5_callbacks.put(topic,mqtt5MessageHandler);
+
+        SubscribePacketBuilder subscribePacketBuilder = new SubscribePacketBuilder();
+        subscribePacketBuilder.withSubscription(topic, qos);
+        return clientV5.subscribe(subscribePacketBuilder.build());
+    }
+
     /**
      * Subscribes to the accepted topic for the UpdateShadow operation
      *
@@ -1135,6 +1446,13 @@ public class IotShadowClient {
         QualityOfService qos,
         Consumer<UpdateShadowResponse> handler) {
         return SubscribeToUpdateShadowAccepted(request, qos, handler, null);
+    }
+
+    public CompletableFuture<SubAckPacket> Mqtt5SubscribeToUpdateShadowAccepted(
+        UpdateShadowSubscriptionRequest request,
+        QOS qos,
+        Consumer<UpdateShadowResponse> handler) {
+        return Mqtt5SubscribeToUpdateShadowAccepted(request, qos, handler, null);
     }
 
     /**
