@@ -46,42 +46,7 @@ public class OperationQueue {
 
     static CommandLineUtils cmdUtils;
 
-    static MqttOperationQueue operationQueue;
     static CompletableFuture<Void> onQueueEmptyFuture = new CompletableFuture<>();
-
-    static class SampleQueueCallbacks implements MqttOperationQueue.QueueCallbacks {
-        @Override
-        public void OnQueueEmpty() {
-            System.out.println("Operation queue is completely empty");
-            onQueueEmptyFuture.complete(null);
-        }
-
-        @Override
-        public void OnQueueFull() {
-            System.out.println("Operation queue is full and will start dropping messages should new messages come in");
-        }
-
-        @Override
-        public void OnQueuedOperationSent(MqttOperationQueue.QueueOperation operation, CompletableFuture<Integer> operationFuture) {
-            System.out.println("Sending operation of type " + operation.type + " from the operation queue");
-            // TODO - test waiting on the future...
-        }
-
-        @Override
-        public void OnQueuedOperationSentFailure(MqttOperationQueue.QueueOperation operation, MqttOperationQueue.QueueResult error) {
-            System.out.println("ERROR: Operation from queue failed with error: " + error);
-        }
-
-        @Override
-        public void OnQueuedOperationDropped(MqttOperationQueue.QueueOperation operation) {
-            System.out.println("Operation of type " + operation.type + " was dropped from the operation queue");
-        }
-    }
-    static SampleQueueCallbacks sampleCallbacks = new SampleQueueCallbacks();
-
-    static void onRejectedError(RejectedError error) {
-        System.out.println("Request rejected: " + error.code.toString() + ": " + error.message);
-    }
 
     /*
      * When called during a CI run, throw an exception that will escape and fail the exec:java task
@@ -116,7 +81,10 @@ public class OperationQueue {
         messagesToPublish = Integer.parseInt(cmdUtils.getCommandOrDefault("count", String.valueOf(messagesToPublish)));
         runQueueTests = Integer.parseInt(cmdUtils.getCommandOrDefault("run_tests", "0"));
 
-        // If running the queue tests, do it immediately and exit without running the sample
+        /**
+         * If running the queue tests, do it immediately and exit without running the rest of the sample.
+         * These tests make sure the MqttOperationQueue works as expected, as opposed to demonstrating how it works.
+         */
         if (runQueueTests > 0) {
             MqttOperationQueueTests.RunTests(cmdUtils);
             return;
@@ -136,6 +104,44 @@ public class OperationQueue {
             }
         };
 
+        MqttOperationQueue.QueueCallbacks queueCallbacks = new MqttOperationQueue.QueueCallbacks() {
+            @Override
+            public void OnQueueEmpty() {
+                System.out.println("Operation queue is completely empty");
+                onQueueEmptyFuture.complete(null);
+            }
+
+            @Override
+            public void OnQueueFull() {
+                System.out.println("Operation queue is full and will start dropping messages should new messages come in");
+            }
+
+            @Override
+            public void OnQueuedOperationSent(MqttOperationQueue.QueueOperation operation, CompletableFuture<Integer> operationFuture) {
+                System.out.println("Sending operation of type " + operation.type + " from the operation queue");
+
+                // Optional: Wait on the future if desired. This is disabled for the sake of this sample
+                /*
+                try {
+                    operationFuture.get();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    System.out.println("ERROR: Exception occurred waiting on operation future!");
+                }
+                */
+            }
+
+            @Override
+            public void OnQueuedOperationSentFailure(MqttOperationQueue.QueueOperation operation, MqttOperationQueue.QueueResult error) {
+                System.out.println("ERROR: Operation from queue failed with error: " + error);
+            }
+
+            @Override
+            public void OnQueuedOperationDropped(MqttOperationQueue.QueueOperation operation) {
+                System.out.println("Operation of type " + operation.type + " was dropped from the operation queue");
+            }
+        };
+
         try {
 
             MqttClientConnection connection = cmdUtils.buildMQTTConnection(callbacks);
@@ -145,9 +151,8 @@ public class OperationQueue {
             }
 
             MqttOperationQueue.MqttOperationQueueBuilder queueBuilder = new MqttOperationQueue.MqttOperationQueueBuilder();
-            queueBuilder.withConnection(connection).withQueueCallbacks(sampleCallbacks);
-            queueBuilder.withEnableLogging(true);
-            operationQueue = queueBuilder.build();
+            queueBuilder.withConnection(connection).withQueueCallbacks(queueCallbacks);
+            MqttOperationQueue operationQueue = queueBuilder.build();
 
             CompletableFuture<Boolean> connected = connection.connect();
             try {
@@ -160,11 +165,9 @@ public class OperationQueue {
             // Start the queue
             operationQueue.start();
 
-            CountDownLatch countDownLatch = new CountDownLatch(messagesToPublish);
             operationQueue.subscribe(topic, QualityOfService.AT_LEAST_ONCE, (message) -> {
                 String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
                 System.out.println("MESSAGE: " + payload);
-                countDownLatch.countDown();
             });
             onQueueEmptyFuture.get(60, TimeUnit.SECONDS);
 
@@ -174,8 +177,6 @@ public class OperationQueue {
                 operationQueue.publish(new MqttMessage(topic, message.getBytes(), QualityOfService.AT_LEAST_ONCE, false));
             }
             onQueueEmptyFuture.get(60, TimeUnit.SECONDS);
-
-            countDownLatch.await();
 
             // Stop the queue
             operationQueue.stop();
