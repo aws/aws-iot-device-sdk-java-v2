@@ -38,7 +38,7 @@ public class MqttOperationQueueTests {
 
     private static int OPERATION_WAIT_TIME = 60;
     private static boolean PRINT_QUEUE_LOGS = false;
-    private static String TEST_TOPIC = "test/topic";
+    private static String TEST_TOPIC = "test/topic/" + UUID.randomUUID().toString();
 
     static void OnApplicationFailure(Throwable cause) {
         throw new RuntimeException("OperationQueue execution failure", cause);
