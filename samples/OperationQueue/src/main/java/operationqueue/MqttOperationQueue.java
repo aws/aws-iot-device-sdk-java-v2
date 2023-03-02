@@ -113,7 +113,7 @@ public class MqttOperationQueue extends software.amazon.awssdk.crt.CrtResource {
 
         if (result == QueueResult.SUCCESS) {
             PrintLogMessage("Added operation of type " + operation.type + " successfully to queue");
-            if (this.operationQueue.size() == this.queueLimitSize) {
+            if (this.operationQueue.size() == this.queueLimitSize && droppedOperation == null) {
                 if (this.queueCallbacks != null) {
                     this.queueCallbacks.OnQueueFull();
                 }
