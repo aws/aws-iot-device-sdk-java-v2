@@ -25,6 +25,7 @@
         <module>samples/WindowsCertConnect</module>
         <module>samples/Shadow</module>
         <module>samples/Identity</module>
+        <module>samples/OperationQueue</module>
         <module>samples/Mqtt5/PubSub</module>
     </modules>
 
