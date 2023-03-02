@@ -89,7 +89,7 @@ public class OperationQueue {
      */
     static void onApplicationFailure(Throwable cause) {
         if (isCI) {
-            throw new RuntimeException("BasicPubSub execution failure", cause);
+            throw new RuntimeException("OperationQueue execution failure", cause);
         } else if (cause != null) {
             System.out.println("Exception encountered: " + cause.toString());
         }
@@ -118,7 +118,7 @@ public class OperationQueue {
 
         // If running the queue tests, do it immediately and exit without running the sample
         if (runQueueTests > 0) {
-            // TODO - add tests
+            MqttOperationQueueTests.RunTests(cmdUtils);
             return;
         }
 
