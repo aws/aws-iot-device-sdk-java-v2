@@ -29,7 +29,7 @@ Your IoT Core Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerg
         "iot:Receive"
       ],
       "Resource": [
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/test/topic"
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/test/topic/*"
       ]
     },
     {
@@ -38,7 +38,7 @@ Your IoT Core Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerg
         "iot:Subscribe"
       ],
       "Resource": [
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topicfilter/test/topic"
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topicfilter/test/topic/*"
       ]
     },
     {

@@ -39,7 +39,7 @@ public class OperationQueue {
     static String ciPropValue = System.getProperty("aws.crt.ci");
     static boolean isCI = ciPropValue != null && Boolean.valueOf(ciPropValue);
 
-    static String topic = "test/topic";
+    static String topic = "test/topic/" + UUID.randomUUID().toString();;
     static String message = "Hello World:";
     static int    messagesToPublish = 20;
     static int runQueueTests = 0;
