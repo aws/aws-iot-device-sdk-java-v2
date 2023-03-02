@@ -87,8 +87,49 @@ See the output of the `--help` argument for more information on the queue operat
 
 ## Queue Design
 
-TODO
+The operation queue is designed to hold a number of operations (publish, subscribe, and unsubscribe) in a queue so that it can be processed in a controlled manner that doesn't overwhelm the MQTT311 connection, as well as giving a control to your code on how the operations are processed. This is written on top of the MQTT311 connection and as a sample so it can be used as a reference and extended/adjusted to meet the needs of your application.
 
-### Operations outside of the queue and retries
+The backbone of how the operation queue works is the [MQTT311 operation statistics](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/MqttClientConnection.html#getOperationStatistics()). [These statistics](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/MqttClientConnectionOperationStatistics.html) reported by the MQTT311 connection give a window into what the MQTT311 connection is doing, what operations are being sent to AWS IoT Core via via a socket, and what operations are waiting for responses from AWS IoT Core. This is how the operation queue knows how many operations are being processed and when to send another, as well as allowing it to be reactive to the state of the connection.
 
-TODO
+Specifically, the operation statistics is how the operation queue class calculates whether or not to send another operation in its queue to the MQTT311 connection or not. If the MQTT311 connection has many operations waiting, it can hold off and wait until the MQTT311 connection has processed the data and can consume more. This has the benefits mentioned in the top of this document: It prevents the MQTT311 connection from being flooded with too many operations and the socket being too backed up. Additionally, it has the benefit of allowing your code to control the order of operations that are sent directly and can be configured so that your code has the assurance it will not send too much data and exceed AWS IoT Core limits.
+
+Put simply, the operation queue is a system that looks at the MQTT311 operation statistics at a timed interval and determines whether the MQTT311 connection can take another operation based on the settings of the operation queue. If it can, it sends that operation to the MQTT311 client and continues to observe it's statistics until either the queue is empty and there is nothing to do, or until the operation queue is stopped.
+
+___________
+
+The operation queue is designed to be a helpful reference you can use directly in your applications to have a queue-based control over the MQTT operation flow, as well as ensuring that you have back pressure support and will not write too much data to the socket at a given time. The operation queue in this sample is designed to be flexible and powerful, but of course you can extend the operation queue to meet the needs of your application. For example, it could be extended to allow injecting operations at specific indexes in the queue, allow removing operations at any index in the queue, etc. All of the code for the operation queue has comments that explain what each function does for easier customization and extension.
+
+Below is more information on specifics about how the operation queue works.
+
+### Operations outside of the queue
+
+What is great with using the operation statistics to determine the state of the MQTT311 connection is that if your code uses the MQTT311 connection directly for something or you are doing non-queued operations, like connect/disconnect for example, then the queue will still properly react and possibly limit the action of the queue based on what the statistics return and how your queue is setup. You can even have two operation queues on the same connection!
+
+This is helpful because it allows you to selectively choose which operations are written to the MQTT311 connection socket right away and which are behind the queue on a per-operation basis. This means that if you have a operation that you must get sent as soon as possible regardless of any queues, you can just directly call the operation (publish, subscribe, unsubscribe, etc.) directly on the MQTT311 connection and the queue will react accordingly.
+
+### Retried operations
+
+A question you might be wondering is how does the operation queue, and by extension the operation statistics, handle retried QoS1 operations? QoS1 requires getting an acknowledgement (ACK) back from the MQTT server and, should this not happen, it will retry the operation by sending it again. This is why QoS1 is described as "at least once", because it only tries to guarantee that the message will be sent at **least once** but there are no guarantees that it will not be sent **more than once**.
+
+**Note**: For operations that need to be sent exactly and only one time, QoS2 would be used for this purpose. However, at this time QoS2 is not currently supported by the AWS IoT SDKs.
+
+(**TODO - replace TODOs with concrete, specific information on how it works**)
+In the AWS IoT SDKs, QoS1 operations will be automatically retried after TODO length of time, and then will be retried in the following pattern: TODO. This is done automatically with no additional code nor configuration needed on the client side to support this action.
+
+For the operation statistics reporting of the retries though, the situation is simple and there is no complexities to worry about. When a QoS1 operation is made and sent to the socket so it can go to the MQTT server, it gets added to the "in-flight" operation statistics and is removed from the "incomplete operations". If the server does not send an acknowledgement of the operation in the given time and a retry is sent, the operation is NOT moved from the "in-flight" statistics nor is a new one added, it simply keeps waiting in the "in-flight". This means that if you retry once, a hundred times, or not at all, the "in-flight" will only show a single operation waiting in the "in-flight". Finally, when the operation gets a response from the server, whether it be on the initial operation or a retry, it will be removed from the "in-flight" statistics.
+
+**Note**: This only applies to QoS1 operations! QoS0 operations are different and explained below.
+
+This means that for the operation queue, it has no idea if the operation has been retried or not, it just sees it as there being an in-flight operation. This means that if you have a bunch of in-flight operations all waiting, the queue will wait for the MQTT server to send acknowledgements without needing additional configurations nor code on the user side.
+
+In other words, thanks to using the MQTT311 operation statistics to track the client state, we get the functionality to wait on retries automatically.
+
+### QoS 0 operations
+
+Operations can be made with either QoS0 or QoS1. QoS0 states than an operation will be sent "at most once". This means that once the operation is written to the socket, it is removed and the code does not wait to see if the server actually got the data. For the MQTT311 operation statistics, it means that a QoS0 operation is written to the socket and then immediately removed from the "incomplete operations", it does not get added to "in-flight" nor is there any waiting to be done, it is fire and forget.
+
+For the operation queue, this means that QoS0 operations are stored in the queue and will wait like all other operations until the MQTT311 operation statistics are in a state where it can be published, but once it is published, it will be fired and forgotten. QoS0 operations will not hang around and will be fired as soon as they are in the front of the queue and the MQTT311 operation statistics are in an acceptable state.
+
+### Service Clients (Shadow, Jobs, etc)
+
+The operation queue should work fully alongside service clients like [Shadow](../Shadow/README.md), [Jobs](../Jobs/README.md), and [Fleet Provisioning](../Identity/README.md). These service clients ultimately subscribe, publish, and unsubscribe to MQTT topics, and as such they are compatible with the operation queue. That said though, they will **not** be added to the operation queue, instead they will function like if operations were made manually outside of the queue, as noted in the [Operations outside of the queue section](#operations-outside-of-the-queue).
