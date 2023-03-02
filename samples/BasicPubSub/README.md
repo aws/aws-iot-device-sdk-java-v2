@@ -68,9 +68,3 @@ You can also pass a Certificate Authority file (CA) if your certificate and key 
 ```sh
 mvn compile exec:java -pl samples/BasicPubSub -Dexec.mainClass=pubsub.PubSub -Dexec.args="--endpoint <endpoint> --cert <path to certificate> --key <path to private key> --ca_file <path to CA file>"
 ```
-
-Finally, if you wish to use the latest SDK release to run the sample rather than using the version of the Java V2 SDK installed on the device, you can run the sample and change the profile to `latest-release`, which will download and use the latest Java V2 SDK release from Maven:
-
-```sh
-mvn -P latest-release compile exec:java -pl samples/BasicPubSub -Dexec.mainClass=pubsub.PubSub -Dexec.args="--endpoint <endpoint> --cert <path to certificate> --key <path to private key> "
-```

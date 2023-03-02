@@ -2,13 +2,17 @@
 
 [**Return to main sample list**](../README.md)
 
-## TODO - adjust this whole thing!
-
 This sample uses the
 [Message Broker](https://docs.aws.amazon.com/iot/latest/developerguide/iot-message-broker.html)
-for AWS IoT to send and receive messages through an MQTT connection.
+for AWS IoT to send and receive messages through an MQTT connection. It then subscribes and begins publishing messages to a topic, like in the [PubSub sample](../BasicPubSub/README.md).
 
-On startup, the device connects to the server, subscribes to a topic, and begins publishing messages to that topic. The device should receive those same messages back from the message broker, since it is subscribed to that same topic. Status updates are continually printed to the console. This sample demonstrates how to send and receive messages on designated IoT Core topics, an essential task that is the backbone of many IoT applications that need to send data over the internet. This sample simply subscribes and publishes to a topic, printing the messages it just sent as it is received from AWS IoT Core, but this can be used as a reference point for more complex Pub-Sub applications.
+However, this sample uses a operation queue to handle the processing of operations, rather than directly using the MQTT311 connection. This gives an extreme level of control over how operations are processed, the order they are processed in, limiting how many operations can exist waiting to be sent, what happens when a new operation is added when the queue is full, and ensuring the MQTT311 connection is never overwhelmed with too many messages at once.
+
+Additionally, using a queue allows you to put limits on how much data you are trying to send through the socket to the AWS IoT Core server. This can help keep your application within the IoT Core sending limits, ensuring all your MQTT311 operations are being processed correctly and the socket is not backed up. It also the peace of mind that your application cannot become "runaway" and start sending an extreme amount of messages at all once, clogging the socket depending on how large the messages are and the frequency.
+
+**Note**: MQTT5 does not have the same issues with backed up sockets due to the use of an internal operation queue, which ensures the socket does not get backed up.
+
+This operation queue can be configured in a number of different ways to best match the needs of your application. Further, the operation queue is designed to be as standalone as possible so it can be used as a starting point for implementing your own operation queue for the MQTT311 connection. The `MqttOperationQueue` class is fully documented with comments explaining the functions used.
 
 Your IoT Core Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-policies.html) must provide privileges for this sample to connect, subscribe, publish, and receive. Below is a sample policy that can be used on your IoT Core Thing that will allow this sample to run as intended.
 
@@ -61,22 +65,30 @@ Note that in a real application, you may want to avoid the use of wildcards in y
 ## How to run
 
 To Run this sample, use the following command:
+
 ```sh
-mvn compile exec:java -pl samples/BasicPubSub -Dexec.mainClass=pubsub.PubSub -Dexec.args="--endpoint <endpoint> --cert <path to certificate> --key <path to private key>"
+mvn compile exec:java -pl samples/OperationQueue -Dexec.mainClass=pubsub.PubSub -Dexec.args="--endpoint <endpoint> --cert <path to certificate> --key <path to private key>"
 ```
 
 You can also pass a Certificate Authority file (CA) if your certificate and key combination requires it:
 
 ```sh
-mvn compile exec:java -pl samples/BasicPubSub -Dexec.mainClass=pubsub.PubSub -Dexec.args="--endpoint <endpoint> --cert <path to certificate> --key <path to private key> --ca_file <path to CA file>"
+mvn compile exec:java -pl samples/OperationQueue -Dexec.mainClass=pubsub.PubSub -Dexec.args="--endpoint <endpoint> --cert <path to certificate> --key <path to private key> --ca_file <path to CA file>"
 ```
 
-Finally, if you wish to use the latest SDK release to run the sample rather than using the version of the Java V2 SDK installed on the device, you can run the sample and change the profile to `latest-release`, which will download and use the latest Java V2 SDK release from Maven:
+Finally, you can control how the operation queue inserts new operations and drops operations when the queue is full via the `--queue_mode` parameter. For example, to have a rolling queue where new operations are added to the front and overflow is removed from the back of the queue:
 
 ```sh
-mvn -P latest-release compile exec:java -pl samples/BasicPubSub -Dexec.mainClass=pubsub.PubSub -Dexec.args="--endpoint <endpoint> --cert <path to certificate> --key <path to private key> "
+mvn compile exec:java -pl samples/OperationQueue -Dexec.mainClass=pubsub.PubSub -Dexec.args="--endpoint <endpoint> --cert <path to certificate> --key <path to private key> --queue_mode 1"
 ```
 
-## Queue Design and Configuration
+See the output of the `--help` argument for more information on the queue operation modes and configuration of this sample.
 
-### TODO Write this!
+
+## Queue Design
+
+TODO
+
+### Operations outside of the queue and retries
+
+TODO

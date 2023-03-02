@@ -11,6 +11,7 @@
 * [JavaKeystore Connect](./JavaKeystoreConnect/README.md)
 * [Cognito Connect](./CognitoConnect/README.md)
 * [CustomKeyOperationPubSub](./CustomKeyOpsPubSub/README.md)
+* [Operation Queue](./OperationQueue/README.md)
 * [Shadow](./Shadow/README.md)
 * [Jobs](./Jobs/README.md)
 * [fleet provisioning](./Identity/README.md)
