@@ -113,16 +113,17 @@ A question you might be wondering is how does the operation queue, and by extens
 
 **Note**: For operations that need to be sent exactly and only one time, QoS2 would be used for this purpose. However, at this time QoS2 is not currently supported by the AWS IoT SDKs.
 
-(**TODO - replace TODOs with concrete, specific information on how it works**)
-In the AWS IoT SDKs, QoS1 operations will be automatically retried after TODO length of time, and then will be retried in the following pattern: TODO. This is done automatically with no additional code nor configuration needed on the client side to support this action.
+For the MQTT311 connection operations (publish, subscribe, and unsubscribe), QoS1 operations will NOT be retried automatically even if the MQTT server does not send an acknowledgement. These operations will keep waiting for a reply from the server until it receives one. This can be adjusted by setting an operation timeout, in which case the operation will be resolved as having failed to send if an acknowledgment is not received in the given timeout time. Note that, by default, the MQTT311 connection will not have an operation timeout set and this timeout has to be manually set.
 
-For the operation statistics reporting of the retries though, the situation is simple and there is no complexities to worry about. When a QoS1 operation is made and sent to the socket so it can go to the MQTT server, it gets added to the "in-flight" operation statistics and is removed from the "incomplete operations". If the server does not send an acknowledgement of the operation in the given time and a retry is sent, the operation is NOT moved from the "in-flight" statistics nor is a new one added, it simply keeps waiting in the "in-flight". This means that if you retry once, a hundred times, or not at all, the "in-flight" will only show a single operation waiting in the "in-flight". Finally, when the operation gets a response from the server, whether it be on the initial operation or a retry, it will be removed from the "in-flight" statistics.
+Connections are an exception to this however. Connections are retried automatically with an exceptional back-off if the connect does not get an acknowledgment from the server in the expected time. However, because this process is done internally by the MQTT311 connection, it would fall into the [operations outside of the queue](#operations-outside-of-the-queue) for the purposes of the operation queue.
 
-**Note**: This only applies to QoS1 operations! QoS0 operations are different and explained below.
+However, there is a case where QoS1 operations (publish, subscribe, unsubscribe) will be retried, and this is when the MQTT311 connection has in-flight operations that have not received an acknowledgment from the server and the MQTT311 connection becomes disconnected from the server. When the MQTT311 connection reconnects, it will resend the QoS1 operations that were waiting for acknowledgements prior to becoming disconnected.
+
+When a QoS1 operation is made and sent to the socket so it can go to the MQTT server, it gets added to the "in-flight" operation statistics and is removed from the "incomplete operations". If the server does not send an acknowledgement of the operation, the MQTT311 client becomes disconnected, the MQTT311 reconnects, and the operation is resent, the operation is NOT moved from the "in-flight" statistics nor is a new one added. Instead, the resent operation simply keeps waiting in the "in-flight". Finally, when the operation gets a response from the server, whether it be on the initial operation or a retry, it will be removed from the "in-flight" statistics. Likewise, if the operation has a timeout set and does not get an acknowledgement within the given timeout period, it will be removed from the "in-flight" statistics when the operation is considered to have failed.
+
+**Note**: This only applies to QoS1 operations! QoS0 operations are different and [explained below](#qos-0-operations).
 
 This means that for the operation queue, it has no idea if the operation has been retried or not, it just sees it as there being an in-flight operation. This means that if you have a bunch of in-flight operations all waiting, the queue will wait for the MQTT server to send acknowledgements without needing additional configurations nor code on the user side.
-
-In other words, thanks to using the MQTT311 operation statistics to track the client state, we get the functionality to wait on retries automatically.
 
 ### QoS 0 operations
 

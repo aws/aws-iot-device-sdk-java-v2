@@ -23,15 +23,19 @@
 
 * [PubSubStress](https://github.com/aws/aws-iot-device-sdk-java-v2/tree/main/samples/PubSubStress)
 
-### Note
+### Sample help
 
-Note that **all samples will show their options by passing in `--help`**. For example:
+All samples will show their options by passing in `--help`. For example:
 
 ```sh
 mvn compile exec:java -pl samples/BasicPubSub -Dexec.mainClass=pubsub.PubSub -Dexec.args='--help'
 ```
 
-Additionally, you can enable logging in all samples. To enable logging in the samples, you will need to set the following system properties when running the samples:
+Which will result in output showing all of the options that can be passed in at the command line, along with descriptions of what each does and whether they are optional or not.
+
+### Enable logging in samples
+
+To enable logging in the samples, you will need to set the following additional system properties when running the samples:
 
 ```sh
 -Daws.crt.debugnative=true
