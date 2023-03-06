@@ -420,13 +420,13 @@ public class MqttOperationQueue extends software.amazon.awssdk.crt.CrtResource {
             MqttClientConnectionOperationStatistics statistics = queue.connection.getOperationStatistics();
             if (statistics.getIncompleteOperationCount() >= queue.incompleteLimit) {
                 if (queue.incompleteLimit > 0) {
-                    this.queue.PrintLogMessage("Skipping running operation due to incomplete operation count being higher than maximum");
+                    this.queue.PrintLogMessage("Skipping running operation due to incomplete operation count being equal or higher than maximum");
                     return false;
                 }
             }
             if (statistics.getUnackedOperationCount() >= queue.inflightLimit) {
                 if (queue.inflightLimit > 0) {
-                    this.queue.PrintLogMessage("Skipping running operation due to inflight operation count being higher than maximum");
+                    this.queue.PrintLogMessage("Skipping running operation due to inflight operation count being equal or higher than maximum");
                     return false;
                 }
             }
@@ -523,10 +523,7 @@ public class MqttOperationQueue extends software.amazon.awssdk.crt.CrtResource {
          * @param operation The unknown operation
          */
         private void PerformOperationUnknown(QueueOperation operation) {
-            if (this.queue.enableLogging) {
-                this.queue.PrintLogMessage("ERROR - got unknown operation to perform!");
-            }
-
+            this.queue.PrintLogMessage("ERROR - got unknown operation to perform!");
             if (queue.queueCallbacks != null) {
                 queue.queueCallbacks.OnQueuedOperationSentFailure(operation, QueueResult.UNKNOWN_OPERATION);
             }

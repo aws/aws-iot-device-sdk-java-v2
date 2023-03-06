@@ -67,19 +67,19 @@ Note that in a real application, you may want to avoid the use of wildcards in y
 To Run this sample, use the following command:
 
 ```sh
-mvn compile exec:java -pl samples/OperationQueue -Dexec.mainClass=pubsub.PubSub -Dexec.args="--endpoint <endpoint> --cert <path to certificate> --key <path to private key>"
+mvn compile exec:java -pl samples/OperationQueue -Dexec.mainClass=operationqueue.OperationQueue -Dexec.args="--endpoint <endpoint> --cert <path to certificate> --key <path to private key>"
 ```
 
 You can also pass a Certificate Authority file (CA) if your certificate and key combination requires it:
 
 ```sh
-mvn compile exec:java -pl samples/OperationQueue -Dexec.mainClass=pubsub.PubSub -Dexec.args="--endpoint <endpoint> --cert <path to certificate> --key <path to private key> --ca_file <path to CA file>"
+mvn compile exec:java -pl samples/OperationQueue -Dexec.mainClass=operationqueue.OperationQueue -Dexec.args="--endpoint <endpoint> --cert <path to certificate> --key <path to private key> --ca_file <path to CA file>"
 ```
 
 Finally, you can control how the operation queue inserts new operations and drops operations when the queue is full via the `--queue_mode` parameter. For example, to have a rolling queue where new operations are added to the front and overflow is removed from the back of the queue:
 
 ```sh
-mvn compile exec:java -pl samples/OperationQueue -Dexec.mainClass=pubsub.PubSub -Dexec.args="--endpoint <endpoint> --cert <path to certificate> --key <path to private key> --queue_mode 1"
+mvn compile exec:java -pl samples/OperationQueue -Dexec.mainClass=operationqueue.OperationQueue -Dexec.args="--endpoint <endpoint> --cert <path to certificate> --key <path to private key> --queue_mode 1"
 ```
 
 See the output of the `--help` argument for more information on the queue operation modes and configuration of this sample.
