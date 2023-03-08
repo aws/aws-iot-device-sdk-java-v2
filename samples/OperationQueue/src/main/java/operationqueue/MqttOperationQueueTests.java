@@ -331,7 +331,7 @@ public class MqttOperationQueueTests {
             callbacks.onQueueSentFuture = new CompletableFuture<MqttOperationQueue.QueueOperation>();
             returnOperation = callbacks.onQueueSentFuture.get(OPERATION_WAIT_TIME, TimeUnit.SECONDS);
             if (returnOperation == null || returnOperation.type != MqttOperationQueue.QueueOperationType.UNSUBSCRIBE) {
-                OnApplicationFailure(new RuntimeException("TestAddFront: Second operation is not publish!"));
+                OnApplicationFailure(new RuntimeException("TestAddFront: Second operation is not unsubscribe!"));
             }
 
             // Make sure the queue is reported empty
