@@ -123,7 +123,7 @@ public class OperationQueue {
 
             @Override
             public void OnQueueFull() {
-                System.out.println("Operation queue is full and will start dropping messages should new messages come in");
+                System.out.println("Operation queue is full and will start dropping operations should new operations come in");
             }
 
             @Override
