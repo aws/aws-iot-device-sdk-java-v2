@@ -127,7 +127,7 @@ public class OperationQueue {
             }
 
             @Override
-            public void OnQueuedOperationSent(MqttOperationQueue.QueueOperation operation, CompletableFuture<Integer> operationFuture) {
+            public void OnOperationSent(MqttOperationQueue.QueueOperation operation, CompletableFuture<Integer> operationFuture) {
                 if (operation.type == MqttOperationQueue.QueueOperationType.PUBLISH) {
                     String payload = new String(operation.message.getPayload(), StandardCharsets.UTF_8);
                     System.out.println("Sending publish with payload [" + payload + "] from the operation queue");
@@ -137,12 +137,12 @@ public class OperationQueue {
             }
 
             @Override
-            public void OnQueuedOperationSentFailure(MqttOperationQueue.QueueOperation operation, MqttOperationQueue.QueueResult error) {
+            public void OnOperationSentFailure(MqttOperationQueue.QueueOperation operation, MqttOperationQueue.QueueResult error) {
                 System.out.println("ERROR: Operation from queue failed with error: " + error);
             }
 
             @Override
-            public void OnQueuedOperationDropped(MqttOperationQueue.QueueOperation operation) {
+            public void OnOperationDropped(MqttOperationQueue.QueueOperation operation) {
                 if (operation.type == MqttOperationQueue.QueueOperationType.PUBLISH) {
                     String payload = new String(operation.message.getPayload(), StandardCharsets.UTF_8);
                     System.out.println("Publish with payload [" + payload + "] dropped from operation queue");
@@ -165,17 +165,17 @@ public class OperationQueue {
             queueBuilder.withConnection(connection).withQueueCallbacks(queueCallbacks).withQueueLimitSize(queueLimit);
             // Change the insert and overflow mode based on the CI input
             if (queueMode == 0) {
-                queueBuilder.withQueueInsertBehavior(MqttOperationQueue.QueueInsertBehavior.INSERT_BACK)
-                            .withQueueLimitBehavior(MqttOperationQueue.QueueLimitBehavior.DROP_BACK);
+                queueBuilder.withQueueInsertBehavior(MqttOperationQueue.InsertBehavior.INSERT_BACK)
+                            .withQueueLimitBehavior(MqttOperationQueue.LimitBehavior.DROP_BACK);
             } else if (queueMode == 1) {
-                queueBuilder.withQueueInsertBehavior(MqttOperationQueue.QueueInsertBehavior.INSERT_BACK)
-                            .withQueueLimitBehavior(MqttOperationQueue.QueueLimitBehavior.DROP_FRONT);
+                queueBuilder.withQueueInsertBehavior(MqttOperationQueue.InsertBehavior.INSERT_BACK)
+                            .withQueueLimitBehavior(MqttOperationQueue.LimitBehavior.DROP_FRONT);
             } else if (queueMode == 2) {
-                queueBuilder.withQueueInsertBehavior(MqttOperationQueue.QueueInsertBehavior.INSERT_FRONT)
-                            .withQueueLimitBehavior(MqttOperationQueue.QueueLimitBehavior.DROP_FRONT);
+                queueBuilder.withQueueInsertBehavior(MqttOperationQueue.InsertBehavior.INSERT_FRONT)
+                            .withQueueLimitBehavior(MqttOperationQueue.LimitBehavior.DROP_FRONT);
             } else if (queueMode == 3) {
-                queueBuilder.withQueueInsertBehavior(MqttOperationQueue.QueueInsertBehavior.INSERT_FRONT)
-                            .withQueueLimitBehavior(MqttOperationQueue.QueueLimitBehavior.DROP_BACK);
+                queueBuilder.withQueueInsertBehavior(MqttOperationQueue.InsertBehavior.INSERT_FRONT)
+                            .withQueueLimitBehavior(MqttOperationQueue.LimitBehavior.DROP_BACK);
             }
             MqttOperationQueue operationQueue = queueBuilder.build();
 

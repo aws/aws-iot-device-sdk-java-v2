@@ -29,8 +29,8 @@ public class MqttOperationQueue extends software.amazon.awssdk.crt.CrtResource {
     // Configuration options/settings
     private MqttClientConnection connection;
     private int queueLimitSize;
-    private QueueLimitBehavior queueLimitBehavior;
-    private QueueInsertBehavior queueInsertBehavior;
+    private LimitBehavior queueLimitBehavior;
+    private InsertBehavior queueInsertBehavior;
     private int incompleteLimit;
     private int inflightLimit;
     private QueueCallbacks queueCallbacks;
@@ -123,7 +123,7 @@ public class MqttOperationQueue extends software.amazon.awssdk.crt.CrtResource {
         // Note: We invoke the dropped callback outside of the critical section to avoid deadlocks
         if (droppedOperation != null) {
             if (this.queueCallbacks != null) {
-                this.queueCallbacks.OnQueuedOperationDropped(droppedOperation);
+                this.queueCallbacks.OnOperationDropped(droppedOperation);
             }
         }
 
@@ -141,14 +141,14 @@ public class MqttOperationQueue extends software.amazon.awssdk.crt.CrtResource {
         QueueOperationAndResult returnData = new QueueOperationAndResult();
         returnData.result = QueueResult.SUCCESS;
 
-        if (queueLimitBehavior == QueueLimitBehavior.RETURN_ERROR) {
+        if (queueLimitBehavior == LimitBehavior.RETURN_ERROR) {
             PrintLogMessage("Did not drop any operation, instead returning error...");
             returnData.result = QueueResult.ERROR_QUEUE_FULL;
-        } else if (queueLimitBehavior == QueueLimitBehavior.DROP_FRONT) {
+        } else if (queueLimitBehavior == LimitBehavior.DROP_FRONT) {
             returnData.operation = this.operationQueue.remove(0);
             PrintLogMessage("Dropped operation of type " + returnData.operation.type + " from the front...");
             returnData.result = addOperationToQueueInsert(operation);
-        } else if (queueLimitBehavior == QueueLimitBehavior.DROP_BACK) {
+        } else if (queueLimitBehavior == LimitBehavior.DROP_BACK) {
             returnData.operation = this.operationQueue.remove(this.operationQueue.size()-1);
             PrintLogMessage("Dropped operation of type " + returnData.operation.type + " from the back...");
             returnData.result = addOperationToQueueInsert(operation);
@@ -167,9 +167,9 @@ public class MqttOperationQueue extends software.amazon.awssdk.crt.CrtResource {
      */
     private QueueResult addOperationToQueueInsert(QueueOperation operation) {
         QueueResult result = QueueResult.SUCCESS;
-        if (queueInsertBehavior == QueueInsertBehavior.INSERT_BACK) {
+        if (queueInsertBehavior == InsertBehavior.INSERT_BACK) {
             this.operationQueue.add(operation);
-        } else if (queueInsertBehavior == QueueInsertBehavior.INSERT_FRONT) {
+        } else if (queueInsertBehavior == InsertBehavior.INSERT_FRONT) {
             this.operationQueue.add(0, operation);
         } else {
             result = QueueResult.UNKNOWN_QUEUE_INSERT_BEHAVIOR;
@@ -234,7 +234,7 @@ public class MqttOperationQueue extends software.amazon.awssdk.crt.CrtResource {
      * the MqttClientConnection, but instead of executing the operation as soon as possible, it
      * will be added to the queue based on the queueInsertBehavior and processed accordingly.
      *
-     * The OnQueuedOperationSent callback function will be invoked when the operation is
+     * The OnOperationSent callback function will be invoked when the operation is
      * processed and sent by the client.
      *
      * @param message The message you want to publish in the future.
@@ -254,7 +254,7 @@ public class MqttOperationQueue extends software.amazon.awssdk.crt.CrtResource {
      * the MqttClientConnection, but instead of executing the operation as soon as possible, it
      * will be added to the queue based on the queueInsertBehavior and processed accordingly.
      *
-     * The OnQueuedOperationSent callback function will be invoked when the operation is
+     * The OnOperationSent callback function will be invoked when the operation is
      * processed and sent by the client.
      *
      * @param topic The topic to subscribe to.
@@ -276,7 +276,7 @@ public class MqttOperationQueue extends software.amazon.awssdk.crt.CrtResource {
      * the MqttClientConnection, but instead of executing the operation as soon as possible, it
      * will be added to the queue based on the queueInsertBehavior and processed accordingly.
      *
-     * The OnQueuedOperationSent callback function will be invoked when the operation is
+     * The OnOperationSent callback function will be invoked when the operation is
      * processed and sent by the client.
      *
      * @param topic The topic to subscribe to.
@@ -300,7 +300,7 @@ public class MqttOperationQueue extends software.amazon.awssdk.crt.CrtResource {
      * the MqttClientConnection, but instead of executing the operation as soon as possible, it
      * will be added to the queue based on the queueInsertBehavior and processed accordingly.
      *
-     * The OnQueuedOperationSent callback function will be invoked when the operation is
+     * The OnOperationSent callback function will be invoked when the operation is
      * processed and sent by the client.
      *
      * @param topic The topic to unsubscribe to
@@ -317,7 +317,7 @@ public class MqttOperationQueue extends software.amazon.awssdk.crt.CrtResource {
      * Adds a new queue operation (publish, subscribe, unsubscribe) to the queue to be run.
      *
      * Note: This function provides only basic validation of the operation data. It is primarily
-     * intended to be used with the OnQueuedOperationDropped callback for when you may want to
+     * intended to be used with the OnOperationDropped callback for when you may want to
      * add a dropped message back to the queue.
      * (for example, say it's an important message you know you want to send)
      *
@@ -487,7 +487,7 @@ public class MqttOperationQueue extends software.amazon.awssdk.crt.CrtResource {
         private void PerformOperationPublish(QueueOperation operation) {
             CompletableFuture<Integer> future = this.queue.connection.publish(operation.message);
             if (queue.queueCallbacks != null) {
-                queue.queueCallbacks.OnQueuedOperationSent(operation, future);
+                queue.queueCallbacks.OnOperationSent(operation, future);
             }
         }
 
@@ -503,7 +503,7 @@ public class MqttOperationQueue extends software.amazon.awssdk.crt.CrtResource {
                 future = this.queue.connection.subscribe(operation.topic, operation.qos);
             }
             if (queue.queueCallbacks != null) {
-                queue.queueCallbacks.OnQueuedOperationSent(operation, future);
+                queue.queueCallbacks.OnOperationSent(operation, future);
             }
         }
 
@@ -514,7 +514,7 @@ public class MqttOperationQueue extends software.amazon.awssdk.crt.CrtResource {
         private void PerformOperationUnsubscribe(QueueOperation operation) {
             CompletableFuture<Integer> future = this.queue.connection.unsubscribe(operation.topic);
             if (queue.queueCallbacks != null) {
-                queue.queueCallbacks.OnQueuedOperationSent(operation, future);
+                queue.queueCallbacks.OnOperationSent(operation, future);
             }
         }
 
@@ -525,7 +525,7 @@ public class MqttOperationQueue extends software.amazon.awssdk.crt.CrtResource {
         private void PerformOperationUnknown(QueueOperation operation) {
             this.queue.PrintLogMessage("ERROR - got unknown operation to perform!");
             if (queue.queueCallbacks != null) {
-                queue.queueCallbacks.OnQueuedOperationSentFailure(operation, QueueResult.UNKNOWN_OPERATION);
+                queue.queueCallbacks.OnOperationSentFailure(operation, QueueResult.UNKNOWN_OPERATION);
             }
         }
     }
@@ -566,14 +566,14 @@ public class MqttOperationQueue extends software.amazon.awssdk.crt.CrtResource {
     }
 
     /**
-     * An enum to indicate what happens when the MqttOperationQueue is completely full but a new
-     * operation is requested to be added to the queue.
+     * An enum to indicate what happens when the MqttOperationQueue is completely full but new
+     * operations are requested to be added to the queue.
      */
-    public static enum QueueLimitBehavior {
-        /** Drops/Removes the oldest (but soonest to be run) operation added to the queue */
+    public static enum LimitBehavior {
+        /** Drops/Removes the oldest (but first to be run) operation in the queue */
         DROP_FRONT,
 
-        /** Drops/Removes the newest (but further to be run) operation added to the queue */
+        /** Drops/Removes the newest (but last to be run) operation in the queue */
         DROP_BACK,
 
         /** Does not add the new operation at all and instead returns ERROR_QUEUE_FULL */
@@ -584,8 +584,8 @@ public class MqttOperationQueue extends software.amazon.awssdk.crt.CrtResource {
      * An enum to indicate what happens when the MqttOperationQueue has a new operation it
      * needs to add to the queue, configuring where the new operation is added.
      */
-    public static enum QueueInsertBehavior {
-        /** Adds the new operation to the front, so it will be executed the soonest */
+    public static enum InsertBehavior {
+        /** Adds the new operation to the front, so it will be executed first */
         INSERT_FRONT,
         /** Adds the new operation to the back, so it will be executed last */
         INSERT_BACK
@@ -603,29 +603,29 @@ public class MqttOperationQueue extends software.amazon.awssdk.crt.CrtResource {
          * @param operation The operation that was just sent.
          * @param operationFuture The CompletableFuture tied to the operation that was just invoked.
          */
-        public void OnQueuedOperationSent(QueueOperation operation, CompletableFuture<Integer> operationFuture);
+        public void OnOperationSent(QueueOperation operation, CompletableFuture<Integer> operationFuture);
 
         /**
          * Invoked when an operation was removed from the queue and attempted to be sent to the MQTT connection but it failed.
          * @param operation The operation that failed to be sent
          * @param error The reason the operation failed
          */
-        public void OnQueuedOperationSentFailure(QueueOperation operation, QueueResult error);
+        public void OnOperationSentFailure(QueueOperation operation, QueueResult error);
 
         /**
          * Invoked when an operation was dropped/removed from the queue because the queue is full and a new operation
          * was just added to the queue.
          * @param operation The operation that was just dropped/removed.
          */
-        public void OnQueuedOperationDropped(QueueOperation operation);
+        public void OnOperationDropped(QueueOperation operation);
 
         /**
-         * Invoked when the operation queue in the MqttOperationQueue has just become full
+         * Invoked when the operation queue has just become full
          */
         public void OnQueueFull();
 
         /**
-         * Invoked when the operation queue in the MqttOperationQueue has just become empty
+         * Invoked when the operation queue has just become empty
          */
         public void OnQueueEmpty();
     }
@@ -642,8 +642,8 @@ public class MqttOperationQueue extends software.amazon.awssdk.crt.CrtResource {
     public static class MqttOperationQueueBuilder {
         private MqttClientConnection connection;
         private int queueLimitSize = 10;
-        private QueueLimitBehavior queueLimitBehavior = QueueLimitBehavior.DROP_BACK;
-        private QueueInsertBehavior queueInsertBehavior = QueueInsertBehavior.INSERT_BACK;
+        private LimitBehavior queueLimitBehavior = LimitBehavior.DROP_BACK;
+        private InsertBehavior queueInsertBehavior = InsertBehavior.INSERT_BACK;
         private int incompleteLimit = 1;
         private int inflightLimit = 1;
         private QueueCallbacks queueCallbacks;
@@ -697,7 +697,7 @@ public class MqttOperationQueue extends software.amazon.awssdk.crt.CrtResource {
          * @param queueLimitBehavior How the MqttOperationQueue will behave when the operation queue is full.
          * @return The MqttOperationQueueBuilder.
          */
-        public MqttOperationQueueBuilder withQueueLimitBehavior(QueueLimitBehavior queueLimitBehavior) {
+        public MqttOperationQueueBuilder withQueueLimitBehavior(LimitBehavior queueLimitBehavior) {
             this.queueLimitBehavior = queueLimitBehavior;
             return this;
         }
@@ -706,7 +706,7 @@ public class MqttOperationQueue extends software.amazon.awssdk.crt.CrtResource {
          * Returns how the MqttOperationQueue will behave when the operation queue is full.
          * @return How the MqttOperationQueue will behave when the operation queue is full.
          */
-        public QueueLimitBehavior getQueueLimitBehavior() {
+        public LimitBehavior getQueueLimitBehavior() {
             return this.queueLimitBehavior;
         }
 
@@ -716,7 +716,7 @@ public class MqttOperationQueue extends software.amazon.awssdk.crt.CrtResource {
          * @param queueInsertBehavior How the MqttOperationQueue will behave when inserting a new operation into the queue.
          * @return The MqttOperationQueueBuilder.
          */
-        public MqttOperationQueueBuilder withQueueInsertBehavior(QueueInsertBehavior queueInsertBehavior) {
+        public MqttOperationQueueBuilder withQueueInsertBehavior(InsertBehavior queueInsertBehavior) {
             this.queueInsertBehavior = queueInsertBehavior;
             return this;
         }
@@ -725,7 +725,7 @@ public class MqttOperationQueue extends software.amazon.awssdk.crt.CrtResource {
          * Returns how the MqttOperationQueue will behave when inserting a new operation into the queue.
          * @return How the MqttOperationQueue will behave when inserting a new operation into the queue.
          */
-        public QueueInsertBehavior getQueueInsertBehavior() {
+        public InsertBehavior getQueueInsertBehavior() {
             return this.queueInsertBehavior;
         }
 

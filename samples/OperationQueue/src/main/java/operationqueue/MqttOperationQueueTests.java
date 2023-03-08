@@ -61,15 +61,15 @@ public class MqttOperationQueueTests {
         }
 
         @Override
-        public void OnQueuedOperationSent(MqttOperationQueue.QueueOperation operation, CompletableFuture<Integer> operationFuture) {
+        public void OnOperationSent(MqttOperationQueue.QueueOperation operation, CompletableFuture<Integer> operationFuture) {
             onQueueSentFuture.complete(operation);
         }
 
         @Override
-        public void OnQueuedOperationSentFailure(MqttOperationQueue.QueueOperation operation, MqttOperationQueue.QueueResult error) {}
+        public void OnOperationSentFailure(MqttOperationQueue.QueueOperation operation, MqttOperationQueue.QueueResult error) {}
 
         @Override
-        public void OnQueuedOperationDropped(MqttOperationQueue.QueueOperation operation) {
+        public void OnOperationDropped(MqttOperationQueue.QueueOperation operation) {
             onQueueDroppedFuture.complete(operation);
         }
     }
@@ -182,7 +182,7 @@ public class MqttOperationQueueTests {
 
         MqttOperationQueue.MqttOperationQueueBuilder queueBuilder = new MqttOperationQueue.MqttOperationQueueBuilder();
         queueBuilder.withConnection(this.connection).withQueueCallbacks(callbacks).withEnableLogging(PRINT_QUEUE_LOGS);
-        queueBuilder.withQueueLimitSize(2).withQueueLimitBehavior(MqttOperationQueue.QueueLimitBehavior.DROP_BACK);
+        queueBuilder.withQueueLimitSize(2).withQueueLimitBehavior(MqttOperationQueue.LimitBehavior.DROP_BACK);
         queueBuilder.withQueueLoopTime(2000); // Spend 2 seconds per operation to ensure the last operation had time to run
         MqttOperationQueue operationQueue = queueBuilder.build();
 
@@ -249,7 +249,7 @@ public class MqttOperationQueueTests {
 
         MqttOperationQueue.MqttOperationQueueBuilder queueBuilder = new MqttOperationQueue.MqttOperationQueueBuilder();
         queueBuilder.withConnection(this.connection).withQueueCallbacks(callbacks).withEnableLogging(PRINT_QUEUE_LOGS);
-        queueBuilder.withQueueLimitSize(2).withQueueLimitBehavior(MqttOperationQueue.QueueLimitBehavior.DROP_FRONT);
+        queueBuilder.withQueueLimitSize(2).withQueueLimitBehavior(MqttOperationQueue.LimitBehavior.DROP_FRONT);
         MqttOperationQueue operationQueue = queueBuilder.build();
 
         try {
@@ -292,8 +292,8 @@ public class MqttOperationQueueTests {
 
         MqttOperationQueue.MqttOperationQueueBuilder queueBuilder = new MqttOperationQueue.MqttOperationQueueBuilder();
         queueBuilder.withConnection(this.connection).withQueueCallbacks(callbacks).withEnableLogging(PRINT_QUEUE_LOGS);
-        queueBuilder.withQueueLimitSize(2).withQueueLimitBehavior(MqttOperationQueue.QueueLimitBehavior.DROP_BACK);
-        queueBuilder.withQueueInsertBehavior(MqttOperationQueue.QueueInsertBehavior.INSERT_FRONT);
+        queueBuilder.withQueueLimitSize(2).withQueueLimitBehavior(MqttOperationQueue.LimitBehavior.DROP_BACK);
+        queueBuilder.withQueueInsertBehavior(MqttOperationQueue.InsertBehavior.INSERT_FRONT);
         queueBuilder.withQueueLoopTime(2000); // Spend 2 seconds per operation to ensure the last operation had time to run
         MqttOperationQueue operationQueue = queueBuilder.build();
 
@@ -360,7 +360,7 @@ public class MqttOperationQueueTests {
 
         MqttOperationQueue.MqttOperationQueueBuilder queueBuilder = new MqttOperationQueue.MqttOperationQueueBuilder();
         queueBuilder.withConnection(this.connection).withQueueCallbacks(callbacks).withEnableLogging(PRINT_QUEUE_LOGS);
-        queueBuilder.withQueueLimitSize(2).withQueueLimitBehavior(MqttOperationQueue.QueueLimitBehavior.RETURN_ERROR);
+        queueBuilder.withQueueLimitSize(2).withQueueLimitBehavior(MqttOperationQueue.LimitBehavior.RETURN_ERROR);
         MqttOperationQueue operationQueue = queueBuilder.build();
 
         try {
