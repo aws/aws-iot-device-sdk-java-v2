@@ -756,8 +756,6 @@ public class MqttOperationQueue extends software.amazon.awssdk.crt.CrtResource {
         }
 
         /**
-         * Sets the maximum number of inflight operations that
-         *
          * Sets the maximum number of inflight operations that the MQTT connection can have before the
          * MqttOperationQueue will wait for them to be complete. inflight operations are those that have been
          * sent to the MqttClientConnection and sent out to the MQTT server/broker, but an acknowledgement from
