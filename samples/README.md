@@ -17,6 +17,7 @@
 * [Greengrass Discovery](./Greengrass/README.md)
 * [Greengrass IPC](./GreengrassIPC/README.md)
 * [MQTT5 PubSub](./Mqtt5/PubSub/README.md)
+* [MQTT5 Shared Subscription](./Mqtt5/SharedSubscription/README.md)
 
 **Additional sample apps currently without READMEs:**
 

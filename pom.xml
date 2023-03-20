@@ -26,6 +26,7 @@
         <module>samples/Shadow</module>
         <module>samples/Identity</module>
         <module>samples/Mqtt5/PubSub</module>
+        <module>samples/Mqtt5/SharedSubscription</module>
     </modules>
 
     <build>
