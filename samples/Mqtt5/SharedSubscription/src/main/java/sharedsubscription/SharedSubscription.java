@@ -52,6 +52,10 @@ public class SharedSubscription {
         }
     }
 
+    /**
+     * The interface that contains the functions invoked when the MQTT5 has a life-cycle event
+     * (connect, disconnect, etc) that can be reacted to.
+     */
     static final class SampleLifecycleEvents implements Mqtt5ClientOptions.LifecycleEvents {
         SampleMqtt5Client sampleClient;
         CompletableFuture<Void> connectedFuture = new CompletableFuture<>();
@@ -59,59 +63,56 @@ public class SharedSubscription {
 
         SampleLifecycleEvents(SampleMqtt5Client client) {
             sampleClient = client;
+            if (sampleClient == null) {
+                System.out.println("Invalid sample client passed to SampleLifecycleEvents");
+            }
         }
 
         @Override
         public void onAttemptingConnect(Mqtt5Client client, OnAttemptingConnectReturn onAttemptingConnectReturn) {
-            if (sampleClient != null && sampleClient.client == client) {
-                System.out.println("[" + sampleClient.name + "]: Attempting connection...");
-            }
+            System.out.println("[" + sampleClient.name + "]: Attempting connection...");
         }
 
         @Override
         public void onConnectionSuccess(Mqtt5Client client, OnConnectionSuccessReturn onConnectionSuccessReturn) {
-            if (sampleClient != null && sampleClient.client == client) {
-                System.out.println("[" + sampleClient.name + "]: Connection success, client ID: "
-                    + onConnectionSuccessReturn.getNegotiatedSettings().getAssignedClientID());
-                connectedFuture.complete(null);
-            }
+            System.out.println("[" + sampleClient.name + "]: Connection success, client ID: "
+                + onConnectionSuccessReturn.getNegotiatedSettings().getAssignedClientID());
+            connectedFuture.complete(null);
         }
 
         @Override
         public void onConnectionFailure(Mqtt5Client client, OnConnectionFailureReturn onConnectionFailureReturn) {
-            if (sampleClient != null && sampleClient.client == client) {
-                String errorString = CRT.awsErrorString(onConnectionFailureReturn.getErrorCode());
-                System.out.println("[" + sampleClient.name + "]: Connection failed with error: " + errorString);
-                connectedFuture.completeExceptionally(new Exception("Could not connect: " + errorString));
-            }
+            String errorString = CRT.awsErrorString(onConnectionFailureReturn.getErrorCode());
+            System.out.println("[" + sampleClient.name + "]: Connection failed with error: " + errorString);
+            connectedFuture.completeExceptionally(new Exception("Could not connect: " + errorString));
         }
 
         @Override
         public void onDisconnection(Mqtt5Client client, OnDisconnectionReturn onDisconnectionReturn) {
-            if (sampleClient != null && sampleClient.client == client) {
-                System.out.println("[" + sampleClient.name + "]: Disconnected");
-                DisconnectPacket disconnectPacket = onDisconnectionReturn.getDisconnectPacket();
-                if (disconnectPacket != null) {
-                    System.out.println("\tDisconnection packet code: " + disconnectPacket.getReasonCode());
-                    System.out.println("\tDisconnection packet reason: " + disconnectPacket.getReasonString());
+            System.out.println("[" + sampleClient.name + "]: Disconnected");
+            DisconnectPacket disconnectPacket = onDisconnectionReturn.getDisconnectPacket();
+            if (disconnectPacket != null) {
+                System.out.println("\tDisconnection packet code: " + disconnectPacket.getReasonCode());
+                System.out.println("\tDisconnection packet reason: " + disconnectPacket.getReasonString());
 
-                    if (disconnectPacket.getReasonCode() == DisconnectPacket.DisconnectReasonCode.SHARED_SUBSCRIPTIONS_NOT_SUPPORTED) {
-                        /* Stop the client, which will interrupt the subscription and stop the sample */
-                        client.stop(null);
-                    }
+                if (disconnectPacket.getReasonCode() == DisconnectPacket.DisconnectReasonCode.SHARED_SUBSCRIPTIONS_NOT_SUPPORTED) {
+                    /* Stop the client, which will interrupt the subscription and stop the sample */
+                    client.stop(null);
                 }
             }
         }
 
         @Override
         public void onStopped(Mqtt5Client client, OnStoppedReturn onStoppedReturn) {
-            if (sampleClient != null && sampleClient.client == client) {
-                System.out.println("[" + sampleClient.name + "]: Stopped");
-                stoppedFuture.complete(null);
-            }
+            System.out.println("[" + sampleClient.name + "]: Stopped");
+            stoppedFuture.complete(null);
         }
     }
 
+    /**
+     * The interface that contains the functions invoked when the MQTT5 client gets a message/publish
+     * on a topic the MQTT5 client has subscribed to.
+     */
     static final class SamplePublishEvents implements Mqtt5ClientOptions.PublishEvents {
         SampleMqtt5Client sampleClient;
         CountDownLatch messagesReceived;
@@ -143,6 +144,9 @@ public class SharedSubscription {
         }
     }
 
+    /**
+     * A class to make keeping the data in the sample for each MQTT5 client easier to manage.
+     */
     static final class SampleMqtt5Client {
         Mqtt5Client client;
         String name;
@@ -150,6 +154,10 @@ public class SharedSubscription {
         SampleLifecycleEvents lifecycleEvents;
     }
 
+    /**
+     * Creates a MQTT5 client using direct MQTT5 via mTLS with the passed input data
+     * from the command line.
+     */
     public static SampleMqtt5Client createMqtt5Client(
         String input_endpoint, String input_cert, String input_key, String input_ca,
         String input_clientId, int input_count, String input_clientName) {
@@ -202,7 +210,9 @@ public class SharedSubscription {
             "The group identifier to use in the shared subscription (optional, default='java-sample')");
         cmdUtils.sendArguments(args);
 
-        /* Get all the input from the command line */
+        /**
+         * Pull data from the command line
+         */
         String input_endpoint = cmdUtils.getCommandRequired("endpoint", "");
         String input_cert = cmdUtils.getCommandRequired("cert", "");
         String input_key = cmdUtils.getCommandRequired("key", "");
@@ -221,14 +231,14 @@ public class SharedSubscription {
 
         try {
 
-            /* Create a publisher and two subscribers */
+            /* Create the MQTT5 clients: one publisher and two subscribers */
             publisher = createMqtt5Client(
                 input_endpoint, input_cert, input_key, input_ca,
                 input_clientId + '1', input_count, "Publisher");
-                subscriberOne = createMqtt5Client(
+            subscriberOne = createMqtt5Client(
                 input_endpoint, input_cert, input_key, input_ca,
                 input_clientId + '2', input_count, "Subscriber One");
-                subscriberTwo = createMqtt5Client(
+            subscriberTwo = createMqtt5Client(
                 input_endpoint, input_cert, input_key, input_ca,
                 input_clientId + '3', input_count, "Subscriber Two");
 
@@ -290,14 +300,17 @@ public class SharedSubscription {
             System.out.println("[" + subscriberTwo.name + "]: Fully stopped");
 
         } catch (Exception ex) {
+            /* Something bad happened, abort and report! */
             onApplicationFailure(ex);
         } finally {
-            /* Close all the MQTT5 clients to make sure no memory is leaked */
+            /**
+             * Close all the MQTT5 clients to make sure no native memory is leaked
+             */
             if (publisher != null && publisher.client != null) {
                 publisher.client.close();
             }
-            if (subscriber_one != null && subscriber_one.client != null) {
-                subscriber_one.client.close();
+            if (subscriberOne != null && subscriberOne.client != null) {
+                subscriberOne.client.close();
             }
             if (subscriberTwo != null && subscriberTwo.client != null) {
                 subscriberTwo.client.close();
