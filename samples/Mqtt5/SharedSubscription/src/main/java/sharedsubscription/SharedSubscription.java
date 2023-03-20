@@ -152,7 +152,7 @@ public class SharedSubscription {
 
     public static SampleMqtt5Client createMqtt5Client(
         String input_endpoint, String input_cert, String input_key, String input_ca,
-        String input_client_id, int input_count, String input_clientName) {
+        String input_clientId, int input_count, String input_clientName) {
 
         SampleMqtt5Client sampleClient = new SampleMqtt5Client();
         SamplePublishEvents publishEvents = new SamplePublishEvents(sampleClient, input_count / 2);
@@ -163,7 +163,7 @@ public class SharedSubscription {
             AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newDirectMqttBuilderWithMtlsFromPath(input_endpoint, input_cert, input_key);
 
             ConnectPacket.ConnectPacketBuilder connectProperties = new ConnectPacket.ConnectPacketBuilder();
-            connectProperties.withClientId(input_client_id);
+            connectProperties.withClientId(input_clientId);
             builder.withConnectProperties(connectProperties);
             if (input_ca != "") {
                 builder.withCertificateAuthorityFromPath(null, input_ca);
@@ -207,49 +207,49 @@ public class SharedSubscription {
         String input_cert = cmdUtils.getCommandRequired("cert", "");
         String input_key = cmdUtils.getCommandRequired("key", "");
         String input_ca = cmdUtils.getCommandOrDefault("ca_file", "");
-        String input_client_id = cmdUtils.getCommandOrDefault("client_id", "test-" + UUID.randomUUID().toString());
+        String input_clientId = cmdUtils.getCommandOrDefault("client_id", "test-" + UUID.randomUUID().toString());
         int input_count = Integer.parseInt(cmdUtils.getCommandOrDefault("count", String.valueOf(10)));
         String input_topic = cmdUtils.getCommandOrDefault("topic", "test/topic");
         String input_message = cmdUtils.getCommandOrDefault("message", "Hello World!");
-        String input_group_identifier = cmdUtils.getCommandOrDefault("group_identifier", "java-sample");
-        String input_shared_topic = "$share/" + input_group_identifier + "/" + input_topic;
+        String input_groupIdentifier = cmdUtils.getCommandOrDefault("group_identifier", "java-sample");
+        String input_sharedTopic = "$share/" + input_groupIdentifier + "/" + input_topic;
 
         /* This sample uses a publisher and two subscribers */
         SampleMqtt5Client publisher = null;
-        SampleMqtt5Client subscriber_one = null;
-        SampleMqtt5Client subscriber_two = null;
+        SampleMqtt5Client subscriberOne = null;
+        SampleMqtt5Client subscriberTwo = null;
 
         try {
 
             /* Create a publisher and two subscribers */
             publisher = createMqtt5Client(
                 input_endpoint, input_cert, input_key, input_ca,
-                input_client_id + '1', input_count, "Publisher");
-            subscriber_one = createMqtt5Client(
+                input_clientId + '1', input_count, "Publisher");
+                subscriberOne = createMqtt5Client(
                 input_endpoint, input_cert, input_key, input_ca,
-                input_client_id + '2', input_count, "Subscriber One");
-            subscriber_two = createMqtt5Client(
+                input_clientId + '2', input_count, "Subscriber One");
+                subscriberTwo = createMqtt5Client(
                 input_endpoint, input_cert, input_key, input_ca,
-                input_client_id + '3', input_count, "Subscriber Two");
+                input_clientId + '3', input_count, "Subscriber Two");
 
             /* Connect all the clients */
             publisher.client.start();
             publisher.lifecycleEvents.connectedFuture.get(60, TimeUnit.SECONDS);
             System.out.println("[" + publisher.name + "]: Connected");
-            subscriber_one.client.start();
-            subscriber_one.lifecycleEvents.connectedFuture.get(60, TimeUnit.SECONDS);
-            System.out.println("[" + subscriber_one.name + "]: Connected");
-            subscriber_two.client.start();
-            subscriber_two.lifecycleEvents.connectedFuture.get(60, TimeUnit.SECONDS);
-            System.out.println("[" + subscriber_two.name + "]: Connected");
+            subscriberOne.client.start();
+            subscriberOne.lifecycleEvents.connectedFuture.get(60, TimeUnit.SECONDS);
+            System.out.println("[" + subscriberOne.name + "]: Connected");
+            subscriberTwo.client.start();
+            subscriberTwo.lifecycleEvents.connectedFuture.get(60, TimeUnit.SECONDS);
+            System.out.println("[" + subscriberTwo.name + "]: Connected");
 
             /* Subscribe to the shared topic on the two subscribers */
             SubscribePacket.SubscribePacketBuilder subscribeBuilder = new SubscribePacket.SubscribePacketBuilder();
-            subscribeBuilder.withSubscription(input_shared_topic, QOS.AT_LEAST_ONCE, false, false, SubscribePacket.RetainHandlingType.DONT_SEND);
-            subscriber_one.client.subscribe(subscribeBuilder.build()).get(60, TimeUnit.SECONDS);
-            System.out.println("[" + subscriber_one.name + "]: Subscribed");
-            subscriber_two.client.subscribe(subscribeBuilder.build()).get(60, TimeUnit.SECONDS);
-            System.out.println("[" + subscriber_two.name + "]: Subscribed");
+            subscribeBuilder.withSubscription(input_sharedTopic, QOS.AT_LEAST_ONCE, false, false, SubscribePacket.RetainHandlingType.DONT_SEND);
+            subscriberOne.client.subscribe(subscribeBuilder.build()).get(60, TimeUnit.SECONDS);
+            System.out.println("[" + subscriberOne.name + "]: Subscribed");
+            subscriberTwo.client.subscribe(subscribeBuilder.build()).get(60, TimeUnit.SECONDS);
+            System.out.println("[" + subscriberTwo.name + "]: Subscribed");
 
             /* Publish using the publisher client */
             PublishPacket.PublishPacketBuilder publishBuilder = new PublishPacket.PublishPacketBuilder();
@@ -267,27 +267,27 @@ public class SharedSubscription {
             }
 
             /* Make sure all the messages were gotten on the subscribers */
-            subscriber_one.publishEvents.messagesReceived.await(60 * 4, TimeUnit.SECONDS);
-            subscriber_two.publishEvents.messagesReceived.await(60 * 4, TimeUnit.SECONDS);
+            subscriberOne.publishEvents.messagesReceived.await(60 * 4, TimeUnit.SECONDS);
+            subscriberTwo.publishEvents.messagesReceived.await(60 * 4, TimeUnit.SECONDS);
 
             /* Unsubscribe from the shared topic on the two subscribers */
             UnsubscribePacket.UnsubscribePacketBuilder unsubscribeBuilder = new UnsubscribePacket.UnsubscribePacketBuilder();
-            unsubscribeBuilder.withSubscription(input_shared_topic);
-            subscriber_one.client.unsubscribe(unsubscribeBuilder.build()).get(60, TimeUnit.SECONDS);
-            System.out.println("[" + subscriber_one.name + "]: Unsubscribed");
-            subscriber_two.client.unsubscribe(unsubscribeBuilder.build()).get(60, TimeUnit.SECONDS);
-            System.out.println("[" + subscriber_two.name + "]: Unsubscribed");
+            unsubscribeBuilder.withSubscription(input_sharedTopic);
+            subscriberOne.client.unsubscribe(unsubscribeBuilder.build()).get(60, TimeUnit.SECONDS);
+            System.out.println("[" + subscriberOne.name + "]: Unsubscribed");
+            subscriberTwo.client.unsubscribe(unsubscribeBuilder.build()).get(60, TimeUnit.SECONDS);
+            System.out.println("[" + subscriberTwo.name + "]: Unsubscribed");
 
             /* Disconnect all the clients */
             publisher.client.stop(null);
             publisher.lifecycleEvents.stoppedFuture.get(60, TimeUnit.SECONDS);
             System.out.println("[" + publisher.name + "]: Fully stopped");
-            subscriber_one.client.stop(null);
-            subscriber_one.lifecycleEvents.stoppedFuture.get(60, TimeUnit.SECONDS);
-            System.out.println("[" + subscriber_one.name + "]: Fully stopped");
-            subscriber_two.client.stop(null);
-            subscriber_two.lifecycleEvents.stoppedFuture.get(60, TimeUnit.SECONDS);
-            System.out.println("[" + subscriber_two.name + "]: Fully stopped");
+            subscriberOne.client.stop(null);
+            subscriberOne.lifecycleEvents.stoppedFuture.get(60, TimeUnit.SECONDS);
+            System.out.println("[" + subscriberOne.name + "]: Fully stopped");
+            subscriberTwo.client.stop(null);
+            subscriberTwo.lifecycleEvents.stoppedFuture.get(60, TimeUnit.SECONDS);
+            System.out.println("[" + subscriberTwo.name + "]: Fully stopped");
 
         } catch (Exception ex) {
             onApplicationFailure(ex);
@@ -299,8 +299,8 @@ public class SharedSubscription {
             if (subscriber_one != null && subscriber_one.client != null) {
                 subscriber_one.client.close();
             }
-            if (subscriber_two != null && subscriber_two.client != null) {
-                subscriber_two.client.close();
+            if (subscriberTwo != null && subscriberTwo.client != null) {
+                subscriberTwo.client.close();
             }
         }
 
