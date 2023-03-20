@@ -9,28 +9,10 @@ import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.crt.CrtResource;
 import software.amazon.awssdk.crt.CrtRuntimeException;
 import software.amazon.awssdk.crt.io.ClientBootstrap;
-import software.amazon.awssdk.crt.mqtt5.Mqtt5Client;
-import software.amazon.awssdk.crt.mqtt5.Mqtt5ClientOptions;
-import software.amazon.awssdk.crt.mqtt5.NegotiatedSettings;
-import software.amazon.awssdk.crt.mqtt5.OnAttemptingConnectReturn;
-import software.amazon.awssdk.crt.mqtt5.OnConnectionFailureReturn;
-import software.amazon.awssdk.crt.mqtt5.OnConnectionSuccessReturn;
-import software.amazon.awssdk.crt.mqtt5.OnDisconnectionReturn;
-import software.amazon.awssdk.crt.mqtt5.OnStoppedReturn;
-import software.amazon.awssdk.crt.mqtt5.PublishResult;
-import software.amazon.awssdk.crt.mqtt5.PublishReturn;
-import software.amazon.awssdk.crt.mqtt5.QOS;
+import software.amazon.awssdk.crt.mqtt5.*;
 import software.amazon.awssdk.crt.mqtt5.Mqtt5ClientOptions.LifecycleEvents;
-import software.amazon.awssdk.crt.mqtt5.packets.ConnAckPacket;
-import software.amazon.awssdk.crt.mqtt5.packets.ConnectPacket;
-import software.amazon.awssdk.crt.mqtt5.packets.DisconnectPacket;
-import software.amazon.awssdk.crt.mqtt5.packets.PubAckPacket;
-import software.amazon.awssdk.crt.mqtt5.packets.PublishPacket;
-import software.amazon.awssdk.crt.mqtt5.packets.SubscribePacket;
-import software.amazon.awssdk.crt.mqtt5.packets.SubAckPacket;
-import software.amazon.awssdk.crt.mqtt5.packets.UnsubscribePacket;
-import software.amazon.awssdk.crt.mqtt5.packets.UserProperty;
-import software.amazon.awssdk.iot.iotjobs.model.RejectedError;
+import software.amazon.awssdk.crt.mqtt5.packets.*;
+import software.amazon.awssdk.iot.AwsIotMqtt5ClientBuilder;
 
 import java.util.List;
 import java.util.UUID;
@@ -168,21 +150,38 @@ public class SharedSubscription {
         SampleLifecycleEvents lifecycleEvents;
     }
 
-    public static SampleMqtt5Client createMqtt5Client(CommandLineUtils cmdUtils, String clientName) {
-        SampleMqtt5Client sampleClient = new SampleMqtt5Client();
+    public static SampleMqtt5Client createMqtt5Client(
+        String input_endpoint, String input_cert, String input_key, String input_ca,
+        String input_client_id, int input_count, String input_clientName) {
 
-        int messagesToPublish = Integer.parseInt(cmdUtils.getCommandOrDefault("count", String.valueOf(10)));
-        SamplePublishEvents publishEvents = new SamplePublishEvents(sampleClient, messagesToPublish / 2);
+        SampleMqtt5Client sampleClient = new SampleMqtt5Client();
+        SamplePublishEvents publishEvents = new SamplePublishEvents(sampleClient, input_count / 2);
         SampleLifecycleEvents lifecycleEvents = new SampleLifecycleEvents(sampleClient);
+
         Mqtt5Client client;
-        if (cmdUtils.hasCommand("cert") || cmdUtils.hasCommand("key")) {
-            client = cmdUtils.buildDirectMQTT5Connection(lifecycleEvents, publishEvents);
-        } else {
-            client = cmdUtils.buildWebsocketMQTT5Connection(lifecycleEvents, publishEvents);
+        try {
+            AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newDirectMqttBuilderWithMtlsFromPath(input_endpoint, input_cert, input_key);
+
+            ConnectPacket.ConnectPacketBuilder connectProperties = new ConnectPacket.ConnectPacketBuilder();
+            connectProperties.withClientId(input_client_id);
+            builder.withConnectProperties(connectProperties);
+            if (input_ca != "") {
+                builder.withCertificateAuthorityFromPath(null, input_ca);
+            }
+
+            builder.withLifeCycleEvents(lifecycleEvents);
+            builder.withPublishEvents(publishEvents);
+
+            client = builder.build();
+            builder.close();
+        }
+        catch (CrtRuntimeException ex) {
+            System.out.println("Client creation failed!");
+            return null;
         }
 
         sampleClient.client = client;
-        sampleClient.name = clientName;
+        sampleClient.name = input_clientName;
         sampleClient.publishEvents = publishEvents;
         sampleClient.lifecycleEvents = lifecycleEvents;
         return sampleClient;
@@ -196,17 +195,24 @@ public class SharedSubscription {
         cmdUtils.addCommonTopicMessageCommands();
         cmdUtils.registerCommand("key", "<path>", "Path to your key in PEM format. (will use direct MQTT to connect if defined)");
         cmdUtils.registerCommand("cert", "<path>", "Path to your client certificate in PEM format. (will use direct MQTT to connect if defined)");
-        cmdUtils.registerCommand("signing_region", "<string>", "Websocket region to use (will use websockets to connect if defined).");
-        cmdUtils.registerCommand("client_id", "<int>", "Client id to use (optional, default='test-*').");
+        cmdUtils.registerCommand("client_id", "<int>",
+            "Client id to use (optional, default='test-*'). Note that '1', '2', and '3' will be added for first, second, and third client");
         cmdUtils.registerCommand("count", "<int>", "Number of messages to publish (optional, default='10').");
-        cmdUtils.registerCommand("group_identifier", "<string>", "The group identifier to use in the shared subscription (optional, default='java-sample')");
+        cmdUtils.registerCommand("group_identifier", "<string>",
+            "The group identifier to use in the shared subscription (optional, default='java-sample')");
         cmdUtils.sendArguments(args);
 
-        String topic = cmdUtils.getCommandOrDefault("topic", "test/topic");
-        String message = cmdUtils.getCommandOrDefault("message", "Hello World!");
-        int messagesToPublish = Integer.parseInt(cmdUtils.getCommandOrDefault("count", String.valueOf(10)));
-        String group_identifier = cmdUtils.getCommandOrDefault("group_identifier", "java-sample");
-        String sharedTopic = "$share/" + group_identifier + "/" + topic;
+        /* Get all the input from the command line */
+        String input_endpoint = cmdUtils.getCommandRequired("endpoint", "");
+        String input_cert = cmdUtils.getCommandRequired("cert", "");
+        String input_key = cmdUtils.getCommandRequired("key", "");
+        String input_ca = cmdUtils.getCommandOrDefault("ca_file", "");
+        String input_client_id = cmdUtils.getCommandOrDefault("client_id", "test-" + UUID.randomUUID().toString());
+        int input_count = Integer.parseInt(cmdUtils.getCommandOrDefault("count", String.valueOf(10)));
+        String input_topic = cmdUtils.getCommandOrDefault("topic", "test/topic");
+        String input_message = cmdUtils.getCommandOrDefault("message", "Hello World!");
+        String input_group_identifier = cmdUtils.getCommandOrDefault("group_identifier", "java-sample");
+        String input_shared_topic = "$share/" + input_group_identifier + "/" + input_topic;
 
         /* This sample uses a publisher and two subscribers */
         SampleMqtt5Client publisher = null;
@@ -216,9 +222,15 @@ public class SharedSubscription {
         try {
 
             /* Create a publisher and two subscribers */
-            publisher = createMqtt5Client(cmdUtils, "Publisher");
-            subscriber_one = createMqtt5Client(cmdUtils, "Subscriber One");
-            subscriber_two = createMqtt5Client(cmdUtils, "Subscriber Two");
+            publisher = createMqtt5Client(
+                input_endpoint, input_cert, input_key, input_ca,
+                input_client_id + '1', input_count, "Publisher");
+            subscriber_one = createMqtt5Client(
+                input_endpoint, input_cert, input_key, input_ca,
+                input_client_id + '2', input_count, "Subscriber One");
+            subscriber_two = createMqtt5Client(
+                input_endpoint, input_cert, input_key, input_ca,
+                input_client_id + '3', input_count, "Subscriber Two");
 
             /* Connect all the clients */
             publisher.client.start();
@@ -233,7 +245,7 @@ public class SharedSubscription {
 
             /* Subscribe to the shared topic on the two subscribers */
             SubscribePacket.SubscribePacketBuilder subscribeBuilder = new SubscribePacket.SubscribePacketBuilder();
-            subscribeBuilder.withSubscription(sharedTopic, QOS.AT_LEAST_ONCE, false, false, SubscribePacket.RetainHandlingType.DONT_SEND);
+            subscribeBuilder.withSubscription(input_shared_topic, QOS.AT_LEAST_ONCE, false, false, SubscribePacket.RetainHandlingType.DONT_SEND);
             subscriber_one.client.subscribe(subscribeBuilder.build()).get(60, TimeUnit.SECONDS);
             System.out.println("[" + subscriber_one.name + "]: Subscribed");
             subscriber_two.client.subscribe(subscribeBuilder.build()).get(60, TimeUnit.SECONDS);
@@ -241,11 +253,11 @@ public class SharedSubscription {
 
             /* Publish using the publisher client */
             PublishPacket.PublishPacketBuilder publishBuilder = new PublishPacket.PublishPacketBuilder();
-            publishBuilder.withTopic(topic).withQOS(QOS.AT_LEAST_ONCE);
+            publishBuilder.withTopic(input_topic).withQOS(QOS.AT_LEAST_ONCE);
             int count = 0;
-            if (messagesToPublish > 0) {
-                while (count++ < messagesToPublish) {
-                    publishBuilder.withPayload(("\"" + message + ": " + String.valueOf(count) + "\"").getBytes());
+            if (input_count > 0) {
+                while (count++ < input_count) {
+                    publishBuilder.withPayload(("\"" + input_message + ": " + String.valueOf(count) + "\"").getBytes());
                     publisher.client.publish(publishBuilder.build()).get(60, TimeUnit.SECONDS);
                     System.out.println("[" + publisher.name + "]: Sent publish");
                     Thread.sleep(1000);
@@ -260,7 +272,7 @@ public class SharedSubscription {
 
             /* Unsubscribe from the shared topic on the two subscribers */
             UnsubscribePacket.UnsubscribePacketBuilder unsubscribeBuilder = new UnsubscribePacket.UnsubscribePacketBuilder();
-            unsubscribeBuilder.withSubscription(sharedTopic);
+            unsubscribeBuilder.withSubscription(input_shared_topic);
             subscriber_one.client.unsubscribe(unsubscribeBuilder.build()).get(60, TimeUnit.SECONDS);
             System.out.println("[" + subscriber_one.name + "]: Unsubscribed");
             subscriber_two.client.unsubscribe(unsubscribeBuilder.build()).get(60, TimeUnit.SECONDS);
