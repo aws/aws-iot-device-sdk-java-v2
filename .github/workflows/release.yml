@@ -49,11 +49,11 @@ jobs:
         ./make-docs.py
 
     - name: Commit documentation
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add --force docs/
-          git commit --message="update docs"
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add --force docs/
+        git commit --message="update docs"
 
     - name: Push generated documentation to docs branch
       uses: ad-m/github-push-action@v0.6.0
