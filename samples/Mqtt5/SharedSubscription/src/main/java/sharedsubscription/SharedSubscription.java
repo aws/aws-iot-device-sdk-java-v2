@@ -222,6 +222,13 @@ public class SharedSubscription {
         String input_topic = cmdUtils.getCommandOrDefault("topic", "test/topic");
         String input_message = cmdUtils.getCommandOrDefault("message", "Hello World!");
         String input_groupIdentifier = cmdUtils.getCommandOrDefault("group_identifier", "java-sample");
+
+        /* If this is CI, append a UUID to the topic */
+        if (isCI) {
+            input_topic += "/" + UUID.randomUUID().toString();
+        }
+
+        /* Construct the shared topic */
         String input_sharedTopic = "$share/" + input_groupIdentifier + "/" + input_topic;
 
         /* This sample uses a publisher and two subscribers */
