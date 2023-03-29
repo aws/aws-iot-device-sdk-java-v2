@@ -229,6 +229,12 @@ public class SharedSubscription {
         SampleMqtt5Client subscriberOne = null;
         SampleMqtt5Client subscriberTwo = null;
 
+        /* Make sure the message count is even */
+        if (input_count%2 != 0) {
+            onApplicationFailure(new Throwable("Message count is an odd number. Message count must be even for this sample."));
+            System.exit(1);
+        }
+
         try {
 
             /* Create the MQTT5 clients: one publisher and two subscribers */
