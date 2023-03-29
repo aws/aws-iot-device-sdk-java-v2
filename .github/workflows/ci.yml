@@ -419,3 +419,6 @@ jobs:
       - name: run MQTT5 PubSub sample
         run: |
           python3 ./utils/run_sample_ci.py --file ./.github/workflows/ci_run_mqtt5_pubsub_cfg.json
+      - name: run MQTT5 Shared Subscription sample
+        run: |
+          python3 ./utils/run_sample_ci.py --file ./.github/workflows/ci_run_mqtt5_shared_subscription_cfg.json
