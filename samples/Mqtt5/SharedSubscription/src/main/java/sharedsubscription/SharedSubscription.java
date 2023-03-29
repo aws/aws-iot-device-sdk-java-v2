@@ -273,7 +273,7 @@ public class SharedSubscription {
             // TMP: If this fails subscribing in CI, just exit the sample gracefully.
             catch (Exception ex) {
                 if (isCI) {
-                    throw new RuntimeException("Failed to make shared subscription");
+                    throw new RuntimeException("Sample: Failed to make shared subscription");
                 } else {
                     throw ex;
                 }
