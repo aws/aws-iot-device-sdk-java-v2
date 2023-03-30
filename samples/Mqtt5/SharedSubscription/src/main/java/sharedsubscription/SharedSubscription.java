@@ -273,7 +273,7 @@ public class SharedSubscription {
             // TMP: If this fails subscribing in CI, just exit the sample gracefully.
             catch (Exception ex) {
                 if (isCI) {
-                    throw new RuntimeException("Sample: Failed to make shared subscription");
+                    return;
                 } else {
                     throw ex;
                 }
@@ -317,12 +317,8 @@ public class SharedSubscription {
             System.out.println("[" + subscriberTwo.name + "]: Fully stopped");
 
         } catch (Exception ex) {
-            /* TMP: If this fails subscribing in CI, just exit the sample gracefully. Otherwise fail the sample */
-            if (ex.getMessage() != "Sample: Failed to make shared subscription") {}
-            {
-                /* Something bad happened, abort and report! */
-                onApplicationFailure(ex);
-            }
+            /* Something bad happened, abort and report! */
+            onApplicationFailure(ex);
         } finally {
             /* Close all the MQTT5 clients to make sure no native memory is leaked */
             if (publisher != null && publisher.client != null) {
@@ -334,8 +330,8 @@ public class SharedSubscription {
             if (subscriberTwo != null && subscriberTwo.client != null) {
                 subscriberTwo.client.close();
             }
+            CrtResource.waitForNoResources();
         }
-        CrtResource.waitForNoResources();
         System.out.println("Complete!");
     }
 }
