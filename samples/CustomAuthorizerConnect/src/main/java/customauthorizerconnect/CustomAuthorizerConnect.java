@@ -62,10 +62,10 @@ public class CustomAuthorizerConnect {
          */
         String input_endpoint = cmdUtils.getCommandRequired("endpoint", "");
         String input_client_id = cmdUtils.getCommandOrDefault("client_id", "test-" + UUID.randomUUID().toString());
-        String input_customAuthUsername = cmdUtils.getCommandRequired("custom_auth_username", null);
-        String input_customAuthorizerName = cmdUtils.getCommandRequired("custom_auth_authorizer_name", null);
-        String input_customAuthorizerSignature = cmdUtils.getCommandRequired("custom_auth_authorizer_signature", null);
-        String input_customAuthPassword = cmdUtils.getCommandRequired("custom_auth_password", null);
+        String input_customAuthUsername = cmdUtils.getCommandOrDefault("custom_auth_username", null);
+        String input_customAuthorizerName = cmdUtils.getCommandOrDefault("custom_auth_authorizer_name", null);
+        String input_customAuthorizerSignature = cmdUtils.getCommandOrDefault("custom_auth_authorizer_signature", null);
+        String input_customAuthPassword = cmdUtils.getCommandOrDefault("custom_auth_password", null);
 
         MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
             @Override
