@@ -44,8 +44,6 @@ public class JobsSample {
     static String ciPropValue = System.getProperty("aws.crt.ci");
     static boolean isCI = ciPropValue != null && Boolean.valueOf(ciPropValue);
 
-    static String thingName;
-
     static CompletableFuture<Void> gotResponse;
     static List<String> availableJobs = new LinkedList<>();
     static String currentJobId;
@@ -92,6 +90,9 @@ public class JobsSample {
 
     public static void main(String[] args) {
 
+        /**
+         * Register the command line inputs
+         */
         cmdUtils = new CommandLineUtils();
         cmdUtils.registerProgramName("JobsSample");
         cmdUtils.addCommonMQTTCommands();
@@ -102,7 +103,16 @@ public class JobsSample {
         cmdUtils.registerCommand("port", "<int>", "Port to connect to on the endpoint (optional, default='8883').");
         cmdUtils.sendArguments(args);
 
-        thingName = cmdUtils.getCommandRequired("thing_name", "");
+        /**
+         * Gather the input from the command line
+         */
+        String input_endpoint = cmdUtils.getCommandRequired("endpoint", "");
+        String input_cert = cmdUtils.getCommandRequired("cert", "");
+        String input_key = cmdUtils.getCommandRequired("key", "");
+        String input_ca = cmdUtils.getCommandOrDefault("ca", "");
+        String input_client_id = cmdUtils.getCommandOrDefault("client_id", "test-" + UUID.randomUUID().toString());
+        int input_port = Integer.parseInt(cmdUtils.getCommandOrDefault("port", "8883"));
+        String input_thingName = cmdUtils.getCommandRequired("thing_name", "");
 
         MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
             @Override
@@ -120,7 +130,22 @@ public class JobsSample {
 
         try {
 
-            MqttClientConnection connection = cmdUtils.buildMQTTConnection(callbacks);
+            /**
+             * Create the MQTT connection from the builder
+             */
+            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(input_cert, input_key);
+            if (input_ca != "") {
+                builder.withCertificateAuthorityFromPath(null, input_ca);
+            }
+            builder.withConnectionEventCallbacks(callbacks)
+                .withClientId(input_client_id)
+                .withEndpoint(input_endpoint)
+                .withPort((short)input_port)
+                .withCleanSession(true)
+                .withProtocolOperationTimeoutMs(60000);
+            MqttClientConnection connection = builder.build();
+            builder.close();
+
             IotJobsClient jobs = new IotJobsClient(connection);
 
             CompletableFuture<Boolean> connected = connection.connect();
@@ -134,7 +159,7 @@ public class JobsSample {
             {
                 gotResponse = new CompletableFuture<>();
                 GetPendingJobExecutionsSubscriptionRequest subscriptionRequest = new GetPendingJobExecutionsSubscriptionRequest();
-                subscriptionRequest.thingName = thingName;
+                subscriptionRequest.thingName = input_thingName;
                 CompletableFuture<Integer> subscribed = jobs.SubscribeToGetPendingJobExecutionsAccepted(
                         subscriptionRequest,
                         QualityOfService.AT_LEAST_ONCE,
@@ -154,7 +179,7 @@ public class JobsSample {
                 System.out.println("Subscribed to GetPendingJobExecutionsRejected");
 
                 GetPendingJobExecutionsRequest publishRequest = new GetPendingJobExecutionsRequest();
-                publishRequest.thingName = thingName;
+                publishRequest.thingName = input_thingName;
                 CompletableFuture<Integer> published = jobs.PublishGetPendingJobExecutions(
                         publishRequest,
                         QualityOfService.AT_LEAST_ONCE);
@@ -179,7 +204,7 @@ public class JobsSample {
             for (String jobId : availableJobs) {
                 gotResponse = new CompletableFuture<>();
                 DescribeJobExecutionSubscriptionRequest subscriptionRequest = new DescribeJobExecutionSubscriptionRequest();
-                subscriptionRequest.thingName = thingName;
+                subscriptionRequest.thingName = input_thingName;
                 subscriptionRequest.jobId = jobId;
                 jobs.SubscribeToDescribeJobExecutionAccepted(
                         subscriptionRequest,
@@ -191,7 +216,7 @@ public class JobsSample {
                         JobsSample::onRejectedError);
 
                 DescribeJobExecutionRequest publishRequest = new DescribeJobExecutionRequest();
-                publishRequest.thingName = thingName;
+                publishRequest.thingName = input_thingName;
                 publishRequest.jobId = jobId;
                 publishRequest.includeJobDocument = true;
                 publishRequest.executionNumber = 1L;
@@ -207,7 +232,7 @@ public class JobsSample {
 
                         // Start the next pending job
                         StartNextPendingJobExecutionSubscriptionRequest subscriptionRequest = new StartNextPendingJobExecutionSubscriptionRequest();
-                        subscriptionRequest.thingName = thingName;
+                        subscriptionRequest.thingName = input_thingName;
 
                         jobs.SubscribeToStartNextPendingJobExecutionAccepted(
                                 subscriptionRequest,
@@ -219,7 +244,7 @@ public class JobsSample {
                                 JobsSample::onRejectedError);
 
                         StartNextPendingJobExecutionRequest publishRequest = new StartNextPendingJobExecutionRequest();
-                        publishRequest.thingName = thingName;
+                        publishRequest.thingName = input_thingName;
                         publishRequest.stepTimeoutInMinutes = 15L;
                         jobs.PublishStartNextPendingJobExecution(publishRequest, QualityOfService.AT_LEAST_ONCE);
 
@@ -231,7 +256,7 @@ public class JobsSample {
                         gotResponse = new CompletableFuture<>();
 
                         UpdateJobExecutionSubscriptionRequest subscriptionRequest = new UpdateJobExecutionSubscriptionRequest();
-                        subscriptionRequest.thingName = thingName;
+                        subscriptionRequest.thingName = input_thingName;
                         subscriptionRequest.jobId = currentJobId;
                         jobs.SubscribeToUpdateJobExecutionAccepted(
                                 subscriptionRequest,
@@ -246,7 +271,7 @@ public class JobsSample {
                                 JobsSample::onRejectedError);
 
                         UpdateJobExecutionRequest publishRequest = new UpdateJobExecutionRequest();
-                        publishRequest.thingName = thingName;
+                        publishRequest.thingName = input_thingName;
                         publishRequest.jobId = currentJobId;
                         publishRequest.executionNumber = currentExecutionNumber;
                         publishRequest.status = JobStatus.IN_PROGRESS;
@@ -264,7 +289,7 @@ public class JobsSample {
                         gotResponse = new CompletableFuture<>();
 
                         UpdateJobExecutionSubscriptionRequest subscriptionRequest = new UpdateJobExecutionSubscriptionRequest();
-                        subscriptionRequest.thingName = thingName;
+                        subscriptionRequest.thingName = input_thingName;
                         subscriptionRequest.jobId = currentJobId;
                         jobs.SubscribeToUpdateJobExecutionAccepted(
                                 subscriptionRequest,
@@ -279,7 +304,7 @@ public class JobsSample {
                                 JobsSample::onRejectedError);
 
                         UpdateJobExecutionRequest publishRequest = new UpdateJobExecutionRequest();
-                        publishRequest.thingName = thingName;
+                        publishRequest.thingName = input_thingName;
                         publishRequest.jobId = currentJobId;
                         publishRequest.executionNumber = currentExecutionNumber;
                         publishRequest.status = JobStatus.SUCCEEDED;
