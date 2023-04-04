@@ -18,10 +18,6 @@
 * [Greengrass IPC](./GreengrassIPC/README.md)
 * [MQTT5 PubSub](./Mqtt5/PubSub/README.md)
 
-**Additional sample apps currently without READMEs:**
-
-* [PubSubStress](https://github.com/aws/aws-iot-device-sdk-java-v2/tree/main/samples/PubSubStress)
-
 ### Note
 
 Note that **all samples will show their options by passing in `--help`**. For example:
