@@ -69,8 +69,6 @@ public class JavaKeystoreConnect {
          * Gather the input from the command line
          */
         String input_endpoint = cmdUtils.getCommandRequired("endpoint", "");
-        String input_cert = cmdUtils.getCommandRequired("cert", "");
-        String input_key = cmdUtils.getCommandRequired("key", "");
         String input_ca = cmdUtils.getCommandOrDefault("ca", "");
         String input_client_id = cmdUtils.getCommandOrDefault("client_id", "test-" + UUID.randomUUID().toString());
         int input_port = Integer.parseInt(cmdUtils.getCommandOrDefault("port", "8883"));
