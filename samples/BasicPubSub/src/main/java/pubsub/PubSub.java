@@ -82,9 +82,14 @@ public class PubSub {
         int input_port = Integer.parseInt(cmdUtils.getCommandOrDefault("port", "8883"));
         String input_proxyHost = cmdUtils.getCommandOrDefault("proxy_host", "");
         int input_proxyPort = Integer.parseInt(cmdUtils.getCommandOrDefault("proxy_port", "0"));
-        String input_topic = cmdUtils.getCommandOrDefault("topic", topic);
-        String input_message = cmdUtils.getCommandOrDefault("message", message);
-        int input_messagesToPublish = Integer.parseInt(cmdUtils.getCommandOrDefault("count", String.valueOf(messagesToPublish)));
+        String input_topic = cmdUtils.getCommandOrDefault("topic", "test/topic");
+        String input_message = cmdUtils.getCommandOrDefault("message", "Hello World!");
+        int input_messagesToPublish = Integer.parseInt(cmdUtils.getCommandOrDefault("count", "10"));
+
+        // If running in CI, add a UUID to the topic
+        if (isCI == true) {
+            input_topic += "/" + UUID.randomUUID().toString();
+        }
 
         MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
             @Override
