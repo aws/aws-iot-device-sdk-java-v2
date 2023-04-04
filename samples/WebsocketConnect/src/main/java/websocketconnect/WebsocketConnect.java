@@ -10,9 +10,12 @@ import software.amazon.awssdk.crt.CrtResource;
 import software.amazon.awssdk.crt.CrtRuntimeException;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnectionEvents;
-import software.amazon.awssdk.iot.iotjobs.model.RejectedError;
+import software.amazon.awssdk.crt.http.HttpProxyOptions;
+import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
 
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.CompletableFuture;
+import java.util.UUID;
 
 import utils.commandlineutils.CommandLineUtils;
 
@@ -39,14 +42,28 @@ public class WebsocketConnect {
 
     public static void main(String[] args) {
 
+        /**
+         * Register the command line inputs
+         */
         cmdUtils = new CommandLineUtils();
         cmdUtils.registerProgramName("WebsocketConnect");
         cmdUtils.addCommonMQTTCommands();
         cmdUtils.addCommonProxyCommands();
         cmdUtils.registerCommand("signing_region", "<str>", "AWS IoT service region.");
         cmdUtils.registerCommand("client_id", "<int>", "Client id to use (optional, default='test-*').");
-        cmdUtils.registerCommand("port", "<int>", "Port to connect to on the endpoint (optional, default='8883').");
+        cmdUtils.registerCommand("port", "<int>", "Port to connect to on the endpoint (optional, default='443').");
         cmdUtils.sendArguments(args);
+
+        /**
+         * Gather the input from the command line
+         */
+        String input_endpoint = cmdUtils.getCommandRequired("endpoint", "");
+        String input_ca = cmdUtils.getCommandOrDefault("ca", "");
+        String input_signingRegion = cmdUtils.getCommandRequired("signing_region", "");
+        String input_client_id = cmdUtils.getCommandOrDefault("client_id", "test-" + UUID.randomUUID().toString());
+        int input_port = Integer.parseInt(cmdUtils.getCommandOrDefault("port", "443"));
+        String input_proxyHost = cmdUtils.getCommandOrDefault("proxy_host", "");
+        int input_proxyPort = Integer.parseInt(cmdUtils.getCommandOrDefault("proxy_port", "0"));
 
         MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
             @Override
@@ -63,20 +80,53 @@ public class WebsocketConnect {
         };
 
         try {
+
             /**
-             * Creates a websocket connection using AWS credentials on the device.
-             * Note: The data for the connection is gotten from cmdUtils.
-             * (see buildWebsocketMQTTConnection for implementation)
+             * Create the MQTT connection from the builder
              */
-            MqttClientConnection connection = cmdUtils.buildWebsocketMQTTConnection(callbacks);
+            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(null, null);
+            if (input_ca != "") {
+                builder.withCertificateAuthorityFromPath(null, input_ca);
+            }
+            builder.withConnectionEventCallbacks(callbacks)
+                .withClientId(input_client_id)
+                .withEndpoint(input_endpoint)
+                .withPort((short)input_port)
+                .withCleanSession(true)
+                .withProtocolOperationTimeoutMs(60000);
+            if (input_proxyHost != "" && input_proxyPort > 0) {
+                HttpProxyOptions proxyOptions = new HttpProxyOptions();
+                proxyOptions.setHost(input_proxyHost);
+                proxyOptions.setPort(input_proxyPort);
+                builder.withHttpProxyOptions(proxyOptions);
+            }
+            builder.withWebsockets(true);
+            builder.withWebsocketSigningRegion(input_signingRegion);
+            MqttClientConnection connection = builder.build();
+            builder.close();
+
+            /**
+             * Verify the connection was created
+             */
             if (connection == null)
             {
                 onApplicationFailure(new RuntimeException("MQTT connection creation failed!"));
             }
 
-            // Connect and disconnect using the connection we created
-            // (see sampleConnectAndDisconnect for implementation)
-            cmdUtils.sampleConnectAndDisconnect(connection);
+            /**
+             * Connect and disconnect
+             */
+            CompletableFuture<Boolean> connected = connection.connect();
+            try {
+                boolean sessionPresent = connected.get();
+                System.out.println("Connected to " + (!sessionPresent ? "new" : "existing") + " session!");
+            } catch (Exception ex) {
+                throw new RuntimeException("Exception occurred during connect", ex);
+            }
+            System.out.println("Disconnecting...");
+            CompletableFuture<Void> disconnected = connection.disconnect();
+            disconnected.get();
+            System.out.println("Disconnected.");
 
             // Close the connection now that we are completely done with it.
             connection.close();

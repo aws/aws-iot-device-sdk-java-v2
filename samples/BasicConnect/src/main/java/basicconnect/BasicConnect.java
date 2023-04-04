@@ -12,7 +12,6 @@ import software.amazon.awssdk.crt.io.ClientBootstrap;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnectionEvents;
 import software.amazon.awssdk.crt.http.HttpProxyOptions;
-import software.amazon.awssdk.iot.iotjobs.model.RejectedError;
 import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
 
 import java.util.concurrent.ExecutionException;
