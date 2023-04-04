@@ -37,10 +37,6 @@ public class PubSub {
     static String ciPropValue = System.getProperty("aws.crt.ci");
     static boolean isCI = ciPropValue != null && Boolean.valueOf(ciPropValue);
 
-    static String topic = "test/topic";
-    static String message = "Hello World!";
-    static int    messagesToPublish = 10;
-
     static CommandLineUtils cmdUtils;
 
     static void onRejectedError(RejectedError error) {
@@ -61,6 +57,9 @@ public class PubSub {
 
     public static void main(String[] args) {
 
+        /**
+         * Register the command line inputs
+         */
         cmdUtils = new CommandLineUtils();
         cmdUtils.registerProgramName("PubSub");
         cmdUtils.addCommonMQTTCommands();
@@ -72,9 +71,20 @@ public class PubSub {
         cmdUtils.registerCommand("count", "<int>", "Number of messages to publish (optional, default='10').");
         cmdUtils.sendArguments(args);
 
-        topic = cmdUtils.getCommandOrDefault("topic", topic);
-        message = cmdUtils.getCommandOrDefault("message", message);
-        messagesToPublish = Integer.parseInt(cmdUtils.getCommandOrDefault("count", String.valueOf(messagesToPublish)));
+        /**
+         * Gather the input from the command line
+         */
+        String input_endpoint = cmdUtils.getCommandRequired("endpoint", "");
+        String input_cert = cmdUtils.getCommandRequired("cert", "");
+        String input_key = cmdUtils.getCommandRequired("key", "");
+        String input_ca = cmdUtils.getCommandOrDefault("ca", "");
+        String input_client_id = cmdUtils.getCommandOrDefault("client_id", "test-" + UUID.randomUUID().toString());
+        int input_port = Integer.parseInt(cmdUtils.getCommandOrDefault("port", "8883"));
+        String input_proxyHost = cmdUtils.getCommandOrDefault("proxy_host", "");
+        int input_proxyPort = Integer.parseInt(cmdUtils.getCommandOrDefault("proxy_port", "0"));
+        String input_topic = cmdUtils.getCommandOrDefault("topic", topic);
+        String input_message = cmdUtils.getCommandOrDefault("message", message);
+        int input_messagesToPublish = Integer.parseInt(cmdUtils.getCommandOrDefault("count", String.valueOf(messagesToPublish)));
 
         MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
             @Override
@@ -92,12 +102,29 @@ public class PubSub {
 
         try {
 
-            MqttClientConnection connection = cmdUtils.buildMQTTConnection(callbacks);
-            if (connection == null)
-            {
-                onApplicationFailure(new RuntimeException("MQTT connection creation failed!"));
+            /**
+             * Create the MQTT connection from the builder
+             */
+            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(input_cert, input_key);
+            if (input_ca != "") {
+                builder.withCertificateAuthorityFromPath(null, input_ca);
             }
+            builder.withConnectionEventCallbacks(callbacks)
+                .withClientId(input_client_id)
+                .withEndpoint(input_endpoint)
+                .withPort((short)input_port)
+                .withCleanSession(true)
+                .withProtocolOperationTimeoutMs(60000);
+            if (input_proxyHost != "" && input_proxyPort > 0) {
+                HttpProxyOptions proxyOptions = new HttpProxyOptions();
+                proxyOptions.setHost(input_proxyHost);
+                proxyOptions.setPort(input_proxyPort);
+                builder.withHttpProxyOptions(proxyOptions);
+            }
+            MqttClientConnection connection = builder.build();
+            builder.close();
 
+            // Connect the MQTT client
             CompletableFuture<Boolean> connected = connection.connect();
             try {
                 boolean sessionPresent = connected.get();
@@ -106,25 +133,25 @@ public class PubSub {
                 throw new RuntimeException("Exception occurred during connect", ex);
             }
 
-            CountDownLatch countDownLatch = new CountDownLatch(messagesToPublish);
-
-            CompletableFuture<Integer> subscribed = connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, (message) -> {
+            // Subscribe to the topic
+            CountDownLatch countDownLatch = new CountDownLatch(input_messagesToPublish);
+            CompletableFuture<Integer> subscribed = connection.subscribe(input_topic, QualityOfService.AT_LEAST_ONCE, (message) -> {
                 String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
                 System.out.println("MESSAGE: " + payload);
                 countDownLatch.countDown();
             });
-
             subscribed.get();
 
+            // Publish to the topic
             int count = 0;
-            while (count++ < messagesToPublish) {
-                CompletableFuture<Integer> published = connection.publish(new MqttMessage(topic, message.getBytes(), QualityOfService.AT_LEAST_ONCE, false));
+            while (count++ < input_messagesToPublish) {
+                CompletableFuture<Integer> published = connection.publish(new MqttMessage(input_topic, input_message.getBytes(), QualityOfService.AT_LEAST_ONCE, false));
                 published.get();
                 Thread.sleep(1000);
             }
-
             countDownLatch.await();
 
+            // Disconnect
             CompletableFuture<Void> disconnected = connection.disconnect();
             disconnected.get();
 
