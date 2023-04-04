@@ -53,7 +53,6 @@ public class CognitoConnect {
         cmdUtils = new CommandLineUtils();
         cmdUtils.registerProgramName("CognitoConnect");
         cmdUtils.addCommonMQTTCommands();
-        cmdUtils.addCommonProxyCommands();
         cmdUtils.registerCommand("signing_region", "<str>", "AWS IoT service region.");
         cmdUtils.registerCommand("client_id", "<int>", "Client id to use (optional, default='test-*').");
         cmdUtils.registerCommand("cognito_identity", "<str>", "The Cognito identity ID to use to connect via Cognito");
@@ -65,8 +64,6 @@ public class CognitoConnect {
         String input_endpoint = cmdUtils.getCommandRequired("endpoint", "");
         String input_signingRegion = cmdUtils.getCommandOrDefault("signing_region", "us-east-1");
         String input_client_id = cmdUtils.getCommandOrDefault("client_id", "test-" + UUID.randomUUID().toString());
-        String input_proxyHost = cmdUtils.getCommandOrDefault("proxy_host", "");
-        int input_proxyPort = Integer.parseInt(cmdUtils.getCommandOrDefault("proxy_port", "0"));
         String input_cognitoIdentity = cmdUtils.getCommandRequired("cognito_identity", "");
 
         MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
@@ -101,18 +98,12 @@ public class CognitoConnect {
                 .withEndpoint(input_endpoint)
                 .withCleanSession(true)
                 .withProtocolOperationTimeoutMs(60000);
-            if (input_proxyHost != "" && input_proxyPort > 0) {
-                HttpProxyOptions proxyOptions = new HttpProxyOptions();
-                proxyOptions.setHost(input_proxyHost);
-                proxyOptions.setPort(input_proxyPort);
-                builder.withHttpProxyOptions(proxyOptions);
-            }
 
             builder.withWebsockets(true);
             builder.withWebsocketSigningRegion(input_signingRegion);
 
             CognitoCredentialsProvider.CognitoCredentialsProviderBuilder cognitoBuilder = new CognitoCredentialsProvider.CognitoCredentialsProviderBuilder();
-            String cognitoEndpoint = "cognito-identity." + input_cognitoIdentity + ".amazonaws.com";
+            String cognitoEndpoint = "cognito-identity." + input_signingRegion + ".amazonaws.com";
             cognitoBuilder.withEndpoint(cognitoEndpoint).withIdentity(input_cognitoIdentity);
             cognitoBuilder.withClientBootstrap(ClientBootstrap.getOrCreateStaticDefault());
 
