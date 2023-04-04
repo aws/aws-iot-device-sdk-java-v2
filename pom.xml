@@ -25,6 +25,7 @@
         <module>samples/Shadow</module>
         <module>samples/FleetProvisioning</module>
         <module>samples/Mqtt5/PubSub</module>
+        <module>samples/Mqtt5/SharedSubscription</module>
     </modules>
 
     <build>
