@@ -114,8 +114,8 @@ public class JavaKeystoreConnect {
             }
             AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newJavaKeystoreBuilder(
                 keyStore,
-                input_cert,
-                input_key);
+                input_certificateAlias,
+                input_certificatePassword);
             if (input_ca != "") {
                 builder.withCertificateAuthorityFromPath(null, input_ca);
             }
