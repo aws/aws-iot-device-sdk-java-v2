@@ -221,7 +221,7 @@ A MQTT5 direct connection can be made with a set of custom private key operation
 ~~~ java
 class MyKeyOperationHandler implements TlsKeyOperationHandler {
 
-    // Implement based on the operation. See CustomKeyOpsPubSub sample for example
+    // Implement based on the operation. See CustomKeyOpsConnect sample for example
     public void performOperation(TlsKeyOperation operation) {
         try {
             throw new RuntimeException("This is just an example!");

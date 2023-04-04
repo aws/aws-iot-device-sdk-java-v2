@@ -21,7 +21,7 @@
         <module>samples/GreengrassIPC</module>
         <module>samples/Jobs</module>
         <module>samples/PubSubStress</module>
-        <module>samples/CustomKeyOpsPubSub</module>
+        <module>samples/CustomKeyOpsConnect</module>
         <module>samples/WindowsCertConnect</module>
         <module>samples/Shadow</module>
         <module>samples/Identity</module>

@@ -10,10 +10,10 @@ import software.amazon.awssdk.crt.CrtResource;
 import software.amazon.awssdk.crt.CrtRuntimeException;
 import software.amazon.awssdk.crt.io.*;
 import software.amazon.awssdk.crt.mqtt.*;
-import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
-
+import software.amazon.awssdk.crt.http.HttpProxyOptions;
 import software.amazon.awssdk.crt.Log;
 import software.amazon.awssdk.crt.Log.LogLevel;
+import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -32,7 +32,7 @@ import java.util.concurrent.ExecutionException;
 
 import utils.commandlineutils.CommandLineUtils;
 
-public class CustomKeyOpsPubSub {
+public class CustomKeyOpsConnect {
 
     // When run normally, we want to exit nicely even if something goes wrong
     // When run from CI, we want to let an exception escape which in turn causes the
@@ -41,12 +41,6 @@ public class CustomKeyOpsPubSub {
     static boolean isCI = ciPropValue != null && Boolean.valueOf(ciPropValue);
 
     static CommandLineUtils cmdUtils;
-
-    static String topic = "test/topic";
-    static String message = "Hello World!";
-    static int    messagesToPublish = 10;
-    static String certPath;
-    static String keyPath;
 
     /*
      * When called during a CI run, throw an exception that will escape and fail the exec:java task
@@ -70,7 +64,7 @@ public class CustomKeyOpsPubSub {
         public void performOperation(TlsKeyOperation operation) {
             try {
                 System.out.println("MyKeyOperationHandler.performOperation" + operation.getType().name());
-                
+
                 if (operation.getType() != TlsKeyOperation.Type.SIGN) {
                     throw new RuntimeException("Simple sample only handles SIGN operations");
                 }
@@ -155,8 +149,11 @@ public class CustomKeyOpsPubSub {
 
     public static void main(String[] args) {
 
+        /**
+         * Register the command line inputs
+         */
         cmdUtils = new CommandLineUtils();
-        cmdUtils.registerProgramName("CustomKeyOpsPubSub");
+        cmdUtils.registerProgramName("CustomKeyOpsConnect");
         cmdUtils.addCommonMQTTCommands();
         cmdUtils.addCommonTopicMessageCommands();
         cmdUtils.registerCommand("key", "<path>", "Path to your PKCS#8 key in PEM format.");
@@ -166,12 +163,17 @@ public class CustomKeyOpsPubSub {
         cmdUtils.registerCommand("count", "<int>", "Number of messages to publish (optional, default='10').");
         cmdUtils.sendArguments(args);
 
-        keyPath = cmdUtils.getCommandRequired("key", "");
-        certPath = cmdUtils.getCommandRequired("cert", "");
-
-        topic = cmdUtils.getCommandOrDefault("topic", topic);
-        message = cmdUtils.getCommandOrDefault("message", message);
-        messagesToPublish = Integer.parseInt(cmdUtils.getCommandOrDefault("count", String.valueOf(messagesToPublish)));
+        /**
+         * Gather the input from the command line
+         */
+        String input_endpoint = cmdUtils.getCommandRequired("endpoint", "");
+        String input_key = cmdUtils.getCommandRequired("key", "");
+        String input_cert = cmdUtils.getCommandRequired("cert", "");
+        String input_ca = cmdUtils.getCommandOrDefault("ca", "");
+        String input_client_id = cmdUtils.getCommandOrDefault("client_id", "test-" + UUID.randomUUID().toString());
+        int input_port = Integer.parseInt(cmdUtils.getCommandOrDefault("port", "8883"));
+        String input_proxyHost = cmdUtils.getCommandOrDefault("proxy_host", "");
+        int input_proxyPort = Integer.parseInt(cmdUtils.getCommandOrDefault("proxy_port", "0"));
 
         MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
             @Override
@@ -187,17 +189,45 @@ public class CustomKeyOpsPubSub {
             }
         };
 
-        MyKeyOperationHandler myKeyOperationHandler = new MyKeyOperationHandler(keyPath);
+        MyKeyOperationHandler myKeyOperationHandler = new MyKeyOperationHandler(input_key);
         TlsContextCustomKeyOperationOptions keyOperationOptions = new TlsContextCustomKeyOperationOptions(myKeyOperationHandler)
-                .withCertificateFilePath(certPath);
+                .withCertificateFilePath(input_cert);
 
         try {
-            MqttClientConnection connection = cmdUtils.buildCustomKeyOperationConnection(callbacks, keyOperationOptions);
+
+            /**
+             * Create the MQTT connection from the builder
+             */
+            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsCustomKeyOperationsBuilder(keyOperationOptions);
+            if (input_ca != "") {
+                builder.withCertificateAuthorityFromPath(null, input_ca);
+            }
+            builder.withConnectionEventCallbacks(callbacks)
+                .withClientId(input_client_id)
+                .withEndpoint(input_endpoint)
+                .withPort((short)input_port)
+                .withCleanSession(true)
+                .withProtocolOperationTimeoutMs(60000);
+            if (input_proxyHost != "" && input_proxyPort > 0) {
+                HttpProxyOptions proxyOptions = new HttpProxyOptions();
+                proxyOptions.setHost(input_proxyHost);
+                proxyOptions.setPort(input_proxyPort);
+                builder.withHttpProxyOptions(proxyOptions);
+            }
+            MqttClientConnection connection = builder.build();
+            builder.close();
+
+            /**
+             * Verify the connection was created
+             */
             if (connection == null)
             {
                 onApplicationFailure(new RuntimeException("MQTT connection creation failed!"));
             }
 
+            /**
+             * Connect and disconnect
+             */
             CompletableFuture<Boolean> connected = connection.connect();
             try {
                 boolean sessionPresent = connected.get();
@@ -205,29 +235,14 @@ public class CustomKeyOpsPubSub {
             } catch (Exception ex) {
                 throw new RuntimeException("Exception occurred during connect", ex);
             }
-
-            CountDownLatch countDownLatch = new CountDownLatch(messagesToPublish);
-
-            CompletableFuture<Integer> subscribed = connection.subscribe(topic, QualityOfService.AT_LEAST_ONCE, (message) -> {
-                String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
-                System.out.println("MESSAGE: " + payload);
-                countDownLatch.countDown();
-            });
-
-            subscribed.get();
-
-            int count = 0;
-            while (count++ < messagesToPublish) {
-                CompletableFuture<Integer> published = connection.publish(new MqttMessage(topic, message.getBytes(), QualityOfService.AT_LEAST_ONCE, false));
-                published.get();
-                Thread.sleep(1000);
-            }
-
-            countDownLatch.await();
-
+            System.out.println("Disconnecting...");
             CompletableFuture<Void> disconnected = connection.disconnect();
             disconnected.get();
+            System.out.println("Disconnected.");
 
+            /**
+             * Close the connection now that it is complete
+             */
             connection.close();
 
         } catch (CrtRuntimeException | InterruptedException | ExecutionException ex) {

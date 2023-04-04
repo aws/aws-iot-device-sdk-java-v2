@@ -10,7 +10,7 @@
 * [CustomAuthorizer Connect](./CustomAuthorizerConnect/README.md)
 * [JavaKeystore Connect](./JavaKeystoreConnect/README.md)
 * [Cognito Connect](./CognitoConnect/README.md)
-* [CustomKeyOperationPubSub](./CustomKeyOpsPubSub/README.md)
+* [CustomKeyOperation Connect](./CustomKeyOpsConnect/README.md)
 * [Shadow](./Shadow/README.md)
 * [Jobs](./Jobs/README.md)
 * [fleet provisioning](./Identity/README.md)
