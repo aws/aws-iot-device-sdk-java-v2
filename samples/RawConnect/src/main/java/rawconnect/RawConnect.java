@@ -50,19 +50,19 @@ public class RawConnect {
                 "For raw mqtt these will be appended to user_name. (optional)");
         cmdUtils.sendArguments(args);
 
-        String endpoint = cmdUtils.getCommandRequired("endpoint", "");
-        String clientId = cmdUtils.getCommandOrDefault("client_id", "test-" + UUID.randomUUID().toString());
-        String caPath = cmdUtils.getCommandOrDefault("ca_file", "");
-        String certPath = cmdUtils.getCommandRequired("cert", "");
-        String keyPath = cmdUtils.getCommandRequired("key", "");
-        String proxyHost = cmdUtils.getCommandOrDefault("proxy_host", "");
-        int proxyPort = Integer.parseInt(cmdUtils.getCommandOrDefault("proxy_port", "8080"));
-        String userName = cmdUtils.getCommandRequired("username", "");
-        String password = cmdUtils.getCommandRequired("password", "");
-        String protocolName = cmdUtils.getCommandOrDefault("protocol", "x-amzn-mqtt-ca");
-        List<String> authParams = null;
+        String input_endpoint = cmdUtils.getCommandRequired("endpoint", "");
+        String input_clientId = cmdUtils.getCommandOrDefault("client_id", "test-" + UUID.randomUUID().toString());
+        String input_caPath = cmdUtils.getCommandOrDefault("ca_file", "");
+        String input_certPath = cmdUtils.getCommandRequired("cert", "");
+        String input_keyPath = cmdUtils.getCommandRequired("key", "");
+        String input_proxyHost = cmdUtils.getCommandOrDefault("proxy_host", "");
+        int input_proxyPort = Integer.parseInt(cmdUtils.getCommandOrDefault("proxy_port", "8080"));
+        String input_userName = cmdUtils.getCommandRequired("username", "");
+        String input_password = cmdUtils.getCommandRequired("password", "");
+        String input_protocolName = cmdUtils.getCommandOrDefault("protocol", "x-amzn-mqtt-ca");
+        List<String> input_authParams = null;
         if (cmdUtils.hasCommand("auth_params")) {
-            authParams = Arrays.asList(cmdUtils.getCommand("auth_params").split("\\s*,\\s*"));
+            input_authParams = Arrays.asList(cmdUtils.getCommand("auth_params").split("\\s*,\\s*"));
         }
 
         MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
@@ -79,33 +79,33 @@ public class RawConnect {
             }
         };
 
-        if (authParams != null && authParams.size() > 0) {
-            if (userName.length() > 0) {
+        if (input_authParams != null && input_authParams.size() > 0) {
+            if (input_userName.length() > 0) {
                 StringBuilder usernameBuilder = new StringBuilder();
 
-                usernameBuilder.append(userName);
+                usernameBuilder.append(input_userName);
                 usernameBuilder.append("?");
-                for (int i = 0; i < authParams.size(); ++i) {
-                    usernameBuilder.append(authParams.get(i));
-                    if (i + 1 < authParams.size()) {
+                for (int i = 0; i < input_authParams.size(); ++i) {
+                    usernameBuilder.append(input_authParams.get(i));
+                    if (i + 1 < input_authParams.size()) {
                         usernameBuilder.append("&");
                     }
                 }
-                userName = usernameBuilder.toString();
+                input_userName = usernameBuilder.toString();
             }
         }
 
         try(
-            TlsContextOptions tlsContextOptions = TlsContextOptions.createWithMtlsFromPath(certPath, keyPath)) {
+            TlsContextOptions tlsContextOptions = TlsContextOptions.createWithMtlsFromPath(input_certPath, input_keyPath)) {
 
-            if (caPath != null) {
-                tlsContextOptions.overrideDefaultTrustStoreFromPath(null, caPath);
+            if (input_caPath != null) {
+                tlsContextOptions.overrideDefaultTrustStoreFromPath(null, input_caPath);
             }
 
             int port = 8883;
             if (TlsContextOptions.isAlpnSupported()) {
                 port = 443;
-                tlsContextOptions.withAlpnList(protocolName);
+                tlsContextOptions.withAlpnList(input_protocolName);
             }
 
             try(TlsContext tlsContext = new TlsContext(tlsContextOptions);
@@ -113,21 +113,32 @@ public class RawConnect {
                 MqttConnectionConfig config = new MqttConnectionConfig()) {
 
                 config.setMqttClient(client);
-                config.setClientId(clientId);
+                config.setClientId(input_clientId);
                 config.setConnectionCallbacks(callbacks);
                 config.setCleanSession(true);
-                config.setEndpoint(endpoint);
+                config.setEndpoint(input_endpoint);
                 config.setPort(port);
 
-                if (userName != null && userName.length() > 0) {
-                    config.setLogin(userName, password);
+                if (input_userName != null && input_userName.length() > 0) {
+                    config.setLogin(input_userName, input_password);
                 }
 
                 try (MqttClientConnection connection = new MqttClientConnection(config)) {
 
-                    // Connect and disconnect using the connection we created
-                    // (see sampleConnectAndDisconnect for implementation)
-                    cmdUtils.sampleConnectAndDisconnect(connection);
+                    /**
+                     * Connect and disconnect
+                     */
+                    CompletableFuture<Boolean> connected = connection.connect();
+                    try {
+                        boolean sessionPresent = connected.get();
+                        System.out.println("Connected to " + (!sessionPresent ? "new" : "existing") + " session!");
+                    } catch (Exception ex) {
+                        throw new RuntimeException("Exception occurred during connect", ex);
+                    }
+                    System.out.println("Disconnecting...");
+                    CompletableFuture<Void> disconnected = connection.disconnect();
+                    disconnected.get();
+                    System.out.println("Disconnected.");
 
                     // Close the connection now that we are completely done with it.
                     connection.close();
