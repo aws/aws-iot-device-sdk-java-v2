@@ -1,0 +1,22 @@
+{
+    "language": "Java",
+    "sample_file": "samples/Mqtt5/SharedSubscription",
+    "sample_region": "us-east-1",
+    "sample_main_class": "mqtt5.sharedsubscription.SharedSubscription",
+    "arguments": [
+        {
+            "name": "--endpoint",
+            "secret": "ci/endpoint"
+        },
+        {
+            "name": "--cert",
+            "secret": "ci/mqtt5/us/mqtt5_thing/cert",
+            "filename": "tmp_certificate.pem"
+        },
+        {
+            "name": "--key",
+            "secret": "ci/mqtt5/us/mqtt5_thing/key",
+            "filename": "tmp_key.pem"
+        }
+    ]
+}
