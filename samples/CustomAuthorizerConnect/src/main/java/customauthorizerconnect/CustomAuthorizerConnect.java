@@ -12,7 +12,9 @@ import software.amazon.awssdk.crt.io.ClientBootstrap;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnectionEvents;
 import software.amazon.awssdk.iot.iotjobs.model.RejectedError;
+import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import utils.commandlineutils.CommandLineUtils;
@@ -39,6 +41,10 @@ public class CustomAuthorizerConnect {
     }
 
     public static void main(String[] args) {
+
+        /**
+         * Register the command line inputs
+         */
         cmdUtils = new CommandLineUtils();
         cmdUtils.registerProgramName("CustomAuthorizerConnect");
         cmdUtils.addCommonMQTTCommands();
@@ -48,6 +54,16 @@ public class CustomAuthorizerConnect {
         cmdUtils.registerCommand("custom_auth_authorizer_signature", "<str>", "Signature passed when connecting to custom authorizer (optional, default=null).");
         cmdUtils.registerCommand("custom_auth_password", "<str>", "Password for connecting to custom authorizer (optional, default=null).");
         cmdUtils.sendArguments(args);
+
+        /**
+         * Gather the input from the command line
+         */
+        String input_endpoint = cmdUtils.getCommandRequired("endpoint", "");
+        String input_client_id = cmdUtils.getCommandOrDefault("client_id", "test-" + UUID.randomUUID().toString());
+        String input_customAuthUsername = cmdUtils.getCommandRequired("custom_auth_username", null);
+        String input_customAuthorizerName = cmdUtils.getCommandRequired("custom_auth_authorizer_name", null);
+        String input_customAuthorizerSignature = cmdUtils.getCommandRequired("custom_auth_authorizer_signature", null);
+        String input_customAuthPassword = cmdUtils.getCommandRequired("custom_auth_password", null);
 
         MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
             @Override
@@ -65,18 +81,45 @@ public class CustomAuthorizerConnect {
 
         try {
 
-            // Create a connection authenticated via a custom authorizer.
-            // Note: The data for the connection is gotten from cmdUtils.
-            // (see buildDirectMQTTConnectionWithCustomAuthorizer for implementation)
-            MqttClientConnection connection = cmdUtils.buildDirectMQTTConnectionWithCustomAuthorizer(callbacks);
+            /**
+             * Create the MQTT connection from the builder
+             */
+            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newDefaultBuilder();
+            builder.withConnectionEventCallbacks(callbacks)
+                .withClientId(input_client_id)
+                .withEndpoint(input_endpoint)
+                .withCleanSession(true)
+                .withProtocolOperationTimeoutMs(60000);
+            builder.withCustomAuthorizer(
+                input_customAuthUsername,
+                input_customAuthorizerName,
+                input_customAuthorizerSignature,
+                input_customAuthPassword);
+            MqttClientConnection connection = builder.build();
+            builder.close();
+
+            /**
+             * Verify the connection was created
+             */
             if (connection == null)
             {
                 onApplicationFailure(new RuntimeException("MQTT connection creation (through custom authorizer) failed!"));
             }
 
-            // Connect and disconnect using the connection we created
-            // (see sampleConnectAndDisconnect for implementation)
-            cmdUtils.sampleConnectAndDisconnect(connection);
+            /**
+             * Connect and disconnect
+             */
+            CompletableFuture<Boolean> connected = connection.connect();
+            try {
+                boolean sessionPresent = connected.get();
+                System.out.println("Connected to " + (!sessionPresent ? "new" : "existing") + " session!");
+            } catch (Exception ex) {
+                throw new RuntimeException("Exception occurred during connect", ex);
+            }
+            System.out.println("Disconnecting...");
+            CompletableFuture<Void> disconnected = connection.disconnect();
+            disconnected.get();
+            System.out.println("Disconnected.");
 
             // Close the connection now that we are completely done with it.
             connection.close();

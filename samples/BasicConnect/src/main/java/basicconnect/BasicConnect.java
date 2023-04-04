@@ -119,22 +119,17 @@ public class BasicConnect {
             /**
              * Connect and disconnect
              */
+            CompletableFuture<Boolean> connected = connection.connect();
             try {
-                CompletableFuture<Boolean> connected = connection.connect();
-                try {
-                    boolean sessionPresent = connected.get();
-                    System.out.println("Connected to " + (!sessionPresent ? "new" : "existing") + " session!");
-                } catch (Exception ex) {
-                    throw new RuntimeException("Exception occurred during connect", ex);
-                }
-                System.out.println("Disconnecting...");
-                CompletableFuture<Void> disconnected = connection.disconnect();
-                disconnected.get();
-                System.out.println("Disconnected.");
+                boolean sessionPresent = connected.get();
+                System.out.println("Connected to " + (!sessionPresent ? "new" : "existing") + " session!");
+            } catch (Exception ex) {
+                throw new RuntimeException("Exception occurred during connect", ex);
             }
-            catch (CrtRuntimeException | InterruptedException | ExecutionException ex) {
-                throw ex;
-            }
+            System.out.println("Disconnecting...");
+            CompletableFuture<Void> disconnected = connection.disconnect();
+            disconnected.get();
+            System.out.println("Disconnected.");
 
             /**
              * Close the connection now that it is complete
