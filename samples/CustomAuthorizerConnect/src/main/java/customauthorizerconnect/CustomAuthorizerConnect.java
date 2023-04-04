@@ -16,6 +16,8 @@ import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.io.UnsupportedEncodingException;
+import java.util.UUID;
 
 import utils.commandlineutils.CommandLineUtils;
 
@@ -124,7 +126,7 @@ public class CustomAuthorizerConnect {
             // Close the connection now that we are completely done with it.
             connection.close();
 
-        } catch (CrtRuntimeException | InterruptedException | ExecutionException ex) {
+        } catch (CrtRuntimeException | UnsupportedEncodingException | InterruptedException | ExecutionException ex) {
             onApplicationFailure(ex);
         }
 
