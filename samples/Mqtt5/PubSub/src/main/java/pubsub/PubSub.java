@@ -9,26 +9,10 @@ import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.crt.CrtResource;
 import software.amazon.awssdk.crt.CrtRuntimeException;
 import software.amazon.awssdk.crt.io.ClientBootstrap;
-import software.amazon.awssdk.crt.mqtt5.Mqtt5Client;
-import software.amazon.awssdk.crt.mqtt5.Mqtt5ClientOptions;
-import software.amazon.awssdk.crt.mqtt5.NegotiatedSettings;
-import software.amazon.awssdk.crt.mqtt5.OnAttemptingConnectReturn;
-import software.amazon.awssdk.crt.mqtt5.OnConnectionFailureReturn;
-import software.amazon.awssdk.crt.mqtt5.OnConnectionSuccessReturn;
-import software.amazon.awssdk.crt.mqtt5.OnDisconnectionReturn;
-import software.amazon.awssdk.crt.mqtt5.OnStoppedReturn;
-import software.amazon.awssdk.crt.mqtt5.PublishResult;
-import software.amazon.awssdk.crt.mqtt5.PublishReturn;
-import software.amazon.awssdk.crt.mqtt5.QOS;
+import software.amazon.awssdk.crt.mqtt5.*;
 import software.amazon.awssdk.crt.mqtt5.Mqtt5ClientOptions.LifecycleEvents;
-import software.amazon.awssdk.crt.mqtt5.packets.ConnAckPacket;
-import software.amazon.awssdk.crt.mqtt5.packets.ConnectPacket;
-import software.amazon.awssdk.crt.mqtt5.packets.DisconnectPacket;
-import software.amazon.awssdk.crt.mqtt5.packets.PubAckPacket;
-import software.amazon.awssdk.crt.mqtt5.packets.PublishPacket;
-import software.amazon.awssdk.crt.mqtt5.packets.SubscribePacket;
-import software.amazon.awssdk.crt.mqtt5.packets.UserProperty;
-import software.amazon.awssdk.iot.iotjobs.model.RejectedError;
+import software.amazon.awssdk.crt.mqtt5.packets.*;
+import software.amazon.awssdk.iot.AwsIotMqtt5ClientBuilder;
 
 import java.util.List;
 import java.util.UUID;
@@ -53,10 +37,6 @@ public class PubSub {
     static boolean isCI = ciPropValue != null && Boolean.valueOf(ciPropValue);
 
     static CommandLineUtils cmdUtils;
-
-    static void onRejectedError(RejectedError error) {
-        System.out.println("Request rejected: " + error.code.toString() + ": " + error.message);
-    }
 
     /*
      * When called during a CI run, throw an exception that will escape and fail the exec:java task
@@ -153,19 +133,60 @@ public class PubSub {
         cmdUtils.registerCommand("count", "<int>", "Number of messages to publish (optional, default='10').");
         cmdUtils.sendArguments(args);
 
-        String topic = cmdUtils.getCommandOrDefault("topic", "test/topic");
-        String message = cmdUtils.getCommandOrDefault("message", "Hello World!");
-        int messagesToPublish = Integer.parseInt(cmdUtils.getCommandOrDefault("count", String.valueOf(10)));
+        /**
+         * Gather the input from the command line
+         */
+        String input_endpoint = cmdUtils.getCommandRequired("endpoint", "");
+        String input_cert = cmdUtils.getCommandOrDefault("cert", "");
+        String input_key = cmdUtils.getCommandOrDefault("key", "");
+        String input_ca = cmdUtils.getCommandOrDefault("ca", "");
+        String input_client_id = cmdUtils.getCommandOrDefault("client_id", "test-" + UUID.randomUUID().toString());
+        int input_port = Integer.parseInt(cmdUtils.getCommandOrDefault("port", "8883"));
+        String input_proxyHost = cmdUtils.getCommandOrDefault("proxy_host", "");
+        int input_proxyPort = Integer.parseInt(cmdUtils.getCommandOrDefault("proxy_port", "0"));
+        String input_topic = cmdUtils.getCommandOrDefault("topic", "test/topic");
+        String input_message = cmdUtils.getCommandOrDefault("message", "Hello World!");
+        int input_messagesToPublish = Integer.parseInt(cmdUtils.getCommandOrDefault("count", "10"));
+        String input_signingRegion = cmdUtils.getCommandOrDefault("signing_region", null);
+
+        // If running in CI, add a UUID to the topic
+        if (isCI == true) {
+            input_topic += "/" + UUID.randomUUID().toString();
+        }
 
         try {
             /* Create a client based on desired connection type */
             SampleLifecycleEvents lifecycleEvents = new SampleLifecycleEvents();
-            SamplePublishEvents publishEvents = new SamplePublishEvents(messagesToPublish);
+            SamplePublishEvents publishEvents = new SamplePublishEvents(input_messagesToPublish);
             Mqtt5Client client;
-            if (cmdUtils.hasCommand("cert") || cmdUtils.hasCommand("key")) {
-                client = cmdUtils.buildDirectMQTT5Connection(lifecycleEvents, publishEvents);
+
+            /**
+             * Create the MQTT connection from the builder
+             */
+            if (input_cert != "" || input_key != "") {
+                AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newDirectMqttBuilderWithMtlsFromPath(
+                    input_endpoint, input_cert, input_key);
+                ConnectPacket.ConnectPacketBuilder connectProperties = new ConnectPacket.ConnectPacketBuilder();
+                connectProperties.withClientId(input_client_id);
+                builder.withConnectProperties(connectProperties);
+                builder.withLifeCycleEvents(lifecycleEvents);
+                builder.withPublishEvents(publishEvents);
+                client = builder.build();
+                builder.close();
             } else {
-                client = cmdUtils.buildWebsocketMQTT5Connection(lifecycleEvents, publishEvents);
+                AwsIotMqtt5ClientBuilder.WebsocketSigv4Config websocketConfig = new AwsIotMqtt5ClientBuilder.WebsocketSigv4Config();
+                if (input_signingRegion != "") {
+                    websocketConfig.region = input_signingRegion;
+                }
+                AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newWebsocketMqttBuilderWithSigv4Auth(
+                    input_endpoint, websocketConfig);
+                ConnectPacket.ConnectPacketBuilder connectProperties = new ConnectPacket.ConnectPacketBuilder();
+                connectProperties.withClientId(input_client_id);
+                builder.withConnectProperties(connectProperties);
+                builder.withLifeCycleEvents(lifecycleEvents);
+                builder.withPublishEvents(publishEvents);
+                client = builder.build();
+                builder.close();
             }
 
             /* Connect */
@@ -178,7 +199,7 @@ public class PubSub {
 
             /* Subscribe */
             SubscribePacket.SubscribePacketBuilder subscribeBuilder = new SubscribePacket.SubscribePacketBuilder();
-            subscribeBuilder.withSubscription(topic, QOS.AT_LEAST_ONCE, false, false, SubscribePacket.RetainHandlingType.DONT_SEND);
+            subscribeBuilder.withSubscription(input_topic, QOS.AT_LEAST_ONCE, false, false, SubscribePacket.RetainHandlingType.DONT_SEND);
             try {
                 client.subscribe(subscribeBuilder.build()).get(60, TimeUnit.SECONDS);
             } catch (Exception ex) {
@@ -187,11 +208,11 @@ public class PubSub {
 
             /* Publish */
             PublishPacket.PublishPacketBuilder publishBuilder = new PublishPacket.PublishPacketBuilder();
-            publishBuilder.withTopic(topic).withQOS(QOS.AT_LEAST_ONCE);
+            publishBuilder.withTopic(input_topic).withQOS(QOS.AT_LEAST_ONCE);
             int count = 0;
             try {
-                while (count++ < messagesToPublish) {
-                    publishBuilder.withPayload(("\"" + message + ": " + String.valueOf(count) + "\"").getBytes());
+                while (count++ < input_messagesToPublish) {
+                    publishBuilder.withPayload(("\"" + input_message + ": " + String.valueOf(count) + "\"").getBytes());
                     CompletableFuture<PublishResult> published = client.publish(publishBuilder.build());
                     published.get(60, TimeUnit.SECONDS);
                     Thread.sleep(1000);
