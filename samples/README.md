@@ -13,7 +13,7 @@
 * [CustomKeyOperation Connect](./CustomKeyOpsConnect/README.md)
 * [Shadow](./Shadow/README.md)
 * [Jobs](./Jobs/README.md)
-* [fleet provisioning](./Identity/README.md)
+* [fleet provisioning](./FleetProvisioning/README.md)
 * [Greengrass Discovery](./Greengrass/README.md)
 * [Greengrass IPC](./GreengrassIPC/README.md)
 * [MQTT5 PubSub](./Mqtt5/PubSub/README.md)

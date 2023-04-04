@@ -27,7 +27,7 @@
 
 MQTT5 support is currently in **developer preview**. We encourage feedback at all times, but feedback during the preview window is especially valuable in shaping the final product. During the preview period we may make backwards-incompatible changes to the public API, but in general, this is something we will try our best to avoid.
 
-The MQTT5 client cannot yet be used with the AWS IoT MQTT services (Shadow, Jobs, Identity). We plan to address this in the near future.
+The MQTT5 client cannot yet be used with the AWS IoT MQTT services (Shadow, Jobs, Fleet-Provisioning/Identity). We plan to address this in the near future.
 
 # Introduction
 
