@@ -50,35 +50,11 @@ public class JavaKeystoreConnect {
     public static void main(String[] args) {
 
         /**
-         * Register the command line inputs
+         * Parse the command line data and store the values in cmdData for this sample.
          */
         cmdUtils = new CommandLineUtils();
         cmdUtils.registerProgramName("JavaKeystoreConnect");
-        cmdUtils.addCommonMQTTCommands();
-        cmdUtils.addCommonProxyCommands();
-        cmdUtils.registerCommand("keystore", "<file>", "The path to the Java keystore to use");
-        cmdUtils.registerCommand("keystore_password", "<str>", "The password for the Java keystore");
-        cmdUtils.registerCommand("keystore_format", "<str>", "The format of the Java keystore (optional, default='PKCS12')");
-        cmdUtils.registerCommand("certificate_alias", "<str>", "The certificate alias to use to access the key and certificate in the Java keystore");
-        cmdUtils.registerCommand("certificate_password", "<str>", "The password associated with the key and certificate in the Java keystore");
-        cmdUtils.registerCommand("client_id", "<int>", "Client id to use (optional, default='test-*').");
-        cmdUtils.registerCommand("port", "<int>", "Port to connect to on the endpoint (optional, default='8883').");
-        cmdUtils.sendArguments(args);
-
-        /**
-         * Gather the input from the command line
-         */
-        String input_endpoint = cmdUtils.getCommandRequired("endpoint", "");
-        String input_ca = cmdUtils.getCommandOrDefault("ca", "");
-        String input_client_id = cmdUtils.getCommandOrDefault("client_id", "test-" + UUID.randomUUID().toString());
-        int input_port = Integer.parseInt(cmdUtils.getCommandOrDefault("port", "8883"));
-        String input_proxyHost = cmdUtils.getCommandOrDefault("proxy_host", "");
-        int input_proxyPort = Integer.parseInt(cmdUtils.getCommandOrDefault("proxy_port", "0"));
-        String input_keystore = cmdUtils.getCommandRequired("keystore", "");
-        String input_keystorePassword = cmdUtils.getCommandRequired("keystore_password", "");
-        String input_keystoreFormat = cmdUtils.getCommandOrDefault("keystore_format", "PKCS12");
-        String input_certificateAlias = cmdUtils.getCommandRequired("certificate_alias", "");
-        String input_certificatePassword = cmdUtils.getCommandRequired("certificate_password", "");
+        CommandLineUtils.SampleCommandLineData cmdData = cmdUtils.parseSampleInputKeystoreConnect(args);
 
         MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
             @Override
@@ -101,12 +77,12 @@ public class JavaKeystoreConnect {
              */
             java.security.KeyStore keyStore;
             try {
-                keyStore = java.security.KeyStore.getInstance(input_keystoreFormat);
+                keyStore = java.security.KeyStore.getInstance(cmdData.input_keystoreFormat);
             } catch (java.security.KeyStoreException ex) {
-                throw new CrtRuntimeException("Could not get instance of Java keystore with format " + input_keystoreFormat);
+                throw new CrtRuntimeException("Could not get instance of Java keystore with format " + cmdData.input_keystoreFormat);
             }
-            try (java.io.FileInputStream fileInputStream = new java.io.FileInputStream(input_keystore)) {
-                keyStore.load(fileInputStream, input_keystorePassword.toCharArray());
+            try (java.io.FileInputStream fileInputStream = new java.io.FileInputStream(cmdData.input_keystore)) {
+                keyStore.load(fileInputStream, cmdData.input_keystorePassword.toCharArray());
             } catch (java.io.FileNotFoundException ex) {
                 throw new CrtRuntimeException("Could not open Java keystore file");
             } catch (java.io.IOException | java.security.NoSuchAlgorithmException | java.security.cert.CertificateException ex) {
@@ -114,21 +90,21 @@ public class JavaKeystoreConnect {
             }
             AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newJavaKeystoreBuilder(
                 keyStore,
-                input_certificateAlias,
-                input_certificatePassword);
-            if (input_ca != "") {
-                builder.withCertificateAuthorityFromPath(null, input_ca);
+                cmdData.input_certificateAlias,
+                cmdData.input_certificatePassword);
+            if (cmdData.input_ca != "") {
+                builder.withCertificateAuthorityFromPath(null, cmdData.input_ca);
             }
             builder.withConnectionEventCallbacks(callbacks)
-                .withClientId(input_client_id)
-                .withEndpoint(input_endpoint)
-                .withPort((short)input_port)
+                .withClientId(cmdData.input_clientId)
+                .withEndpoint(cmdData.input_endpoint)
+                .withPort((short)cmdData.input_port)
                 .withCleanSession(true)
                 .withProtocolOperationTimeoutMs(60000);
-            if (input_proxyHost != "" && input_proxyPort > 0) {
+            if (cmdData.input_proxyHost != "" && cmdData.input_proxyPort > 0) {
                 HttpProxyOptions proxyOptions = new HttpProxyOptions();
-                proxyOptions.setHost(input_proxyHost);
-                proxyOptions.setPort(input_proxyPort);
+                proxyOptions.setHost(cmdData.input_proxyHost);
+                proxyOptions.setPort(cmdData.input_proxyPort);
                 builder.withHttpProxyOptions(proxyOptions);
             }
             MqttClientConnection connection = builder.build();

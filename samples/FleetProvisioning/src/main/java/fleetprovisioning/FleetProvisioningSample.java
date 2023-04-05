@@ -144,32 +144,11 @@ public class FleetProvisioningSample {
     public static void main(String[] args) {
 
         /**
-         * Register the command line inputs
+         * Parse the command line data and store the values in cmdData for this sample.
          */
         cmdUtils = new CommandLineUtils();
         cmdUtils.registerProgramName("FleetProvisioningSample");
-        cmdUtils.addCommonMQTTCommands();
-        cmdUtils.registerCommand("key", "<path>", "Path to your key in PEM format.");
-        cmdUtils.registerCommand("cert", "<path>", "Path to your client certificate in PEM format.");
-        cmdUtils.registerCommand("client_id", "<int>", "Client id to use (optional, default='test-*').");
-        cmdUtils.registerCommand("port", "<int>", "Port to connect to on the endpoint (optional, default='8883').");
-        cmdUtils.registerCommand("template_name", "<str>", "Provisioning template name.");
-        cmdUtils.registerCommand("template_parameters", "<json>", "Provisioning template parameters.");
-        cmdUtils.registerCommand("csr", "<path>", "Path to the CSR file (optional).");
-        cmdUtils.sendArguments(args);
-
-        /**
-         * Gather the input from the command line
-         */
-        String input_endpoint = cmdUtils.getCommandRequired("endpoint", "");
-        String input_cert = cmdUtils.getCommandRequired("cert", "");
-        String input_key = cmdUtils.getCommandRequired("key", "");
-        String input_ca = cmdUtils.getCommandOrDefault("ca", "");
-        String input_client_id = cmdUtils.getCommandOrDefault("client_id", "test-" + UUID.randomUUID().toString());
-        int input_port = Integer.parseInt(cmdUtils.getCommandOrDefault("port", "8883"));
-        String input_templateName = cmdUtils.getCommandRequired("template_name", "");
-        String input_templateParameters = cmdUtils.getCommandRequired("template_parameters", "");
-        String input_csrPath = cmdUtils.getCommandOrDefault("csr", null);
+        CommandLineUtils.SampleCommandLineData cmdData = cmdUtils.parseSampleInputFleetProvisioning(args);
 
         MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
             @Override
@@ -192,14 +171,14 @@ public class FleetProvisioningSample {
             /**
              * Create the MQTT connection from the builder
              */
-            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(input_cert, input_key);
-            if (input_ca != "") {
-                builder.withCertificateAuthorityFromPath(null, input_ca);
+            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(cmdData.input_cert, cmdData.input_key);
+            if (cmdData.input_ca != "") {
+                builder.withCertificateAuthorityFromPath(null, cmdData.input_ca);
             }
             builder.withConnectionEventCallbacks(callbacks)
-                .withClientId(input_client_id)
-                .withEndpoint(input_endpoint)
-                .withPort((short)input_port)
+                .withClientId(cmdData.input_clientId)
+                .withEndpoint(cmdData.input_endpoint)
+                .withPort((short)cmdData.input_port)
                 .withCleanSession(true)
                 .withProtocolOperationTimeoutMs(60000);
             connection = builder.build();
@@ -222,10 +201,10 @@ public class FleetProvisioningSample {
             System.out.println("Connected to " + (!sessionPresent ? "new" : "existing") + " session!");
 
             // Fleet Provision based on whether there is a CSR file path or not
-            if (input_csrPath == null) {
-                createKeysAndCertificateWorkflow(input_templateName, input_templateParameters);
+            if (cmdData.input_csrPath == null) {
+                createKeysAndCertificateWorkflow(cmdData.input_templateName, cmdData.input_templateParameters);
             } else {
-                createCertificateFromCsrWorkflow(input_templateName, input_templateParameters, input_csrPath);
+                createCertificateFromCsrWorkflow(cmdData.input_templateName, cmdData.input_templateParameters, cmdData.input_csrPath);
             }
 
             // Disconnect

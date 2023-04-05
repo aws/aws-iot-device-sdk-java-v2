@@ -28,6 +28,10 @@ public class CommandLineUtils {
     private final HashMap<String, CommandLineOption> registeredCommands = new HashMap<>();
     private List<String> commandArguments;
 
+    /**
+     * Functions for registering and command line arguments
+     */
+
     public void registerProgramName(String newProgramName) {
         programName = newProgramName;
     }
@@ -123,6 +127,10 @@ public class CommandLineUtils {
         }
     }
 
+    /**
+     * Helper functions for registering commands
+     */
+
     public void addCommonMQTTCommands() {
         registerCommand(m_cmd_endpoint, "<str>", "The endpoint of the mqtt server, not including a port.");
         registerCommand(m_cmd_ca_file, "<path>", "Path to AmazonRootCA1.pem (optional, system trust store used by default).");
@@ -162,357 +170,248 @@ public class CommandLineUtils {
         registerCommand(m_cmd_topic, "<str>", "Topic to publish, subscribe to. (optional, default='test/topic')");
     }
 
-    public MqttClientConnection buildCustomKeyOperationConnection(
-        MqttClientConnectionEvents callbacks, TlsContextCustomKeyOperationOptions customKeyOperationOptions)
+    public void addKeyAndCertCommands()
     {
-        try {
-            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsCustomKeyOperationsBuilder(
-                customKeyOperationOptions);
-            buildConnectionSetupCAFileDefaults(builder);
-            buildConnectionSetupConnectionDefaults(builder, callbacks);
-            buildConnectionSetupProxyDefaults(builder);
-
-            MqttClientConnection conn = builder.build();
-            builder.close();
-            return conn;
-
-        } catch (CrtRuntimeException ex) {
-            return null;
-        }
+        registerCommand(m_cmd_key_file, "<path>", "Path to your key in PEM format.");
+        registerCommand(m_cmd_cert_file, "<path>", "Path to your client certificate in PEM format.");
     }
 
-    public MqttClientConnection buildPKCS11MQTTConnection(MqttClientConnectionEvents callbacks)
+    /**
+     * Functions to register commands on a per-sample basis, as well as getting a struct containing all the data
+     */
+
+    public class SampleCommandLineData
     {
-        try {
-
-            Pkcs11Lib pkcs11Lib = new Pkcs11Lib(getCommandRequired(m_cmd_pkcs11_lib, ""));
-            TlsContextPkcs11Options pkcs11Options = new TlsContextPkcs11Options(pkcs11Lib);
-
-            pkcs11Options.withCertificateFilePath(getCommandRequired(m_cmd_cert_file, ""));
-            pkcs11Options.withUserPin(getCommandRequired(m_cmd_pkcs11_pin, ""));
-
-            if (hasCommand(m_cmd_pkcs11_token)) {
-                pkcs11Options.withTokenLabel(getCommand(m_cmd_pkcs11_token));
-            }
-
-            if (hasCommand(m_cmd_pkcs11_slot)) {
-                pkcs11Options.withSlotId(Long.parseLong(getCommand(m_cmd_pkcs11_slot)));
-            }
-
-            if (hasCommand(m_cmd_pkcs11_key)) {
-                pkcs11Options.withPrivateKeyObjectLabel(getCommand(m_cmd_pkcs11_key));
-            }
-
-            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsPkcs11Builder(pkcs11Options);
-
-            buildConnectionSetupCAFileDefaults(builder);
-            buildConnectionSetupConnectionDefaults(builder, callbacks);
-
-            MqttClientConnection conn = builder.build();
-            builder.close();
-            return conn;
-
-        } catch (CrtRuntimeException ex) {
-            return null;
-        }
+        public String input_endpoint;
+        public String input_cert;
+        public String input_key;
+        public String input_ca;
+        public String input_clientId;
+        public int input_port;
+        public String input_proxyHost;
+        public int input_proxyPort;
+        public String input_topic;
+        // PubSub
+        public String input_message;
+        public int input_messagesToPublish;
+        // Websockets
+        public String input_signingRegion;
+        // Cognito
+        public String input_cognitoIdentity;
+        // Custom auth
+        public String input_customAuthUsername;
+        public String input_customAuthorizerName;
+        public String input_customAuthorizerSignature;
+        public String input_customAuthPassword;
+        // Fleet provisioning
+        public String input_templateName;
+        public String input_templateParameters;
+        public String input_csrPath;
+        // Services (Shadow, Jobs, Greengrass, etc)
+        public String input_thingName;
+        public String input_mode;
+        // Java Keystore
+        public String input_keystore;
+        public String input_keystorePassword;
+        public String input_keystoreFormat;
+        public String input_certificateAlias;
+        public String input_certificatePassword;
     }
 
-    public MqttClientConnection buildWebsocketX509MQTTConnection(MqttClientConnectionEvents callbacks)
+    public SampleCommandLineData parseSampleInputBasicConnect(String[] args)
     {
-        try {
+        addCommonMQTTCommands();
+        addCommonProxyCommands();
+        addKeyAndCertCommands();
+        registerCommand(m_cmd_client_id, "<int>", "Client id to use (optional, default='test-*').");
+        registerCommand(m_cmd_port, "<int>", "Port to connect to on the endpoint (optional, default='8883').");
+        sendArguments(args);
 
-            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(null, null);
-            buildConnectionSetupCAFileDefaults(builder);
-            buildConnectionSetupConnectionDefaults(builder, callbacks);
-
-            HttpProxyOptions proxyOptions = null;
-            int proxyPort = Integer.parseInt(getCommandOrDefault(m_cmd_proxy_port, "0"));
-            if (hasCommand(m_cmd_proxy_host) && proxyPort > 0) {
-                proxyOptions = new HttpProxyOptions();
-                proxyOptions.setHost(getCommand(m_cmd_proxy_host));
-                proxyOptions.setPort(proxyPort);
-                builder.withHttpProxyOptions(proxyOptions);
-            }
-
-            builder.withWebsockets(true);
-            builder.withWebsocketSigningRegion(getCommandRequired(m_cmd_signing_region, ""));
-
-            TlsContextOptions x509TlsOptions = TlsContextOptions.createWithMtlsFromPath(getCommandRequired(m_cmd_x509_cert_file, ""), getCommandRequired(m_cmd_x509_key_file, ""));
-            if (hasCommand(m_cmd_x509_ca_file)) {
-                x509TlsOptions.withCertificateAuthorityFromPath(null, getCommand(m_cmd_x509_ca_file));
-            }
-
-            ClientTlsContext x509TlsContext = new ClientTlsContext(x509TlsOptions);
-            X509CredentialsProvider.X509CredentialsProviderBuilder x509builder = new X509CredentialsProvider.X509CredentialsProviderBuilder()
-                .withTlsContext(x509TlsContext)
-                .withEndpoint(getCommandRequired(m_cmd_x509_endpoint, ""))
-                .withRoleAlias(getCommandRequired(m_cmd_x509_role, ""))
-                .withThingName(getCommandRequired(m_cmd_x509_thing_name, ""))
-                .withProxyOptions(proxyOptions);
-            X509CredentialsProvider provider = x509builder.build();
-            builder.withWebsocketCredentialsProvider(provider);
-
-            MqttClientConnection conn = builder.build();
-            builder.close();
-            provider.close();
-            return conn;
-
-        } catch (CrtRuntimeException ex) {
-            return null;
-        }
+        SampleCommandLineData returnData = new SampleCommandLineData();
+        returnData.input_endpoint = getCommandRequired(m_cmd_endpoint, "");
+        returnData.input_cert = getCommandRequired(m_cmd_cert_file, "");
+        returnData.input_key = getCommandRequired(m_cmd_key_file, "");
+        returnData.input_ca = getCommandOrDefault(m_cmd_ca_file, "");
+        returnData.input_clientId = getCommandOrDefault(m_cmd_client_id, "test-" + UUID.randomUUID().toString());
+        returnData.input_port = Integer.parseInt(getCommandOrDefault(m_cmd_port, "8883"));
+        returnData.input_proxyHost = getCommandOrDefault(m_cmd_proxy_host, "");
+        returnData.input_proxyPort = Integer.parseInt(getCommandOrDefault(m_cmd_proxy_port, "0"));
+        return returnData;
     }
 
-    public MqttClientConnection buildWebsocketMQTTConnection(MqttClientConnectionEvents callbacks)
+    public SampleCommandLineData parseSampleInputPubSub(String [] args)
     {
-        try {
+        addCommonMQTTCommands();
+        addCommonTopicMessageCommands();
+        addKeyAndCertCommands();
+        registerCommand(m_cmd_client_id, "<int>", "Client id to use (optional, default='test-*').");
+        registerCommand(m_cmd_port, "<int>", "Port to connect to on the endpoint (optional, default='8883').");
+        registerCommand(m_cmd_count, "<int>", "Number of messages to publish (optional, default='10').");
+        sendArguments(args);
 
-            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(null, null);
-            buildConnectionSetupCAFileDefaults(builder);
-            buildConnectionSetupConnectionDefaults(builder, callbacks);
-            buildConnectionSetupProxyDefaults(builder);
-
-            builder.withWebsockets(true);
-            builder.withWebsocketSigningRegion(getCommandRequired(m_cmd_signing_region, ""));
-
-            MqttClientConnection conn = builder.build();
-            builder.close();
-            return conn;
-
-        } catch (CrtRuntimeException ex) {
-            return null;
-        }
+        SampleCommandLineData returnData = new SampleCommandLineData();
+        returnData.input_endpoint = getCommandRequired(m_cmd_endpoint, "");
+        returnData.input_cert = getCommandRequired(m_cmd_cert_file, "");
+        returnData.input_key = getCommandRequired(m_cmd_key_file, "");
+        returnData.input_ca = getCommandOrDefault(m_cmd_ca_file, "");
+        returnData.input_clientId = getCommandOrDefault(m_cmd_client_id, "test-" + UUID.randomUUID().toString());
+        returnData.input_port = Integer.parseInt(getCommandOrDefault(m_cmd_port, "8883"));
+        returnData.input_proxyHost = getCommandOrDefault(m_cmd_proxy_host, "");
+        returnData.input_proxyPort = Integer.parseInt(getCommandOrDefault(m_cmd_proxy_port, "0"));
+        returnData.input_topic = getCommandOrDefault(m_cmd_topic, "test/topic");
+        returnData.input_message = getCommandOrDefault(m_cmd_message, "Hello World!");
+        returnData.input_messagesToPublish = Integer.parseInt(getCommandOrDefault(m_cmd_count, "10"));
+        return returnData;
     }
 
-    public MqttClientConnection buildDirectMQTTConnection(MqttClientConnectionEvents callbacks)
+    public SampleCommandLineData parseSampleInputCognitoConnect(String [] args)
     {
-        try {
+        addCommonMQTTCommands();
+        registerCommand(m_cmd_signing_region, "<str>", "AWS IoT service region.");
+        registerCommand(m_cmd_client_id, "<int>", "Client id to use (optional, default='test-*').");
+        registerCommand(m_cmd_cognito_identity, "<str>", "The Cognito identity ID to use to connect via Cognito");
+        sendArguments(args);
 
-            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(
-                getCommandRequired(m_cmd_cert_file, ""), getCommandRequired(m_cmd_key_file, ""));
-            buildConnectionSetupCAFileDefaults(builder);
-            buildConnectionSetupConnectionDefaults(builder, callbacks);
-            buildConnectionSetupProxyDefaults(builder);
-
-            MqttClientConnection conn = builder.build();
-            builder.close();
-            return conn;
-        }
-        catch (CrtRuntimeException ex) {
-            return null;
-        }
+        SampleCommandLineData returnData = new SampleCommandLineData();
+        returnData.input_endpoint = getCommandRequired(m_cmd_endpoint, "");
+        returnData.input_signingRegion = getCommandOrDefault(m_cmd_signing_region, "us-east-1");
+        returnData.input_clientId = getCommandOrDefault(m_cmd_client_id, "test-" + UUID.randomUUID().toString());
+        returnData.input_cognitoIdentity = getCommandRequired(m_cmd_cognito_identity, "");
+        return returnData;
     }
 
-    public MqttClientConnection buildDirectMQTTConnectionWithCustomAuthorizer(MqttClientConnectionEvents callbacks)
+    public SampleCommandLineData parseSampleInputCustomAuthorizerConnect(String [] args)
     {
-        try {
-            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newDefaultBuilder();
-            buildConnectionSetupCAFileDefaults(builder);
-            buildConnectionSetupConnectionDefaults(builder, callbacks);
-            builder.withCustomAuthorizer(
-                getCommandOrDefault(m_cmd_custom_auth_username, null),
-                getCommandOrDefault(m_cmd_custom_auth_authorizer_name, null),
-                getCommandOrDefault(m_cmd_custom_auth_authorizer_signature, null),
-                getCommandOrDefault(m_cmd_custom_auth_password, null));
+        addCommonMQTTCommands();
+        registerCommand(m_cmd_client_id, "<int>", "Client id to use (optional, default='test-*').");
+        registerCommand(m_cmd_custom_auth_username, "<str>", "Username for connecting to custom authorizer (optional, default=null).");
+        registerCommand(m_cmd_custom_auth_authorizer_name, "<str>", "Name of custom authorizer (optional, default=null).");
+        registerCommand(m_cmd_custom_auth_authorizer_signature, "<str>", "Signature passed when connecting to custom authorizer (optional, default=null).");
+        registerCommand(m_cmd_custom_auth_password, "<str>", "Password for connecting to custom authorizer (optional, default=null).");
+        sendArguments(args);
 
-            MqttClientConnection conn = builder.build();
-            builder.close();
-            return conn;
-        }
-        catch (CrtRuntimeException | UnsupportedEncodingException ex) {
-            return null;
-        }
+        SampleCommandLineData returnData = new SampleCommandLineData();
+        returnData.input_endpoint = getCommandRequired(m_cmd_endpoint, "");
+        returnData.input_clientId = getCommandOrDefault(m_cmd_client_id, "test-" + UUID.randomUUID().toString());
+        returnData.input_customAuthUsername = getCommandOrDefault(m_cmd_custom_auth_username, null);
+        returnData.input_customAuthorizerName = getCommandOrDefault(m_cmd_custom_auth_authorizer_name, null);
+        returnData.input_customAuthorizerSignature = getCommandOrDefault(m_cmd_custom_auth_authorizer_signature, null);
+        returnData.input_customAuthPassword = getCommandOrDefault(m_cmd_custom_auth_password, null);
+        return returnData;
     }
 
-    public MqttClientConnection buildDirectMQTTConnectionWithJavaKeystore(MqttClientConnectionEvents callbacks)
+    public SampleCommandLineData parseSampleInputCustomKeyOpsConnect(String [] args)
     {
-        try {
-            String keystoreFormat = getCommandOrDefault(m_cmd_javakeystore_format, "PKCS12");
-            java.security.KeyStore keyStore;
-            try {
-                keyStore = java.security.KeyStore.getInstance(keystoreFormat);
-            } catch (java.security.KeyStoreException ex) {
-                throw new CrtRuntimeException("Could not get instance of Java keystore with format " + keystoreFormat);
-            }
+        addCommonMQTTCommands();
+        addKeyAndCertCommands();
+        registerCommand(m_cmd_client_id, "<int>", "Client id to use (optional, default='test-*').");
+        registerCommand(m_cmd_port, "<int>", "Port to connect to on the endpoint (optional, default='8883').");
 
-            try (java.io.FileInputStream fileInputStream = new java.io.FileInputStream(getCommandRequired(m_cmd_javakeystore_path, ""))) {
-                keyStore.load(fileInputStream, getCommandRequired(m_cmd_javakeystore_password, "").toCharArray());
-            } catch (java.io.FileNotFoundException ex) {
-                throw new CrtRuntimeException("Could not open Java keystore file");
-            } catch (java.io.IOException | java.security.NoSuchAlgorithmException | java.security.cert.CertificateException ex) {
-                throw new CrtRuntimeException("Could not load Java keystore");
-            }
-
-            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newJavaKeystoreBuilder(
-                keyStore,
-                getCommandRequired(m_cmd_javakeystore_certificate, ""),
-                getCommandRequired(m_cmd_javakeystore_key_password, ""));
-            buildConnectionSetupCAFileDefaults(builder);
-            buildConnectionSetupConnectionDefaults(builder, callbacks);
-            MqttClientConnection conn = builder.build();
-            builder.close();
-            return conn;
-        } catch (CrtRuntimeException ex) {
-            return null;
-        }
+        SampleCommandLineData returnData = new SampleCommandLineData();
+        returnData.input_endpoint = getCommandRequired(m_cmd_endpoint, "");
+        returnData.input_cert = getCommandRequired(m_cmd_cert_file, "");
+        returnData.input_key = getCommandRequired(m_cmd_key_file, "");
+        returnData.input_ca = getCommandOrDefault(m_cmd_ca_file, "");
+        returnData.input_clientId = getCommandOrDefault(m_cmd_client_id, "test-" + UUID.randomUUID().toString());
+        returnData.input_port = Integer.parseInt(getCommandOrDefault(m_cmd_port, "8883"));
+        return returnData;
     }
 
-    public MqttClientConnection buildCognitoMQTTConnection(MqttClientConnectionEvents callbacks)
+    public SampleCommandLineData parseSampleInputFleetProvisioning(String [] args)
     {
-        try {
+        addCommonMQTTCommands();
+        addKeyAndCertCommands();
+        registerCommand(m_cmd_client_id, "<int>", "Client id to use (optional, default='test-*').");
+        registerCommand(m_cmd_port, "<int>", "Port to connect to on the endpoint (optional, default='8883').");
+        registerCommand(m_cmd_fleet_template_name, "<str>", "Provisioning template name.");
+        registerCommand(m_cmd_fleet_template_parameters, "<json>", "Provisioning template parameters.");
+        registerCommand(m_cmd_fleet_template_csr, "<path>", "Path to the CSR file (optional).");
+        sendArguments(args);
 
-            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(null, null);
-            buildConnectionSetupCAFileDefaults(builder);
-            buildConnectionSetupConnectionDefaults(builder, callbacks);
-            buildConnectionSetupProxyDefaults(builder);
-
-            builder.withWebsockets(true);
-            builder.withWebsocketSigningRegion(getCommandRequired(m_cmd_signing_region, ""));
-
-            CognitoCredentialsProvider.CognitoCredentialsProviderBuilder cognitoBuilder = new CognitoCredentialsProvider.CognitoCredentialsProviderBuilder();
-            String cognitoEndpoint = "cognito-identity." + getCommandRequired(m_cmd_signing_region, "") + ".amazonaws.com";
-            cognitoBuilder.withEndpoint(cognitoEndpoint).withIdentity(getCommandRequired(m_cmd_cognito_identity, ""));
-            cognitoBuilder.withClientBootstrap(ClientBootstrap.getOrCreateStaticDefault());
-
-            TlsContextOptions cognitoTlsContextOptions = TlsContextOptions.createDefaultClient();
-            ClientTlsContext cognitoTlsContext = new ClientTlsContext(cognitoTlsContextOptions);
-            cognitoTlsContextOptions.close();
-            cognitoBuilder.withTlsContext(cognitoTlsContext);
-
-            CognitoCredentialsProvider cognitoCredentials = cognitoBuilder.build();
-            builder.withWebsocketCredentialsProvider(cognitoCredentials);
-
-            MqttClientConnection conn = builder.build();
-            builder.close();
-            cognitoCredentials.close();
-            cognitoTlsContext.close();
-            return conn;
-
-        } catch (CrtRuntimeException ex) {
-            return null;
-        }
+        SampleCommandLineData returnData = new SampleCommandLineData();
+        returnData.input_endpoint = getCommandRequired(m_cmd_endpoint, "");
+        returnData.input_cert = getCommandRequired(m_cmd_cert_file, "");
+        returnData.input_key = getCommandRequired(m_cmd_key_file, "");
+        returnData.input_ca = getCommandOrDefault(m_cmd_ca_file, "");
+        returnData.input_clientId = getCommandOrDefault(m_cmd_client_id, "test-" + UUID.randomUUID().toString());
+        returnData.input_port = Integer.parseInt(getCommandOrDefault(m_cmd_port, "8883"));
+        returnData.input_templateName = getCommandRequired(m_cmd_fleet_template_name, "");
+        returnData.input_templateParameters = getCommandRequired(m_cmd_fleet_template_parameters, "");
+        returnData.input_csrPath = getCommandOrDefault(m_cmd_fleet_template_csr, null);
+        return returnData;
     }
 
-    public Mqtt5Client buildWebsocketMQTT5Connection(
-        Mqtt5ClientOptions.LifecycleEvents lifecycleEvents, Mqtt5ClientOptions.PublishEvents publishEvents) {
-        try {
-
-            AwsIotMqtt5ClientBuilder.WebsocketSigv4Config websocketConfig = new AwsIotMqtt5ClientBuilder.WebsocketSigv4Config();
-            if (hasCommand(m_cmd_signing_region)) {
-                websocketConfig.region = getCommandRequired(m_cmd_signing_region, "");
-            }
-            AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newWebsocketMqttBuilderWithSigv4Auth(
-                getCommandRequired(m_cmd_endpoint, ""), websocketConfig);
-
-            ConnectPacket.ConnectPacketBuilder connectProperties = new ConnectPacket.ConnectPacketBuilder();
-            connectProperties.withClientId(getCommandOrDefault("client_id", "test-" + UUID.randomUUID().toString()));
-            builder.withConnectProperties(connectProperties);
-
-            builder.withLifeCycleEvents(lifecycleEvents);
-            builder.withPublishEvents(publishEvents);
-
-            Mqtt5Client returnClient = builder.build();
-            builder.close();
-            return returnClient;
-
-        } catch (CrtRuntimeException ex) {
-            return null;
-        }
-    }
-
-    public Mqtt5Client buildDirectMQTT5Connection(
-        Mqtt5ClientOptions.LifecycleEvents lifecycleEvents, Mqtt5ClientOptions.PublishEvents publishEvents) {
-        try {
-            AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newDirectMqttBuilderWithMtlsFromPath(
-                getCommandRequired(m_cmd_endpoint, ""), getCommandRequired(m_cmd_cert_file, ""), getCommandRequired(m_cmd_key_file, ""));
-
-            ConnectPacket.ConnectPacketBuilder connectProperties = new ConnectPacket.ConnectPacketBuilder();
-            connectProperties.withClientId(getCommandOrDefault("client_id", "test-" + UUID.randomUUID().toString()));
-            builder.withConnectProperties(connectProperties);
-
-            builder.withLifeCycleEvents(lifecycleEvents);
-            builder.withPublishEvents(publishEvents);
-
-            Mqtt5Client returnClient = builder.build();
-            builder.close();
-            return returnClient;
-        }
-        catch (CrtRuntimeException ex) {
-            return null;
-        }
-    }
-
-    private void buildConnectionSetupCAFileDefaults(AwsIotMqttConnectionBuilder builder)
+    public SampleCommandLineData parseSampleInputGreengrassDiscovery(String [] args)
     {
-        if (hasCommand(m_cmd_ca_file)) {
-            builder.withCertificateAuthorityFromPath(null, getCommand(m_cmd_ca_file));
-        }
-    }
-    private void buildConnectionSetupConnectionDefaults(AwsIotMqttConnectionBuilder builder, MqttClientConnectionEvents callbacks)
-    {
-        builder.withConnectionEventCallbacks(callbacks)
-                .withClientId(getCommandOrDefault("client_id", "test-" + UUID.randomUUID().toString()))
-                .withEndpoint(getCommandRequired(m_cmd_endpoint, ""))
-                .withPort((short) Integer.parseInt(getCommandOrDefault("port", "8883")) )
-                .withCleanSession(true)
-                .withProtocolOperationTimeoutMs(60000);
-    }
-    private void buildConnectionSetupProxyDefaults(AwsIotMqttConnectionBuilder builder)
-    {
-        int proxyPort = Integer.parseInt(getCommandOrDefault(m_cmd_proxy_port, "0"));
-        if (hasCommand(m_cmd_proxy_host) && proxyPort > 0) {
-            HttpProxyOptions proxyOptions = new HttpProxyOptions();
-            proxyOptions.setHost(getCommand(m_cmd_proxy_host));
-            proxyOptions.setPort(proxyPort);
-            builder.withHttpProxyOptions(proxyOptions);
-        }
+        addCommonMQTTCommands();
+        removeCommand(m_cmd_endpoint);
+        addKeyAndCertCommands();
+        registerCommand(m_cmd_signing_region, "<str>", "AWS IoT service region (optional, default='us-east-1').");
+        registerCommand(m_cmd_thing_name, "<str>", "The name of the IoT thing.");
+        registerCommand(m_cmd_topic, "<str>", "Topic to subscribe/publish to (optional, default='test/topic').");
+        registerCommand(m_cmd_mode, "<str>", "Mode options: 'both', 'publish', or 'subscribe' (optional, default='both').");
+        addCommonProxyCommands();
+        sendArguments(args);
+
+        SampleCommandLineData returnData = new SampleCommandLineData();
+        returnData.input_thingName = getCommandRequired(m_cmd_thing_name, "");
+        returnData.input_signingRegion = getCommandOrDefault(m_cmd_signing_region, "us-east-1");
+        returnData.input_ca = getCommandOrDefault(m_cmd_ca_file, null);
+        returnData.input_cert = getCommandRequired(m_cmd_cert_file, "");
+        returnData.input_key = getCommandRequired(m_cmd_key_file, "");
+        returnData.input_proxyHost = getCommandOrDefault(m_cmd_proxy_host, "");
+        returnData.input_proxyPort = Integer.parseInt(getCommandOrDefault(m_cmd_proxy_port, "0"));
+        returnData.input_topic = getCommandOrDefault(m_cmd_topic, "test/topic");
+        returnData.input_mode = getCommandOrDefault(m_cmd_mode, "Hello World!");
+        return returnData;
     }
 
-    public MqttClientConnection buildMQTTConnection(MqttClientConnectionEvents callbacks)
+    public SampleCommandLineData parseSampleInputKeystoreConnect(String [] args)
     {
-        if (hasCommand(m_cmd_pkcs11_lib))
-        {
-            return buildPKCS11MQTTConnection(callbacks);
-        }
-        else if (hasCommand(m_cmd_signing_region))
-        {
-            if (hasCommand(m_cmd_x509_endpoint))
-            {
-                return buildWebsocketX509MQTTConnection(callbacks);
-            }
-            else
-            {
-                return buildWebsocketMQTTConnection(callbacks);
-            }
-        }
-        else if (hasCommand(m_cmd_custom_auth_authorizer_name))
-        {
-            return buildDirectMQTTConnectionWithCustomAuthorizer(callbacks);
-        }
-        else
-        {
-            return buildDirectMQTTConnection(callbacks);
-        }
+        addCommonMQTTCommands();
+        addCommonProxyCommands();
+        registerCommand(m_cmd_javakeystore_path, "<file>", "The path to the Java keystore to use");
+        registerCommand(m_cmd_javakeystore_password, "<str>", "The password for the Java keystore");
+        registerCommand(m_cmd_javakeystore_format, "<str>", "The format of the Java keystore (optional, default='PKCS12')");
+        registerCommand(m_cmd_javakeystore_certificate, "<str>", "The certificate alias to use to access the key and certificate in the Java keystore");
+        registerCommand(m_cmd_javakeystore_key_password, "<str>", "The password associated with the key and certificate in the Java keystore");
+        registerCommand(m_cmd_client_id, "<int>", "Client id to use (optional, default='test-*').");
+        registerCommand(m_cmd_port, "<int>", "Port to connect to on the endpoint (optional, default='8883').");
+        sendArguments(args);
+
+        SampleCommandLineData returnData = new SampleCommandLineData();
+        returnData.input_endpoint = getCommandRequired(m_cmd_endpoint, "");
+        returnData.input_ca = getCommandOrDefault(m_cmd_ca_file, "");
+        returnData.input_clientId = getCommandOrDefault(m_cmd_client_id, "test-" + UUID.randomUUID().toString());
+        returnData.input_port = Integer.parseInt(getCommandOrDefault(m_cmd_port, "8883"));
+        returnData.input_proxyHost = getCommandOrDefault(m_cmd_proxy_host, "");
+        returnData.input_proxyPort = Integer.parseInt(getCommandOrDefault(m_cmd_proxy_port, "0"));
+        returnData.input_keystore = getCommandRequired(m_cmd_javakeystore_path, "");
+        returnData.input_keystorePassword = getCommandRequired(m_cmd_javakeystore_password, "");
+        returnData.input_keystoreFormat = getCommandOrDefault(m_cmd_javakeystore_format, "PKCS12");
+        returnData.input_certificateAlias = getCommandRequired(m_cmd_javakeystore_certificate, "");
+        returnData.input_certificatePassword = getCommandRequired(m_cmd_javakeystore_key_password, "");
+        return returnData;
     }
 
-    public void sampleConnectAndDisconnect(MqttClientConnection connection) throws CrtRuntimeException, InterruptedException, ExecutionException
+    public SampleCommandLineData parseSampleInputJobs(String[] args)
     {
-        try {
-            // Connect and disconnect
-            CompletableFuture<Boolean> connected = connection.connect();
-            try {
-                boolean sessionPresent = connected.get();
-                System.out.println("Connected to " + (!sessionPresent ? "new" : "existing") + " session!");
-            } catch (Exception ex) {
-                throw new RuntimeException("Exception occurred during connect", ex);
-            }
-            System.out.println("Disconnecting...");
-            CompletableFuture<Void> disconnected = connection.disconnect();
-            disconnected.get();
-            System.out.println("Disconnected.");
-        }
-        catch (CrtRuntimeException | InterruptedException | ExecutionException ex) {
-            throw ex;
-        }
+        addCommonMQTTCommands();
+        addKeyAndCertCommands();
+        registerCommand(m_cmd_client_id, "<int>", "Client id to use (optional, default='test-*').");
+        registerCommand(m_cmd_port, "<int>", "Port to connect to on the endpoint (optional, default='8883').");
+        registerCommand(m_cmd_thing_name, "<str>", "The name of the IoT thing.");
+        sendArguments(args);
+
+        SampleCommandLineData returnData = new SampleCommandLineData();
+        returnData.input_endpoint = getCommandRequired(m_cmd_endpoint, "");
+        returnData.input_cert = getCommandRequired(m_cmd_cert_file, "");
+        returnData.input_key = getCommandRequired(m_cmd_key_file, "");
+        returnData.input_ca = getCommandOrDefault(m_cmd_ca_file, "");
+        returnData.input_clientId = getCommandOrDefault(m_cmd_client_id, "test-" + UUID.randomUUID().toString());
+        returnData.input_port = Integer.parseInt(getCommandOrDefault(m_cmd_port, "8883"));
+        returnData.input_thingName = getCommandRequired(m_cmd_thing_name, "");
+        return returnData;
     }
 
     // Constants for commonly used/needed commands
@@ -520,6 +419,8 @@ public class CommandLineUtils {
     private static final String m_cmd_ca_file = "ca_file";
     private static final String m_cmd_cert_file = "cert";
     private static final String m_cmd_key_file = "key";
+    private static final String m_cmd_client_id = "client_id";
+    private static final String m_cmd_port = "port";
     private static final String m_cmd_proxy_host = "proxy_host";
     private static final String m_cmd_proxy_port = "proxy_port";
     private static final String m_cmd_signing_region = "signing_region";
@@ -548,6 +449,12 @@ public class CommandLineUtils {
     private static final String m_cmd_javakeystore_certificate = "certificate_alias";
     private static final String m_cmd_javakeystore_key_password = "certificate_password";
     private static final String m_cmd_cognito_identity = "cognito_identity";
+    private static final String m_cmd_count = "count";
+    private static final String m_cmd_fleet_template_name = "template_name";
+    private static final String m_cmd_fleet_template_parameters = "template_parameters";
+    private static final String m_cmd_fleet_template_csr = "csr";
+    private static final String m_cmd_thing_name = "thing_name";
+    private static final String m_cmd_mode = "mode";
 }
 
 class CommandLineOption {

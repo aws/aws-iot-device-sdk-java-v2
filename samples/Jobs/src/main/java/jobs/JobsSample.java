@@ -91,28 +91,11 @@ public class JobsSample {
     public static void main(String[] args) {
 
         /**
-         * Register the command line inputs
+         * Parse the command line data and store the values in cmdData for this sample.
          */
         cmdUtils = new CommandLineUtils();
         cmdUtils.registerProgramName("JobsSample");
-        cmdUtils.addCommonMQTTCommands();
-        cmdUtils.registerCommand("key", "<path>", "Path to your key in PEM format.");
-        cmdUtils.registerCommand("cert", "<path>", "Path to your client certificate in PEM format.");
-        cmdUtils.registerCommand("client_id", "<int>", "Client id to use (optional, default='test-*').");
-        cmdUtils.registerCommand("thing_name", "<str>", "The name of the IoT thing.");
-        cmdUtils.registerCommand("port", "<int>", "Port to connect to on the endpoint (optional, default='8883').");
-        cmdUtils.sendArguments(args);
-
-        /**
-         * Gather the input from the command line
-         */
-        String input_endpoint = cmdUtils.getCommandRequired("endpoint", "");
-        String input_cert = cmdUtils.getCommandRequired("cert", "");
-        String input_key = cmdUtils.getCommandRequired("key", "");
-        String input_ca = cmdUtils.getCommandOrDefault("ca", "");
-        String input_client_id = cmdUtils.getCommandOrDefault("client_id", "test-" + UUID.randomUUID().toString());
-        int input_port = Integer.parseInt(cmdUtils.getCommandOrDefault("port", "8883"));
-        String input_thingName = cmdUtils.getCommandRequired("thing_name", "");
+        CommandLineUtils.SampleCommandLineData cmdData = cmdUtils.parseSampleInputJobs(args);
 
         MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
             @Override
@@ -133,14 +116,14 @@ public class JobsSample {
             /**
              * Create the MQTT connection from the builder
              */
-            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(input_cert, input_key);
-            if (input_ca != "") {
-                builder.withCertificateAuthorityFromPath(null, input_ca);
+            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(cmdData.input_cert, cmdData.input_key);
+            if (cmdData.input_ca != "") {
+                builder.withCertificateAuthorityFromPath(null, cmdData.input_ca);
             }
             builder.withConnectionEventCallbacks(callbacks)
-                .withClientId(input_client_id)
-                .withEndpoint(input_endpoint)
-                .withPort((short)input_port)
+                .withClientId(cmdData.input_clientId)
+                .withEndpoint(cmdData.input_endpoint)
+                .withPort((short)cmdData.input_port)
                 .withCleanSession(true)
                 .withProtocolOperationTimeoutMs(60000);
             MqttClientConnection connection = builder.build();
@@ -159,7 +142,7 @@ public class JobsSample {
             {
                 gotResponse = new CompletableFuture<>();
                 GetPendingJobExecutionsSubscriptionRequest subscriptionRequest = new GetPendingJobExecutionsSubscriptionRequest();
-                subscriptionRequest.thingName = input_thingName;
+                subscriptionRequest.thingName = cmdData.input_thingName;
                 CompletableFuture<Integer> subscribed = jobs.SubscribeToGetPendingJobExecutionsAccepted(
                         subscriptionRequest,
                         QualityOfService.AT_LEAST_ONCE,
@@ -179,7 +162,7 @@ public class JobsSample {
                 System.out.println("Subscribed to GetPendingJobExecutionsRejected");
 
                 GetPendingJobExecutionsRequest publishRequest = new GetPendingJobExecutionsRequest();
-                publishRequest.thingName = input_thingName;
+                publishRequest.thingName = cmdData.input_thingName;
                 CompletableFuture<Integer> published = jobs.PublishGetPendingJobExecutions(
                         publishRequest,
                         QualityOfService.AT_LEAST_ONCE);
@@ -204,7 +187,7 @@ public class JobsSample {
             for (String jobId : availableJobs) {
                 gotResponse = new CompletableFuture<>();
                 DescribeJobExecutionSubscriptionRequest subscriptionRequest = new DescribeJobExecutionSubscriptionRequest();
-                subscriptionRequest.thingName = input_thingName;
+                subscriptionRequest.thingName = cmdData.input_thingName;
                 subscriptionRequest.jobId = jobId;
                 jobs.SubscribeToDescribeJobExecutionAccepted(
                         subscriptionRequest,
@@ -216,7 +199,7 @@ public class JobsSample {
                         JobsSample::onRejectedError);
 
                 DescribeJobExecutionRequest publishRequest = new DescribeJobExecutionRequest();
-                publishRequest.thingName = input_thingName;
+                publishRequest.thingName = cmdData.input_thingName;
                 publishRequest.jobId = jobId;
                 publishRequest.includeJobDocument = true;
                 publishRequest.executionNumber = 1L;
@@ -232,7 +215,7 @@ public class JobsSample {
 
                         // Start the next pending job
                         StartNextPendingJobExecutionSubscriptionRequest subscriptionRequest = new StartNextPendingJobExecutionSubscriptionRequest();
-                        subscriptionRequest.thingName = input_thingName;
+                        subscriptionRequest.thingName = cmdData.input_thingName;
 
                         jobs.SubscribeToStartNextPendingJobExecutionAccepted(
                                 subscriptionRequest,
@@ -244,7 +227,7 @@ public class JobsSample {
                                 JobsSample::onRejectedError);
 
                         StartNextPendingJobExecutionRequest publishRequest = new StartNextPendingJobExecutionRequest();
-                        publishRequest.thingName = input_thingName;
+                        publishRequest.thingName = cmdData.input_thingName;
                         publishRequest.stepTimeoutInMinutes = 15L;
                         jobs.PublishStartNextPendingJobExecution(publishRequest, QualityOfService.AT_LEAST_ONCE);
 
@@ -256,7 +239,7 @@ public class JobsSample {
                         gotResponse = new CompletableFuture<>();
 
                         UpdateJobExecutionSubscriptionRequest subscriptionRequest = new UpdateJobExecutionSubscriptionRequest();
-                        subscriptionRequest.thingName = input_thingName;
+                        subscriptionRequest.thingName = cmdData.input_thingName;
                         subscriptionRequest.jobId = currentJobId;
                         jobs.SubscribeToUpdateJobExecutionAccepted(
                                 subscriptionRequest,
@@ -271,7 +254,7 @@ public class JobsSample {
                                 JobsSample::onRejectedError);
 
                         UpdateJobExecutionRequest publishRequest = new UpdateJobExecutionRequest();
-                        publishRequest.thingName = input_thingName;
+                        publishRequest.thingName = cmdData.input_thingName;
                         publishRequest.jobId = currentJobId;
                         publishRequest.executionNumber = currentExecutionNumber;
                         publishRequest.status = JobStatus.IN_PROGRESS;
@@ -289,7 +272,7 @@ public class JobsSample {
                         gotResponse = new CompletableFuture<>();
 
                         UpdateJobExecutionSubscriptionRequest subscriptionRequest = new UpdateJobExecutionSubscriptionRequest();
-                        subscriptionRequest.thingName = input_thingName;
+                        subscriptionRequest.thingName = cmdData.input_thingName;
                         subscriptionRequest.jobId = currentJobId;
                         jobs.SubscribeToUpdateJobExecutionAccepted(
                                 subscriptionRequest,
@@ -304,7 +287,7 @@ public class JobsSample {
                                 JobsSample::onRejectedError);
 
                         UpdateJobExecutionRequest publishRequest = new UpdateJobExecutionRequest();
-                        publishRequest.thingName = input_thingName;
+                        publishRequest.thingName = cmdData.input_thingName;
                         publishRequest.jobId = currentJobId;
                         publishRequest.executionNumber = currentExecutionNumber;
                         publishRequest.status = JobStatus.SUCCEEDED;

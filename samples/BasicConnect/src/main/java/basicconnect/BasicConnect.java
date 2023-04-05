@@ -45,29 +45,11 @@ public class BasicConnect {
     public static void main(String[] args) {
 
         /**
-         * Register the command line inputs
+         * Parse the command line data and store the values in cmdData for this sample.
          */
         cmdUtils = new CommandLineUtils();
         cmdUtils.registerProgramName("BasicConnect");
-        cmdUtils.addCommonMQTTCommands();
-        cmdUtils.addCommonProxyCommands();
-        cmdUtils.registerCommand("key", "<path>", "Path to your key in PEM format.");
-        cmdUtils.registerCommand("cert", "<path>", "Path to your client certificate in PEM format.");
-        cmdUtils.registerCommand("client_id", "<int>", "Client id to use (optional, default='test-*').");
-        cmdUtils.registerCommand("port", "<int>", "Port to connect to on the endpoint (optional, default='8883').");
-        cmdUtils.sendArguments(args);
-
-        /**
-         * Gather the input from the command line
-         */
-        String input_endpoint = cmdUtils.getCommandRequired("endpoint", "");
-        String input_cert = cmdUtils.getCommandRequired("cert", "");
-        String input_key = cmdUtils.getCommandRequired("key", "");
-        String input_ca = cmdUtils.getCommandOrDefault("ca", "");
-        String input_client_id = cmdUtils.getCommandOrDefault("client_id", "test-" + UUID.randomUUID().toString());
-        int input_port = Integer.parseInt(cmdUtils.getCommandOrDefault("port", "8883"));
-        String input_proxyHost = cmdUtils.getCommandOrDefault("proxy_host", "");
-        int input_proxyPort = Integer.parseInt(cmdUtils.getCommandOrDefault("proxy_port", "0"));
+        CommandLineUtils.SampleCommandLineData cmdData = cmdUtils.parseSampleInputBasicConnect(args);
 
         MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
             @Override
@@ -88,20 +70,20 @@ public class BasicConnect {
             /**
              * Create the MQTT connection from the builder
              */
-            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(input_cert, input_key);
-            if (input_ca != "") {
-                builder.withCertificateAuthorityFromPath(null, input_ca);
+            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(cmdData.input_cert, cmdData.input_key);
+            if (cmdData.input_ca != "") {
+                builder.withCertificateAuthorityFromPath(null, cmdData.input_ca);
             }
             builder.withConnectionEventCallbacks(callbacks)
-                .withClientId(input_client_id)
-                .withEndpoint(input_endpoint)
-                .withPort((short)input_port)
+                .withClientId(cmdData.input_clientId)
+                .withEndpoint(cmdData.input_endpoint)
+                .withPort((short)cmdData.input_port)
                 .withCleanSession(true)
                 .withProtocolOperationTimeoutMs(60000);
-            if (input_proxyHost != "" && input_proxyPort > 0) {
+            if (cmdData.input_proxyHost != "" && cmdData.input_proxyPort > 0) {
                 HttpProxyOptions proxyOptions = new HttpProxyOptions();
-                proxyOptions.setHost(input_proxyHost);
-                proxyOptions.setPort(input_proxyPort);
+                proxyOptions.setHost(cmdData.input_proxyHost);
+                proxyOptions.setPort(cmdData.input_proxyPort);
                 builder.withHttpProxyOptions(proxyOptions);
             }
             MqttClientConnection connection = builder.build();

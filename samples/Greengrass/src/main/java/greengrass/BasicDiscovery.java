@@ -32,91 +32,67 @@ import utils.commandlineutils.CommandLineUtils;
 public class BasicDiscovery {
 
     static String input_thingName;
-    static String input_region;
-    static String input_rootCaPath;
     static String input_certPath;
     static String input_keyPath;
-    static String input_topic;
-    static String input_mode;
-    static String input_proxyHost;
-    static int input_proxyPort;
 
     static CommandLineUtils cmdUtils;
 
     public static void main(String[] args) {
 
         /**
-         * Register the command line inputs
+         * Parse the command line data and store the values in cmdData for this sample.
          */
         cmdUtils = new CommandLineUtils();
         cmdUtils.registerProgramName("BasicDiscovery");
-        cmdUtils.addCommonMQTTCommands();
-        cmdUtils.removeCommand("endpoint");
-        cmdUtils.registerCommand("thing_name", "<str>", "The name of the IoT thing.");
-        cmdUtils.registerCommand("region", "<str>", "AWS IoT service region (optional, default='us-east-1').");
-        cmdUtils.registerCommand("topic", "<str>", "Topic to subscribe/publish to (optional, default='test/topic').");
-        cmdUtils.registerCommand("mode", "<str>", "Mode options: 'both', 'publish', or 'subscribe' (optional, default='both').");
-        cmdUtils.registerCommand("proxy_host", "<str>", "Websocket proxy host to use (optional, required if --proxy_port is set).");
-        cmdUtils.registerCommand("proxy_port", "<int>", "Websocket proxy port to use (optional, required if --proxy_host is set).");
-        cmdUtils.registerCommand("help", "", "Prints this message");
-        cmdUtils.sendArguments(args);
+        CommandLineUtils.SampleCommandLineData cmdData = cmdUtils.parseSampleInputGreengrassDiscovery(args);
 
-        /**
-         * Gather the input from the command line
-         */
-        input_thingName = cmdUtils.getCommandRequired("thing_name", "");
-        input_region = cmdUtils.getCommandOrDefault("region", "us-east-1");
-        input_rootCaPath = cmdUtils.getCommandOrDefault("ca_file", null);
-        input_certPath = cmdUtils.getCommandRequired("cert", "");
-        input_keyPath = cmdUtils.getCommandRequired("key", "");
-        input_topic = cmdUtils.getCommandOrDefault("topic", "test/topic");
-        input_mode = cmdUtils.getCommandOrDefault("mode", "both");
-        input_proxyHost = cmdUtils.getCommandOrDefault("proxy_host", null);
-        input_proxyPort = Integer.parseInt(cmdUtils.getCommandOrDefault("proxy_port", "0"));
+        input_thingName = cmdData.input_thingName;
+        input_certPath = cmdData.input_cert;
+        input_keyPath = cmdData.input_key;
 
         // ---- Verify file loads ----
         // Get the absolute CA file path
-        final File rootCaFile = new File(input_rootCaPath);
+        final File rootCaFile = new File(cmdData.input_ca);
         if (!rootCaFile.isFile()) {
             throw new RuntimeException("Cannot load root CA from path: " + rootCaFile.getAbsolutePath());
         }
-        input_rootCaPath = rootCaFile.getAbsolutePath();
+        cmdData.input_ca = rootCaFile.getAbsolutePath();
 
-        final File certFile = new File(input_certPath);
+        final File certFile = new File(cmdData.input_cert);
         if (!certFile.isFile()) {
             throw new RuntimeException("Cannot load certificate from path: " + certFile.getAbsolutePath());
         }
-        input_certPath = certFile.getAbsolutePath();
+        cmdData.input_cert = certFile.getAbsolutePath();
 
-        final File keyFile = new File(input_keyPath);
+        final File keyFile = new File(cmdData.input_key);
         if (!keyFile.isFile()) {
             throw new RuntimeException("Cannot load private key from path: " + keyFile.getAbsolutePath());
         }
-        input_keyPath = keyFile.getAbsolutePath();
+        cmdData.input_key = keyFile.getAbsolutePath();
         // ----------------------------
 
-        try(final TlsContextOptions tlsCtxOptions = TlsContextOptions.createWithMtlsFromPath(input_certPath, input_keyPath)) {
+        try(final TlsContextOptions tlsCtxOptions = TlsContextOptions.createWithMtlsFromPath(cmdData.input_cert, cmdData.input_key)) {
             if(TlsContextOptions.isAlpnSupported()) {
                 tlsCtxOptions.withAlpnList(TLS_EXT_ALPN);
             }
-            if(input_rootCaPath != null) {
-                tlsCtxOptions.overrideDefaultTrustStoreFromPath(null, input_rootCaPath);
+            if(cmdData.input_ca != null) {
+                tlsCtxOptions.overrideDefaultTrustStoreFromPath(null, cmdData.input_ca);
             }
             HttpProxyOptions proxyOptions = null;
-            if (input_proxyHost != null && input_proxyPort > 0) {
+            if (cmdData.input_proxyHost != null && cmdData.input_proxyPort > 0) {
                 proxyOptions = new HttpProxyOptions();
-                proxyOptions.setHost(input_proxyHost);
-                proxyOptions.setPort(input_proxyPort);
+                proxyOptions.setHost(cmdData.input_proxyHost);
+                proxyOptions.setPort(cmdData.input_proxyPort);
             }
 
             try(final DiscoveryClientConfig discoveryClientConfig =
                         new DiscoveryClientConfig(tlsCtxOptions,
-                        new SocketOptions(), input_region, 1, proxyOptions);
+                        new SocketOptions(), cmdData.input_signingRegion, 1, proxyOptions);
                 final DiscoveryClient discoveryClient = new DiscoveryClient(discoveryClientConfig);
                 final MqttClientConnection connection = getClientFromDiscovery(discoveryClient)) {
 
-                if ("subscribe".equals(input_mode) || "both".equals(input_mode)) {
-                    final CompletableFuture<Integer> subFuture = connection.subscribe(input_topic, QualityOfService.AT_MOST_ONCE, message -> {
+                if ("subscribe".equals(cmdData.input_mode) || "both".equals(cmdData.input_mode)) {
+                    final CompletableFuture<Integer> subFuture = connection.subscribe(cmdData.input_topic, QualityOfService.AT_MOST_ONCE, message -> {
                         System.out.println(String.format("Message received on topic %s: %s",
                                 message.getTopic(), new String(message.getPayload(), StandardCharsets.UTF_8)));
                     });
@@ -127,8 +103,8 @@ public class BasicDiscovery {
                 final Scanner scanner = new Scanner(System.in);
                 while (true) {
                     String input = null;
-                    if ("publish".equals(input_mode) || "both".equals(input_mode)) {
-                        System.out.println("Enter the message you want to publish to topic " + input_topic + " and press Enter. " +
+                    if ("publish".equals(cmdData.input_mode) || "both".equals(cmdData.input_mode)) {
+                        System.out.println("Enter the message you want to publish to topic " + cmdData.input_topic + " and press Enter. " +
                                 "Type 'exit' or 'quit' to exit this program: ");
                         input = scanner.nextLine();
                     }
@@ -138,8 +114,8 @@ public class BasicDiscovery {
                         break;
                     }
 
-                    if ("publish".equals(input_mode) || "both".equals(input_mode)) {
-                        final CompletableFuture<Integer> publishResult = connection.publish(new MqttMessage(input_topic,
+                    if ("publish".equals(cmdData.input_mode) || "both".equals(cmdData.input_mode)) {
+                        final CompletableFuture<Integer> publishResult = connection.publish(new MqttMessage(cmdData.input_topic,
                                 input.getBytes(StandardCharsets.UTF_8), QualityOfService.AT_MOST_ONCE, false));
                         Integer result = publishResult.get();
                     }

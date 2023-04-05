@@ -48,23 +48,11 @@ public class CognitoConnect {
     public static void main(String[] args) {
 
         /**
-         * Register the command line inputs
+         * Parse the command line data and store the values in cmdData for this sample.
          */
         cmdUtils = new CommandLineUtils();
         cmdUtils.registerProgramName("CognitoConnect");
-        cmdUtils.addCommonMQTTCommands();
-        cmdUtils.registerCommand("signing_region", "<str>", "AWS IoT service region.");
-        cmdUtils.registerCommand("client_id", "<int>", "Client id to use (optional, default='test-*').");
-        cmdUtils.registerCommand("cognito_identity", "<str>", "The Cognito identity ID to use to connect via Cognito");
-        cmdUtils.sendArguments(args);
-
-        /**
-         * Gather the input from the command line
-         */
-        String input_endpoint = cmdUtils.getCommandRequired("endpoint", "");
-        String input_signingRegion = cmdUtils.getCommandOrDefault("signing_region", "us-east-1");
-        String input_client_id = cmdUtils.getCommandOrDefault("client_id", "test-" + UUID.randomUUID().toString());
-        String input_cognitoIdentity = cmdUtils.getCommandRequired("cognito_identity", "");
+        CommandLineUtils.SampleCommandLineData cmdData = cmdUtils.parseSampleInputCognitoConnect(args);
 
         MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
             @Override
@@ -94,17 +82,17 @@ public class CognitoConnect {
             // =================================
             AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(null, null);
             builder.withConnectionEventCallbacks(callbacks)
-                .withClientId(input_client_id)
-                .withEndpoint(input_endpoint)
+                .withClientId(cmdData.input_clientId)
+                .withEndpoint(cmdData.input_endpoint)
                 .withCleanSession(true)
                 .withProtocolOperationTimeoutMs(60000);
 
             builder.withWebsockets(true);
-            builder.withWebsocketSigningRegion(input_signingRegion);
+            builder.withWebsocketSigningRegion(cmdData.input_signingRegion);
 
             CognitoCredentialsProvider.CognitoCredentialsProviderBuilder cognitoBuilder = new CognitoCredentialsProvider.CognitoCredentialsProviderBuilder();
-            String cognitoEndpoint = "cognito-identity." + input_signingRegion + ".amazonaws.com";
-            cognitoBuilder.withEndpoint(cognitoEndpoint).withIdentity(input_cognitoIdentity);
+            String cognitoEndpoint = "cognito-identity." + cmdData.input_signingRegion + ".amazonaws.com";
+            cognitoBuilder.withEndpoint(cognitoEndpoint).withIdentity(cmdData.input_cognitoIdentity);
             cognitoBuilder.withClientBootstrap(ClientBootstrap.getOrCreateStaticDefault());
 
             TlsContextOptions cognitoTlsContextOptions = TlsContextOptions.createDefaultClient();

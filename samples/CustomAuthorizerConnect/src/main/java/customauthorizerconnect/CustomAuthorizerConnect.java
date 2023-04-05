@@ -45,27 +45,11 @@ public class CustomAuthorizerConnect {
     public static void main(String[] args) {
 
         /**
-         * Register the command line inputs
+         * Parse the command line data and store the values in cmdData for this sample.
          */
         cmdUtils = new CommandLineUtils();
         cmdUtils.registerProgramName("CustomAuthorizerConnect");
-        cmdUtils.addCommonMQTTCommands();
-        cmdUtils.registerCommand("client_id", "<int>", "Client id to use (optional, default='test-*').");
-        cmdUtils.registerCommand("custom_auth_username", "<str>", "Username for connecting to custom authorizer (optional, default=null).");
-        cmdUtils.registerCommand("custom_auth_authorizer_name", "<str>", "Name of custom authorizer (optional, default=null).");
-        cmdUtils.registerCommand("custom_auth_authorizer_signature", "<str>", "Signature passed when connecting to custom authorizer (optional, default=null).");
-        cmdUtils.registerCommand("custom_auth_password", "<str>", "Password for connecting to custom authorizer (optional, default=null).");
-        cmdUtils.sendArguments(args);
-
-        /**
-         * Gather the input from the command line
-         */
-        String input_endpoint = cmdUtils.getCommandRequired("endpoint", "");
-        String input_client_id = cmdUtils.getCommandOrDefault("client_id", "test-" + UUID.randomUUID().toString());
-        String input_customAuthUsername = cmdUtils.getCommandOrDefault("custom_auth_username", null);
-        String input_customAuthorizerName = cmdUtils.getCommandOrDefault("custom_auth_authorizer_name", null);
-        String input_customAuthorizerSignature = cmdUtils.getCommandOrDefault("custom_auth_authorizer_signature", null);
-        String input_customAuthPassword = cmdUtils.getCommandOrDefault("custom_auth_password", null);
+        CommandLineUtils.SampleCommandLineData cmdData = cmdUtils.parseSampleInputCustomAuthorizerConnect(args);
 
         MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
             @Override
@@ -88,15 +72,15 @@ public class CustomAuthorizerConnect {
              */
             AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newDefaultBuilder();
             builder.withConnectionEventCallbacks(callbacks)
-                .withClientId(input_client_id)
-                .withEndpoint(input_endpoint)
+                .withClientId(cmdData.input_clientId)
+                .withEndpoint(cmdData.input_endpoint)
                 .withCleanSession(true)
                 .withProtocolOperationTimeoutMs(60000);
             builder.withCustomAuthorizer(
-                input_customAuthUsername,
-                input_customAuthorizerName,
-                input_customAuthorizerSignature,
-                input_customAuthPassword);
+                cmdData.input_customAuthUsername,
+                cmdData.input_customAuthorizerName,
+                cmdData.input_customAuthorizerSignature,
+                cmdData.input_customAuthPassword);
             MqttClientConnection connection = builder.build();
             builder.close();
 
