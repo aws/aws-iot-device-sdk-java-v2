@@ -194,6 +194,7 @@ public class ShadowSample {
          * See the Utils/CommandLineUtils for more information.
          */
         CommandLineUtils.SampleCommandLineData cmdData = CommandLineUtils.getInputForIoTSample("Shadow", args);
+        input_thingName = cmdData.input_thingName;
 
         MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
             @Override
