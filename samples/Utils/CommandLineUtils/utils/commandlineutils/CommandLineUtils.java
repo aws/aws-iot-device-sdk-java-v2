@@ -328,6 +328,7 @@ public class CommandLineUtils {
         addKeyAndCertCommands();
         registerCommand(m_cmd_client_id, "<int>", "Client id to use (optional, default='test-*').");
         registerCommand(m_cmd_port, "<int>", "Port to connect to on the endpoint (optional, default='8883').");
+        sendArguments(args);
 
         SampleCommandLineData returnData = new SampleCommandLineData();
         returnData.input_endpoint = getCommandRequired(m_cmd_endpoint, "");
