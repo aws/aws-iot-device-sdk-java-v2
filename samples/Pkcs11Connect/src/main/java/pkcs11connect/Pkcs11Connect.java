@@ -43,37 +43,11 @@ public class Pkcs11Connect {
     public static void main(String[] args) {
 
         /**
-         * Register the command line inputs
+         * Parse the command line data and store the values in cmdData for this sample.
          */
         cmdUtils = new CommandLineUtils();
         cmdUtils.registerProgramName("Pkcs11PubSub");
-        cmdUtils.addCommonMQTTCommands();
-        cmdUtils.registerCommand("cert", "<path>", "Path to your client certificate in PEM format.");
-        cmdUtils.registerCommand("client_id", "<int>", "Client id to use (optional, default='test-*').");
-        cmdUtils.registerCommand("port", "<int>", "Port to connect to on the endpoint (optional, default='8883').");
-        cmdUtils.registerCommand("pkcs11_lib", "<path>", "Path to PKCS#11 library.");
-        cmdUtils.registerCommand("pin", "<int>", "User PIN for logging into PKCS#11 token.");
-        cmdUtils.registerCommand("token_label", "<str>", "Label of PKCS#11 token to use (optional).");
-        cmdUtils.registerCommand("slot_id", "<int>", "Slot ID containing PKCS#11 token to use (optional).");
-        cmdUtils.registerCommand("key_label", "<str>", "Label of private key on the PKCS#11 token (optional).");
-        cmdUtils.sendArguments(args);
-
-        /**
-         * Gather the input from the command line
-         */
-        String input_endpoint = cmdUtils.getCommandRequired("endpoint", "");
-        String input_certPath = cmdUtils.getCommandRequired("cert", "");
-        String input_CaPath = cmdUtils.getCommandOrDefault("ca_file", "");
-        String input_clientId = cmdUtils.getCommandOrDefault("client_id", "test-" + UUID.randomUUID().toString());
-        int input_port = Integer.parseInt(cmdUtils.getCommandOrDefault("port", "8883"));
-        String input_pkcs11LibPath = cmdUtils.getCommandRequired("pkcs11_lib", "");
-        String input_pkcs11UserPin = cmdUtils.getCommandRequired("pin", "");
-        String input_pkcs11TokenLabel = cmdUtils.getCommandOrDefault("token_label", "");
-        Long input_pkcs11SlotId = null;
-        if (cmdUtils.hasCommand("slot_id")) {
-            input_pkcs11SlotId = Long.parseLong(cmdUtils.getCommandOrDefault("slot_id", "-1"));
-        }
-        String input_pkcs11KeyLabel = cmdUtils.getCommandOrDefault("key_label", "");
+        CommandLineUtils.SampleCommandLineData cmdData = cmdUtils.parseSampleInputPkcs11Connect(args);
 
         MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
             @Override
@@ -90,11 +64,11 @@ public class Pkcs11Connect {
         };
 
         // Load PKCS#11 library
-        try (Pkcs11Lib pkcs11Lib = new Pkcs11Lib(input_pkcs11LibPath);
+        try (Pkcs11Lib pkcs11Lib = new Pkcs11Lib(cmdData.input_pkcs11LibPath);
                 TlsContextPkcs11Options pkcs11Options = new TlsContextPkcs11Options(pkcs11Lib)) {
 
-            pkcs11Options.withCertificateFilePath(input_certPath);
-            pkcs11Options.withUserPin(input_pkcs11UserPin);
+            pkcs11Options.withCertificateFilePath(cmdData.input_cert);
+            pkcs11Options.withUserPin(cmdData.input_pkcs11UserPin);
 
             // Pass arguments to help find the correct PKCS#11 token,
             // and the private key on that token. You don't need to pass
@@ -103,29 +77,29 @@ public class Pkcs11Connect {
             // are multiple tokens, or multiple keys to choose from, you
             // must narrow down which one should be used.
 
-            if (input_pkcs11TokenLabel != null && input_pkcs11TokenLabel != "") {
-                pkcs11Options.withTokenLabel(input_pkcs11TokenLabel);
+            if (cmdData.input_pkcs11TokenLabel != null && cmdData.input_pkcs11TokenLabel != "") {
+                pkcs11Options.withTokenLabel(cmdData.input_pkcs11TokenLabel);
             }
 
-            if (input_pkcs11SlotId != null) {
-                pkcs11Options.withSlotId(input_pkcs11SlotId);
+            if (cmdData.input_pkcs11SlotId != null) {
+                pkcs11Options.withSlotId(cmdData.input_pkcs11SlotId);
             }
 
-            if (input_pkcs11KeyLabel != null && input_pkcs11KeyLabel != "") {
-                pkcs11Options.withPrivateKeyObjectLabel(input_pkcs11KeyLabel);
+            if (cmdData.input_pkcs11KeyLabel != null && cmdData.input_pkcs11KeyLabel != "") {
+                pkcs11Options.withPrivateKeyObjectLabel(cmdData.input_pkcs11KeyLabel);
             }
 
             try (AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder
                     .newMtlsPkcs11Builder(pkcs11Options)) {
 
-                if (input_CaPath != null && input_CaPath != "") {
-                    builder.withCertificateAuthorityFromPath(null, input_CaPath);
+                if (cmdData.input_ca != null && cmdData.input_ca != "") {
+                    builder.withCertificateAuthorityFromPath(null, cmdData.input_ca);
                 }
 
                 builder.withConnectionEventCallbacks(callbacks)
-                        .withClientId(input_clientId)
-                        .withEndpoint(input_endpoint)
-                        .withPort((short) input_port)
+                        .withClientId(cmdData.input_clientId)
+                        .withEndpoint(cmdData.input_endpoint)
+                        .withPort((short) cmdData.input_port)
                         .withCleanSession(true)
                         .withProtocolOperationTimeoutMs(60000);
 

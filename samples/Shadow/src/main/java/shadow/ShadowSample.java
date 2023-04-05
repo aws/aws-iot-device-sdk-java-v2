@@ -187,26 +187,14 @@ public class ShadowSample {
     }
 
     public static void main(String[] args) {
-        cmdUtils = new CommandLineUtils();
-        cmdUtils.registerProgramName("ShadowSample");
-        cmdUtils.addCommonMQTTCommands();
-        cmdUtils.registerCommand("key", "<path>", "Path to your key in PEM format.");
-        cmdUtils.registerCommand("cert", "<path>", "Path to your client certificate in PEM format.");
-        cmdUtils.registerCommand("port", "<int>", "Port to use (optional, default='8883').");
-        cmdUtils.registerCommand("thing_name", "<str>", "The name of the IoT thing.");
-        cmdUtils.registerCommand("client_id", "<int>", "Client id to use (optional, default='test-*')");
-        cmdUtils.sendArguments(args);
 
         /**
-         * Gather the input from the command line
+         * Parse the command line data and store the values in cmdData for this sample.
          */
-        String input_endpoint = cmdUtils.getCommandRequired("endpoint", "");
-        String input_cert = cmdUtils.getCommandRequired("cert", "");
-        String input_key = cmdUtils.getCommandRequired("key", "");
-        String input_ca = cmdUtils.getCommandOrDefault("ca", "");
-        String input_client_id = cmdUtils.getCommandOrDefault("client_id", "test-" + UUID.randomUUID().toString());
-        int input_port = Integer.parseInt(cmdUtils.getCommandOrDefault("port", "8883"));
-        input_thingName = cmdUtils.getCommandRequired("thing_name", "");
+        cmdUtils = new CommandLineUtils();
+        cmdUtils.registerProgramName("ShadowSample");
+        CommandLineUtils.SampleCommandLineData cmdData = cmdUtils.parseSampleInputShadow(args);
+        input_thingName = cmdData.input_thingName;
 
         MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
             @Override
@@ -227,14 +215,14 @@ public class ShadowSample {
             /**
              * Create the MQTT connection from the builder
              */
-            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(input_cert, input_key);
-            if (input_ca != "") {
-                builder.withCertificateAuthorityFromPath(null, input_ca);
+            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(cmdData.input_cert, cmdData.input_key);
+            if (cmdData.input_ca != "") {
+                builder.withCertificateAuthorityFromPath(null, cmdData.input_ca);
             }
             builder.withConnectionEventCallbacks(callbacks)
-                .withClientId(input_client_id)
-                .withEndpoint(input_endpoint)
-                .withPort((short)input_port)
+                .withClientId(cmdData.input_clientId)
+                .withEndpoint(cmdData.input_endpoint)
+                .withPort((short)cmdData.input_port)
                 .withCleanSession(true)
                 .withProtocolOperationTimeoutMs(60000);
             MqttClientConnection connection = builder.build();

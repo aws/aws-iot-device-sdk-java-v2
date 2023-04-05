@@ -43,27 +43,11 @@ public class WebsocketConnect {
     public static void main(String[] args) {
 
         /**
-         * Register the command line inputs
+         * Parse the command line data and store the values in cmdData for this sample.
          */
         cmdUtils = new CommandLineUtils();
         cmdUtils.registerProgramName("WebsocketConnect");
-        cmdUtils.addCommonMQTTCommands();
-        cmdUtils.addCommonProxyCommands();
-        cmdUtils.registerCommand("signing_region", "<str>", "AWS IoT service region.");
-        cmdUtils.registerCommand("client_id", "<int>", "Client id to use (optional, default='test-*').");
-        cmdUtils.registerCommand("port", "<int>", "Port to connect to on the endpoint (optional, default='443').");
-        cmdUtils.sendArguments(args);
-
-        /**
-         * Gather the input from the command line
-         */
-        String input_endpoint = cmdUtils.getCommandRequired("endpoint", "");
-        String input_ca = cmdUtils.getCommandOrDefault("ca", "");
-        String input_signingRegion = cmdUtils.getCommandRequired("signing_region", "");
-        String input_client_id = cmdUtils.getCommandOrDefault("client_id", "test-" + UUID.randomUUID().toString());
-        int input_port = Integer.parseInt(cmdUtils.getCommandOrDefault("port", "443"));
-        String input_proxyHost = cmdUtils.getCommandOrDefault("proxy_host", "");
-        int input_proxyPort = Integer.parseInt(cmdUtils.getCommandOrDefault("proxy_port", "0"));
+        CommandLineUtils.SampleCommandLineData cmdData = cmdUtils.parseSampleInputWebsocketConnect(args);
 
         MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
             @Override
@@ -85,23 +69,23 @@ public class WebsocketConnect {
              * Create the MQTT connection from the builder
              */
             AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(null, null);
-            if (input_ca != "") {
-                builder.withCertificateAuthorityFromPath(null, input_ca);
+            if (cmdData.input_ca != "") {
+                builder.withCertificateAuthorityFromPath(null, cmdData.input_ca);
             }
             builder.withConnectionEventCallbacks(callbacks)
-                .withClientId(input_client_id)
-                .withEndpoint(input_endpoint)
-                .withPort((short)input_port)
+                .withClientId(cmdData.input_clientId)
+                .withEndpoint(cmdData.input_endpoint)
+                .withPort((short)cmdData.input_port)
                 .withCleanSession(true)
                 .withProtocolOperationTimeoutMs(60000);
-            if (input_proxyHost != "" && input_proxyPort > 0) {
+            if (cmdData.input_proxyHost != "" && cmdData.input_proxyPort > 0) {
                 HttpProxyOptions proxyOptions = new HttpProxyOptions();
-                proxyOptions.setHost(input_proxyHost);
-                proxyOptions.setPort(input_proxyPort);
+                proxyOptions.setHost(cmdData.input_proxyHost);
+                proxyOptions.setPort(cmdData.input_proxyPort);
                 builder.withHttpProxyOptions(proxyOptions);
             }
             builder.withWebsockets(true);
-            builder.withWebsocketSigningRegion(input_signingRegion);
+            builder.withWebsocketSigningRegion(cmdData.input_signingRegion);
             MqttClientConnection connection = builder.build();
             builder.close();
 

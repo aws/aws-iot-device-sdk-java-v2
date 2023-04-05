@@ -35,35 +35,12 @@ public class RawConnect {
 
     public static void main(String[] args) {
 
+        /**
+         * Parse the command line data and store the values in cmdData for this sample.
+         */
         cmdUtils = new CommandLineUtils();
         cmdUtils.registerProgramName("RawConnect");
-        cmdUtils.addCommonMQTTCommands();
-        cmdUtils.registerCommand("key", "<path>", "Path to your key in PEM format.");
-        cmdUtils.registerCommand("cert", "<path>", "Path to your client certificate in PEM format.");
-        cmdUtils.addCommonProxyCommands();
-        cmdUtils.registerCommand("client_id", "<int>", "Client id to use (optional, default='test-*').");
-        cmdUtils.registerCommand("username", "<str>", "Username to use as part of the connection/authentication process.");
-        cmdUtils.registerCommand("password", "<str>", "Password to use as part of the connection/authentication process.");
-        cmdUtils.registerCommand("protocol", "<str>", "ALPN protocol to use (optional, default='x-amzn-mqtt-ca').");
-        cmdUtils.registerCommand("auth_params", "<comma delimited list>",
-                "Comma delimited list of auth parameters. For websockets these will be set as headers. " +
-                "For raw mqtt these will be appended to user_name. (optional)");
-        cmdUtils.sendArguments(args);
-
-        String input_endpoint = cmdUtils.getCommandRequired("endpoint", "");
-        String input_clientId = cmdUtils.getCommandOrDefault("client_id", "test-" + UUID.randomUUID().toString());
-        String input_caPath = cmdUtils.getCommandOrDefault("ca_file", "");
-        String input_certPath = cmdUtils.getCommandRequired("cert", "");
-        String input_keyPath = cmdUtils.getCommandRequired("key", "");
-        String input_proxyHost = cmdUtils.getCommandOrDefault("proxy_host", "");
-        int input_proxyPort = Integer.parseInt(cmdUtils.getCommandOrDefault("proxy_port", "8080"));
-        String input_userName = cmdUtils.getCommandRequired("username", "");
-        String input_password = cmdUtils.getCommandRequired("password", "");
-        String input_protocolName = cmdUtils.getCommandOrDefault("protocol", "x-amzn-mqtt-ca");
-        List<String> input_authParams = null;
-        if (cmdUtils.hasCommand("auth_params")) {
-            input_authParams = Arrays.asList(cmdUtils.getCommand("auth_params").split("\\s*,\\s*"));
-        }
+        CommandLineUtils.SampleCommandLineData cmdData = cmdUtils.parseSampleInputPkcs11Connect(args);
 
         MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
             @Override
@@ -79,33 +56,33 @@ public class RawConnect {
             }
         };
 
-        if (input_authParams != null && input_authParams.size() > 0) {
-            if (input_userName.length() > 0) {
+        if (cmdData.input_authParams != null && cmdData.input_authParams.size() > 0) {
+            if (cmdData.input_username.length() > 0) {
                 StringBuilder usernameBuilder = new StringBuilder();
 
-                usernameBuilder.append(input_userName);
+                usernameBuilder.append(cmdData.input_username);
                 usernameBuilder.append("?");
-                for (int i = 0; i < input_authParams.size(); ++i) {
-                    usernameBuilder.append(input_authParams.get(i));
-                    if (i + 1 < input_authParams.size()) {
+                for (int i = 0; i < cmdData.input_authParams.size(); ++i) {
+                    usernameBuilder.append(cmdData.input_authParams.get(i));
+                    if (i + 1 < cmdData.input_authParams.size()) {
                         usernameBuilder.append("&");
                     }
                 }
-                input_userName = usernameBuilder.toString();
+                cmdData.input_username = usernameBuilder.toString();
             }
         }
 
         try(
-            TlsContextOptions tlsContextOptions = TlsContextOptions.createWithMtlsFromPath(input_certPath, input_keyPath)) {
+            TlsContextOptions tlsContextOptions = TlsContextOptions.createWithMtlsFromPath(cmdData.input_cert, cmdData.input_key)) {
 
-            if (input_caPath != null) {
-                tlsContextOptions.overrideDefaultTrustStoreFromPath(null, input_caPath);
+            if (cmdData.input_ca != null) {
+                tlsContextOptions.overrideDefaultTrustStoreFromPath(null, cmdData.input_ca);
             }
 
             int port = 8883;
             if (TlsContextOptions.isAlpnSupported()) {
                 port = 443;
-                tlsContextOptions.withAlpnList(input_protocolName);
+                tlsContextOptions.withAlpnList(cmdData.input_protocolName);
             }
 
             try(TlsContext tlsContext = new TlsContext(tlsContextOptions);
@@ -113,14 +90,14 @@ public class RawConnect {
                 MqttConnectionConfig config = new MqttConnectionConfig()) {
 
                 config.setMqttClient(client);
-                config.setClientId(input_clientId);
+                config.setClientId(cmdData.input_clientId);
                 config.setConnectionCallbacks(callbacks);
                 config.setCleanSession(true);
-                config.setEndpoint(input_endpoint);
+                config.setEndpoint(cmdData.input_endpoint);
                 config.setPort(port);
 
-                if (input_userName != null && input_userName.length() > 0) {
-                    config.setLogin(input_userName, input_password);
+                if (cmdData.input_username != null && cmdData.input_username.length() > 0) {
+                    config.setLogin(cmdData.input_username, cmdData.input_password);
                 }
 
                 try (MqttClientConnection connection = new MqttClientConnection(config)) {

@@ -46,34 +46,11 @@ public class X509CredentialsProviderConnect {
     public static void main(String[] args) {
 
         /**
-         * Register the command line inputs
+         * Parse the command line data and store the values in cmdData for this sample.
          */
         cmdUtils = new CommandLineUtils();
         cmdUtils.registerProgramName("x509CredentialsProviderConnect");
-        cmdUtils.addCommonMQTTCommands();
-        cmdUtils.addCommonProxyCommands();
-        cmdUtils.addCommonX509Commands();
-        cmdUtils.registerCommand("signing_region", "<str>", "AWS IoT service region.");
-        cmdUtils.registerCommand("client_id", "<int>", "Client id to use (optional, default='test-*').");
-        cmdUtils.registerCommand("port", "<int>", "Port to connect to on the endpoint (optional, default='8883').");
-        cmdUtils.sendArguments(args);
-
-        /**
-         * Gather the input from the command line
-         */
-        String input_endpoint = cmdUtils.getCommandRequired("endpoint", "");
-        String input_ca = cmdUtils.getCommandOrDefault("ca", "");
-        String input_signingRegion = cmdUtils.getCommandRequired("signing_region", "");
-        String input_client_id = cmdUtils.getCommandOrDefault("client_id", "test-" + UUID.randomUUID().toString());
-        int input_port = Integer.parseInt(cmdUtils.getCommandOrDefault("port", "443"));
-        String input_proxyHost = cmdUtils.getCommandOrDefault("proxy_host", "");
-        int input_proxyPort = Integer.parseInt(cmdUtils.getCommandOrDefault("proxy_port", "0"));
-        String input_x509Endpoint = cmdUtils.getCommandRequired("x509_endpoint", "");
-        String input_x509Role = cmdUtils.getCommandRequired("x509_role_alias", "");
-        String input_x509ThingName = cmdUtils.getCommandRequired("x509_thing_name", "");
-        String input_x509Cert = cmdUtils.getCommandRequired("x509_cert", "");
-        String input_x509Key = cmdUtils.getCommandRequired("x509_key", "");
-        String input_x509Ca = cmdUtils.getCommandOrDefault("x509_ca_file", null);
+        CommandLineUtils.SampleCommandLineData cmdData = cmdUtils.parseSampleInputX509Connect(args);
 
         MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
             @Override
@@ -96,36 +73,36 @@ public class X509CredentialsProviderConnect {
              */
             // ==============================
             AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(null, null);
-            if (input_ca != "") {
-                builder.withCertificateAuthorityFromPath(null, input_ca);
+            if (cmdData.input_ca != "") {
+                builder.withCertificateAuthorityFromPath(null, cmdData.input_ca);
             }
             builder.withConnectionEventCallbacks(callbacks)
-                .withClientId(input_client_id)
-                .withEndpoint(input_endpoint)
-                .withPort((short)input_port)
+                .withClientId(cmdData.input_clientId)
+                .withEndpoint(cmdData.input_endpoint)
+                .withPort((short)cmdData.input_port)
                 .withCleanSession(true)
                 .withProtocolOperationTimeoutMs(60000);
             HttpProxyOptions proxyOptions = null;
-            if (input_proxyHost != "" && input_proxyPort > 0) {
+            if (cmdData.input_proxyHost != "" && cmdData.input_proxyPort > 0) {
                 proxyOptions = new HttpProxyOptions();
-                proxyOptions.setHost(input_proxyHost);
-                proxyOptions.setPort(input_proxyPort);
+                proxyOptions.setHost(cmdData.input_proxyHost);
+                proxyOptions.setPort(cmdData.input_proxyPort);
                 builder.withHttpProxyOptions(proxyOptions);
             }
             builder.withWebsockets(true);
-            builder.withWebsocketSigningRegion(input_signingRegion);
+            builder.withWebsocketSigningRegion(cmdData.input_signingRegion);
 
-            TlsContextOptions x509TlsOptions = TlsContextOptions.createWithMtlsFromPath(input_x509Cert, input_x509Key);
-            if (input_x509Ca != null) {
-                x509TlsOptions.withCertificateAuthorityFromPath(null, input_x509Ca);
+            TlsContextOptions x509TlsOptions = TlsContextOptions.createWithMtlsFromPath(cmdData.input_x509Cert, cmdData.input_x509Key);
+            if (cmdData.input_x509Ca != null) {
+                x509TlsOptions.withCertificateAuthorityFromPath(null, cmdData.input_x509Ca);
             }
 
             ClientTlsContext x509TlsContext = new ClientTlsContext(x509TlsOptions);
             X509CredentialsProvider.X509CredentialsProviderBuilder x509builder = new X509CredentialsProvider.X509CredentialsProviderBuilder()
                 .withTlsContext(x509TlsContext)
-                .withEndpoint(input_x509Endpoint)
-                .withRoleAlias(input_x509Role)
-                .withThingName(input_x509ThingName)
+                .withEndpoint(cmdData.input_x509Endpoint)
+                .withRoleAlias(cmdData.input_x509Role)
+                .withThingName(cmdData.input_x509ThingName)
                 .withProxyOptions(proxyOptions);
             X509CredentialsProvider provider = x509builder.build();
             builder.withWebsocketCredentialsProvider(provider);

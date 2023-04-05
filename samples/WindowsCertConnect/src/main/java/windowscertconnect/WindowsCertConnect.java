@@ -43,23 +43,12 @@ public class WindowsCertConnect {
 
     public static void main(String[] args) {
 
+        /**
+         * Parse the command line data and store the values in cmdData for this sample.
+         */
         cmdUtils = new CommandLineUtils();
         cmdUtils.registerProgramName("WindowsCertConnect");
-        cmdUtils.addCommonMQTTCommands();
-        cmdUtils.registerCommand("cert", "<str>", "Path to certificate in Windows cert store. " +
-                                                  "e.g. \"CurrentUser\\MY\\6ac133ac58f0a88b83e9c794eba156a98da39b4c\"");
-        cmdUtils.registerCommand("client_id", "<int>", "Client id to use (optional, default='test-*').");
-        cmdUtils.registerCommand("port", "<int>", "Port to connect to on the endpoint (optional, default='8883').");
-        cmdUtils.sendArguments(args);
-
-        /**
-         * Gather the input from the command line
-         */
-        String input_endpoint = cmdUtils.getCommandRequired("endpoint", "");
-        String input_windowsCertStorePath = cmdUtils.getCommandRequired("cert", "");
-        String input_ca = cmdUtils.getCommandOrDefault("ca", "");
-        String input_client_id = cmdUtils.getCommandOrDefault("client_id", "test-" + UUID.randomUUID().toString());
-        int input_port = Integer.parseInt(cmdUtils.getCommandOrDefault("port", "8883"));
+        CommandLineUtils.SampleCommandLineData cmdData = cmdUtils.parseSampleInputWindowsCertConnect(args);
 
         MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
             @Override
@@ -76,14 +65,14 @@ public class WindowsCertConnect {
         };
 
         try {
-            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsWindowsCertStorePathBuilder(input_windowsCertStorePath);
-            if (input_ca != "") {
-                builder.withCertificateAuthorityFromPath(null, input_ca);
+            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsWindowsCertStorePathBuilder(cmdData.input_cert);
+            if (cmdData.input_ca != "") {
+                builder.withCertificateAuthorityFromPath(null, cmdData.input_ca);
             }
             builder.withConnectionEventCallbacks(callbacks)
-                .withClientId(input_client_id)
-                .withEndpoint(input_endpoint)
-                .withPort((short)input_port)
+                .withClientId(cmdData.input_clientId)
+                .withEndpoint(cmdData.input_endpoint)
+                .withPort((short)cmdData.input_port)
                 .withCleanSession(true)
                 .withProtocolOperationTimeoutMs(60000);
             MqttClientConnection connection = builder.build();

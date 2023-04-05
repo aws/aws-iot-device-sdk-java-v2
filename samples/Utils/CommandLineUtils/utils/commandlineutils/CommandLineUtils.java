@@ -182,18 +182,20 @@ public class CommandLineUtils {
 
     public class SampleCommandLineData
     {
+        // General use
         public String input_endpoint;
         public String input_cert;
         public String input_key;
         public String input_ca;
         public String input_clientId;
         public int input_port;
+        // Proxy
         public String input_proxyHost;
         public int input_proxyPort;
-        public String input_topic;
         // PubSub
+        public String input_topic;
         public String input_message;
-        public int input_messagesToPublish;
+        public int input_count;
         // Websockets
         public String input_signingRegion;
         // Cognito
@@ -216,6 +218,26 @@ public class CommandLineUtils {
         public String input_keystoreFormat;
         public String input_certificateAlias;
         public String input_certificatePassword;
+        // Shared Subscription
+        public String input_groupIdentifier;
+        // PKCS#11
+        public String input_pkcs11LibPath;
+        public String input_pkcs11UserPin;
+        public String input_pkcs11TokenLabel;
+        public Long input_pkcs11SlotId;
+        public String input_pkcs11KeyLabel;
+        // Raw Connect
+        public String input_username;
+        public String input_password;
+        public String input_protocolName;
+        public List<String> input_authParams;
+        // X509
+        public String input_x509Endpoint;
+        public String input_x509Role;
+        public String input_x509ThingName;
+        public String input_x509Cert;
+        public String input_x509Key;
+        public String input_x509Ca;
     }
 
     public SampleCommandLineData parseSampleInputBasicConnect(String[] args)
@@ -260,7 +282,7 @@ public class CommandLineUtils {
         returnData.input_proxyPort = Integer.parseInt(getCommandOrDefault(m_cmd_proxy_port, "0"));
         returnData.input_topic = getCommandOrDefault(m_cmd_topic, "test/topic");
         returnData.input_message = getCommandOrDefault(m_cmd_message, "Hello World!");
-        returnData.input_messagesToPublish = Integer.parseInt(getCommandOrDefault(m_cmd_count, "10"));
+        returnData.input_count = Integer.parseInt(getCommandOrDefault(m_cmd_count, "10"));
         return returnData;
     }
 
@@ -414,7 +436,199 @@ public class CommandLineUtils {
         return returnData;
     }
 
-    // Constants for commonly used/needed commands
+    public SampleCommandLineData parseSampleInputMqtt5PubSub(String [] args)
+    {
+        addCommonMQTTCommands();
+        addCommonTopicMessageCommands();
+        addKeyAndCertCommands();
+        registerCommand(m_cmd_client_id, "<int>", "Client id to use (optional, default='test-*').");
+        registerCommand(m_cmd_port, "<int>", "Port to connect to on the endpoint (optional, default='8883').");
+        registerCommand(m_cmd_count, "<int>", "Number of messages to publish (optional, default='10').");
+        registerCommand(m_cmd_signing_region, "<string>", "Websocket region to use (will use websockets to connect if defined).");
+        sendArguments(args);
+
+        SampleCommandLineData returnData = new SampleCommandLineData();
+        returnData.input_endpoint = getCommandRequired(m_cmd_endpoint, "");
+        returnData.input_cert = getCommandRequired(m_cmd_cert_file, "");
+        returnData.input_key = getCommandRequired(m_cmd_key_file, "");
+        returnData.input_ca = getCommandOrDefault(m_cmd_ca_file, "");
+        returnData.input_clientId = getCommandOrDefault(m_cmd_client_id, "test-" + UUID.randomUUID().toString());
+        returnData.input_port = Integer.parseInt(getCommandOrDefault(m_cmd_port, "8883"));
+        returnData.input_proxyHost = getCommandOrDefault(m_cmd_proxy_host, "");
+        returnData.input_proxyPort = Integer.parseInt(getCommandOrDefault(m_cmd_proxy_port, "0"));
+        returnData.input_topic = getCommandOrDefault(m_cmd_topic, "test/topic");
+        returnData.input_message = getCommandOrDefault(m_cmd_message, "Hello World!");
+        returnData.input_count = Integer.parseInt(getCommandOrDefault(m_cmd_count, "10"));
+        returnData.input_signingRegion = getCommandOrDefault(m_cmd_signing_region, null);
+        return returnData;
+    }
+
+    public SampleCommandLineData parseSampleInputMqtt5SharedSubscription(String [] args)
+    {
+        addCommonMQTTCommands();
+        addCommonTopicMessageCommands();
+        addKeyAndCertCommands();
+        registerCommand(m_cmd_client_id, "<int>", "Client id to use (optional, default='test-*').");
+        registerCommand(m_cmd_port, "<int>", "Port to connect to on the endpoint (optional, default='8883').");
+        registerCommand(m_cmd_count, "<int>", "Number of messages to publish (optional, default='10').");
+        registerCommand(m_cmd_group_identifier, "<string>", "The group identifier to use in the shared subscription (optional, default='java-sample')");
+        sendArguments(args);
+
+        SampleCommandLineData returnData = new SampleCommandLineData();
+        returnData.input_endpoint = getCommandRequired(m_cmd_endpoint, "");
+        returnData.input_cert = getCommandRequired(m_cmd_cert_file, "");
+        returnData.input_key = getCommandRequired(m_cmd_key_file, "");
+        returnData.input_ca = getCommandOrDefault(m_cmd_ca_file, "");
+        returnData.input_clientId = getCommandOrDefault(m_cmd_client_id, "test-" + UUID.randomUUID().toString());
+        returnData.input_port = Integer.parseInt(getCommandOrDefault(m_cmd_port, "8883"));
+        returnData.input_proxyHost = getCommandOrDefault(m_cmd_proxy_host, "");
+        returnData.input_proxyPort = Integer.parseInt(getCommandOrDefault(m_cmd_proxy_port, "0"));
+        returnData.input_topic = getCommandOrDefault(m_cmd_topic, "test/topic");
+        returnData.input_message = getCommandOrDefault(m_cmd_message, "Hello World!");
+        returnData.input_count = Integer.parseInt(getCommandOrDefault(m_cmd_count, "10"));
+        returnData.input_groupIdentifier = getCommandRequired(m_cmd_group_identifier, "");
+        return returnData;
+    }
+
+    public SampleCommandLineData parseSampleInputPkcs11Connect(String [] args)
+    {
+        addCommonMQTTCommands();
+        registerCommand(m_cmd_cert_file, "<path>", "Path to your client certificate in PEM format.");
+        registerCommand(m_cmd_client_id, "<int>", "Client id to use (optional, default='test-*').");
+        registerCommand(m_cmd_port, "<int>", "Port to connect to on the endpoint (optional, default='8883').");
+        registerCommand(m_cmd_pkcs11_lib, "<path>", "Path to PKCS#11 library.");
+        registerCommand(m_cmd_pkcs11_pin, "<int>", "User PIN for logging into PKCS#11 token.");
+        registerCommand(m_cmd_pkcs11_token, "<str>", "Label of PKCS#11 token to use (optional).");
+        registerCommand(m_cmd_pkcs11_slot, "<int>", "Slot ID containing PKCS#11 token to use (optional).");
+        registerCommand(m_cmd_pkcs11_key, "<str>", "Label of private key on the PKCS#11 token (optional).");
+        sendArguments(args);
+
+        SampleCommandLineData returnData = new SampleCommandLineData();
+        returnData.input_endpoint = getCommandRequired(m_cmd_endpoint, "");
+        returnData.input_cert = getCommandRequired(m_cmd_cert_file, "");
+        returnData.input_ca = getCommandOrDefault(m_cmd_ca_file, "");
+        returnData.input_clientId = getCommandOrDefault(m_cmd_client_id, "test-" + UUID.randomUUID().toString());
+        returnData.input_port = Integer.parseInt(getCommandOrDefault(m_cmd_port, "8883"));
+        returnData.input_pkcs11LibPath = getCommandRequired(m_cmd_pkcs11_lib, "");
+        returnData.input_pkcs11UserPin = getCommandRequired(m_cmd_pkcs11_pin, "");
+        returnData.input_pkcs11TokenLabel = getCommandOrDefault(m_cmd_pkcs11_token, "");
+        returnData.input_pkcs11SlotId = null;
+        if (hasCommand(m_cmd_pkcs11_slot)) {
+            returnData.input_pkcs11SlotId = Long.parseLong(getCommandOrDefault(m_cmd_pkcs11_slot, "-1"));
+        }
+        returnData.input_pkcs11KeyLabel = getCommandOrDefault(m_cmd_pkcs11_key, "");
+        return returnData;
+    }
+
+    public SampleCommandLineData parseSampleInputRawConnect(String [] args)
+    {
+        addCommonMQTTCommands();
+        addKeyAndCertCommands();
+        addCommonProxyCommands();
+        registerCommand(m_cmd_client_id, "<int>", "Client id to use (optional, default='test-*').");
+        registerCommand(m_cmd_username, "<str>", "Username to use as part of the connection/authentication process.");
+        registerCommand(m_cmd_password, "<str>", "Password to use as part of the connection/authentication process.");
+        registerCommand(m_cmd_protocol, "<str>", "ALPN protocol to use (optional, default='x-amzn-mqtt-ca').");
+        registerCommand(m_cmd_auth_params, "<comma delimited list>",
+                "Comma delimited list of auth parameters. For websockets these will be set as headers. " +
+                "For raw mqtt these will be appended to user_name. (optional)");
+        sendArguments(args);
+
+        SampleCommandLineData returnData = new SampleCommandLineData();
+        returnData.input_endpoint = getCommandRequired(m_cmd_endpoint, "");
+        returnData.input_clientId = getCommandOrDefault(m_cmd_client_id, "test-" + UUID.randomUUID().toString());
+        returnData.input_ca = getCommandOrDefault(m_cmd_ca_file, "");
+        returnData.input_cert = getCommandRequired(m_cmd_cert_file, "");
+        returnData.input_key = getCommandRequired(m_cmd_key_file, "");
+        returnData.input_proxyHost = getCommandOrDefault(m_cmd_proxy_host, "");
+        returnData.input_proxyPort = Integer.parseInt(getCommandOrDefault(m_cmd_proxy_port, "8080"));
+        returnData.input_username = getCommandRequired(m_cmd_username, "");
+        returnData.input_password = getCommandRequired(m_cmd_password, "");
+        returnData.input_protocolName = getCommandOrDefault(m_cmd_protocol, "x-amzn-mqtt-ca");
+        returnData.input_authParams = null;
+        if (hasCommand(m_cmd_auth_params)) {
+            returnData.input_authParams = Arrays.asList(getCommand(m_cmd_auth_params).split("\\s*,\\s*"));
+        }
+        return returnData;
+    }
+
+    public SampleCommandLineData parseSampleInputShadow(String [] args)
+    {
+        // Shadow and Jobs use the same inputs currently
+        return parseSampleInputJobs(args);
+    }
+
+    public SampleCommandLineData parseSampleInputWebsocketConnect(String [] args)
+    {
+        addCommonMQTTCommands();
+        addCommonProxyCommands();
+        registerCommand(m_cmd_signing_region, "<str>", "AWS IoT service region.");
+        registerCommand(m_cmd_client_id, "<int>", "Client id to use (optional, default='test-*').");
+        registerCommand(m_cmd_port, "<int>", "Port to connect to on the endpoint (optional, default='443').");
+        sendArguments(args);
+
+        SampleCommandLineData returnData = new SampleCommandLineData();
+        returnData.input_endpoint = getCommandRequired(m_cmd_endpoint, "");
+        returnData.input_ca = getCommandOrDefault(m_cmd_ca_file, "");
+        returnData.input_signingRegion = getCommandRequired(m_cmd_signing_region, "");
+        returnData.input_clientId = getCommandOrDefault(m_cmd_client_id, "test-" + UUID.randomUUID().toString());
+        returnData.input_port = Integer.parseInt(getCommandOrDefault(m_cmd_port, "443"));
+        returnData.input_proxyHost = getCommandOrDefault(m_cmd_proxy_host, "");
+        returnData.input_proxyPort = Integer.parseInt(getCommandOrDefault(m_cmd_proxy_port, "0"));
+        return returnData;
+    }
+
+    public SampleCommandLineData parseSampleInputWindowsCertConnect(String [] args)
+    {
+        addCommonMQTTCommands();
+        registerCommand(m_cmd_cert_file, "<str>", "Path to certificate in Windows cert store. " +
+                                                  "e.g. \"CurrentUser\\MY\\6ac133ac58f0a88b83e9c794eba156a98da39b4c\"");
+        registerCommand(m_cmd_client_id, "<int>", "Client id to use (optional, default='test-*').");
+        registerCommand(m_cmd_port, "<int>", "Port to connect to on the endpoint (optional, default='8883').");
+        sendArguments(args);
+
+        SampleCommandLineData returnData = new SampleCommandLineData();
+        returnData.input_endpoint = getCommandRequired("endpoint", "");
+        returnData.input_cert = getCommandRequired("cert", "");
+        returnData.input_ca = getCommandOrDefault("ca", "");
+        returnData.input_clientId = getCommandOrDefault("client_id", "test-" + UUID.randomUUID().toString());
+        returnData.input_port = Integer.parseInt(getCommandOrDefault("port", "8883"));
+        return returnData;
+    }
+
+    public SampleCommandLineData parseSampleInputX509Connect(String [] args)
+    {
+        addCommonMQTTCommands();
+        addCommonProxyCommands();
+        addCommonX509Commands();
+        registerCommand(m_cmd_signing_region, "<str>", "AWS IoT service region.");
+        registerCommand(m_cmd_client_id, "<int>", "Client id to use (optional, default='test-*').");
+        registerCommand(m_cmd_port, "<int>", "Port to connect to on the endpoint (optional, default='8883').");
+        sendArguments(args);
+
+        /**
+         * Gather the input from the command line
+         */
+        SampleCommandLineData returnData = new SampleCommandLineData();
+        returnData.input_endpoint = getCommandRequired(m_cmd_endpoint, "");
+        returnData.input_ca = getCommandOrDefault(m_cmd_ca_file, "");
+        returnData.input_signingRegion = getCommandRequired(m_cmd_signing_region, "");
+        returnData.input_clientId = getCommandOrDefault(m_cmd_client_id, "test-" + UUID.randomUUID().toString());
+        returnData.input_port = Integer.parseInt(getCommandOrDefault(m_cmd_port, "443"));
+        returnData.input_proxyHost = getCommandOrDefault(m_cmd_proxy_host, "");
+        returnData.input_proxyPort = Integer.parseInt(getCommandOrDefault(m_cmd_proxy_port, "0"));
+        returnData.input_x509Endpoint = getCommandRequired(m_cmd_x509_endpoint, "");
+        returnData.input_x509Role = getCommandRequired(m_cmd_x509_role, "");
+        returnData.input_x509ThingName = getCommandRequired(m_cmd_x509_thing_name, "");
+        returnData.input_x509Cert = getCommandRequired(m_cmd_x509_cert_file, "");
+        returnData.input_x509Key = getCommandRequired(m_cmd_x509_key_file, "");
+        returnData.input_x509Ca = getCommandOrDefault(m_cmd_x509_ca_file, null);
+        return returnData;
+    }
+
+    /**
+     * Constants for commonly used/needed commands
+     */
     private static final String m_cmd_endpoint = "endpoint";
     private static final String m_cmd_ca_file = "ca_file";
     private static final String m_cmd_cert_file = "cert";
@@ -432,7 +646,7 @@ public class CommandLineUtils {
     private static final String m_cmd_x509_ca_file = "x509_ca_file";
     private static final String m_cmd_pkcs11_lib = "pkcs11_lib";
     private static final String m_cmd_pkcs11_cert = "cert";
-    private static final String m_cmd_pkcs11_pin = "ppin";
+    private static final String m_cmd_pkcs11_pin = "pin";
     private static final String m_cmd_pkcs11_token = "token_label";
     private static final String m_cmd_pkcs11_slot = "slot_id";
     private static final String m_cmd_pkcs11_key = "key_label";
@@ -455,6 +669,11 @@ public class CommandLineUtils {
     private static final String m_cmd_fleet_template_csr = "csr";
     private static final String m_cmd_thing_name = "thing_name";
     private static final String m_cmd_mode = "mode";
+    private static final String m_cmd_group_identifier = "group_identifier";
+    private static final String m_cmd_username = "username";
+    private static final String m_cmd_password = "password";
+    private static final String m_cmd_protocol = "protocol";
+    private static final String m_cmd_auth_params = "auth_params";
 }
 
 class CommandLineOption {
