@@ -628,6 +628,53 @@ public class CommandLineUtils {
     }
 
     /**
+     * Based on the sample string: sets up the arguments, parses the arguments, and returns the command line data all in one go
+     */
+    public static SampleCommandLineData getInputForIoTSample(String sampleName, String[] args)
+    {
+        CommandLineUtils cmdUtils = new CommandLineUtils();
+        cmdUtils.registerProgramName(sampleName);
+
+        if (sampleName.equals("BasicConnect")) {
+            return cmdUtils.parseSampleInputBasicConnect(args);
+        } else if (sampleName.equals("PubSub")) {
+            return cmdUtils.parseSampleInputPubSub(args);
+        } else if (sampleName.equals("CognitoConnect")) {
+            return cmdUtils.parseSampleInputCognitoConnect(args);
+        } else if (sampleName.equals("CustomAuthorizerConnect")) {
+            return cmdUtils.parseSampleInputCustomAuthorizerConnect(args);
+        } else if (sampleName.equals("CustomKeyOpsConnect")) {
+            return cmdUtils.parseSampleInputCustomKeyOpsConnect(args);
+        } else if (sampleName.equals("FleetProvisioningSample")) {
+            return cmdUtils.parseSampleInputFleetProvisioning(args);
+        } else if (sampleName.equals("BasicDiscovery")) {
+            return cmdUtils.parseSampleInputGreengrassDiscovery(args);
+        } else if (sampleName.equals("JavaKeystoreConnect")) {
+            return cmdUtils.parseSampleInputKeystoreConnect(args);
+        } else if (sampleName.equals("Jobs")) {
+            return cmdUtils.parseSampleInputJobs(args);
+        } else if (sampleName.equals("Mqtt5PubSub")) {
+            return cmdUtils.parseSampleInputMqtt5PubSub(args);
+        } else if (sampleName.equals("Mqtt5SharedSubscription")) {
+            return cmdUtils.parseSampleInputMqtt5SharedSubscription(args);
+        } else if (sampleName.equals("Pkcs11Connect")) {
+            return cmdUtils.parseSampleInputPkcs11Connect(args);
+        } else if (sampleName.equals("RawConnect")) {
+            return cmdUtils.parseSampleInputRawConnect(args);
+        } else if (sampleName.equals("Shadow")) {
+            return cmdUtils.parseSampleInputShadow(args);
+        } else if (sampleName.equals("WebsocketConnect")) {
+            return cmdUtils.parseSampleInputWebsocketConnect(args);
+        } else if (sampleName.equals("WindowsCertConnect")) {
+            return cmdUtils.parseSampleInputWindowsCertConnect(args);
+        } else if (sampleName.equals("x509CredentialsProviderConnect")) {
+            return cmdUtils.parseSampleInputX509Connect(args);
+        } else {
+            throw new RuntimeException("Unknown sample name!");
+        }
+    }
+
+    /**
      * Constants for commonly used/needed commands
      */
     private static final String m_cmd_endpoint = "endpoint";

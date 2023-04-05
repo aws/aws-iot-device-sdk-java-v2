@@ -40,11 +40,11 @@ public class BasicDiscovery {
     public static void main(String[] args) {
 
         /**
-         * Parse the command line data and store the values in cmdData for this sample.
+         * cmdData is the arguments/input from the command line placed into a single struct for
+         * use in this sample. This handles all of the command line parsing, validating, etc.
+         * See the Utils/CommandLineUtils for more information.
          */
-        cmdUtils = new CommandLineUtils();
-        cmdUtils.registerProgramName("BasicDiscovery");
-        CommandLineUtils.SampleCommandLineData cmdData = cmdUtils.parseSampleInputGreengrassDiscovery(args);
+        CommandLineUtils.SampleCommandLineData cmdData = CommandLineUtils.getInputForIoTSample("BasicDiscovery", args);
 
         input_thingName = cmdData.input_thingName;
         input_certPath = cmdData.input_cert;

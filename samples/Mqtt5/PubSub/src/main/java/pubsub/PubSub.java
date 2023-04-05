@@ -118,11 +118,11 @@ public class PubSub {
     public static void main(String[] args) {
 
         /**
-         * Parse the command line data and store the values in cmdData for this sample.
+         * cmdData is the arguments/input from the command line placed into a single struct for
+         * use in this sample. This handles all of the command line parsing, validating, etc.
+         * See the Utils/CommandLineUtils for more information.
          */
-        cmdUtils = new CommandLineUtils();
-        cmdUtils.registerProgramName("Mqtt5PubSub");
-        CommandLineUtils.SampleCommandLineData cmdData = cmdUtils.parseSampleInputMqtt5PubSub(args);
+        CommandLineUtils.SampleCommandLineData cmdData = CommandLineUtils.getInputForIoTSample("Mqtt5PubSub", args);
 
         // If running in CI, add a UUID to the topic
         if (isCI == true) {

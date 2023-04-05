@@ -48,11 +48,11 @@ public class CognitoConnect {
     public static void main(String[] args) {
 
         /**
-         * Parse the command line data and store the values in cmdData for this sample.
+         * cmdData is the arguments/input from the command line placed into a single struct for
+         * use in this sample. This handles all of the command line parsing, validating, etc.
+         * See the Utils/CommandLineUtils for more information.
          */
-        cmdUtils = new CommandLineUtils();
-        cmdUtils.registerProgramName("CognitoConnect");
-        CommandLineUtils.SampleCommandLineData cmdData = cmdUtils.parseSampleInputCognitoConnect(args);
+        CommandLineUtils.SampleCommandLineData cmdData = CommandLineUtils.getInputForIoTSample("CognitoConnect", args);
 
         MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
             @Override
