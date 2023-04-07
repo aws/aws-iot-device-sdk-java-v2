@@ -4,7 +4,6 @@
 * [Basic Connect](./BasicConnect/README.md)
 * [Websocket Connect](./WebsocketConnect/README.md)
 * [Pkcs11 Connect](./Pkcs11Connect/README.md)
-* [Raw Connect](./RawConnect/README.md)
 * [WindowsCert Connect](./WindowsCertConnect/README.md)
 * [X509 Connect](./X509CredentialsProviderConnect/README.md)
 * [CustomAuthorizer Connect](./CustomAuthorizerConnect/README.md)

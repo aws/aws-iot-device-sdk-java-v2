@@ -532,38 +532,6 @@ public class CommandLineUtils {
         return returnData;
     }
 
-    public SampleCommandLineData parseSampleInputRawConnect(String [] args)
-    {
-        addCommonMQTTCommands();
-        addKeyAndCertCommands();
-        addCommonProxyCommands();
-        registerCommand(m_cmd_client_id, "<int>", "Client id to use (optional, default='test-*').");
-        registerCommand(m_cmd_username, "<str>", "Username to use as part of the connection/authentication process.");
-        registerCommand(m_cmd_password, "<str>", "Password to use as part of the connection/authentication process.");
-        registerCommand(m_cmd_protocol, "<str>", "ALPN protocol to use (optional, default='x-amzn-mqtt-ca').");
-        registerCommand(m_cmd_auth_params, "<comma delimited list>",
-                "Comma delimited list of auth parameters. For websockets these will be set as headers. " +
-                "For raw mqtt these will be appended to user_name. (optional)");
-        sendArguments(args);
-
-        SampleCommandLineData returnData = new SampleCommandLineData();
-        returnData.input_endpoint = getCommandRequired(m_cmd_endpoint, "");
-        returnData.input_clientId = getCommandOrDefault(m_cmd_client_id, "test-" + UUID.randomUUID().toString());
-        returnData.input_ca = getCommandOrDefault(m_cmd_ca_file, "");
-        returnData.input_cert = getCommandRequired(m_cmd_cert_file, "");
-        returnData.input_key = getCommandRequired(m_cmd_key_file, "");
-        returnData.input_proxyHost = getCommandOrDefault(m_cmd_proxy_host, "");
-        returnData.input_proxyPort = Integer.parseInt(getCommandOrDefault(m_cmd_proxy_port, "8080"));
-        returnData.input_username = getCommandRequired(m_cmd_username, "");
-        returnData.input_password = getCommandRequired(m_cmd_password, "");
-        returnData.input_protocolName = getCommandOrDefault(m_cmd_protocol, "x-amzn-mqtt-ca");
-        returnData.input_authParams = null;
-        if (hasCommand(m_cmd_auth_params)) {
-            returnData.input_authParams = Arrays.asList(getCommand(m_cmd_auth_params).split("\\s*,\\s*"));
-        }
-        return returnData;
-    }
-
     public SampleCommandLineData parseSampleInputShadow(String [] args)
     {
         // Shadow and Jobs use the same inputs currently
@@ -670,8 +638,6 @@ public class CommandLineUtils {
             return cmdUtils.parseSampleInputMqtt5SharedSubscription(args);
         } else if (sampleName.equals("Pkcs11Connect")) {
             return cmdUtils.parseSampleInputPkcs11Connect(args);
-        } else if (sampleName.equals("RawConnect")) {
-            return cmdUtils.parseSampleInputRawConnect(args);
         } else if (sampleName.equals("Shadow")) {
             return cmdUtils.parseSampleInputShadow(args);
         } else if (sampleName.equals("WebsocketConnect")) {
