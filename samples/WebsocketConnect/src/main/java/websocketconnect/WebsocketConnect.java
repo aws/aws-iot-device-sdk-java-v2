@@ -15,7 +15,6 @@ import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.CompletableFuture;
-import java.util.UUID;
 
 import utils.commandlineutils.CommandLineUtils;
 

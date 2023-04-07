@@ -11,23 +11,18 @@ import software.amazon.awssdk.crt.CrtRuntimeException;
 import software.amazon.awssdk.crt.io.*;
 import software.amazon.awssdk.crt.mqtt.*;
 import software.amazon.awssdk.crt.http.HttpProxyOptions;
-import software.amazon.awssdk.crt.Log;
-import software.amazon.awssdk.crt.Log.LogLevel;
 import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.FileReader;
-import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.Signature;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Base64;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 
 import utils.commandlineutils.CommandLineUtils;

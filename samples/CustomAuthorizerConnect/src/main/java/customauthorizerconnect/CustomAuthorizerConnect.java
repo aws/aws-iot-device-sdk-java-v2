@@ -8,16 +8,13 @@ package customauthorizerconnect;
 import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.crt.CrtResource;
 import software.amazon.awssdk.crt.CrtRuntimeException;
-import software.amazon.awssdk.crt.io.ClientBootstrap;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnectionEvents;
-import software.amazon.awssdk.iot.iotjobs.model.RejectedError;
 import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.io.UnsupportedEncodingException;
-import java.util.UUID;
 
 import utils.commandlineutils.CommandLineUtils;
 

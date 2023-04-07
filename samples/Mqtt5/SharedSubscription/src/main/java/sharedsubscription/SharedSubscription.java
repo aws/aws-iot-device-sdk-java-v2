@@ -8,17 +8,14 @@ package mqtt5.sharedsubscription;
 import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.crt.CrtResource;
 import software.amazon.awssdk.crt.CrtRuntimeException;
-import software.amazon.awssdk.crt.io.ClientBootstrap;
 import software.amazon.awssdk.crt.mqtt5.*;
 import software.amazon.awssdk.crt.mqtt5.Mqtt5ClientOptions.LifecycleEvents;
 import software.amazon.awssdk.crt.mqtt5.packets.*;
 import software.amazon.awssdk.iot.AwsIotMqtt5ClientBuilder;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import utils.commandlineutils.CommandLineUtils;
@@ -195,11 +192,6 @@ public class SharedSubscription {
          * See the Utils/CommandLineUtils for more information.
          */
         CommandLineUtils.SampleCommandLineData cmdData = CommandLineUtils.getInputForIoTSample("Mqtt5SharedSubscription", args);
-
-        /* If this is CI, append a UUID to the topic */
-        if (isCI) {
-            cmdData.input_topic += "/" + UUID.randomUUID().toString();
-        }
 
         /* Construct the shared topic */
         String input_sharedTopic = "$share/" + cmdData.input_groupIdentifier + "/" + cmdData.input_topic;

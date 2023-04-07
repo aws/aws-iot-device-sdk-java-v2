@@ -8,21 +8,14 @@ package pubsub;
 import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.crt.CrtResource;
 import software.amazon.awssdk.crt.CrtRuntimeException;
-import software.amazon.awssdk.crt.Log;
-import software.amazon.awssdk.crt.auth.credentials.X509CredentialsProvider;
 import software.amazon.awssdk.crt.http.HttpProxyOptions;
-import software.amazon.awssdk.crt.io.ClientBootstrap;
-import software.amazon.awssdk.crt.io.ClientTlsContext;
-import software.amazon.awssdk.crt.io.TlsContextOptions;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnectionEvents;
 import software.amazon.awssdk.crt.mqtt.MqttMessage;
 import software.amazon.awssdk.crt.mqtt.QualityOfService;
 import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
-import software.amazon.awssdk.iot.iotjobs.model.RejectedError;
 
 import java.nio.charset.StandardCharsets;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
@@ -38,10 +31,6 @@ public class PubSub {
     static boolean isCI = ciPropValue != null && Boolean.valueOf(ciPropValue);
 
     static CommandLineUtils cmdUtils;
-
-    static void onRejectedError(RejectedError error) {
-        System.out.println("Request rejected: " + error.code.toString() + ": " + error.message);
-    }
 
     /*
      * When called during a CI run, throw an exception that will escape and fail the exec:java task
@@ -63,11 +52,6 @@ public class PubSub {
          * See the Utils/CommandLineUtils for more information.
          */
         CommandLineUtils.SampleCommandLineData cmdData = CommandLineUtils.getInputForIoTSample("PubSub", args);
-
-        // If running in CI, add a UUID to the topic
-        if (isCI == true) {
-            cmdData.input_topic += "/" + UUID.randomUUID().toString();
-        }
 
         MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
             @Override

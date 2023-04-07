@@ -240,6 +240,20 @@ public class CommandLineUtils {
         public String input_x509Ca;
     }
 
+    // Helper function for getting the message and topic
+    public void parseSampleInputPopulateMessageAndTopic(SampleCommandLineData returnData)
+    {
+        String ciPropValue = System.getProperty("aws.crt.ci");
+        boolean isCI = ciPropValue != null && Boolean.valueOf(ciPropValue);
+        if (isCI == true) {
+            returnData.input_topic = getCommandOrDefault(m_cmd_topic, "test/topic/" + UUID.randomUUID().toString());
+            returnData.input_message = getCommandOrDefault(m_cmd_message, "Hello World!");
+        } else {
+            returnData.input_topic = getCommandOrDefault(m_cmd_topic, "test/topic");
+            returnData.input_message = getCommandOrDefault(m_cmd_message, "Hello World!");
+        }
+    }
+
     public SampleCommandLineData parseSampleInputBasicConnect(String[] args)
     {
         addCommonMQTTCommands();
@@ -280,8 +294,7 @@ public class CommandLineUtils {
         returnData.input_port = Integer.parseInt(getCommandOrDefault(m_cmd_port, "8883"));
         returnData.input_proxyHost = getCommandOrDefault(m_cmd_proxy_host, "");
         returnData.input_proxyPort = Integer.parseInt(getCommandOrDefault(m_cmd_proxy_port, "0"));
-        returnData.input_topic = getCommandOrDefault(m_cmd_topic, "test/topic");
-        returnData.input_message = getCommandOrDefault(m_cmd_message, "Hello World!");
+        parseSampleInputPopulateMessageAndTopic(returnData);
         returnData.input_count = Integer.parseInt(getCommandOrDefault(m_cmd_count, "10"));
         return returnData;
     }
@@ -457,8 +470,7 @@ public class CommandLineUtils {
         returnData.input_port = Integer.parseInt(getCommandOrDefault(m_cmd_port, "8883"));
         returnData.input_proxyHost = getCommandOrDefault(m_cmd_proxy_host, "");
         returnData.input_proxyPort = Integer.parseInt(getCommandOrDefault(m_cmd_proxy_port, "0"));
-        returnData.input_topic = getCommandOrDefault(m_cmd_topic, "test/topic");
-        returnData.input_message = getCommandOrDefault(m_cmd_message, "Hello World!");
+        parseSampleInputPopulateMessageAndTopic(returnData);
         returnData.input_count = Integer.parseInt(getCommandOrDefault(m_cmd_count, "10"));
         returnData.input_signingRegion = getCommandOrDefault(m_cmd_signing_region, null);
         return returnData;
@@ -484,8 +496,7 @@ public class CommandLineUtils {
         returnData.input_port = Integer.parseInt(getCommandOrDefault(m_cmd_port, "8883"));
         returnData.input_proxyHost = getCommandOrDefault(m_cmd_proxy_host, "");
         returnData.input_proxyPort = Integer.parseInt(getCommandOrDefault(m_cmd_proxy_port, "0"));
-        returnData.input_topic = getCommandOrDefault(m_cmd_topic, "test/topic");
-        returnData.input_message = getCommandOrDefault(m_cmd_message, "Hello World!");
+        parseSampleInputPopulateMessageAndTopic(returnData);
         returnData.input_count = Integer.parseInt(getCommandOrDefault(m_cmd_count, "10"));
         returnData.input_groupIdentifier = getCommandOrDefault(m_cmd_group_identifier, "java-sample");
         return returnData;

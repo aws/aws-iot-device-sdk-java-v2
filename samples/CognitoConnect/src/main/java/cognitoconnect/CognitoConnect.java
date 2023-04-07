@@ -15,12 +15,10 @@ import software.amazon.awssdk.crt.auth.credentials.CognitoCredentialsProvider;
 import software.amazon.awssdk.crt.io.ClientBootstrap;
 import software.amazon.awssdk.crt.io.TlsContextOptions;
 import software.amazon.awssdk.crt.io.ClientTlsContext;
-import software.amazon.awssdk.iot.iotjobs.model.RejectedError;
 import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.UUID;
 
 import utils.commandlineutils.CommandLineUtils;
 

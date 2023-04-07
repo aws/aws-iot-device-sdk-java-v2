@@ -8,16 +8,13 @@ package javakeystoreconnect;
 import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.crt.CrtResource;
 import software.amazon.awssdk.crt.CrtRuntimeException;
-import software.amazon.awssdk.crt.io.ClientBootstrap;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnectionEvents;
-import software.amazon.awssdk.iot.iotjobs.model.RejectedError;
 import software.amazon.awssdk.crt.http.HttpProxyOptions;
 import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.CompletableFuture;
-import java.util.UUID;
 
 import utils.commandlineutils.CommandLineUtils;
 
@@ -30,10 +27,6 @@ public class JavaKeystoreConnect {
     static boolean isCI = ciPropValue != null && Boolean.valueOf(ciPropValue);
 
     static CommandLineUtils cmdUtils;
-
-    static void onRejectedError(RejectedError error) {
-        System.out.println("Request rejected: " + error.code.toString() + ": " + error.message);
-    }
 
     /*
      * When called during a CI run, throw an exception that will escape and fail the exec:java task

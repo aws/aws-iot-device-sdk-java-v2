@@ -15,10 +15,8 @@ import software.amazon.awssdk.crt.mqtt5.packets.*;
 import software.amazon.awssdk.iot.AwsIotMqtt5ClientBuilder;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import utils.commandlineutils.CommandLineUtils;
@@ -123,11 +121,6 @@ public class PubSub {
          * See the Utils/CommandLineUtils for more information.
          */
         CommandLineUtils.SampleCommandLineData cmdData = CommandLineUtils.getInputForIoTSample("Mqtt5PubSub", args);
-
-        // If running in CI, add a UUID to the topic
-        if (isCI == true) {
-            cmdData.input_topic += "/" + UUID.randomUUID().toString();
-        }
 
         try {
             /* Create a client based on desired connection type */

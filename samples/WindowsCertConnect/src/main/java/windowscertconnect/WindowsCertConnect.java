@@ -10,10 +10,7 @@ import software.amazon.awssdk.crt.io.*;
 import software.amazon.awssdk.crt.mqtt.*;
 import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
 
-import java.nio.charset.StandardCharsets;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 
 import utils.commandlineutils.CommandLineUtils;
