@@ -1,10 +1,12 @@
 package software.amazon.awssdk.awstest.model;
 
 import com.google.gson.annotations.Expose;
-import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
-
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
 import java.util.Objects;
 import java.util.Optional;
+import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
 
 public class ServiceError extends EchoTestRPCError implements EventStreamJsonMessage {
   public static final String APPLICATION_MODEL_TYPE = "awstest#ServiceError";
@@ -56,8 +58,12 @@ public class ServiceError extends EchoTestRPCError implements EventStreamJsonMes
     return null;
   }
 
-  public ServiceError setMessage(final String message) {
+  public void setMessage(final String message) {
     this.message = Optional.ofNullable(message);
+  }
+
+  public ServiceError withMessage(final String message) {
+    setMessage(message);
     return this;
   }
 
@@ -68,8 +74,12 @@ public class ServiceError extends EchoTestRPCError implements EventStreamJsonMes
     return null;
   }
 
-  public ServiceError setValue(final String value) {
+  public void setValue(final String value) {
     this.value = Optional.ofNullable(value);
+  }
+
+  public ServiceError withValue(final String value) {
+    setValue(value);
     return this;
   }
 

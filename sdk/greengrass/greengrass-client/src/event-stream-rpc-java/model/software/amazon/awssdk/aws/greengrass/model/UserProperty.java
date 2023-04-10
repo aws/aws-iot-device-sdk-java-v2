@@ -1,4 +1,11 @@
-package software.amazon.awssdk.awstest.model;
+/**
+ * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * SPDX-License-Identifier: Apache-2.0.
+ *
+ * This file is generated.
+ */
+
+package software.amazon.awssdk.aws.greengrass.model;
 
 import com.google.gson.annotations.Expose;
 import java.lang.Object;
@@ -8,13 +15,13 @@ import java.util.Objects;
 import java.util.Optional;
 import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
 
-public class Pair implements EventStreamJsonMessage {
-  public static final String APPLICATION_MODEL_TYPE = "awstest#Pair";
+public class UserProperty implements EventStreamJsonMessage {
+  public static final String APPLICATION_MODEL_TYPE = "aws.greengrass#UserProperty";
 
-  public static final Pair VOID;
+  public static final UserProperty VOID;
 
   static {
-    VOID = new Pair() {
+    VOID = new UserProperty() {
       @Override
       public boolean isVoid() {
         return true;
@@ -34,7 +41,7 @@ public class Pair implements EventStreamJsonMessage {
   )
   private Optional<String> value;
 
-  public Pair() {
+  public UserProperty() {
     this.key = Optional.empty();
     this.value = Optional.empty();
   }
@@ -50,7 +57,7 @@ public class Pair implements EventStreamJsonMessage {
     this.key = Optional.ofNullable(key);
   }
 
-  public Pair withKey(final String key) {
+  public UserProperty withKey(final String key) {
     setKey(key);
     return this;
   }
@@ -66,7 +73,7 @@ public class Pair implements EventStreamJsonMessage {
     this.value = Optional.ofNullable(value);
   }
 
-  public Pair withValue(final String value) {
+  public UserProperty withValue(final String value) {
     setValue(value);
     return this;
   }
@@ -79,9 +86,9 @@ public class Pair implements EventStreamJsonMessage {
   @Override
   public boolean equals(Object rhs) {
     if (rhs == null) return false;
-    if (!(rhs instanceof Pair)) return false;
+    if (!(rhs instanceof UserProperty)) return false;
     if (this == rhs) return true;
-    final Pair other = (Pair)rhs;
+    final UserProperty other = (UserProperty)rhs;
     boolean isEquals = true;
     isEquals = isEquals && this.key.equals(other.key);
     isEquals = isEquals && this.value.equals(other.value);

@@ -1,10 +1,12 @@
 package software.amazon.awssdk.awstest.model;
 
 import com.google.gson.annotations.Expose;
-import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
-
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
 import java.util.Objects;
 import java.util.Optional;
+import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
 
 public class EchoMessageRequest implements EventStreamJsonMessage {
   public static final String APPLICATION_MODEL_TYPE = "awstest#EchoMessageRequest";
@@ -37,8 +39,12 @@ public class EchoMessageRequest implements EventStreamJsonMessage {
     return null;
   }
 
-  public EchoMessageRequest setMessage(final MessageData message) {
+  public void setMessage(final MessageData message) {
     this.message = Optional.ofNullable(message);
+  }
+
+  public EchoMessageRequest withMessage(final MessageData message) {
+    setMessage(message);
     return this;
   }
 

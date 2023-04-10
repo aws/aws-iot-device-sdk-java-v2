@@ -1,11 +1,13 @@
 package software.amazon.awssdk.awstest.model;
 
 import com.google.gson.annotations.Expose;
-import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
-
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
 
 public class GetAllCustomersResponse implements EventStreamJsonMessage {
   public static final String APPLICATION_MODEL_TYPE = "awstest#GetAllCustomersResponse";
@@ -38,8 +40,12 @@ public class GetAllCustomersResponse implements EventStreamJsonMessage {
     return null;
   }
 
-  public GetAllCustomersResponse setCustomers(final List<Customer> customers) {
+  public void setCustomers(final List<Customer> customers) {
     this.customers = Optional.ofNullable(customers);
+  }
+
+  public GetAllCustomersResponse withCustomers(final List<Customer> customers) {
+    setCustomers(customers);
     return this;
   }
 

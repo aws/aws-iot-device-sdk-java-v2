@@ -1,12 +1,14 @@
 package software.amazon.awssdk.awstest;
 
+import java.lang.Class;
+import java.lang.Override;
+import java.lang.String;
+import java.util.Optional;
 import software.amazon.awssdk.awstest.model.EchoStreamingMessage;
 import software.amazon.awssdk.awstest.model.EchoStreamingRequest;
 import software.amazon.awssdk.awstest.model.EchoStreamingResponse;
 import software.amazon.awssdk.eventstreamrpc.EventStreamRPCServiceModel;
 import software.amazon.awssdk.eventstreamrpc.OperationModelContext;
-
-import java.util.Optional;
 
 public class EchoStreamMessagesOperationContext implements OperationModelContext<EchoStreamingRequest, EchoStreamingResponse, EchoStreamingMessage, EchoStreamingMessage> {
   @Override

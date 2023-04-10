@@ -1,10 +1,13 @@
 package software.amazon.awssdk.awstest.model;
 
 import com.google.gson.annotations.Expose;
-import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
-
+import java.lang.Float;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
 import java.util.Objects;
 import java.util.Optional;
+import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
 
 public class Product implements EventStreamJsonMessage {
   public static final String APPLICATION_MODEL_TYPE = "awstest#Product";
@@ -30,7 +33,7 @@ public class Product implements EventStreamJsonMessage {
       serialize = true,
       deserialize = true
   )
-  private Optional<Integer> price;
+  private Optional<Float> price;
 
   public Product() {
     this.name = Optional.empty();
@@ -44,20 +47,28 @@ public class Product implements EventStreamJsonMessage {
     return null;
   }
 
-  public Product setName(final String name) {
+  public void setName(final String name) {
     this.name = Optional.ofNullable(name);
+  }
+
+  public Product withName(final String name) {
+    setName(name);
     return this;
   }
 
-  public Integer getPrice() {
+  public Float getPrice() {
     if (price.isPresent()) {
       return price.get();
     }
     return null;
   }
 
-  public Product setPrice(final Integer price) {
+  public void setPrice(final Float price) {
     this.price = Optional.ofNullable(price);
+  }
+
+  public Product withPrice(final Float price) {
+    setPrice(price);
     return this;
   }
 
