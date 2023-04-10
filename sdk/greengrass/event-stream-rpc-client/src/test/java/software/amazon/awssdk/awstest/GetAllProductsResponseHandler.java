@@ -1,11 +1,12 @@
 package software.amazon.awssdk.awstest;
 
+import java.lang.Override;
+import java.lang.Void;
+import java.util.concurrent.CompletableFuture;
 import software.amazon.awssdk.awstest.model.GetAllProductsResponse;
 import software.amazon.awssdk.eventstreamrpc.OperationResponse;
 import software.amazon.awssdk.eventstreamrpc.StreamResponse;
 import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
-
-import java.util.concurrent.CompletableFuture;
 
 public final class GetAllProductsResponseHandler implements StreamResponse<GetAllProductsResponse, EventStreamJsonMessage> {
   private final OperationResponse<GetAllProductsResponse, EventStreamJsonMessage> operationResponse;

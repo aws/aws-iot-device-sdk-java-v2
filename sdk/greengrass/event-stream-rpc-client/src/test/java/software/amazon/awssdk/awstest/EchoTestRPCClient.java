@@ -1,5 +1,7 @@
 package software.amazon.awssdk.awstest;
 
+import java.lang.Override;
+import java.util.Optional;
 import software.amazon.awssdk.awstest.model.CauseServiceErrorRequest;
 import software.amazon.awssdk.awstest.model.EchoMessageRequest;
 import software.amazon.awssdk.awstest.model.EchoStreamingMessage;
@@ -10,8 +12,6 @@ import software.amazon.awssdk.eventstreamrpc.EventStreamRPCClient;
 import software.amazon.awssdk.eventstreamrpc.EventStreamRPCConnection;
 import software.amazon.awssdk.eventstreamrpc.StreamResponseHandler;
 import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
-
-import java.util.Optional;
 
 public class EchoTestRPCClient extends EventStreamRPCClient implements EchoTestRPC {
   public EchoTestRPCClient(final EventStreamRPCConnection connection) {
@@ -42,7 +42,7 @@ public class EchoTestRPCClient extends EventStreamRPCClient implements EchoTestR
 
   @Override
   public EchoStreamMessagesResponseHandler echoStreamMessages(final EchoStreamingRequest request,
-                                                              final Optional<StreamResponseHandler<EchoStreamingMessage>> streamResponseHandler) {
+      final Optional<StreamResponseHandler<EchoStreamingMessage>> streamResponseHandler) {
     final EchoStreamMessagesOperationContext operationContext = EchoTestRPCServiceModel.getEchoStreamMessagesModelContext();
     return new EchoStreamMessagesResponseHandler(doOperationInvoke(operationContext, request, streamResponseHandler));
   }

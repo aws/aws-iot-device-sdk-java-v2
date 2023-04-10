@@ -1,11 +1,12 @@
 package software.amazon.awssdk.awstest;
 
+import java.lang.Override;
+import java.lang.Void;
+import java.util.concurrent.CompletableFuture;
 import software.amazon.awssdk.awstest.model.CauseServiceErrorResponse;
 import software.amazon.awssdk.eventstreamrpc.OperationResponse;
 import software.amazon.awssdk.eventstreamrpc.StreamResponse;
 import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
-
-import java.util.concurrent.CompletableFuture;
 
 public final class CauseServiceErrorResponseHandler implements StreamResponse<CauseServiceErrorResponse, EventStreamJsonMessage> {
   private final OperationResponse<CauseServiceErrorResponse, EventStreamJsonMessage> operationResponse;
