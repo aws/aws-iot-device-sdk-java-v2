@@ -7,7 +7,6 @@ package greengrass;
 
 import software.amazon.awssdk.crt.CrtResource;
 import software.amazon.awssdk.crt.CrtRuntimeException;
-import software.amazon.awssdk.crt.Log;
 import software.amazon.awssdk.crt.http.HttpProxyOptions;
 import software.amazon.awssdk.crt.io.*;
 import software.amazon.awssdk.crt.mqtt.*;
@@ -30,91 +29,69 @@ import static software.amazon.awssdk.iot.discovery.DiscoveryClient.TLS_EXT_ALPN;
 import utils.commandlineutils.CommandLineUtils;
 
 public class BasicDiscovery {
-    static String thingName;
-    static String rootCaPath;
-    static String certPath;
-    static String keyPath;
-    static String region = "us-east-1";
-    static String topic = "test/topic";
-    static String mode = "both";
 
-    static String proxyHost;
-    static int proxyPort;
+    static String input_thingName;
+    static String input_certPath;
+    static String input_keyPath;
 
     static CommandLineUtils cmdUtils;
 
     public static void main(String[] args) {
-        cmdUtils = new CommandLineUtils();
-        cmdUtils.registerProgramName("BasicDiscovery");
-        cmdUtils.addCommonMQTTCommands();
-        cmdUtils.removeCommand("endpoint");
-        cmdUtils.registerCommand("thing_name", "<str>", "The name of the IoT thing.");
-        cmdUtils.registerCommand("region", "<str>", "AWS IoT service region (optional, default='us-east-1').");
-        cmdUtils.registerCommand("topic", "<str>", "Topic to subscribe/publish to (optional, default='test/topic').");
-        cmdUtils.registerCommand("mode", "<str>", "Mode options: 'both', 'publish', or 'subscribe' (optional, default='both').");
-        cmdUtils.registerCommand("proxy_host", "<str>", "Websocket proxy host to use (optional, required if --proxy_port is set).");
-        cmdUtils.registerCommand("proxy_port", "<int>", "Websocket proxy port to use (optional, required if --proxy_host is set).");
-        cmdUtils.registerCommand("help", "", "Prints this message");
-        cmdUtils.sendArguments(args);
 
-        if (cmdUtils.hasCommand("help")) {
-            cmdUtils.printHelp();
-            System.exit(1);
-        }
+        /**
+         * cmdData is the arguments/input from the command line placed into a single struct for
+         * use in this sample. This handles all of the command line parsing, validating, etc.
+         * See the Utils/CommandLineUtils for more information.
+         */
+        CommandLineUtils.SampleCommandLineData cmdData = CommandLineUtils.getInputForIoTSample("BasicDiscovery", args);
 
-        thingName = cmdUtils.getCommandRequired("thing_name", "");
-        region = cmdUtils.getCommandOrDefault("region", region);
-        rootCaPath = cmdUtils.getCommandOrDefault("ca_file", rootCaPath);
-        certPath = cmdUtils.getCommandRequired("cert", "");
-        keyPath = cmdUtils.getCommandRequired("key", "");
-        topic = cmdUtils.getCommandOrDefault("topic", topic);
-        mode = cmdUtils.getCommandOrDefault("mode", mode);
-        proxyHost = cmdUtils.getCommandOrDefault("proxy_host", proxyHost);
-        proxyPort = Integer.parseInt(cmdUtils.getCommandOrDefault("proxy_port", String.valueOf(proxyPort)));
+        input_thingName = cmdData.input_thingName;
+        input_certPath = cmdData.input_cert;
+        input_keyPath = cmdData.input_key;
 
         // ---- Verify file loads ----
         // Get the absolute CA file path
-        final File rootCaFile = new File(rootCaPath);
+        final File rootCaFile = new File(cmdData.input_ca);
         if (!rootCaFile.isFile()) {
             throw new RuntimeException("Cannot load root CA from path: " + rootCaFile.getAbsolutePath());
         }
-        rootCaPath = rootCaFile.getAbsolutePath();
+        cmdData.input_ca = rootCaFile.getAbsolutePath();
 
-        final File certFile = new File(certPath);
+        final File certFile = new File(cmdData.input_cert);
         if (!certFile.isFile()) {
             throw new RuntimeException("Cannot load certificate from path: " + certFile.getAbsolutePath());
         }
-        certPath = certFile.getAbsolutePath();
+        cmdData.input_cert = certFile.getAbsolutePath();
 
-        final File keyFile = new File(keyPath);
+        final File keyFile = new File(cmdData.input_key);
         if (!keyFile.isFile()) {
             throw new RuntimeException("Cannot load private key from path: " + keyFile.getAbsolutePath());
         }
-        keyPath = keyFile.getAbsolutePath();
+        cmdData.input_key = keyFile.getAbsolutePath();
         // ----------------------------
 
-        try(final TlsContextOptions tlsCtxOptions = TlsContextOptions.createWithMtlsFromPath(certPath, keyPath)) {
+        try(final TlsContextOptions tlsCtxOptions = TlsContextOptions.createWithMtlsFromPath(cmdData.input_cert, cmdData.input_key)) {
             if(TlsContextOptions.isAlpnSupported()) {
                 tlsCtxOptions.withAlpnList(TLS_EXT_ALPN);
             }
-            if(rootCaPath != null) {
-                tlsCtxOptions.overrideDefaultTrustStoreFromPath(null, rootCaPath);
+            if(cmdData.input_ca != null) {
+                tlsCtxOptions.overrideDefaultTrustStoreFromPath(null, cmdData.input_ca);
             }
             HttpProxyOptions proxyOptions = null;
-            if (proxyHost != null && proxyPort > 0) {
+            if (cmdData.input_proxyHost != null && cmdData.input_proxyPort > 0) {
                 proxyOptions = new HttpProxyOptions();
-                proxyOptions.setHost(proxyHost);
-                proxyOptions.setPort(proxyPort);
+                proxyOptions.setHost(cmdData.input_proxyHost);
+                proxyOptions.setPort(cmdData.input_proxyPort);
             }
 
             try(final DiscoveryClientConfig discoveryClientConfig =
                         new DiscoveryClientConfig(tlsCtxOptions,
-                        new SocketOptions(), region, 1, proxyOptions);
+                        new SocketOptions(), cmdData.input_signingRegion, 1, proxyOptions);
                 final DiscoveryClient discoveryClient = new DiscoveryClient(discoveryClientConfig);
                 final MqttClientConnection connection = getClientFromDiscovery(discoveryClient)) {
 
-                if ("subscribe".equals(mode) || "both".equals(mode)) {
-                    final CompletableFuture<Integer> subFuture = connection.subscribe(topic, QualityOfService.AT_MOST_ONCE, message -> {
+                if ("subscribe".equals(cmdData.input_mode) || "both".equals(cmdData.input_mode)) {
+                    final CompletableFuture<Integer> subFuture = connection.subscribe(cmdData.input_topic, QualityOfService.AT_MOST_ONCE, message -> {
                         System.out.println(String.format("Message received on topic %s: %s",
                                 message.getTopic(), new String(message.getPayload(), StandardCharsets.UTF_8)));
                     });
@@ -125,8 +102,8 @@ public class BasicDiscovery {
                 final Scanner scanner = new Scanner(System.in);
                 while (true) {
                     String input = null;
-                    if ("publish".equals(mode) || "both".equals(mode)) {
-                        System.out.println("Enter the message you want to publish to topic " + topic + " and press Enter. " +
+                    if ("publish".equals(cmdData.input_mode) || "both".equals(cmdData.input_mode)) {
+                        System.out.println("Enter the message you want to publish to topic " + cmdData.input_topic + " and press Enter. " +
                                 "Type 'exit' or 'quit' to exit this program: ");
                         input = scanner.nextLine();
                     }
@@ -136,8 +113,8 @@ public class BasicDiscovery {
                         break;
                     }
 
-                    if ("publish".equals(mode) || "both".equals(mode)) {
-                        final CompletableFuture<Integer> publishResult = connection.publish(new MqttMessage(topic,
+                    if ("publish".equals(cmdData.input_mode) || "both".equals(cmdData.input_mode)) {
+                        final CompletableFuture<Integer> publishResult = connection.publish(new MqttMessage(cmdData.input_topic,
                                 input.getBytes(StandardCharsets.UTF_8), QualityOfService.AT_MOST_ONCE, false));
                         Integer result = publishResult.get();
                     }
@@ -153,7 +130,7 @@ public class BasicDiscovery {
 
     private static MqttClientConnection getClientFromDiscovery(final DiscoveryClient discoveryClient
                                                                ) throws ExecutionException, InterruptedException {
-        final CompletableFuture<DiscoverResponse> futureResponse = discoveryClient.discover(thingName);
+        final CompletableFuture<DiscoverResponse> futureResponse = discoveryClient.discover(input_thingName);
         final DiscoverResponse response = futureResponse.get();
         if(response.getGGGroups() != null) {
             final Optional<GGGroup> groupOpt = response.getGGGroups().stream().findFirst();
@@ -168,8 +145,8 @@ public class BasicDiscovery {
                     System.out.println(String.format("Connecting to group ID %s, with thing arn %s, using endpoint %s:%d",
                             group.getGGGroupId(), core.getThingArn(), dnsOrIp, port));
 
-                    final AwsIotMqttConnectionBuilder connectionBuilder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(certPath, keyPath)
-                            .withClientId(thingName)
+                    final AwsIotMqttConnectionBuilder connectionBuilder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(input_certPath, input_keyPath)
+                            .withClientId(input_thingName)
                             .withPort(port.shortValue())
                             .withEndpoint(dnsOrIp)
                             .withConnectionEventCallbacks(new MqttClientConnectionEvents() {
@@ -203,9 +180,9 @@ public class BasicDiscovery {
                     }
                 }
 
-                throw new RuntimeException("ThingName " + thingName + " could not connect to the green grass core using any of the endpoint connectivity options");
+                throw new RuntimeException("ThingName " + input_thingName + " could not connect to the green grass core using any of the endpoint connectivity options");
             }
         }
-        throw new RuntimeException("ThingName " + thingName + " does not have a Greengrass group/core configuration");
+        throw new RuntimeException("ThingName " + input_thingName + " does not have a Greengrass group/core configuration");
     }
 }

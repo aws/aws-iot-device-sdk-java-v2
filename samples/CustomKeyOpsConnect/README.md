@@ -1,8 +1,8 @@
-# Custom Key Operations PubSub
+# Custom Key Operations Connect
 
 [**Return to main sample list**](../README.md)
 
-This sample is similar to the [Basic PubSub](../BasicPubSub/README.md) sample but shows how to perform custom private key operations during the Mutual TLS (mTLS) handshake. This is necessary if you require an external library to handle private key operations such as signing and decrypting. By utilizing custom private key operations, you can use any external library for the Mutual TLS private key operations when connecting to AWS IoT Core.
+This sample is similar to the [Basic Connect](../BasicConnect/README.md) sample but shows how to perform custom private key operations during the Mutual TLS (mTLS) handshake. This is necessary if you require an external library to handle private key operations such as signing and decrypting. By utilizing custom private key operations, you can use any external library for the Mutual TLS private key operations when connecting to AWS IoT Core.
 
 **WARNING: Unix (Linux) only**
 
@@ -56,16 +56,16 @@ Note that in a real application, you may want to avoid the use of wildcards in y
 
 ## How to run
 
-To run the Custom Key Ops PubSub sample use the following command:
+To run the Custom Key Ops Connect sample use the following command:
 
 ``` sh
-> mvn exec:java -pl samples/CustomKeyOpsPubSub -Dexec.mainClass=customkeyopspubsub.CustomKeyOpsPubSub -Dexec.args="--endpoint <endpoint> --cert <path to certificate> --key <path to pkcs8 key>"
+> mvn exec:java -pl samples/CustomKeyOpsConnect -Dexec.mainClass=customkeyopsconnect.CustomKeyOpsConnect -Dexec.args="--endpoint <endpoint> --cert <path to certificate> --key <path to pkcs8 key>"
 ```
 
 You can also pass a Certificate Authority file (CA) if your certificate and key combination requires it:
 
 ``` sh
-> mvn exec:java -pl samples/CustomKeyOpsPubSub -Dexec.mainClass=customkeyopspubsub.CustomKeyOpsPubSub -Dexec.args="--endpoint <endpoint> --cert <path to certificate> --key <path to pkcs8 key> --ca_file <path to root CA>"
+> mvn exec:java -pl samples/CustomKeyOpsConnect -Dexec.mainClass=customkeyopsconnect.CustomKeyOpsConnect -Dexec.args="--endpoint <endpoint> --cert <path to certificate> --key <path to pkcs8 key> --ca_file <path to root CA>"
 ```
 
 ### How to convert AWS IoT Core key to PCKS#8 key

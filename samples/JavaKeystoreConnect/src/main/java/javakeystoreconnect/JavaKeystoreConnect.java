@@ -8,12 +8,13 @@ package javakeystoreconnect;
 import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.crt.CrtResource;
 import software.amazon.awssdk.crt.CrtRuntimeException;
-import software.amazon.awssdk.crt.io.ClientBootstrap;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnectionEvents;
-import software.amazon.awssdk.iot.iotjobs.model.RejectedError;
+import software.amazon.awssdk.crt.http.HttpProxyOptions;
+import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
 
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.CompletableFuture;
 
 import utils.commandlineutils.CommandLineUtils;
 
@@ -26,10 +27,6 @@ public class JavaKeystoreConnect {
     static boolean isCI = ciPropValue != null && Boolean.valueOf(ciPropValue);
 
     static CommandLineUtils cmdUtils;
-
-    static void onRejectedError(RejectedError error) {
-        System.out.println("Request rejected: " + error.code.toString() + ": " + error.message);
-    }
 
     /*
      * When called during a CI run, throw an exception that will escape and fail the exec:java task
@@ -45,18 +42,12 @@ public class JavaKeystoreConnect {
 
     public static void main(String[] args) {
 
-        cmdUtils = new CommandLineUtils();
-        cmdUtils.registerProgramName("JavaKeystoreConnect");
-        cmdUtils.addCommonMQTTCommands();
-        cmdUtils.addCommonProxyCommands();
-        cmdUtils.registerCommand("keystore", "<file>", "The path to the Java keystore to use");
-        cmdUtils.registerCommand("keystore_password", "<str>", "The password for the Java keystore");
-        cmdUtils.registerCommand("keystore_format", "<str>", "The format of the Java keystore (optional, default='PKCS12')");
-        cmdUtils.registerCommand("certificate_alias", "<str>", "The certificate alias to use to access the key and certificate in the Java keystore");
-        cmdUtils.registerCommand("certificate_password", "<str>", "The password associated with the key and certificate in the Java keystore");
-        cmdUtils.registerCommand("client_id", "<int>", "Client id to use (optional, default='test-*').");
-        cmdUtils.registerCommand("port", "<int>", "Port to connect to on the endpoint (optional, default='8883').");
-        cmdUtils.sendArguments(args);
+        /**
+         * cmdData is the arguments/input from the command line placed into a single struct for
+         * use in this sample. This handles all of the command line parsing, validating, etc.
+         * See the Utils/CommandLineUtils for more information.
+         */
+        CommandLineUtils.SampleCommandLineData cmdData = CommandLineUtils.getInputForIoTSample("JavaKeystoreConnect", args);
 
         MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
             @Override
@@ -74,20 +65,70 @@ public class JavaKeystoreConnect {
 
         try {
 
-            // Create a connection using a certificate and key stored in the Java keystore
-            // Note: The data for the connection is gotten from cmdUtils.
-            // (see buildDirectMQTTConnectionWithJavaKeystore for implementation)
-            MqttClientConnection connection = cmdUtils.buildDirectMQTTConnectionWithJavaKeystore(callbacks);
+            /**
+             * Create the MQTT connection from the builder
+             */
+            java.security.KeyStore keyStore;
+            try {
+                keyStore = java.security.KeyStore.getInstance(cmdData.input_keystoreFormat);
+            } catch (java.security.KeyStoreException ex) {
+                throw new CrtRuntimeException("Could not get instance of Java keystore with format " + cmdData.input_keystoreFormat);
+            }
+            try (java.io.FileInputStream fileInputStream = new java.io.FileInputStream(cmdData.input_keystore)) {
+                keyStore.load(fileInputStream, cmdData.input_keystorePassword.toCharArray());
+            } catch (java.io.FileNotFoundException ex) {
+                throw new CrtRuntimeException("Could not open Java keystore file");
+            } catch (java.io.IOException | java.security.NoSuchAlgorithmException | java.security.cert.CertificateException ex) {
+                throw new CrtRuntimeException("Could not load Java keystore");
+            }
+            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newJavaKeystoreBuilder(
+                keyStore,
+                cmdData.input_certificateAlias,
+                cmdData.input_certificatePassword);
+            if (cmdData.input_ca != "") {
+                builder.withCertificateAuthorityFromPath(null, cmdData.input_ca);
+            }
+            builder.withConnectionEventCallbacks(callbacks)
+                .withClientId(cmdData.input_clientId)
+                .withEndpoint(cmdData.input_endpoint)
+                .withPort((short)cmdData.input_port)
+                .withCleanSession(true)
+                .withProtocolOperationTimeoutMs(60000);
+            if (cmdData.input_proxyHost != "" && cmdData.input_proxyPort > 0) {
+                HttpProxyOptions proxyOptions = new HttpProxyOptions();
+                proxyOptions.setHost(cmdData.input_proxyHost);
+                proxyOptions.setPort(cmdData.input_proxyPort);
+                builder.withHttpProxyOptions(proxyOptions);
+            }
+            MqttClientConnection connection = builder.build();
+            builder.close();
+
+            /**
+             * Verify the connection was created
+             */
             if (connection == null)
             {
                 onApplicationFailure(new RuntimeException("MQTT connection creation failed!"));
             }
 
-            // Connect and disconnect using the connection we created
-            // (see sampleConnectAndDisconnect for implementation)
-            cmdUtils.sampleConnectAndDisconnect(connection);
+            /**
+             * Connect and disconnect
+             */
+            CompletableFuture<Boolean> connected = connection.connect();
+            try {
+                boolean sessionPresent = connected.get();
+                System.out.println("Connected to " + (!sessionPresent ? "new" : "existing") + " session!");
+            } catch (Exception ex) {
+                throw new RuntimeException("Exception occurred during connect", ex);
+            }
+            System.out.println("Disconnecting...");
+            CompletableFuture<Void> disconnected = connection.disconnect();
+            disconnected.get();
+            System.out.println("Disconnected.");
 
-            // Close the connection now that we are completely done with it.
+            /**
+             * Close the connection now that it is complete
+             */
             connection.close();
 
         } catch (CrtRuntimeException | InterruptedException | ExecutionException ex) {

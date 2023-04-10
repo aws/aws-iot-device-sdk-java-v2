@@ -2,7 +2,7 @@
 
 [**Return to main sample list**](../README.md)
 
-This sample uses the AWS IoT [Fleet provisioning](https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html) to provision devices using either a CSR or Keys-And-Certificate and subsequently calls RegisterThing. This allows you to create new AWS IoT Core things using a Fleet Provisioning Template.
+This sample uses the AWS IoT [Fleet-Provisioning/Identity](https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html) service to provision devices using either a CSR or Keys-And-Certificate and subsequently calls RegisterThing. This allows you to create new AWS IoT Core things using a Fleet Provisioning Template.
 
 On startup, the script subscribes to topics based on the request type of either CSR or Keys topics, publishes the request to corresponding topic and calls RegisterThing.
 
@@ -74,14 +74,14 @@ Note that in a real application, you may want to avoid the use of wildcards in y
 There are many different ways to run the Fleet Provisioning sample because of how many different ways there are to setup a Fleet Provisioning template in AWS IoT Core. **The easiest and most common way is to run the sample with the following**:
 
 ``` sh
-mvn compile exec:java -pl samples/Identity -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint <endpoint>
+mvn compile exec:java -pl samples/FleetProvisioning -Dexec.mainClass="fleetprovisioning.FleetProvisioningSample" -Dexec.args="--endpoint <endpoint>
 --cert <path to certificate> --key <path to private key> --template_name <template name> --template_parameters <template params>"
 ```
 
 You can also pass a Certificate Authority file (CA) if your certificate and key combination requires it:
 
 ``` sh
-mvn compile exec:java -pl samples/Identity -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint <endpoint> --ca_file <path to root CA>
+mvn compile exec:java -pl samples/FleetProvisioning -Dexec.mainClass="fleetprovisioning.FleetProvisioningSample" -Dexec.args="--endpoint <endpoint> --ca_file <path to root CA>
 --cert <path to certificate> --key <path to private key> --template_name <template name> --template_parameters <template params>"
 ```
 
@@ -251,7 +251,7 @@ We've included a script in the utils folder that creates certificate and key fil
 `create-provisioning-claim`. These dynamically sourced certificates are **only valid for five minutes**. When running the command,
 you'll need to substitute the name of the template you previously created. If on Windows, replace the paths with something appropriate.
 
-**Note**: The following assumes you are running this command from the `aws-iot-device-sdk-java-v2` folder, which is the main GitHub folder. If you are running this from another folder (like the `samples/Identity` folder), then you will need to adjust the filepaths accordingly.
+**Note**: The following assumes you are running this command from the `aws-iot-device-sdk-java-v2` folder, which is the main GitHub folder. If you are running this from another folder (like the `samples/FleetProvisioning` folder), then you will need to adjust the filepaths accordingly.
 
 ```sh
 aws iot create-provisioning-claim \
@@ -270,7 +270,7 @@ to perform the actual provisioning in the section below.
 To run the sample with your certificate and private key, use the following command:
 
 ``` sh
-mvn compile exec:java -pl samples/Identity -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint <endpoint>
+mvn compile exec:java -pl samples/FleetProvisioning -Dexec.mainClass="fleetprovisioning.FleetProvisioningSample" -Dexec.args="--endpoint <endpoint>
 --cert <path to certificate> --key <path to private key> --template_name <template name> --template_parameters '{\"SerialNumber\":\"1\",\"DeviceLocation\":\"Seattle\"}'"
 ```
 
@@ -306,7 +306,7 @@ aws iot create-provisioning-claim \
 Finally, you can also pass the certificate signing request while invoking the Fleet Provisioning sample.
 
 ``` sh
-mvn compile exec:java -pl samples/Identity -Dexec.mainClass="identity.FleetProvisioningSample" -Dexec.args="--endpoint <endpoint>
+mvn compile exec:java -pl samples/FleetProvisioning -Dexec.mainClass="fleetprovisioning.FleetProvisioningSample" -Dexec.args="--endpoint <endpoint>
 --cert <path to certificate> --key <path to private key> --template_name <template name> --template_parameters '{\"SerialNumber\":\"1\",\"DeviceLocation\":\"Seattle\"}'  --csr <path to csr file>"
 ```
 

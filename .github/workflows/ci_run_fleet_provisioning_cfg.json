@@ -1,8 +1,8 @@
 {
     "language": "Java",
-    "sample_file": "samples/Identity",
+    "sample_file": "samples/FleetProvisioning",
     "sample_region": "us-east-1",
-    "sample_main_class": "identity.FleetProvisioningSample",
+    "sample_main_class": "fleetprovisioning.FleetProvisioningSample",
     "arguments": [
         {
             "name": "--endpoint",

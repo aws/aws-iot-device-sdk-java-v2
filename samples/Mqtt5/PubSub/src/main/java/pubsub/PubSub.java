@@ -9,41 +9,18 @@ import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.crt.CrtResource;
 import software.amazon.awssdk.crt.CrtRuntimeException;
 import software.amazon.awssdk.crt.io.ClientBootstrap;
-import software.amazon.awssdk.crt.mqtt5.Mqtt5Client;
-import software.amazon.awssdk.crt.mqtt5.Mqtt5ClientOptions;
-import software.amazon.awssdk.crt.mqtt5.NegotiatedSettings;
-import software.amazon.awssdk.crt.mqtt5.OnAttemptingConnectReturn;
-import software.amazon.awssdk.crt.mqtt5.OnConnectionFailureReturn;
-import software.amazon.awssdk.crt.mqtt5.OnConnectionSuccessReturn;
-import software.amazon.awssdk.crt.mqtt5.OnDisconnectionReturn;
-import software.amazon.awssdk.crt.mqtt5.OnStoppedReturn;
-import software.amazon.awssdk.crt.mqtt5.PublishResult;
-import software.amazon.awssdk.crt.mqtt5.PublishReturn;
-import software.amazon.awssdk.crt.mqtt5.QOS;
+import software.amazon.awssdk.crt.mqtt5.*;
 import software.amazon.awssdk.crt.mqtt5.Mqtt5ClientOptions.LifecycleEvents;
-import software.amazon.awssdk.crt.mqtt5.packets.ConnAckPacket;
-import software.amazon.awssdk.crt.mqtt5.packets.ConnectPacket;
-import software.amazon.awssdk.crt.mqtt5.packets.DisconnectPacket;
-import software.amazon.awssdk.crt.mqtt5.packets.PubAckPacket;
-import software.amazon.awssdk.crt.mqtt5.packets.PublishPacket;
-import software.amazon.awssdk.crt.mqtt5.packets.SubscribePacket;
-import software.amazon.awssdk.crt.mqtt5.packets.UserProperty;
-import software.amazon.awssdk.iot.iotjobs.model.RejectedError;
+import software.amazon.awssdk.crt.mqtt5.packets.*;
+import software.amazon.awssdk.iot.AwsIotMqtt5ClientBuilder;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import utils.commandlineutils.CommandLineUtils;
 
-/**
- * MQTT5 support is currently in <b>developer preview</b>.  We encourage feedback at all times, but feedback during the
- * preview window is especially valuable in shaping the final product.  During the preview period we may make
- * backwards-incompatible changes to the public API, but in general, this is something we will try our best to avoid.
- */
 public class PubSub {
 
     // When run normally, we want to exit nicely even if something goes wrong
@@ -53,10 +30,6 @@ public class PubSub {
     static boolean isCI = ciPropValue != null && Boolean.valueOf(ciPropValue);
 
     static CommandLineUtils cmdUtils;
-
-    static void onRejectedError(RejectedError error) {
-        System.out.println("Request rejected: " + error.code.toString() + ": " + error.message);
-    }
 
     /*
      * When called during a CI run, throw an exception that will escape and fail the exec:java task
@@ -142,30 +115,46 @@ public class PubSub {
 
     public static void main(String[] args) {
 
-        cmdUtils = new CommandLineUtils();
-        cmdUtils.registerProgramName("Mqtt5PubSub");
-        cmdUtils.addCommonMQTTCommands();
-        cmdUtils.addCommonTopicMessageCommands();
-        cmdUtils.registerCommand("key", "<path>", "Path to your key in PEM format. (will use direct MQTT to connect if defined)");
-        cmdUtils.registerCommand("cert", "<path>", "Path to your client certificate in PEM format. (will use direct MQTT to connect if defined)");
-        cmdUtils.registerCommand("signing_region", "<string>", "Websocket region to use (will use websockets to connect if defined).");
-        cmdUtils.registerCommand("client_id", "<int>", "Client id to use (optional, default='test-*').");
-        cmdUtils.registerCommand("count", "<int>", "Number of messages to publish (optional, default='10').");
-        cmdUtils.sendArguments(args);
-
-        String topic = cmdUtils.getCommandOrDefault("topic", "test/topic");
-        String message = cmdUtils.getCommandOrDefault("message", "Hello World!");
-        int messagesToPublish = Integer.parseInt(cmdUtils.getCommandOrDefault("count", String.valueOf(10)));
+        /**
+         * cmdData is the arguments/input from the command line placed into a single struct for
+         * use in this sample. This handles all of the command line parsing, validating, etc.
+         * See the Utils/CommandLineUtils for more information.
+         */
+        CommandLineUtils.SampleCommandLineData cmdData = CommandLineUtils.getInputForIoTSample("Mqtt5PubSub", args);
 
         try {
             /* Create a client based on desired connection type */
             SampleLifecycleEvents lifecycleEvents = new SampleLifecycleEvents();
-            SamplePublishEvents publishEvents = new SamplePublishEvents(messagesToPublish);
+            SamplePublishEvents publishEvents = new SamplePublishEvents(cmdData.input_count);
             Mqtt5Client client;
-            if (cmdUtils.hasCommand("cert") || cmdUtils.hasCommand("key")) {
-                client = cmdUtils.buildDirectMQTT5Connection(lifecycleEvents, publishEvents);
+
+            /**
+             * Create the MQTT connection from the builder
+             */
+            if (cmdData.input_cert != "" || cmdData.input_key != "") {
+                AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newDirectMqttBuilderWithMtlsFromPath(
+                    cmdData.input_endpoint, cmdData.input_cert, cmdData.input_key);
+                ConnectPacket.ConnectPacketBuilder connectProperties = new ConnectPacket.ConnectPacketBuilder();
+                connectProperties.withClientId(cmdData.input_clientId);
+                builder.withConnectProperties(connectProperties);
+                builder.withLifeCycleEvents(lifecycleEvents);
+                builder.withPublishEvents(publishEvents);
+                client = builder.build();
+                builder.close();
             } else {
-                client = cmdUtils.buildWebsocketMQTT5Connection(lifecycleEvents, publishEvents);
+                AwsIotMqtt5ClientBuilder.WebsocketSigv4Config websocketConfig = new AwsIotMqtt5ClientBuilder.WebsocketSigv4Config();
+                if (cmdData.input_signingRegion != "") {
+                    websocketConfig.region = cmdData.input_signingRegion;
+                }
+                AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newWebsocketMqttBuilderWithSigv4Auth(
+                    cmdData.input_endpoint, websocketConfig);
+                ConnectPacket.ConnectPacketBuilder connectProperties = new ConnectPacket.ConnectPacketBuilder();
+                connectProperties.withClientId(cmdData.input_clientId);
+                builder.withConnectProperties(connectProperties);
+                builder.withLifeCycleEvents(lifecycleEvents);
+                builder.withPublishEvents(publishEvents);
+                client = builder.build();
+                builder.close();
             }
 
             /* Connect */
@@ -178,7 +167,7 @@ public class PubSub {
 
             /* Subscribe */
             SubscribePacket.SubscribePacketBuilder subscribeBuilder = new SubscribePacket.SubscribePacketBuilder();
-            subscribeBuilder.withSubscription(topic, QOS.AT_LEAST_ONCE, false, false, SubscribePacket.RetainHandlingType.DONT_SEND);
+            subscribeBuilder.withSubscription(cmdData.input_topic, QOS.AT_LEAST_ONCE, false, false, SubscribePacket.RetainHandlingType.DONT_SEND);
             try {
                 client.subscribe(subscribeBuilder.build()).get(60, TimeUnit.SECONDS);
             } catch (Exception ex) {
@@ -187,11 +176,11 @@ public class PubSub {
 
             /* Publish */
             PublishPacket.PublishPacketBuilder publishBuilder = new PublishPacket.PublishPacketBuilder();
-            publishBuilder.withTopic(topic).withQOS(QOS.AT_LEAST_ONCE);
+            publishBuilder.withTopic(cmdData.input_topic).withQOS(QOS.AT_LEAST_ONCE);
             int count = 0;
             try {
-                while (count++ < messagesToPublish) {
-                    publishBuilder.withPayload(("\"" + message + ": " + String.valueOf(count) + "\"").getBytes());
+                while (count++ < cmdData.input_count) {
+                    publishBuilder.withPayload(("\"" + cmdData.input_message + ": " + String.valueOf(count) + "\"").getBytes());
                     CompletableFuture<PublishResult> published = client.publish(publishBuilder.build());
                     published.get(60, TimeUnit.SECONDS);
                     Thread.sleep(1000);

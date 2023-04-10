@@ -10,8 +10,14 @@ import software.amazon.awssdk.crt.CrtResource;
 import software.amazon.awssdk.crt.CrtRuntimeException;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnectionEvents;
-import software.amazon.awssdk.iot.iotjobs.model.RejectedError;
+import software.amazon.awssdk.crt.http.HttpProxyOptions;
+import software.amazon.awssdk.crt.auth.credentials.CognitoCredentialsProvider;
+import software.amazon.awssdk.crt.io.ClientBootstrap;
+import software.amazon.awssdk.crt.io.TlsContextOptions;
+import software.amazon.awssdk.crt.io.ClientTlsContext;
+import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import utils.commandlineutils.CommandLineUtils;
@@ -39,14 +45,12 @@ public class CognitoConnect {
 
     public static void main(String[] args) {
 
-        cmdUtils = new CommandLineUtils();
-        cmdUtils.registerProgramName("CognitoConnect");
-        cmdUtils.addCommonMQTTCommands();
-        cmdUtils.addCommonProxyCommands();
-        cmdUtils.registerCommand("signing_region", "<str>", "AWS IoT service region.");
-        cmdUtils.registerCommand("client_id", "<int>", "Client id to use (optional, default='test-*').");
-        cmdUtils.registerCommand("cognito_identity", "<str>", "The Cognito identity ID to use to connect via Cognito");
-        cmdUtils.sendArguments(args);
+        /**
+         * cmdData is the arguments/input from the command line placed into a single struct for
+         * use in this sample. This handles all of the command line parsing, validating, etc.
+         * See the Utils/CommandLineUtils for more information.
+         */
+        CommandLineUtils.SampleCommandLineData cmdData = CommandLineUtils.getInputForIoTSample("CognitoConnect", args);
 
         MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
             @Override
@@ -63,10 +67,9 @@ public class CognitoConnect {
         };
 
         try {
+
             /**
              * Creates a connection using Cognito credentials.
-             * Note: The data for the connection is gotten from cmdUtils.
-             * (see buildCognitoMQTTConnection for implementation)
              *
              * Note: This sample and code assumes that you are using a Cognito identity
              * in the same region as you pass to "--signing_region".
@@ -74,17 +77,59 @@ public class CognitoConnect {
              * See https://docs.aws.amazon.com/general/latest/gr/cognito_identity.html
              * for all Cognito endpoints.
              */
-            MqttClientConnection connection = cmdUtils.buildCognitoMQTTConnection(callbacks);
+            // =================================
+            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(null, null);
+            builder.withConnectionEventCallbacks(callbacks)
+                .withClientId(cmdData.input_clientId)
+                .withEndpoint(cmdData.input_endpoint)
+                .withCleanSession(true)
+                .withProtocolOperationTimeoutMs(60000);
+
+            builder.withWebsockets(true);
+            builder.withWebsocketSigningRegion(cmdData.input_signingRegion);
+
+            CognitoCredentialsProvider.CognitoCredentialsProviderBuilder cognitoBuilder = new CognitoCredentialsProvider.CognitoCredentialsProviderBuilder();
+            String cognitoEndpoint = "cognito-identity." + cmdData.input_signingRegion + ".amazonaws.com";
+            cognitoBuilder.withEndpoint(cognitoEndpoint).withIdentity(cmdData.input_cognitoIdentity);
+            cognitoBuilder.withClientBootstrap(ClientBootstrap.getOrCreateStaticDefault());
+
+            TlsContextOptions cognitoTlsContextOptions = TlsContextOptions.createDefaultClient();
+            ClientTlsContext cognitoTlsContext = new ClientTlsContext(cognitoTlsContextOptions);
+            cognitoTlsContextOptions.close();
+            cognitoBuilder.withTlsContext(cognitoTlsContext);
+
+            CognitoCredentialsProvider cognitoCredentials = cognitoBuilder.build();
+            builder.withWebsocketCredentialsProvider(cognitoCredentials);
+
+            MqttClientConnection connection = builder.build();
+            builder.close();
+            cognitoCredentials.close();
+            cognitoTlsContext.close();
+
             if (connection == null)
             {
                 onApplicationFailure(new RuntimeException("MQTT connection creation failed!"));
             }
+            // =================================
 
-            // Connect and disconnect using the connection we created
-            // (see sampleConnectAndDisconnect for implementation)
-            cmdUtils.sampleConnectAndDisconnect(connection);
+            /**
+             * Connect and disconnect
+             */
+            CompletableFuture<Boolean> connected = connection.connect();
+            try {
+                boolean sessionPresent = connected.get();
+                System.out.println("Connected to " + (!sessionPresent ? "new" : "existing") + " session!");
+            } catch (Exception ex) {
+                throw new RuntimeException("Exception occurred during connect", ex);
+            }
+            System.out.println("Disconnecting...");
+            CompletableFuture<Void> disconnected = connection.disconnect();
+            disconnected.get();
+            System.out.println("Disconnected.");
 
-            // Close the connection now that we are completely done with it.
+            /**
+             * Close the connection now that it is complete
+             */
             connection.close();
 
         } catch (CrtRuntimeException | InterruptedException | ExecutionException ex) {

@@ -8,17 +8,14 @@ package mqtt5.sharedsubscription;
 import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.crt.CrtResource;
 import software.amazon.awssdk.crt.CrtRuntimeException;
-import software.amazon.awssdk.crt.io.ClientBootstrap;
 import software.amazon.awssdk.crt.mqtt5.*;
 import software.amazon.awssdk.crt.mqtt5.Mqtt5ClientOptions.LifecycleEvents;
 import software.amazon.awssdk.crt.mqtt5.packets.*;
 import software.amazon.awssdk.iot.AwsIotMqtt5ClientBuilder;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import utils.commandlineutils.CommandLineUtils;
@@ -189,38 +186,15 @@ public class SharedSubscription {
 
     public static void main(String[] args) {
 
-        cmdUtils = new CommandLineUtils();
-        cmdUtils.registerProgramName("Mqtt5SharedSubscription");
-        cmdUtils.addCommonMQTTCommands();
-        cmdUtils.addCommonTopicMessageCommands();
-        cmdUtils.registerCommand("key", "<path>", "Path to your key in PEM format. (will use direct MQTT to connect if defined)");
-        cmdUtils.registerCommand("cert", "<path>", "Path to your client certificate in PEM format. (will use direct MQTT to connect if defined)");
-        cmdUtils.registerCommand("client_id", "<int>",
-            "Client id to use (optional, default='test-*'). " +
-            "Note that '1', '2', and '3' will be added for to the given clientIDs since this sample uses 3 clients.");
-        cmdUtils.registerCommand("count", "<int>", "Number of messages to publish (optional, default='10').");
-        cmdUtils.registerCommand("group_identifier", "<string>",
-            "The group identifier to use in the shared subscription (optional, default='java-sample')");
-        cmdUtils.sendArguments(args);
-
-        /* Pull data from the command line */
-        String input_endpoint = cmdUtils.getCommandRequired("endpoint", "");
-        String input_cert = cmdUtils.getCommandRequired("cert", "");
-        String input_key = cmdUtils.getCommandRequired("key", "");
-        String input_ca = cmdUtils.getCommandOrDefault("ca_file", "");
-        String input_clientId = cmdUtils.getCommandOrDefault("client_id", "test-" + UUID.randomUUID().toString());
-        int input_count = Integer.parseInt(cmdUtils.getCommandOrDefault("count", String.valueOf(10)));
-        String input_topic = cmdUtils.getCommandOrDefault("topic", "test/topic");
-        String input_message = cmdUtils.getCommandOrDefault("message", "Hello World!");
-        String input_groupIdentifier = cmdUtils.getCommandOrDefault("group_identifier", "java-sample");
-
-        /* If this is CI, append a UUID to the topic */
-        if (isCI) {
-            input_topic += "/" + UUID.randomUUID().toString();
-        }
+        /**
+         * cmdData is the arguments/input from the command line placed into a single struct for
+         * use in this sample. This handles all of the command line parsing, validating, etc.
+         * See the Utils/CommandLineUtils for more information.
+         */
+        CommandLineUtils.SampleCommandLineData cmdData = CommandLineUtils.getInputForIoTSample("Mqtt5SharedSubscription", args);
 
         /* Construct the shared topic */
-        String input_sharedTopic = "$share/" + input_groupIdentifier + "/" + input_topic;
+        String input_sharedTopic = "$share/" + cmdData.input_groupIdentifier + "/" + cmdData.input_topic;
 
         /* This sample uses a publisher and two subscribers */
         SampleMqtt5Client publisher = null;
@@ -228,7 +202,7 @@ public class SharedSubscription {
         SampleMqtt5Client subscriberTwo = null;
 
         /* Make sure the message count is even */
-        if (input_count%2 != 0) {
+        if (cmdData.input_count%2 != 0) {
             onApplicationFailure(new Throwable("'--count' is an odd number. '--count' must be even or zero for this sample."));
             System.exit(1);
         }
@@ -236,14 +210,14 @@ public class SharedSubscription {
         try {
             /* Create the MQTT5 clients: one publisher and two subscribers */
             publisher = SampleMqtt5Client.createMqtt5Client(
-                input_endpoint, input_cert, input_key, input_ca,
-                input_clientId + '1', input_count, "Publisher");
+                cmdData.input_endpoint, cmdData.input_cert, cmdData.input_key, cmdData.input_ca,
+                cmdData.input_clientId + '1', cmdData.input_count, "Publisher");
             subscriberOne = SampleMqtt5Client.createMqtt5Client(
-                input_endpoint, input_cert, input_key, input_ca,
-                input_clientId + '2', input_count, "Subscriber One");
+                cmdData.input_endpoint, cmdData.input_cert, cmdData.input_key, cmdData.input_ca,
+                cmdData.input_clientId + '2', cmdData.input_count, "Subscriber One");
             subscriberTwo = SampleMqtt5Client.createMqtt5Client(
-                input_endpoint, input_cert, input_key, input_ca,
-                input_clientId + '3', input_count, "Subscriber Two");
+                cmdData.input_endpoint, cmdData.input_cert, cmdData.input_key, cmdData.input_ca,
+                cmdData.input_clientId + '3', cmdData.input_count, "Subscriber Two");
 
             /* Connect all the clients */
             publisher.client.start();
@@ -276,11 +250,11 @@ public class SharedSubscription {
 
             /* Publish using the publisher client */
             PublishPacket.PublishPacketBuilder publishBuilder = new PublishPacket.PublishPacketBuilder();
-            publishBuilder.withTopic(input_topic).withQOS(QOS.AT_LEAST_ONCE);
+            publishBuilder.withTopic(cmdData.input_topic).withQOS(QOS.AT_LEAST_ONCE);
             int count = 0;
-            if (input_count > 0) {
-                while (count++ < input_count) {
-                    publishBuilder.withPayload(("\"" + input_message + ": " + String.valueOf(count) + "\"").getBytes());
+            if (cmdData.input_count > 0) {
+                while (count++ < cmdData.input_count) {
+                    publishBuilder.withPayload(("\"" + cmdData.input_message + ": " + String.valueOf(count) + "\"").getBytes());
                     publisher.client.publish(publishBuilder.build()).get(60, TimeUnit.SECONDS);
                     System.out.println("[" + publisher.name + "]: Sent publish");
                     Thread.sleep(1000);

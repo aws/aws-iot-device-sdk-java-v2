@@ -17,8 +17,7 @@ import kotlin.concurrent.thread
 val SAMPLES = mapOf(
     "Publish/Subscribe Sample" to "pubsub.PubSub",
     "Jobs Client Sample" to "jobs.JobsSample",
-    "Shadow Client Sample" to "shadow.ShadowSample",
-    "Publish/Subscribe Load Test" to "pubsubstress.PubSubStress"
+    "Shadow Client Sample" to "shadow.ShadowSample"
 )
 
 class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {

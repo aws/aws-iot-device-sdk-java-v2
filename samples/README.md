@@ -4,24 +4,19 @@
 * [Basic Connect](./BasicConnect/README.md)
 * [Websocket Connect](./WebsocketConnect/README.md)
 * [Pkcs11 Connect](./Pkcs11Connect/README.md)
-* [Raw Connect](./RawConnect/README.md)
 * [WindowsCert Connect](./WindowsCertConnect/README.md)
 * [X509 Connect](./X509CredentialsProviderConnect/README.md)
 * [CustomAuthorizer Connect](./CustomAuthorizerConnect/README.md)
 * [JavaKeystore Connect](./JavaKeystoreConnect/README.md)
 * [Cognito Connect](./CognitoConnect/README.md)
-* [CustomKeyOperationPubSub](./CustomKeyOpsPubSub/README.md)
+* [CustomKeyOperation Connect](./CustomKeyOpsConnect/README.md)
 * [Shadow](./Shadow/README.md)
 * [Jobs](./Jobs/README.md)
-* [fleet provisioning](./Identity/README.md)
+* [fleet provisioning](./FleetProvisioning/README.md)
 * [Greengrass Discovery](./Greengrass/README.md)
 * [Greengrass IPC](./GreengrassIPC/README.md)
 * [MQTT5 PubSub](./Mqtt5/PubSub/README.md)
 * [MQTT5 Shared Subscription](./Mqtt5/SharedSubscription/README.md)
-
-**Additional sample apps currently without READMEs:**
-
-* [PubSubStress](https://github.com/aws/aws-iot-device-sdk-java-v2/tree/main/samples/PubSubStress)
 
 ### Note
 

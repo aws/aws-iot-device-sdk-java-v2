@@ -21,7 +21,6 @@ android {
         main {
             java.srcDir '../../samples/BasicPubSub/src/main/java'
             java.srcDir '../../samples/Jobs/src/main/java'
-            java.srcDir '../../samples/PubSubStress/src/main/java'
             java.srcDir '../../samples/Shadow/src/main/java'
             java.srcDir 'src/main/java'
         }

@@ -8,7 +8,6 @@ package shadow;
 import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.crt.CrtResource;
 import software.amazon.awssdk.crt.CrtRuntimeException;
-import software.amazon.awssdk.crt.Log;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnectionEvents;
 import software.amazon.awssdk.crt.mqtt.QualityOfService;
@@ -29,7 +28,6 @@ import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.Scanner;
-import java.util.UUID;
 
 import utils.commandlineutils.CommandLineUtils;
 
@@ -40,7 +38,7 @@ public class ShadowSample {
     static String ciPropValue = System.getProperty("aws.crt.ci");
     static boolean isCI = ciPropValue != null && Boolean.valueOf(ciPropValue);
 
-    static String thingName;
+    static String input_thingName;
     final static String SHADOW_PROPERTY = "color";
     final static String SHADOW_VALUE_DEFAULT = "off";
 
@@ -142,7 +140,7 @@ public class ShadowSample {
         // build a request to let the service know our current value and desired value, and that we only want
         // to update if the version matches the version we know about
         UpdateShadowRequest request = new UpdateShadowRequest();
-        request.thingName = thingName;
+        request.thingName = input_thingName;
         request.state = new ShadowState();
 
         if (value.compareToIgnoreCase("clear_shadow") == 0) {
@@ -187,17 +185,14 @@ public class ShadowSample {
     }
 
     public static void main(String[] args) {
-        cmdUtils = new CommandLineUtils();
-        cmdUtils.registerProgramName("ShadowSample");
-        cmdUtils.addCommonMQTTCommands();
-        cmdUtils.registerCommand("key", "<path>", "Path to your key in PEM format.");
-        cmdUtils.registerCommand("cert", "<path>", "Path to your client certificate in PEM format.");
-        cmdUtils.registerCommand("port", "<int>", "Port to use (optional, default='8883').");
-        cmdUtils.registerCommand("thing_name", "<str>", "The name of the IoT thing.");
-        cmdUtils.registerCommand("client_id", "<int>", "Client id to use (optional, default='test-*')");
-        cmdUtils.sendArguments(args);
 
-        thingName = cmdUtils.getCommandRequired("thing_name", "");
+        /**
+         * cmdData is the arguments/input from the command line placed into a single struct for
+         * use in this sample. This handles all of the command line parsing, validating, etc.
+         * See the Utils/CommandLineUtils for more information.
+         */
+        CommandLineUtils.SampleCommandLineData cmdData = CommandLineUtils.getInputForIoTSample("Shadow", args);
+        input_thingName = cmdData.input_thingName;
 
         MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
             @Override
@@ -215,10 +210,26 @@ public class ShadowSample {
 
         try {
 
-            MqttClientConnection connection = cmdUtils.buildMQTTConnection(callbacks);
+            /**
+             * Create the MQTT connection from the builder
+             */
+            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(cmdData.input_cert, cmdData.input_key);
+            if (cmdData.input_ca != "") {
+                builder.withCertificateAuthorityFromPath(null, cmdData.input_ca);
+            }
+            builder.withConnectionEventCallbacks(callbacks)
+                .withClientId(cmdData.input_clientId)
+                .withEndpoint(cmdData.input_endpoint)
+                .withPort((short)cmdData.input_port)
+                .withCleanSession(true)
+                .withProtocolOperationTimeoutMs(60000);
+            MqttClientConnection connection = builder.build();
+            builder.close();
 
+            // Create the shadow client
             shadow = new IotShadowClient(connection);
 
+            // Connect
             CompletableFuture<Boolean> connected = connection.connect();
             try {
                 boolean sessionPresent = connected.get();
@@ -227,9 +238,12 @@ public class ShadowSample {
                 throw new RuntimeException("Exception occurred during connect", ex);
             }
 
+            /**
+             * Subscribe to shadow topics
+             */
             System.out.println("Subscribing to shadow delta events...");
             ShadowDeltaUpdatedSubscriptionRequest requestShadowDeltaUpdated = new ShadowDeltaUpdatedSubscriptionRequest();
-            requestShadowDeltaUpdated.thingName = thingName;
+            requestShadowDeltaUpdated.thingName = input_thingName;
             CompletableFuture<Integer> subscribedToDeltas =
                     shadow.SubscribeToShadowDeltaUpdatedEvents(
                             requestShadowDeltaUpdated,
@@ -239,7 +253,7 @@ public class ShadowSample {
 
             System.out.println("Subscribing to update responses...");
             UpdateShadowSubscriptionRequest requestUpdateShadow = new UpdateShadowSubscriptionRequest();
-            requestUpdateShadow.thingName = thingName;
+            requestUpdateShadow.thingName = input_thingName;
             CompletableFuture<Integer> subscribedToUpdateAccepted =
                     shadow.SubscribeToUpdateShadowAccepted(
                             requestUpdateShadow,
@@ -255,7 +269,7 @@ public class ShadowSample {
 
             System.out.println("Subscribing to get responses...");
             GetShadowSubscriptionRequest requestGetShadow = new GetShadowSubscriptionRequest();
-            requestGetShadow.thingName = thingName;
+            requestGetShadow.thingName = input_thingName;
             CompletableFuture<Integer> subscribedToGetShadowAccepted =
                     shadow.SubscribeToGetShadowAccepted(
                             requestGetShadow,
@@ -273,7 +287,7 @@ public class ShadowSample {
 
             System.out.println("Requesting current shadow state...");
             GetShadowRequest getShadowRequest = new GetShadowRequest();
-            getShadowRequest.thingName = thingName;
+            getShadowRequest.thingName = input_thingName;
             CompletableFuture<Integer> publishedGetShadow = shadow.PublishGetShadow(
                     getShadowRequest,
                     QualityOfService.AT_LEAST_ONCE);
@@ -310,6 +324,7 @@ public class ShadowSample {
                 }
             }
 
+            // Disconnect
             CompletableFuture<Void> disconnected = connection.disconnect();
             disconnected.get();
 

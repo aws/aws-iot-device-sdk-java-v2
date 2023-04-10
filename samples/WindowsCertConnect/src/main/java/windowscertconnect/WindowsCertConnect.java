@@ -10,10 +10,7 @@ import software.amazon.awssdk.crt.io.*;
 import software.amazon.awssdk.crt.mqtt.*;
 import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
 
-import java.nio.charset.StandardCharsets;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 
 import utils.commandlineutils.CommandLineUtils;
@@ -43,21 +40,12 @@ public class WindowsCertConnect {
 
     public static void main(String[] args) {
 
-        cmdUtils = new CommandLineUtils();
-        cmdUtils.registerProgramName("WindowsCertConnect");
-        cmdUtils.addCommonMQTTCommands();
-        cmdUtils.registerCommand("cert", "<str>", "Path to certificate in Windows cert store. " +
-                                                  "e.g. \"CurrentUser\\MY\\6ac133ac58f0a88b83e9c794eba156a98da39b4c\"");
-        cmdUtils.registerCommand("client_id", "<int>", "Client id to use (optional, default='test-*').");
-        cmdUtils.registerCommand("port", "<int>", "Port to connect to on the endpoint (optional, default='8883').");
-        cmdUtils.registerCommand("help", "", "Prints this message");
-        cmdUtils.sendArguments(args);
-
-        String endpoint = cmdUtils.getCommandRequired("endpoint", "");
-        String windowsCertStorePath = cmdUtils.getCommandRequired("cert", "");
-        String rootCaPath = cmdUtils.getCommandOrDefault("ca_file", "");
-        String clientId = cmdUtils.getCommandOrDefault("client_id", "test-" + UUID.randomUUID().toString());
-        int port = Integer.parseInt(cmdUtils.getCommandOrDefault("port", "8883"));
+        /**
+         * cmdData is the arguments/input from the command line placed into a single struct for
+         * use in this sample. This handles all of the command line parsing, validating, etc.
+         * See the Utils/CommandLineUtils for more information.
+         */
+        CommandLineUtils.SampleCommandLineData cmdData = CommandLineUtils.getInputForIoTSample("WindowsCertConnect", args);
 
         MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
             @Override
@@ -73,28 +61,48 @@ public class WindowsCertConnect {
             }
         };
 
-        try (AwsIotMqttConnectionBuilder builder =
-                AwsIotMqttConnectionBuilder.newMtlsWindowsCertStorePathBuilder(windowsCertStorePath)) {
-
-            if (rootCaPath != null && rootCaPath != "") {
-                builder.withCertificateAuthorityFromPath(null, rootCaPath);
+        try {
+            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsWindowsCertStorePathBuilder(cmdData.input_cert);
+            if (cmdData.input_ca != "") {
+                builder.withCertificateAuthorityFromPath(null, cmdData.input_ca);
             }
-
             builder.withConnectionEventCallbacks(callbacks)
-                    .withClientId(clientId)
-                    .withEndpoint(endpoint)
-                    .withPort((short) port)
-                    .withCleanSession(true)
-                    .withProtocolOperationTimeoutMs(60000);
+                .withClientId(cmdData.input_clientId)
+                .withEndpoint(cmdData.input_endpoint)
+                .withPort((short)cmdData.input_port)
+                .withCleanSession(true)
+                .withProtocolOperationTimeoutMs(60000);
+            MqttClientConnection connection = builder.build();
+            builder.close();
 
-            try (MqttClientConnection connection = builder.build()) {
-                // Connect and disconnect using the connection we created
-                // (see sampleConnectAndDisconnect for implementation)
-                cmdUtils.sampleConnectAndDisconnect(connection);
-
-                // Close the connection now that we are completely done with it.
-                connection.close();
+            /**
+             * Verify the connection was created
+             */
+            if (connection == null)
+            {
+                onApplicationFailure(new RuntimeException("MQTT connection creation failed!"));
             }
+
+            /**
+             * Connect and disconnect
+             */
+            CompletableFuture<Boolean> connected = connection.connect();
+            try {
+                boolean sessionPresent = connected.get();
+                System.out.println("Connected to " + (!sessionPresent ? "new" : "existing") + " session!");
+            } catch (Exception ex) {
+                throw new RuntimeException("Exception occurred during connect", ex);
+            }
+            System.out.println("Disconnecting...");
+            CompletableFuture<Void> disconnected = connection.disconnect();
+            disconnected.get();
+            System.out.println("Disconnected.");
+
+            /**
+             * Close the connection now that it is complete
+             */
+            connection.close();
+
         } catch (CrtRuntimeException | InterruptedException | ExecutionException ex) {
             onApplicationFailure(ex);
         }

@@ -12,7 +12,6 @@
         <module>samples/BasicConnect</module>
         <module>samples/WebsocketConnect</module>
         <module>samples/X509CredentialsProviderConnect</module>
-        <module>samples/RawConnect</module>
         <module>samples/Pkcs11Connect</module>
         <module>samples/CustomAuthorizerConnect</module>
         <module>samples/JavaKeystoreConnect</module>
@@ -20,11 +19,10 @@
         <module>samples/Greengrass</module>
         <module>samples/GreengrassIPC</module>
         <module>samples/Jobs</module>
-        <module>samples/PubSubStress</module>
-        <module>samples/CustomKeyOpsPubSub</module>
+        <module>samples/CustomKeyOpsConnect</module>
         <module>samples/WindowsCertConnect</module>
         <module>samples/Shadow</module>
-        <module>samples/Identity</module>
+        <module>samples/FleetProvisioning</module>
         <module>samples/Mqtt5/PubSub</module>
         <module>samples/Mqtt5/SharedSubscription</module>
     </modules>
