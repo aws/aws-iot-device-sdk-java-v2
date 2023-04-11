@@ -1,5 +1,6 @@
 package software.amazon.awssdk.awstest.model;
 
+import java.lang.String;
 import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
 import software.amazon.awssdk.eventstreamrpc.model.EventStreamOperationError;
 

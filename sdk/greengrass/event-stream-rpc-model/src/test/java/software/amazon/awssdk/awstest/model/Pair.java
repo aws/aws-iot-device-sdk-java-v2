@@ -1,10 +1,12 @@
 package software.amazon.awssdk.awstest.model;
 
 import com.google.gson.annotations.Expose;
-import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
-
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
 import java.util.Objects;
 import java.util.Optional;
+import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
 
 public class Pair implements EventStreamJsonMessage {
   public static final String APPLICATION_MODEL_TYPE = "awstest#Pair";
@@ -44,8 +46,12 @@ public class Pair implements EventStreamJsonMessage {
     return null;
   }
 
-  public Pair setKey(final String key) {
+  public void setKey(final String key) {
     this.key = Optional.ofNullable(key);
+  }
+
+  public Pair withKey(final String key) {
+    setKey(key);
     return this;
   }
 
@@ -56,8 +62,12 @@ public class Pair implements EventStreamJsonMessage {
     return null;
   }
 
-  public Pair setValue(final String value) {
+  public void setValue(final String value) {
     this.value = Optional.ofNullable(value);
+  }
+
+  public Pair withValue(final String value) {
+    setValue(value);
     return this;
   }
 

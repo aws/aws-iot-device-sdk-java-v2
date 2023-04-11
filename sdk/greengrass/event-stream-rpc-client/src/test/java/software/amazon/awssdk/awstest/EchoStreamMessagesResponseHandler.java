@@ -1,11 +1,12 @@
 package software.amazon.awssdk.awstest;
 
+import java.lang.Override;
+import java.lang.Void;
+import java.util.concurrent.CompletableFuture;
 import software.amazon.awssdk.awstest.model.EchoStreamingMessage;
 import software.amazon.awssdk.awstest.model.EchoStreamingResponse;
 import software.amazon.awssdk.eventstreamrpc.OperationResponse;
 import software.amazon.awssdk.eventstreamrpc.StreamResponse;
-
-import java.util.concurrent.CompletableFuture;
 
 public final class EchoStreamMessagesResponseHandler implements StreamResponse<EchoStreamingResponse, EchoStreamingMessage> {
   private final OperationResponse<EchoStreamingResponse, EchoStreamingMessage> operationResponse;
