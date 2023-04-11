@@ -182,7 +182,7 @@ public class ObjectModelTests {
         final EchoMessageRequest data = new EchoMessageRequest();
         Map<String, Product> sTV = new HashMap<String, Product>();
         Product p = new Product();
-        p.setPrice(1);
+        p.setPrice(1.f);
         // leaving product's name as null for previously found issue
         sTV.put("A", p);
         MessageData m = new MessageData();

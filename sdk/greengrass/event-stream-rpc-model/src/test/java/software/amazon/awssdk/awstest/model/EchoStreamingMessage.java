@@ -1,12 +1,14 @@
 package software.amazon.awssdk.awstest.model;
 
 import com.google.gson.annotations.Expose;
-import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
-
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
 
 public class EchoStreamingMessage implements EventStreamJsonMessage {
   public static final String APPLICATION_MODEL_TYPE = "awstest#EchoStreamingMessage";
@@ -37,12 +39,16 @@ public class EchoStreamingMessage implements EventStreamJsonMessage {
     return null;
   }
 
-  public EchoStreamingMessage setStreamMessage(final MessageData streamMessage) {
+  public void setStreamMessage(final MessageData streamMessage) {
     if (setUnionMember != null) {
       setUnionMember.nullify(this);
     }
     this.streamMessage = Optional.of(streamMessage);
     this.setUnionMember = UnionMember.STREAM_MESSAGE;
+  }
+
+  public EchoStreamingMessage withStreamMessage(final MessageData streamMessage) {
+    setStreamMessage(streamMessage);
     return this;
   }
 
@@ -53,12 +59,16 @@ public class EchoStreamingMessage implements EventStreamJsonMessage {
     return null;
   }
 
-  public EchoStreamingMessage setKeyValuePair(final Pair keyValuePair) {
+  public void setKeyValuePair(final Pair keyValuePair) {
     if (setUnionMember != null) {
       setUnionMember.nullify(this);
     }
     this.keyValuePair = Optional.of(keyValuePair);
     this.setUnionMember = UnionMember.KEY_VALUE_PAIR;
+  }
+
+  public EchoStreamingMessage withKeyValuePair(final Pair keyValuePair) {
+    setKeyValuePair(keyValuePair);
     return this;
   }
 

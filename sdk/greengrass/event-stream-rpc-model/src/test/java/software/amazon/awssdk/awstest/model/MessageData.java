@@ -1,14 +1,17 @@
 package software.amazon.awssdk.awstest.model;
 
 import com.google.gson.annotations.Expose;
-import software.amazon.awssdk.eventstreamrpc.EventStreamRPCServiceModel;
-import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
-
+import java.lang.Boolean;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import software.amazon.awssdk.eventstreamrpc.EventStreamRPCServiceModel;
+import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
 
 public class MessageData implements EventStreamJsonMessage {
   public static final String APPLICATION_MODEL_TYPE = "awstest#MessageData";
@@ -97,8 +100,12 @@ public class MessageData implements EventStreamJsonMessage {
     return null;
   }
 
-  public MessageData setStringMessage(final String stringMessage) {
+  public void setStringMessage(final String stringMessage) {
     this.stringMessage = Optional.ofNullable(stringMessage);
+  }
+
+  public MessageData withStringMessage(final String stringMessage) {
+    setStringMessage(stringMessage);
     return this;
   }
 
@@ -109,8 +116,12 @@ public class MessageData implements EventStreamJsonMessage {
     return null;
   }
 
-  public MessageData setBooleanMessage(final Boolean booleanMessage) {
+  public void setBooleanMessage(final Boolean booleanMessage) {
     this.booleanMessage = Optional.ofNullable(booleanMessage);
+  }
+
+  public MessageData withBooleanMessage(final Boolean booleanMessage) {
+    setBooleanMessage(booleanMessage);
     return this;
   }
 
@@ -121,8 +132,12 @@ public class MessageData implements EventStreamJsonMessage {
     return null;
   }
 
-  public MessageData setTimeMessage(final Instant timeMessage) {
+  public void setTimeMessage(final Instant timeMessage) {
     this.timeMessage = Optional.ofNullable(timeMessage);
+  }
+
+  public MessageData withTimeMessage(final Instant timeMessage) {
+    setTimeMessage(timeMessage);
     return this;
   }
 
@@ -133,8 +148,12 @@ public class MessageData implements EventStreamJsonMessage {
     return null;
   }
 
-  public MessageData setDocumentMessage(final Map<String, Object> documentMessage) {
+  public void setDocumentMessage(final Map<String, Object> documentMessage) {
     this.documentMessage = Optional.ofNullable(documentMessage);
+  }
+
+  public MessageData withDocumentMessage(final Map<String, Object> documentMessage) {
+    setDocumentMessage(documentMessage);
     return this;
   }
 
@@ -152,12 +171,21 @@ public class MessageData implements EventStreamJsonMessage {
     return null;
   }
 
+  public void setEnumMessage(final String enumMessage) {
+    this.enumMessage = Optional.ofNullable(enumMessage);
+  }
+
+  public MessageData withEnumMessage(final String enumMessage) {
+    setEnumMessage(enumMessage);
+    return this;
+  }
+
   public void setEnumMessage(final FruitEnum enumMessage) {
     this.enumMessage = Optional.ofNullable(enumMessage.getValue());
   }
 
-  public MessageData setEnumMessage(final String enumMessage) {
-    this.enumMessage = Optional.ofNullable(enumMessage);
+  public MessageData withEnumMessage(final FruitEnum enumMessage) {
+    setEnumMessage(enumMessage);
     return this;
   }
 
@@ -168,8 +196,12 @@ public class MessageData implements EventStreamJsonMessage {
     return null;
   }
 
-  public MessageData setBlobMessage(final byte[] blobMessage) {
+  public void setBlobMessage(final byte[] blobMessage) {
     this.blobMessage = Optional.ofNullable(blobMessage);
+  }
+
+  public MessageData withBlobMessage(final byte[] blobMessage) {
+    setBlobMessage(blobMessage);
     return this;
   }
 
@@ -180,8 +212,12 @@ public class MessageData implements EventStreamJsonMessage {
     return null;
   }
 
-  public MessageData setStringListMessage(final List<String> stringListMessage) {
+  public void setStringListMessage(final List<String> stringListMessage) {
     this.stringListMessage = Optional.ofNullable(stringListMessage);
+  }
+
+  public MessageData withStringListMessage(final List<String> stringListMessage) {
+    setStringListMessage(stringListMessage);
     return this;
   }
 
@@ -192,8 +228,12 @@ public class MessageData implements EventStreamJsonMessage {
     return null;
   }
 
-  public MessageData setKeyValuePairList(final List<Pair> keyValuePairList) {
+  public void setKeyValuePairList(final List<Pair> keyValuePairList) {
     this.keyValuePairList = Optional.ofNullable(keyValuePairList);
+  }
+
+  public MessageData withKeyValuePairList(final List<Pair> keyValuePairList) {
+    setKeyValuePairList(keyValuePairList);
     return this;
   }
 
@@ -204,8 +244,12 @@ public class MessageData implements EventStreamJsonMessage {
     return null;
   }
 
-  public MessageData setStringToValue(final Map<String, Product> stringToValue) {
+  public void setStringToValue(final Map<String, Product> stringToValue) {
     this.stringToValue = Optional.ofNullable(stringToValue);
+  }
+
+  public MessageData withStringToValue(final Map<String, Product> stringToValue) {
+    setStringToValue(stringToValue);
     return this;
   }
 

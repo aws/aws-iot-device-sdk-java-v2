@@ -1,10 +1,13 @@
 package software.amazon.awssdk.awstest.model;
 
 import com.google.gson.annotations.Expose;
-import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
-
+import java.lang.Long;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
 import java.util.Objects;
 import java.util.Optional;
+import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
 
 public class Customer implements EventStreamJsonMessage {
   public static final String APPLICATION_MODEL_TYPE = "awstest#Customer";
@@ -51,8 +54,12 @@ public class Customer implements EventStreamJsonMessage {
     return null;
   }
 
-  public Customer setId(final Long id) {
+  public void setId(final Long id) {
     this.id = Optional.ofNullable(id);
+  }
+
+  public Customer withId(final Long id) {
+    setId(id);
     return this;
   }
 
@@ -63,8 +70,12 @@ public class Customer implements EventStreamJsonMessage {
     return null;
   }
 
-  public Customer setFirstName(final String firstName) {
+  public void setFirstName(final String firstName) {
     this.firstName = Optional.ofNullable(firstName);
+  }
+
+  public Customer withFirstName(final String firstName) {
+    setFirstName(firstName);
     return this;
   }
 
@@ -75,8 +86,12 @@ public class Customer implements EventStreamJsonMessage {
     return null;
   }
 
-  public Customer setLastName(final String lastName) {
+  public void setLastName(final String lastName) {
     this.lastName = Optional.ofNullable(lastName);
+  }
+
+  public Customer withLastName(final String lastName) {
+    setLastName(lastName);
     return this;
   }
 

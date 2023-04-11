@@ -1,10 +1,11 @@
 package software.amazon.awssdk.awstest.model;
 
 import com.google.gson.annotations.SerializedName;
-import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
-
+import java.lang.Override;
+import java.lang.String;
 import java.util.HashMap;
 import java.util.Map;
+import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
 
 public enum FruitEnum implements EventStreamJsonMessage {
   @SerializedName("apl")
