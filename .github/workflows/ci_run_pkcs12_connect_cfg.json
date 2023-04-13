@@ -1,0 +1,20 @@
+{
+    "language": "Java",
+    "sample_file": "samples/Pkcs12Connect",
+    "sample_region": "us-east-1",
+    "sample_main_class": "pkcs12connect.Pkcs12Connect",
+    "arguments": [
+        {
+            "name": "--endpoint",
+            "secret": "ci/endpoint"
+        },
+        {
+            "name": "--pkcs12_file",
+            "data": "./pkcs12-key.p12"
+        },
+        {
+            "name": "--pkcs12_password",
+            "secret": "ci/PubSub/key_pkcs12_password"
+        }
+    ]
+}
