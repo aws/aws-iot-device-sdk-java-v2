@@ -214,6 +214,18 @@ AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newDirectMqttBuilder
 
 **Note**: Currently, TLS integration with PKCS#11 is only available on Unix devices.
 
+### **Direct MQTT with PKCS12 Method**
+
+A MQTT5 direct connection can be made using a PKCS12 file rather than using a PEM encoded private key. To create a MQTT5 builder configured for this connection, see the following code:
+
+~~~ java
+
+String clientEndpoint = "<prefix>-ats.iot.<region>.amazonaws.com";
+AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newDirectMqttBuilderWithMtlsFromPkcs11(clientEndpoint, "<PKCS12 file path>", "<PKCS12 password>");
+~~~
+
+**Note**: Currently, TLS integration with PKCS12 is only available on MacOS devices.
+
 ### **Direct MQTT with Custom Key Operation Method**
 
 A MQTT5 direct connection can be made with a set of custom private key operations during the mutual TLS handshake. This is necessary if you require an external library to handle private key operations such as signing and decrypting. To create a MQTT5 builder configured for this connection, see the following code:

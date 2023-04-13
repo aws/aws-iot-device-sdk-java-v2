@@ -238,6 +238,9 @@ public class CommandLineUtils {
         public String input_x509Cert;
         public String input_x509Key;
         public String input_x509Ca;
+        // PKCS12
+        public String input_pkcs12File;
+        public String input_pkcs12Password;
     }
 
     // Helper function for getting the message and topic
@@ -606,6 +609,25 @@ public class CommandLineUtils {
         return returnData;
     }
 
+    public SampleCommandLineData parseSampleInputPkcs12Connect(String[] args)
+    {
+        addCommonMQTTCommands();
+        registerCommand(m_cmd_pkcs12_file, "<path>", "Path to your client PKCS12 certificate.");
+        registerCommand(m_cmd_pkcs12_password, "<path>", "Path to your client certificate in PEM format.");
+        registerCommand(m_cmd_client_id, "<int>", "Client id to use (optional, default='test-*').");
+        registerCommand(m_cmd_port, "<int>", "Port to connect to on the endpoint (optional, default='8883').");
+        sendArguments(args);
+
+        SampleCommandLineData returnData = new SampleCommandLineData();
+        returnData.input_endpoint = getCommandRequired(m_cmd_endpoint, "");
+        returnData.input_pkcs12File = getCommandRequired(m_cmd_pkcs12_file, "");
+        returnData.input_pkcs12Password = getCommandRequired(m_cmd_pkcs12_password, "");
+        returnData.input_ca = getCommandOrDefault(m_cmd_ca_file, "");
+        returnData.input_clientId = getCommandOrDefault(m_cmd_client_id, "test-" + UUID.randomUUID().toString());
+        returnData.input_port = Integer.parseInt(getCommandOrDefault(m_cmd_port, "8883"));
+        return returnData;
+    }
+
     /**
      * Based on the sample string: sets up the arguments, parses the arguments, and returns the command line data all in one go
      */
@@ -646,6 +668,8 @@ public class CommandLineUtils {
             return cmdUtils.parseSampleInputWindowsCertConnect(args);
         } else if (sampleName.equals("x509CredentialsProviderConnect")) {
             return cmdUtils.parseSampleInputX509Connect(args);
+        } else if (sampleName.equals("Pkcs12Connect")) {
+            return cmdUtils.parseSampleInputPkcs12Connect(args);
         } else {
             throw new RuntimeException("Unknown sample name!");
         }
@@ -699,6 +723,8 @@ public class CommandLineUtils {
     private static final String m_cmd_password = "password";
     private static final String m_cmd_protocol = "protocol";
     private static final String m_cmd_auth_params = "auth_params";
+    private static final String m_cmd_pkcs12_file = "pkcs12_file";
+    private static final String m_cmd_pkcs12_password = "pkcs12_password";
 }
 
 class CommandLineOption {

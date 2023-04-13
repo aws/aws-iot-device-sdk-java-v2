@@ -197,6 +197,22 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     }
 
     /**
+     * Create a new builder with mTLS, using a PKCS12 library for private key operations.
+     *
+     * NOTE: MacOS only
+     *
+     * @param pkcs12Path Path to the PKCS12 file to use with the builder.
+     * @param pkcs12Password The password of the PKCS12 file to use with the builder.
+     * @return {@link AwsIotMqttConnectionBuilder}
+     */
+    public static AwsIotMqttConnectionBuilder newMtlsPkcs12Builder(
+            String pkcs12Path, String pkcs12Password) {
+        try (TlsContextOptions tlsContextOptions = TlsContextOptions.createWithMtlsPkcs12(pkcs12Path, pkcs12Password)) {
+            return new AwsIotMqttConnectionBuilder(tlsContextOptions);
+        }
+    }
+
+    /**
      * Create a new builder with no default Tls options
      *
      * @return a new builder with default Tls options
