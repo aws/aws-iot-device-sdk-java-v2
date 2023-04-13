@@ -20,7 +20,7 @@
                 <dependency>
                     <groupId>software.amazon.awssdk.iotdevicesdk</groupId>
                     <artifactId>aws-iot-device-sdk</artifactId>
-                    <version>1.11.5</version>
+                    <version>1.11.6</version>
                 </dependency>
             </dependencies>
         </profile>
