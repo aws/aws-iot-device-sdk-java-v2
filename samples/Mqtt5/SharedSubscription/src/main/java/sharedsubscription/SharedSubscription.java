@@ -107,11 +107,9 @@ public class SharedSubscription {
      */
     static final class SamplePublishEvents implements Mqtt5ClientOptions.PublishEvents {
         SampleMqtt5Client sampleClient;
-        CountDownLatch messagesReceived;
 
-        SamplePublishEvents(SampleMqtt5Client client, int messageCount) {
+        SamplePublishEvents(SampleMqtt5Client client) {
             sampleClient = client;
-            messagesReceived = new CountDownLatch(messageCount);
         }
 
         @Override
@@ -132,7 +130,6 @@ public class SharedSubscription {
                     }
                 }
             }
-            messagesReceived.countDown();
         }
     }
 
@@ -151,10 +148,10 @@ public class SharedSubscription {
          */
         public static SampleMqtt5Client createMqtt5Client(
             String input_endpoint, String input_cert, String input_key, String input_ca,
-            String input_clientId, int input_count, String input_clientName) {
+            String input_clientId, String input_clientName) {
 
                 SampleMqtt5Client sampleClient = new SampleMqtt5Client();
-                SamplePublishEvents publishEvents = new SamplePublishEvents(sampleClient, input_count / 2);
+                SamplePublishEvents publishEvents = new SamplePublishEvents(sampleClient);
                 SampleLifecycleEvents lifecycleEvents = new SampleLifecycleEvents(sampleClient);
 
                 Mqtt5Client client;
@@ -201,23 +198,17 @@ public class SharedSubscription {
         SampleMqtt5Client subscriberOne = null;
         SampleMqtt5Client subscriberTwo = null;
 
-        /* Make sure the message count is even */
-        if (cmdData.input_count%2 != 0) {
-            onApplicationFailure(new Throwable("'--count' is an odd number. '--count' must be even or zero for this sample."));
-            System.exit(1);
-        }
-
         try {
             /* Create the MQTT5 clients: one publisher and two subscribers */
             publisher = SampleMqtt5Client.createMqtt5Client(
                 cmdData.input_endpoint, cmdData.input_cert, cmdData.input_key, cmdData.input_ca,
-                cmdData.input_clientId + '1', cmdData.input_count, "Publisher");
+                cmdData.input_clientId + '1', "Publisher");
             subscriberOne = SampleMqtt5Client.createMqtt5Client(
                 cmdData.input_endpoint, cmdData.input_cert, cmdData.input_key, cmdData.input_ca,
-                cmdData.input_clientId + '2', cmdData.input_count, "Subscriber One");
+                cmdData.input_clientId + '2', "Subscriber One");
             subscriberTwo = SampleMqtt5Client.createMqtt5Client(
                 cmdData.input_endpoint, cmdData.input_cert, cmdData.input_key, cmdData.input_ca,
-                cmdData.input_clientId + '3', cmdData.input_count, "Subscriber Two");
+                cmdData.input_clientId + '3', "Subscriber Two");
 
             /* Connect all the clients */
             publisher.client.start();
@@ -231,22 +222,18 @@ public class SharedSubscription {
             System.out.println("[" + subscriberTwo.name + "]: Connected");
 
             /* Subscribe to the shared topic on the two subscribers */
-            try {
-                SubscribePacket.SubscribePacketBuilder subscribeBuilder = new SubscribePacket.SubscribePacketBuilder();
-                subscribeBuilder.withSubscription(input_sharedTopic, QOS.AT_LEAST_ONCE, false, false, SubscribePacket.RetainHandlingType.DONT_SEND);
-                subscriberOne.client.subscribe(subscribeBuilder.build()).get(60, TimeUnit.SECONDS);
-                System.out.println("[" + subscriberOne.name + "]: Subscribed");
-                subscriberTwo.client.subscribe(subscribeBuilder.build()).get(60, TimeUnit.SECONDS);
-                System.out.println("[" + subscriberTwo.name + "]: Subscribed");
-            }
-            // TMP: If this fails subscribing in CI, just exit the sample gracefully.
-            catch (Exception ex) {
-                if (isCI) {
-                    return;
-                } else {
-                    throw ex;
-                }
-            }
+            SubscribePacket.SubscribePacketBuilder subscribeBuilder = new SubscribePacket.SubscribePacketBuilder();
+            subscribeBuilder.withSubscription(input_sharedTopic, QOS.AT_LEAST_ONCE, false, false, SubscribePacket.RetainHandlingType.DONT_SEND);
+            subscriberOne.client.subscribe(subscribeBuilder.build()).get(60, TimeUnit.SECONDS);
+            System.out.println(
+                "[" + subscriberOne.name + "]: Subscribed to topic '" + cmdData.input_topic +
+                "' in shared subscription group '" + cmdData.input_groupIdentifier + "'.");
+            System.out.println("[" + subscriberOne.name + "]: Full subscribed topic is '" + input_sharedTopic + "'.");
+            subscriberTwo.client.subscribe(subscribeBuilder.build()).get(60, TimeUnit.SECONDS);
+            System.out.println(
+                "[" + subscriberTwo.name + "]: Subscribed to topic '" + cmdData.input_topic +
+                "' in shared subscription group '" + cmdData.input_groupIdentifier + "'.");
+            System.out.println("[" + subscriberTwo.name + "]: Full subscribed topic is '" + input_sharedTopic + "'.");
 
             /* Publish using the publisher client */
             PublishPacket.PublishPacketBuilder publishBuilder = new PublishPacket.PublishPacketBuilder();
@@ -259,9 +246,8 @@ public class SharedSubscription {
                     System.out.println("[" + publisher.name + "]: Sent publish");
                     Thread.sleep(1000);
                 }
-                /* Make sure all the messages were gotten on the subscribers */
-                subscriberOne.publishEvents.messagesReceived.await(60 * 4, TimeUnit.SECONDS);
-                subscriberTwo.publishEvents.messagesReceived.await(60 * 4, TimeUnit.SECONDS);
+                /* Wait 5 seconds to let the last publish go out before unsubscribing */
+                Thread.sleep(5000);
             } else {
                 System.out.println("Skipping publishing messages due to message count being zero...");
             }
@@ -270,9 +256,15 @@ public class SharedSubscription {
             UnsubscribePacket.UnsubscribePacketBuilder unsubscribeBuilder = new UnsubscribePacket.UnsubscribePacketBuilder();
             unsubscribeBuilder.withSubscription(input_sharedTopic);
             subscriberOne.client.unsubscribe(unsubscribeBuilder.build()).get(60, TimeUnit.SECONDS);
-            System.out.println("[" + subscriberOne.name + "]: Unsubscribed");
+            System.out.println(
+                "[" + subscriberOne.name + "]: Unsubscribed to topic '" + cmdData.input_topic +
+                "' in shared subscription group '" + cmdData.input_groupIdentifier + "'.");
+            System.out.println("[" + subscriberOne.name + "]: Full unsubscribed topic is '" + input_sharedTopic + "'.");
             subscriberTwo.client.unsubscribe(unsubscribeBuilder.build()).get(60, TimeUnit.SECONDS);
-            System.out.println("[" + subscriberTwo.name + "]: Unsubscribed");
+            System.out.println(
+                "[" + subscriberTwo.name + "]: Unsubscribed to topic '" + cmdData.input_topic +
+                "' in shared subscription group '" + cmdData.input_groupIdentifier + "'.");
+            System.out.println("[" + subscriberTwo.name + "]: Full unsubscribed topic is '" + input_sharedTopic + "'.");
 
             /* Disconnect all the clients */
             publisher.client.stop(null);
