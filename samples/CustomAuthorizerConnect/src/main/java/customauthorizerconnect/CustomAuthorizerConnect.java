@@ -77,7 +77,9 @@ public class CustomAuthorizerConnect {
                 cmdData.input_customAuthUsername,
                 cmdData.input_customAuthorizerName,
                 cmdData.input_customAuthorizerSignature,
-                cmdData.input_customAuthPassword);
+                cmdData.input_customAuthPassword,
+                cmdData.input_customAuthorizerTokenKeyName,
+                cmdData.input_customAuthorizerTokenValue);
             MqttClientConnection connection = builder.build();
             builder.close();
 

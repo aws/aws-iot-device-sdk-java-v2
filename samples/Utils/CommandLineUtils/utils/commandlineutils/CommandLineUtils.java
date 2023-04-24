@@ -205,6 +205,8 @@ public class CommandLineUtils {
         public String input_customAuthorizerName;
         public String input_customAuthorizerSignature;
         public String input_customAuthPassword;
+        public String input_customAuthorizerTokenKeyName;
+        public String input_customAuthorizerTokenValue;
         // Fleet provisioning
         public String input_templateName;
         public String input_templateParameters;
@@ -326,6 +328,8 @@ public class CommandLineUtils {
         registerCommand(m_cmd_custom_auth_authorizer_name, "<str>", "Name of custom authorizer (optional, default=null).");
         registerCommand(m_cmd_custom_auth_authorizer_signature, "<str>", "Signature passed when connecting to custom authorizer (optional, default=null).");
         registerCommand(m_cmd_custom_auth_password, "<str>", "Password for connecting to custom authorizer (optional, default=null).");
+        registerCommand(m_cmd_custom_auth_token_key_name, "<str>", "Key used to extract the custom authorizer token (optional, default=null).");
+        registerCommand(m_cmd_custom_auth_token_value, "<str>", "The opaque token value for the custom authorizer (optional, default=null).");
         sendArguments(args);
 
         SampleCommandLineData returnData = new SampleCommandLineData();
@@ -335,6 +339,8 @@ public class CommandLineUtils {
         returnData.input_customAuthorizerName = getCommandOrDefault(m_cmd_custom_auth_authorizer_name, null);
         returnData.input_customAuthorizerSignature = getCommandOrDefault(m_cmd_custom_auth_authorizer_signature, null);
         returnData.input_customAuthPassword = getCommandOrDefault(m_cmd_custom_auth_password, null);
+        returnData.input_customAuthorizerTokenKeyName = getCommandOrDefault(m_cmd_custom_auth_token_key_name, null);
+        returnData.input_customAuthorizerTokenValue = getCommandOrDefault(m_cmd_custom_auth_token_value, null);
         return returnData;
     }
 
@@ -706,6 +712,8 @@ public class CommandLineUtils {
     private static final String m_cmd_custom_auth_authorizer_name = "custom_auth_authorizer_name";
     private static final String m_cmd_custom_auth_authorizer_signature = "custom_auth_authorizer_signature";
     private static final String m_cmd_custom_auth_password = "custom_auth_password";
+    private static final String m_cmd_custom_auth_token_key_name = "custom_auth_token_key_name";
+    private static final String m_cmd_custom_auth_token_value = "custom_auth_token_value";
     private static final String m_cmd_javakeystore_path = "keystore";
     private static final String m_cmd_javakeystore_password = "keystore_password";
     private static final String m_cmd_javakeystore_format = "keystore_format";
