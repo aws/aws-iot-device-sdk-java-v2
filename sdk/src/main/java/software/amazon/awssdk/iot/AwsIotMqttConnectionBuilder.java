@@ -638,11 +638,14 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
             usernameString = addUsernameParameter(usernameString, authorizerName, "x-amz-customauthorizer-name=", addedStringToUsername);
             addedStringToUsername = true;
         }
-        if (authorizerSignature != null || tokenKeyName != null || tokenValue != null) {
-            if (authorizerSignature == null || tokenKeyName == null || tokenValue == null) {
+        if (authorizerSignature != null)
+        {
+            usernameString = addUsernameParameter(usernameString, authorizerSignature, "x-amz-customauthorizer-signature=", addedStringToUsername);
+        }
+        if (tokenKeyName != null || tokenValue != null) {
+            if (tokenKeyName == null || tokenValue == null) {
                 throw new RuntimeException("Token-based custom authentication requires all token-related properties to be set");
             }
-            usernameString = addUsernameParameter(usernameString, authorizerSignature, "x-amz-customauthorizer-signature=", addedStringToUsername);
             usernameString = addUsernameParameter(usernameString, tokenValue, tokenKeyName + "=", addedStringToUsername);
         }
 
