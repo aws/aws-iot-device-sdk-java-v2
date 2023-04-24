@@ -1,4 +1,4 @@
-# Websocket Connect
+# PKCS12 Connect
 
 [**Return to main sample list**](../README.md)
 
