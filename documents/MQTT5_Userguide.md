@@ -12,6 +12,7 @@
         * [Websocket Connection with Sigv4 Authentication Method](#websocket-connection-with-sigv4-authentication-method)
         * [Direct MQTT with Custom Authorizer Method](#direct-mqtt-with-custom-authorizer-method)
         * [Direct MQTT with PKCS11 Method](#direct-mqtt-with-pkcs11-method)
+        * [Direct MQTT with PKCS12 Method](#direct-mqtt-with-pkcs12-method)
         * [Direct MQTT with Custom Key Operations Method](#direct-mqtt-with-custom-key-operation-method)
         * [Direct MQTT with Windows Certificate Store Method](#direct-mqtt-with-windows-certificate-store-method)
         * [Direct MQTT with Java Keystore Method](#direct-mqtt-with-java-keystore-method)
