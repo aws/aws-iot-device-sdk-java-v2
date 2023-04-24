@@ -576,6 +576,9 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      * Configures the MQTT connection so it can use a custom authorizer.
      * This function will modify the username, port, and TLS options.
      *
+     * @deprecated Please use the full withCustomAuthorizer function that includes `tokenKeyName` and
+     *             `tokenValue`. This version is left for backwards compatibility purposes.
+     *
      * Note: All arguments are optional and can have "null" as valid input.
      * See the description for each argument for information on what happens if null is passed.
      * @param username The username to use with the custom authorizer. If null is passed, it will check to
@@ -589,6 +592,36 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      * @return {@link AwsIotMqttConnectionBuilder}
      */
     public AwsIotMqttConnectionBuilder withCustomAuthorizer(String username, String authorizerName, String authorizerSignature, String password) {
+        return this.withCustomAuthorizer(username, authorizerName, authorizerSignature, password, null, null);
+    }
+
+    /**
+     * Configures the MQTT connection so it can use a custom authorizer.
+     * This function will modify the username, port, and TLS options.
+     *
+     * Note: All arguments are optional and can have "null" as valid input.
+     * See the description for each argument for information on what happens if null is passed.
+     * @param username The username to use with the custom authorizer. If null is passed, it will check to
+     *                 see if a username has already been set (via withUsername function). If no username is set then
+     *                 no username will be passed with the MQTT connection.
+     * @param authorizerName The name of the custom authorizer. If null is passed, then 'x-amz-customauthorizer-name'
+     *                       will not be added with the MQTT connection.
+     * @param authorizerSignature The signature of the custom authorizer. If null is passed, then
+     *                            'x-amz-customauthorizer-signature' will not be added with the MQTT connection.
+     *                            The signature must be based on the private key associated with the custom authorizer.
+     *                            The signature must be base64 encoded. Required if the custom authorizer has signing
+     *                            enabled. It is strongly suggested to URL-encode this value; the SDK will not do
+     *                            so for you.
+     * @param password The password to use with the custom authorizer. If null is passed, then no password will be set.
+     * @param tokenKeyName Key used to extract the custom authorizer token from MQTT username query-string properties.
+     *                     Required if the custom authorizer has signing enabled.  It is strongly suggested to URL-encode
+     *                     this value; the SDK will not do so for you.
+     * @param tokenValue An opaque token value.
+     *                   Required if the custom authorizer has signing enabled. This value must be signed by the private
+     *                   key associated with the custom authorizer and the result placed in the authorizerSignature argument.
+     * @return {@link AwsIotMqttConnectionBuilder}
+     */
+    public AwsIotMqttConnectionBuilder withCustomAuthorizer(String username, String authorizerName, String authorizerSignature, String password, String tokenKeyName, String tokenValue) {
         isUsingCustomAuthorizer = true;
         String usernameString = "";
         Boolean addedStringToUsername = false;
@@ -605,8 +638,12 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
             usernameString = addUsernameParameter(usernameString, authorizerName, "x-amz-customauthorizer-name=", addedStringToUsername);
             addedStringToUsername = true;
         }
-        if (authorizerSignature != null) {
+        if (authorizerSignature != null || tokenKeyName != null || tokenValue != null) {
+            if (authorizerSignature == null || tokenKeyName == null || tokenValue == null) {
+                throw new RuntimeException("Token-based custom authentication requires all token-related properties to be set");
+            }
             usernameString = addUsernameParameter(usernameString, authorizerSignature, "x-amz-customauthorizer-signature=", addedStringToUsername);
+            usernameString = addUsernameParameter(usernameString, tokenValue, tokenKeyName + "=", addedStringToUsername);
         }
 
         config.setUsername(usernameString);
