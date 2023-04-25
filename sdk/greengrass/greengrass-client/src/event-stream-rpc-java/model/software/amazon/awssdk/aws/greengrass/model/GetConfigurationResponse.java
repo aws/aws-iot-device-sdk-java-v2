@@ -47,6 +47,9 @@ public class GetConfigurationResponse implements EventStreamJsonMessage {
     this.value = Optional.empty();
   }
 
+  /**
+   * The name of the component.
+   */
   public String getComponentName() {
     if (componentName.isPresent()) {
       return componentName.get();
@@ -54,15 +57,24 @@ public class GetConfigurationResponse implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The name of the component.
+   */
   public void setComponentName(final String componentName) {
     this.componentName = Optional.ofNullable(componentName);
   }
 
+  /**
+   * The name of the component.
+   */
   public GetConfigurationResponse withComponentName(final String componentName) {
     setComponentName(componentName);
     return this;
   }
 
+  /**
+   * The requested configuration as an object.
+   */
   public Map<String, Object> getValue() {
     if (value.isPresent()) {
       return value.get();
@@ -70,10 +82,16 @@ public class GetConfigurationResponse implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The requested configuration as an object.
+   */
   public void setValue(final Map<String, Object> value) {
     this.value = Optional.ofNullable(value);
   }
 
+  /**
+   * The requested configuration as an object.
+   */
   public GetConfigurationResponse withValue(final Map<String, Object> value) {
     setValue(value);
     return this;

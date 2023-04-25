@@ -39,6 +39,9 @@ public class MessageContext implements EventStreamJsonMessage {
     this.topic = Optional.empty();
   }
 
+  /**
+   * The topic where the message was published.
+   */
   public String getTopic() {
     if (topic.isPresent()) {
       return topic.get();
@@ -46,10 +49,16 @@ public class MessageContext implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The topic where the message was published.
+   */
   public void setTopic(final String topic) {
     this.topic = Optional.ofNullable(topic);
   }
 
+  /**
+   * The topic where the message was published.
+   */
   public MessageContext withTopic(final String topic) {
     setTopic(topic);
     return this;

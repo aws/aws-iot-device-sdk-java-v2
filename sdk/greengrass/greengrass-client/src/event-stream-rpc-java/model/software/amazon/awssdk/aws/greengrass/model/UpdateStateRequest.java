@@ -46,6 +46,9 @@ public class UpdateStateRequest implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The state to set this component to.
+   */
   public String getStateAsString() {
     if (state.isPresent()) {
       return state.get();
@@ -53,19 +56,31 @@ public class UpdateStateRequest implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The state to set this component to.
+   */
   public void setState(final String state) {
     this.state = Optional.ofNullable(state);
   }
 
+  /**
+   * The state to set this component to.
+   */
   public UpdateStateRequest withState(final String state) {
     setState(state);
     return this;
   }
 
+  /**
+   * The state to set this component to.
+   */
   public void setState(final ReportedLifecycleState state) {
     this.state = Optional.ofNullable(state.getValue());
   }
 
+  /**
+   * The state to set this component to.
+   */
   public UpdateStateRequest withState(final ReportedLifecycleState state) {
     setState(state);
     return this;

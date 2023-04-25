@@ -39,6 +39,9 @@ public class PostComponentUpdateEvent implements EventStreamJsonMessage {
     this.deploymentId = Optional.empty();
   }
 
+  /**
+   * The ID of the AWS IoT Greengrass deployment that updated the component.
+   */
   public String getDeploymentId() {
     if (deploymentId.isPresent()) {
       return deploymentId.get();
@@ -46,10 +49,16 @@ public class PostComponentUpdateEvent implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The ID of the AWS IoT Greengrass deployment that updated the component.
+   */
   public void setDeploymentId(final String deploymentId) {
     this.deploymentId = Optional.ofNullable(deploymentId);
   }
 
+  /**
+   * The ID of the AWS IoT Greengrass deployment that updated the component.
+   */
   public PostComponentUpdateEvent withDeploymentId(final String deploymentId) {
     setDeploymentId(deploymentId);
     return this;

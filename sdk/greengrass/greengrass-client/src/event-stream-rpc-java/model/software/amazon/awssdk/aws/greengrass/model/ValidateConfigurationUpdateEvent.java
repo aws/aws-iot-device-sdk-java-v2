@@ -47,6 +47,9 @@ public class ValidateConfigurationUpdateEvent implements EventStreamJsonMessage 
     this.deploymentId = Optional.empty();
   }
 
+  /**
+   * The object that contains the new configuration.
+   */
   public Map<String, Object> getConfiguration() {
     if (configuration.isPresent()) {
       return configuration.get();
@@ -54,16 +57,25 @@ public class ValidateConfigurationUpdateEvent implements EventStreamJsonMessage 
     return null;
   }
 
+  /**
+   * The object that contains the new configuration.
+   */
   public void setConfiguration(final Map<String, Object> configuration) {
     this.configuration = Optional.ofNullable(configuration);
   }
 
+  /**
+   * The object that contains the new configuration.
+   */
   public ValidateConfigurationUpdateEvent withConfiguration(
       final Map<String, Object> configuration) {
     setConfiguration(configuration);
     return this;
   }
 
+  /**
+   * The ID of the AWS IoT Greengrass deployment that updates the component.
+   */
   public String getDeploymentId() {
     if (deploymentId.isPresent()) {
       return deploymentId.get();
@@ -71,10 +83,16 @@ public class ValidateConfigurationUpdateEvent implements EventStreamJsonMessage 
     return null;
   }
 
+  /**
+   * The ID of the AWS IoT Greengrass deployment that updates the component.
+   */
   public void setDeploymentId(final String deploymentId) {
     this.deploymentId = Optional.ofNullable(deploymentId);
   }
 
+  /**
+   * The ID of the AWS IoT Greengrass deployment that updates the component.
+   */
   public ValidateConfigurationUpdateEvent withDeploymentId(final String deploymentId) {
     setDeploymentId(deploymentId);
     return this;

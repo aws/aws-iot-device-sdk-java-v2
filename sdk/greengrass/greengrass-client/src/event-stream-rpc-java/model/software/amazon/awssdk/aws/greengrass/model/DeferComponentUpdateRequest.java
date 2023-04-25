@@ -54,6 +54,9 @@ public class DeferComponentUpdateRequest implements EventStreamJsonMessage {
     this.recheckAfterMs = Optional.empty();
   }
 
+  /**
+   * The ID of the AWS IoT Greengrass deployment to defer.
+   */
   public String getDeploymentId() {
     if (deploymentId.isPresent()) {
       return deploymentId.get();
@@ -61,15 +64,24 @@ public class DeferComponentUpdateRequest implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The ID of the AWS IoT Greengrass deployment to defer.
+   */
   public void setDeploymentId(final String deploymentId) {
     this.deploymentId = Optional.ofNullable(deploymentId);
   }
 
+  /**
+   * The ID of the AWS IoT Greengrass deployment to defer.
+   */
   public DeferComponentUpdateRequest withDeploymentId(final String deploymentId) {
     setDeploymentId(deploymentId);
     return this;
   }
 
+  /**
+   * (Optional) The name of the component for which to defer updates. Defaults to the name of the component that makes the request.
+   */
   public String getMessage() {
     if (message.isPresent()) {
       return message.get();
@@ -77,15 +89,24 @@ public class DeferComponentUpdateRequest implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * (Optional) The name of the component for which to defer updates. Defaults to the name of the component that makes the request.
+   */
   public void setMessage(final String message) {
     this.message = Optional.ofNullable(message);
   }
 
+  /**
+   * (Optional) The name of the component for which to defer updates. Defaults to the name of the component that makes the request.
+   */
   public DeferComponentUpdateRequest withMessage(final String message) {
     setMessage(message);
     return this;
   }
 
+  /**
+   * The amount of time in milliseconds for which to defer the update. Greengrass waits for this amount of time and then sends another PreComponentUpdateEvent
+   */
   public Long getRecheckAfterMs() {
     if (recheckAfterMs.isPresent()) {
       return recheckAfterMs.get();
@@ -93,10 +114,16 @@ public class DeferComponentUpdateRequest implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The amount of time in milliseconds for which to defer the update. Greengrass waits for this amount of time and then sends another PreComponentUpdateEvent
+   */
   public void setRecheckAfterMs(final Long recheckAfterMs) {
     this.recheckAfterMs = Optional.ofNullable(recheckAfterMs);
   }
 
+  /**
+   * The amount of time in milliseconds for which to defer the update. Greengrass waits for this amount of time and then sends another PreComponentUpdateEvent
+   */
   public DeferComponentUpdateRequest withRecheckAfterMs(final Long recheckAfterMs) {
     setRecheckAfterMs(recheckAfterMs);
     return this;

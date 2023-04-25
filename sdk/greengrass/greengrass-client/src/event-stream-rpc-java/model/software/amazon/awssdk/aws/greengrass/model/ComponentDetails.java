@@ -61,6 +61,9 @@ public class ComponentDetails implements EventStreamJsonMessage {
     this.configuration = Optional.empty();
   }
 
+  /**
+   * The name of the component.
+   */
   public String getComponentName() {
     if (componentName.isPresent()) {
       return componentName.get();
@@ -68,15 +71,24 @@ public class ComponentDetails implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The name of the component.
+   */
   public void setComponentName(final String componentName) {
     this.componentName = Optional.ofNullable(componentName);
   }
 
+  /**
+   * The name of the component.
+   */
   public ComponentDetails withComponentName(final String componentName) {
     setComponentName(componentName);
     return this;
   }
 
+  /**
+   * The version of the component.
+   */
   public String getVersion() {
     if (version.isPresent()) {
       return version.get();
@@ -84,10 +96,16 @@ public class ComponentDetails implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The version of the component.
+   */
   public void setVersion(final String version) {
     this.version = Optional.ofNullable(version);
   }
 
+  /**
+   * The version of the component.
+   */
   public ComponentDetails withVersion(final String version) {
     setVersion(version);
     return this;
@@ -100,6 +118,9 @@ public class ComponentDetails implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The state of the component.
+   */
   public String getStateAsString() {
     if (state.isPresent()) {
       return state.get();
@@ -107,24 +128,39 @@ public class ComponentDetails implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The state of the component.
+   */
   public void setState(final String state) {
     this.state = Optional.ofNullable(state);
   }
 
+  /**
+   * The state of the component.
+   */
   public ComponentDetails withState(final String state) {
     setState(state);
     return this;
   }
 
+  /**
+   * The state of the component.
+   */
   public void setState(final LifecycleState state) {
     this.state = Optional.ofNullable(state.getValue());
   }
 
+  /**
+   * The state of the component.
+   */
   public ComponentDetails withState(final LifecycleState state) {
     setState(state);
     return this;
   }
 
+  /**
+   * The component's configuration as a JSON object.
+   */
   public Map<String, Object> getConfiguration() {
     if (configuration.isPresent()) {
       return configuration.get();
@@ -132,10 +168,16 @@ public class ComponentDetails implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The component's configuration as a JSON object.
+   */
   public void setConfiguration(final Map<String, Object> configuration) {
     this.configuration = Optional.ofNullable(configuration);
   }
 
+  /**
+   * The component's configuration as a JSON object.
+   */
   public ComponentDetails withConfiguration(final Map<String, Object> configuration) {
     setConfiguration(configuration);
     return this;

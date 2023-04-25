@@ -47,6 +47,9 @@ public class SubscribeToConfigurationUpdateRequest implements EventStreamJsonMes
     this.keyPath = Optional.empty();
   }
 
+  /**
+   * (Optional) The name of the component. Defaults to the name of the component that makes the request.
+   */
   public String getComponentName() {
     if (componentName.isPresent()) {
       return componentName.get();
@@ -54,15 +57,24 @@ public class SubscribeToConfigurationUpdateRequest implements EventStreamJsonMes
     return null;
   }
 
+  /**
+   * (Optional) The name of the component. Defaults to the name of the component that makes the request.
+   */
   public void setComponentName(final String componentName) {
     this.componentName = Optional.ofNullable(componentName);
   }
 
+  /**
+   * (Optional) The name of the component. Defaults to the name of the component that makes the request.
+   */
   public SubscribeToConfigurationUpdateRequest withComponentName(final String componentName) {
     setComponentName(componentName);
     return this;
   }
 
+  /**
+   * The key path to the configuration value for which to subscribe. Specify a list where each entry is the key for a single level in the configuration object.
+   */
   public List<String> getKeyPath() {
     if (keyPath.isPresent()) {
       return keyPath.get();
@@ -70,10 +82,16 @@ public class SubscribeToConfigurationUpdateRequest implements EventStreamJsonMes
     return null;
   }
 
+  /**
+   * The key path to the configuration value for which to subscribe. Specify a list where each entry is the key for a single level in the configuration object.
+   */
   public void setKeyPath(final List<String> keyPath) {
     this.keyPath = Optional.ofNullable(keyPath);
   }
 
+  /**
+   * The key path to the configuration value for which to subscribe. Specify a list where each entry is the key for a single level in the configuration object.
+   */
   public SubscribeToConfigurationUpdateRequest withKeyPath(final List<String> keyPath) {
     setKeyPath(keyPath);
     return this;

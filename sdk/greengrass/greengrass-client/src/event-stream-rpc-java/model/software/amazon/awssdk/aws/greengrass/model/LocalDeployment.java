@@ -46,6 +46,9 @@ public class LocalDeployment implements EventStreamJsonMessage {
     this.status = Optional.empty();
   }
 
+  /**
+   * The ID of the local deployment.
+   */
   public String getDeploymentId() {
     if (deploymentId.isPresent()) {
       return deploymentId.get();
@@ -53,10 +56,16 @@ public class LocalDeployment implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The ID of the local deployment.
+   */
   public void setDeploymentId(final String deploymentId) {
     this.deploymentId = Optional.ofNullable(deploymentId);
   }
 
+  /**
+   * The ID of the local deployment.
+   */
   public LocalDeployment withDeploymentId(final String deploymentId) {
     setDeploymentId(deploymentId);
     return this;
@@ -69,6 +78,9 @@ public class LocalDeployment implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The status of the local deployment.
+   */
   public String getStatusAsString() {
     if (status.isPresent()) {
       return status.get();
@@ -76,19 +88,31 @@ public class LocalDeployment implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The status of the local deployment.
+   */
   public void setStatus(final String status) {
     this.status = Optional.ofNullable(status);
   }
 
+  /**
+   * The status of the local deployment.
+   */
   public LocalDeployment withStatus(final String status) {
     setStatus(status);
     return this;
   }
 
+  /**
+   * The status of the local deployment.
+   */
   public void setStatus(final DeploymentStatus status) {
     this.status = Optional.ofNullable(status.getValue());
   }
 
+  /**
+   * The status of the local deployment.
+   */
   public LocalDeployment withStatus(final DeploymentStatus status) {
     setStatus(status);
     return this;

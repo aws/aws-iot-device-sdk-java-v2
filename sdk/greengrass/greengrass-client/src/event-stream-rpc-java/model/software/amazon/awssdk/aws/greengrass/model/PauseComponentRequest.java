@@ -39,6 +39,9 @@ public class PauseComponentRequest implements EventStreamJsonMessage {
     this.componentName = Optional.empty();
   }
 
+  /**
+   * The name of the component to pause, which must be a generic component.
+   */
   public String getComponentName() {
     if (componentName.isPresent()) {
       return componentName.get();
@@ -46,10 +49,16 @@ public class PauseComponentRequest implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The name of the component to pause, which must be a generic component.
+   */
   public void setComponentName(final String componentName) {
     this.componentName = Optional.ofNullable(componentName);
   }
 
+  /**
+   * The name of the component to pause, which must be a generic component.
+   */
   public PauseComponentRequest withComponentName(final String componentName) {
     setComponentName(componentName);
     return this;

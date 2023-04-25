@@ -48,6 +48,9 @@ public class SystemResourceLimits implements EventStreamJsonMessage {
     this.cpus = Optional.empty();
   }
 
+  /**
+   * (Optional) The maximum amount of RAM (in kilobytes) that this component's processes can use on the core device.
+   */
   public Long getMemory() {
     if (memory.isPresent()) {
       return memory.get();
@@ -55,15 +58,24 @@ public class SystemResourceLimits implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * (Optional) The maximum amount of RAM (in kilobytes) that this component's processes can use on the core device.
+   */
   public void setMemory(final Long memory) {
     this.memory = Optional.ofNullable(memory);
   }
 
+  /**
+   * (Optional) The maximum amount of RAM (in kilobytes) that this component's processes can use on the core device.
+   */
   public SystemResourceLimits withMemory(final Long memory) {
     setMemory(memory);
     return this;
   }
 
+  /**
+   * (Optional) The maximum amount of CPU time that this component's processes can use on the core device.
+   */
   public Double getCpus() {
     if (cpus.isPresent()) {
       return cpus.get();
@@ -71,10 +83,16 @@ public class SystemResourceLimits implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * (Optional) The maximum amount of CPU time that this component's processes can use on the core device.
+   */
   public void setCpus(final Double cpus) {
     this.cpus = Optional.ofNullable(cpus);
   }
 
+  /**
+   * (Optional) The maximum amount of CPU time that this component's processes can use on the core device.
+   */
   public SystemResourceLimits withCpus(final Double cpus) {
     setCpus(cpus);
     return this;

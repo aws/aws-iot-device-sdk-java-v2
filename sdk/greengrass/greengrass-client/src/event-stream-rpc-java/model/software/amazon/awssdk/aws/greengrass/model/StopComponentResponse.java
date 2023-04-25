@@ -53,6 +53,9 @@ public class StopComponentResponse implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The status of the stop request.
+   */
   public String getStopStatusAsString() {
     if (stopStatus.isPresent()) {
       return stopStatus.get();
@@ -60,24 +63,39 @@ public class StopComponentResponse implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The status of the stop request.
+   */
   public void setStopStatus(final String stopStatus) {
     this.stopStatus = Optional.ofNullable(stopStatus);
   }
 
+  /**
+   * The status of the stop request.
+   */
   public StopComponentResponse withStopStatus(final String stopStatus) {
     setStopStatus(stopStatus);
     return this;
   }
 
+  /**
+   * The status of the stop request.
+   */
   public void setStopStatus(final RequestStatus stopStatus) {
     this.stopStatus = Optional.ofNullable(stopStatus.getValue());
   }
 
+  /**
+   * The status of the stop request.
+   */
   public StopComponentResponse withStopStatus(final RequestStatus stopStatus) {
     setStopStatus(stopStatus);
     return this;
   }
 
+  /**
+   * A message about why the component failed to stop, if the request failed.
+   */
   public String getMessage() {
     if (message.isPresent()) {
       return message.get();
@@ -85,10 +103,16 @@ public class StopComponentResponse implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * A message about why the component failed to stop, if the request failed.
+   */
   public void setMessage(final String message) {
     this.message = Optional.ofNullable(message);
   }
 
+  /**
+   * A message about why the component failed to stop, if the request failed.
+   */
   public StopComponentResponse withMessage(final String message) {
     setMessage(message);
     return this;

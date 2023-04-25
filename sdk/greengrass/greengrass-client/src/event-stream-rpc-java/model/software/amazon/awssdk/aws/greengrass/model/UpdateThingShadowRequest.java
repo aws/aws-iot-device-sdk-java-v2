@@ -54,6 +54,9 @@ public class UpdateThingShadowRequest implements EventStreamJsonMessage {
     this.payload = Optional.empty();
   }
 
+  /**
+   * The name of the thing.
+   */
   public String getThingName() {
     if (thingName.isPresent()) {
       return thingName.get();
@@ -61,15 +64,24 @@ public class UpdateThingShadowRequest implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The name of the thing.
+   */
   public void setThingName(final String thingName) {
     this.thingName = Optional.ofNullable(thingName);
   }
 
+  /**
+   * The name of the thing.
+   */
   public UpdateThingShadowRequest withThingName(final String thingName) {
     setThingName(thingName);
     return this;
   }
 
+  /**
+   * The name of the shadow. To specify the thing's classic shadow, set this parameter to an empty string ("").
+   */
   public String getShadowName() {
     if (shadowName.isPresent()) {
       return shadowName.get();
@@ -77,15 +89,24 @@ public class UpdateThingShadowRequest implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The name of the shadow. To specify the thing's classic shadow, set this parameter to an empty string ("").
+   */
   public void setShadowName(final String shadowName) {
     this.shadowName = Optional.ofNullable(shadowName);
   }
 
+  /**
+   * The name of the shadow. To specify the thing's classic shadow, set this parameter to an empty string ("").
+   */
   public UpdateThingShadowRequest withShadowName(final String shadowName) {
     setShadowName(shadowName);
     return this;
   }
 
+  /**
+   * The request state document as a JSON encoded blob.
+   */
   public byte[] getPayload() {
     if (payload.isPresent()) {
       return payload.get();
@@ -93,10 +114,16 @@ public class UpdateThingShadowRequest implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The request state document as a JSON encoded blob.
+   */
   public void setPayload(final byte[] payload) {
     this.payload = Optional.ofNullable(payload);
   }
 
+  /**
+   * The request state document as a JSON encoded blob.
+   */
   public UpdateThingShadowRequest withPayload(final byte[] payload) {
     setPayload(payload);
     return this;

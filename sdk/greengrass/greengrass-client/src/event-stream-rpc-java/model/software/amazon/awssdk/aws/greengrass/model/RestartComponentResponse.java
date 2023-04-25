@@ -53,6 +53,9 @@ public class RestartComponentResponse implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The status of the restart request.
+   */
   public String getRestartStatusAsString() {
     if (restartStatus.isPresent()) {
       return restartStatus.get();
@@ -60,24 +63,39 @@ public class RestartComponentResponse implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The status of the restart request.
+   */
   public void setRestartStatus(final String restartStatus) {
     this.restartStatus = Optional.ofNullable(restartStatus);
   }
 
+  /**
+   * The status of the restart request.
+   */
   public RestartComponentResponse withRestartStatus(final String restartStatus) {
     setRestartStatus(restartStatus);
     return this;
   }
 
+  /**
+   * The status of the restart request.
+   */
   public void setRestartStatus(final RequestStatus restartStatus) {
     this.restartStatus = Optional.ofNullable(restartStatus.getValue());
   }
 
+  /**
+   * The status of the restart request.
+   */
   public RestartComponentResponse withRestartStatus(final RequestStatus restartStatus) {
     setRestartStatus(restartStatus);
     return this;
   }
 
+  /**
+   * A message about why the component failed to restart, if the request failed.
+   */
   public String getMessage() {
     if (message.isPresent()) {
       return message.get();
@@ -85,10 +103,16 @@ public class RestartComponentResponse implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * A message about why the component failed to restart, if the request failed.
+   */
   public void setMessage(final String message) {
     this.message = Optional.ofNullable(message);
   }
 
+  /**
+   * A message about why the component failed to restart, if the request failed.
+   */
   public RestartComponentResponse withMessage(final String message) {
     setMessage(message);
     return this;

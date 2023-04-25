@@ -60,6 +60,9 @@ public class ConfigurationValidityReport implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The validity status.
+   */
   public String getStatusAsString() {
     if (status.isPresent()) {
       return status.get();
@@ -67,24 +70,39 @@ public class ConfigurationValidityReport implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The validity status.
+   */
   public void setStatus(final String status) {
     this.status = Optional.ofNullable(status);
   }
 
+  /**
+   * The validity status.
+   */
   public ConfigurationValidityReport withStatus(final String status) {
     setStatus(status);
     return this;
   }
 
+  /**
+   * The validity status.
+   */
   public void setStatus(final ConfigurationValidityStatus status) {
     this.status = Optional.ofNullable(status.getValue());
   }
 
+  /**
+   * The validity status.
+   */
   public ConfigurationValidityReport withStatus(final ConfigurationValidityStatus status) {
     setStatus(status);
     return this;
   }
 
+  /**
+   * The ID of the AWS IoT Greengrass deployment that requested the configuration update.
+   */
   public String getDeploymentId() {
     if (deploymentId.isPresent()) {
       return deploymentId.get();
@@ -92,15 +110,24 @@ public class ConfigurationValidityReport implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The ID of the AWS IoT Greengrass deployment that requested the configuration update.
+   */
   public void setDeploymentId(final String deploymentId) {
     this.deploymentId = Optional.ofNullable(deploymentId);
   }
 
+  /**
+   * The ID of the AWS IoT Greengrass deployment that requested the configuration update.
+   */
   public ConfigurationValidityReport withDeploymentId(final String deploymentId) {
     setDeploymentId(deploymentId);
     return this;
   }
 
+  /**
+   * (Optional) A message that reports why the configuration isn't valid.
+   */
   public String getMessage() {
     if (message.isPresent()) {
       return message.get();
@@ -108,10 +135,16 @@ public class ConfigurationValidityReport implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * (Optional) A message that reports why the configuration isn't valid.
+   */
   public void setMessage(final String message) {
     this.message = Optional.ofNullable(message);
   }
 
+  /**
+   * (Optional) A message that reports why the configuration isn't valid.
+   */
   public ConfigurationValidityReport withMessage(final String message) {
     setMessage(message);
     return this;

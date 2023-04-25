@@ -47,6 +47,9 @@ public class BinaryMessage implements EventStreamJsonMessage {
     this.context = Optional.empty();
   }
 
+  /**
+   * The binary message as a blob.
+   */
   public byte[] getMessage() {
     if (message.isPresent()) {
       return message.get();
@@ -54,17 +57,23 @@ public class BinaryMessage implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The binary message as a blob.
+   */
   public void setMessage(final byte[] message) {
     this.message = Optional.ofNullable(message);
   }
 
+  /**
+   * The binary message as a blob.
+   */
   public BinaryMessage withMessage(final byte[] message) {
     setMessage(message);
     return this;
   }
 
   /**
-   * The context is ignored if used in PublishMessage.
+   * The context of the message, such as the topic where the message was published.
    */
   public MessageContext getContext() {
     if (context.isPresent()) {
@@ -74,14 +83,14 @@ public class BinaryMessage implements EventStreamJsonMessage {
   }
 
   /**
-   * The context is ignored if used in PublishMessage.
+   * The context of the message, such as the topic where the message was published.
    */
   public void setContext(final MessageContext context) {
     this.context = Optional.ofNullable(context);
   }
 
   /**
-   * The context is ignored if used in PublishMessage.
+   * The context of the message, such as the topic where the message was published.
    */
   public BinaryMessage withContext(final MessageContext context) {
     setContext(context);

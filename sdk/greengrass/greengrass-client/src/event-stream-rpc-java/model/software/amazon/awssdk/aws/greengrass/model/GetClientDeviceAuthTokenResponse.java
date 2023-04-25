@@ -39,6 +39,9 @@ public class GetClientDeviceAuthTokenResponse implements EventStreamJsonMessage 
     this.clientDeviceAuthToken = Optional.empty();
   }
 
+  /**
+   * The session token for the client device. You can use this session token in subsequent requests to authorize this client device's actions.
+   */
   public String getClientDeviceAuthToken() {
     if (clientDeviceAuthToken.isPresent()) {
       return clientDeviceAuthToken.get();
@@ -46,10 +49,16 @@ public class GetClientDeviceAuthTokenResponse implements EventStreamJsonMessage 
     return null;
   }
 
+  /**
+   * The session token for the client device. You can use this session token in subsequent requests to authorize this client device's actions.
+   */
   public void setClientDeviceAuthToken(final String clientDeviceAuthToken) {
     this.clientDeviceAuthToken = Optional.ofNullable(clientDeviceAuthToken);
   }
 
+  /**
+   * The session token for the client device. You can use this session token in subsequent requests to authorize this client device's actions.
+   */
   public GetClientDeviceAuthTokenResponse withClientDeviceAuthToken(
       final String clientDeviceAuthToken) {
     setClientDeviceAuthToken(clientDeviceAuthToken);

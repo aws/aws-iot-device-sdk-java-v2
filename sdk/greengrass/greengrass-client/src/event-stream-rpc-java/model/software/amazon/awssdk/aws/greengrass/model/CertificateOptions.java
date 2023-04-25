@@ -46,6 +46,9 @@ public class CertificateOptions implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The types of certificate updates to subscribe to.
+   */
   public String getCertificateTypeAsString() {
     if (certificateType.isPresent()) {
       return certificateType.get();
@@ -53,19 +56,31 @@ public class CertificateOptions implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The types of certificate updates to subscribe to.
+   */
   public void setCertificateType(final String certificateType) {
     this.certificateType = Optional.ofNullable(certificateType);
   }
 
+  /**
+   * The types of certificate updates to subscribe to.
+   */
   public CertificateOptions withCertificateType(final String certificateType) {
     setCertificateType(certificateType);
     return this;
   }
 
+  /**
+   * The types of certificate updates to subscribe to.
+   */
   public void setCertificateType(final CertificateType certificateType) {
     this.certificateType = Optional.ofNullable(certificateType.getValue());
   }
 
+  /**
+   * The types of certificate updates to subscribe to.
+   */
   public CertificateOptions withCertificateType(final CertificateType certificateType) {
     setCertificateType(certificateType);
     return this;

@@ -11,6 +11,7 @@ import com.google.gson.annotations.Expose;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
@@ -35,14 +36,22 @@ public class ServiceError extends GreengrassCoreIPCError implements EventStreamJ
   )
   private Optional<String> message;
 
+  @Expose(
+      serialize = true,
+      deserialize = true
+  )
+  private Optional<Map<String, Object>> context;
+
   public ServiceError(String errorMessage) {
     super("ServiceError", errorMessage);
     this.message = Optional.ofNullable(errorMessage);
+    this.context = Optional.empty();
   }
 
   public ServiceError() {
     super("ServiceError", "");
     this.message = Optional.empty();
+    this.context = Optional.empty();
   }
 
   @Override
@@ -66,6 +75,22 @@ public class ServiceError extends GreengrassCoreIPCError implements EventStreamJ
     return this;
   }
 
+  public Map<String, Object> getContext() {
+    if (context.isPresent()) {
+      return context.get();
+    }
+    return null;
+  }
+
+  public void setContext(final Map<String, Object> context) {
+    this.context = Optional.ofNullable(context);
+  }
+
+  public ServiceError withContext(final Map<String, Object> context) {
+    setContext(context);
+    return this;
+  }
+
   @Override
   public String getApplicationModelType() {
     return APPLICATION_MODEL_TYPE;
@@ -79,11 +104,12 @@ public class ServiceError extends GreengrassCoreIPCError implements EventStreamJ
     final ServiceError other = (ServiceError)rhs;
     boolean isEquals = true;
     isEquals = isEquals && this.message.equals(other.message);
+    isEquals = isEquals && this.context.equals(other.context);
     return isEquals;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(message);
+    return Objects.hash(message, context);
   }
 }

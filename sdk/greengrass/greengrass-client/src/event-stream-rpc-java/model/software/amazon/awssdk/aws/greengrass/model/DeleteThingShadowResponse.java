@@ -40,6 +40,9 @@ public class DeleteThingShadowResponse implements EventStreamJsonMessage {
     this.payload = Optional.empty();
   }
 
+  /**
+   * An empty response state document.
+   */
   public byte[] getPayload() {
     if (payload.isPresent()) {
       return payload.get();
@@ -47,10 +50,16 @@ public class DeleteThingShadowResponse implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * An empty response state document.
+   */
   public void setPayload(final byte[] payload) {
     this.payload = Optional.ofNullable(payload);
   }
 
+  /**
+   * An empty response state document.
+   */
   public DeleteThingShadowResponse withPayload(final byte[] payload) {
     setPayload(payload);
     return this;
