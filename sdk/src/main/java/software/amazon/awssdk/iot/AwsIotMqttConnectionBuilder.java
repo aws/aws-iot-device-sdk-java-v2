@@ -588,7 +588,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      *                       will not be added with the MQTT connection.
      * @param authorizerSignature The signature of the custom authorizer.
      *                            NOTE: This will NOT work without the token key name and token value, which requires
-     *                            using the non-depreciated API. This will always fail if set.
+     *                            using the non-depreciated API.
      * @param password The password to use with the custom authorizer. If null is passed, then no password will be set.
      * @return {@link AwsIotMqttConnectionBuilder}
      */
@@ -639,11 +639,21 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
             usernameString = addUsernameParameter(usernameString, authorizerName, "x-amz-customauthorizer-name=", addedStringToUsername);
             addedStringToUsername = true;
         }
+        if (authorizerSignature != null)
+        {
+            usernameString = addUsernameParameter(usernameString, authorizerSignature, "x-amz-customauthorizer-signature=", addedStringToUsername);
+            Log.log(
+                LogLevel.Warn,
+                LogSubject.MqttClient,
+                "Signed custom authorizers with signature will not work without a token key name and " +
+                "token value. Your connection may be rejected/stalled on the IoT Core side due to this. Please " +
+                "use the non-deprecate API and pass both the token key name and token value to connect to a " +
+                "signed custom authorizer");
+        }
         if (authorizerSignature != null || tokenKeyName != null || tokenValue != null) {
-            if (authorizerSignature == null || tokenKeyName == null || tokenValue == null) {
+            if (tokenKeyName == null || tokenValue == null) {
                 throw new RuntimeException("Token-based custom authentication requires all token-related properties to be set");
             }
-            usernameString = addUsernameParameter(usernameString, authorizerSignature, "x-amz-customauthorizer-signature=", addedStringToUsername);
             usernameString = addUsernameParameter(usernameString, tokenValue, tokenKeyName + "=", addedStringToUsername);
         }
 
