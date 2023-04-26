@@ -642,13 +642,15 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
         if (authorizerSignature != null)
         {
             usernameString = addUsernameParameter(usernameString, authorizerSignature, "x-amz-customauthorizer-signature=", addedStringToUsername);
-            Log.log(
-                LogLevel.Warn,
-                LogSubject.MqttClient,
-                "Signed custom authorizers with signature will not work without a token key name and " +
-                "token value. Your connection may be rejected/stalled on the IoT Core side due to this. Please " +
-                "use the non-deprecate API and pass both the token key name and token value to connect to a " +
-                "signed custom authorizer");
+            if (tokenKeyName == null || tokenValue == null) {
+                Log.log(
+                    LogLevel.Warn,
+                    LogSubject.MqttClient,
+                    "Signed custom authorizers with signature will not work without a token key name and " +
+                    "token value. Your connection may be rejected/stalled on the IoT Core side due to this. Please " +
+                    "use the non-deprecate API and pass both the token key name and token value to connect to a " +
+                    "signed custom authorizer");
+            }
         }
         if (authorizerSignature != null || tokenKeyName != null || tokenValue != null) {
             if (tokenKeyName == null || tokenValue == null) {
