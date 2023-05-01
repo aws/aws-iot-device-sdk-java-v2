@@ -92,7 +92,7 @@ mkdir sdk-workspace
 cd sdk-workspace
 # Clone the CRT repository
 #     (Use the latest version of the CRT here instead of "v0.21.11")
-git clone --branch v0.21.11 --recurse-submodules https://github.com/awslabs/aws-crt-java.git
+git clone --branch v0.21.13 --recurse-submodules https://github.com/awslabs/aws-crt-java.git
 cd aws-crt-java
 # Compile and install the CRT
 mvn install -Dmaven.test.skip=true
@@ -114,7 +114,7 @@ mkdir sdk-workspace
 cd sdk-workspace
 # Clone the CRT repository
 #     (Use the latest version of the CRT here instead of "v0.21.11")
-git clone --branch v0.21.11 --recurse-submodules https://github.com/awslabs/aws-crt-java.git
+git clone --branch v0.21.13 --recurse-submodules https://github.com/awslabs/aws-crt-java.git
 # Compile and install the CRT for Android
 cd aws-crt-java/android
 ./gradlew connectedCheck # optional, will run the unit tests on any connected devices/emulators
@@ -139,11 +139,11 @@ repositories {
 }
 
 dependencies {
-    implementation 'software.amazon.awssdk.crt:android:0.21.11'
+    implementation 'software.amazon.awssdk.crt:android:0.21.13'
 }
 ```
 
-Replace `0.21.11` in `software.amazon.awssdk.crt:android:0.21.11` with the latest version of the CRT.
+Replace `0.21.13` in `software.amazon.awssdk.crt:android:0.21.13` with the latest version of the CRT.
 Look up the latest CRT version here: https://github.com/awslabs/aws-crt-java/releases
 
 #### Caution
