@@ -391,7 +391,7 @@ public class CommandLineUtils {
         addCommonMQTTCommands();
         removeCommand(m_cmd_endpoint);
         addKeyAndCertCommands();
-        registerCommand(m_cmd_signing_region, "<str>", "AWS IoT service region (optional, default='us-east-1').");
+        registerCommand(m_cmd_region, "<str>", "AWS IoT service region (optional, default='us-east-1').");
         registerCommand(m_cmd_thing_name, "<str>", "The name of the IoT thing.");
         registerCommand(m_cmd_topic, "<str>", "Topic to subscribe/publish to (optional, default='test/topic').");
         registerCommand(m_cmd_mode, "<str>", "Mode options: 'both', 'publish', or 'subscribe' (optional, default='both').");
@@ -400,7 +400,7 @@ public class CommandLineUtils {
 
         SampleCommandLineData returnData = new SampleCommandLineData();
         returnData.input_thingName = getCommandRequired(m_cmd_thing_name, "");
-        returnData.input_signingRegion = getCommandOrDefault(m_cmd_signing_region, "us-east-1");
+        returnData.input_signingRegion = getCommandOrDefault(m_cmd_region, "us-east-1");
         returnData.input_ca = getCommandOrDefault(m_cmd_ca_file, null);
         returnData.input_cert = getCommandRequired(m_cmd_cert_file, "");
         returnData.input_key = getCommandRequired(m_cmd_key_file, "");
@@ -733,6 +733,7 @@ public class CommandLineUtils {
     private static final String m_cmd_auth_params = "auth_params";
     private static final String m_cmd_pkcs12_file = "pkcs12_file";
     private static final String m_cmd_pkcs12_password = "pkcs12_password";
+    private static final String m_cmd_region = "region";
 }
 
 class CommandLineOption {
