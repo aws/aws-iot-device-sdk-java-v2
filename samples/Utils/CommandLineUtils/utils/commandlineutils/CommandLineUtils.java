@@ -99,17 +99,21 @@ public class CommandLineUtils {
         return commandDefault;
     }
 
-    public String getCommandRequired(String command, String optionalAdditionalMessage) {
+    public String getCommandRequired(String command) {
         if (commandArguments.contains("--" + command)) {
             return getCommand(command);
         }
         printHelp();
         System.out.println("Missing required argument: --" + command + "\n");
-        if (!Objects.equals(optionalAdditionalMessage, "")) {
-            System.out.println(optionalAdditionalMessage + "\n");
-        }
         System.exit(-1);
         return "";
+    }
+
+    public String getCommandRequired(String command, String commandAlt){
+        if(commandArguments.contains("--" + commandAlt)){
+            return getCommand(commandAlt);
+        }
+        return getCommandRequired(command);
     }
 
     public void printHelp() {
@@ -269,9 +273,9 @@ public class CommandLineUtils {
         sendArguments(args);
 
         SampleCommandLineData returnData = new SampleCommandLineData();
-        returnData.input_endpoint = getCommandRequired(m_cmd_endpoint, "");
-        returnData.input_cert = getCommandRequired(m_cmd_cert_file, "");
-        returnData.input_key = getCommandRequired(m_cmd_key_file, "");
+        returnData.input_endpoint = getCommandRequired(m_cmd_endpoint);
+        returnData.input_cert = getCommandRequired(m_cmd_cert_file);
+        returnData.input_key = getCommandRequired(m_cmd_key_file);
         returnData.input_ca = getCommandOrDefault(m_cmd_ca_file, "");
         returnData.input_clientId = getCommandOrDefault(m_cmd_client_id, "test-" + UUID.randomUUID().toString());
         returnData.input_port = Integer.parseInt(getCommandOrDefault(m_cmd_port, "8883"));
@@ -291,9 +295,9 @@ public class CommandLineUtils {
         sendArguments(args);
 
         SampleCommandLineData returnData = new SampleCommandLineData();
-        returnData.input_endpoint = getCommandRequired(m_cmd_endpoint, "");
-        returnData.input_cert = getCommandRequired(m_cmd_cert_file, "");
-        returnData.input_key = getCommandRequired(m_cmd_key_file, "");
+        returnData.input_endpoint = getCommandRequired(m_cmd_endpoint);
+        returnData.input_cert = getCommandRequired(m_cmd_cert_file);
+        returnData.input_key = getCommandRequired(m_cmd_key_file);
         returnData.input_ca = getCommandOrDefault(m_cmd_ca_file, "");
         returnData.input_clientId = getCommandOrDefault(m_cmd_client_id, "test-" + UUID.randomUUID().toString());
         returnData.input_port = Integer.parseInt(getCommandOrDefault(m_cmd_port, "8883"));
@@ -313,10 +317,10 @@ public class CommandLineUtils {
         sendArguments(args);
 
         SampleCommandLineData returnData = new SampleCommandLineData();
-        returnData.input_endpoint = getCommandRequired(m_cmd_endpoint, "");
-        returnData.input_signingRegion = getCommandOrDefault(m_cmd_signing_region, "us-east-1");
+        returnData.input_endpoint = getCommandRequired(m_cmd_endpoint);
+        returnData.input_signingRegion = getCommandRequired(m_cmd_signing_region, m_cmd_region);
         returnData.input_clientId = getCommandOrDefault(m_cmd_client_id, "test-" + UUID.randomUUID().toString());
-        returnData.input_cognitoIdentity = getCommandRequired(m_cmd_cognito_identity, "");
+        returnData.input_cognitoIdentity = getCommandRequired(m_cmd_cognito_identity);
         return returnData;
     }
 
@@ -333,7 +337,7 @@ public class CommandLineUtils {
         sendArguments(args);
 
         SampleCommandLineData returnData = new SampleCommandLineData();
-        returnData.input_endpoint = getCommandRequired(m_cmd_endpoint, "");
+        returnData.input_endpoint = getCommandRequired(m_cmd_endpoint);
         returnData.input_clientId = getCommandOrDefault(m_cmd_client_id, "test-" + UUID.randomUUID().toString());
         returnData.input_customAuthUsername = getCommandOrDefault(m_cmd_custom_auth_username, null);
         returnData.input_customAuthorizerName = getCommandOrDefault(m_cmd_custom_auth_authorizer_name, null);
@@ -353,9 +357,9 @@ public class CommandLineUtils {
         sendArguments(args);
 
         SampleCommandLineData returnData = new SampleCommandLineData();
-        returnData.input_endpoint = getCommandRequired(m_cmd_endpoint, "");
-        returnData.input_cert = getCommandRequired(m_cmd_cert_file, "");
-        returnData.input_key = getCommandRequired(m_cmd_key_file, "");
+        returnData.input_endpoint = getCommandRequired(m_cmd_endpoint);
+        returnData.input_cert = getCommandRequired(m_cmd_cert_file);
+        returnData.input_key = getCommandRequired(m_cmd_key_file);
         returnData.input_ca = getCommandOrDefault(m_cmd_ca_file, "");
         returnData.input_clientId = getCommandOrDefault(m_cmd_client_id, "test-" + UUID.randomUUID().toString());
         returnData.input_port = Integer.parseInt(getCommandOrDefault(m_cmd_port, "8883"));
@@ -374,14 +378,14 @@ public class CommandLineUtils {
         sendArguments(args);
 
         SampleCommandLineData returnData = new SampleCommandLineData();
-        returnData.input_endpoint = getCommandRequired(m_cmd_endpoint, "");
-        returnData.input_cert = getCommandRequired(m_cmd_cert_file, "");
-        returnData.input_key = getCommandRequired(m_cmd_key_file, "");
+        returnData.input_endpoint = getCommandRequired(m_cmd_endpoint);
+        returnData.input_cert = getCommandRequired(m_cmd_cert_file);
+        returnData.input_key = getCommandRequired(m_cmd_key_file);
         returnData.input_ca = getCommandOrDefault(m_cmd_ca_file, "");
         returnData.input_clientId = getCommandOrDefault(m_cmd_client_id, "test-" + UUID.randomUUID().toString());
         returnData.input_port = Integer.parseInt(getCommandOrDefault(m_cmd_port, "8883"));
-        returnData.input_templateName = getCommandRequired(m_cmd_fleet_template_name, "");
-        returnData.input_templateParameters = getCommandRequired(m_cmd_fleet_template_parameters, "");
+        returnData.input_templateName = getCommandRequired(m_cmd_fleet_template_name);
+        returnData.input_templateParameters = getCommandRequired(m_cmd_fleet_template_parameters);
         returnData.input_csrPath = getCommandOrDefault(m_cmd_fleet_template_csr, null);
         return returnData;
     }
@@ -399,11 +403,11 @@ public class CommandLineUtils {
         sendArguments(args);
 
         SampleCommandLineData returnData = new SampleCommandLineData();
-        returnData.input_thingName = getCommandRequired(m_cmd_thing_name, "");
-        returnData.input_signingRegion = getCommandOrDefault(m_cmd_region, "us-east-1");
+        returnData.input_thingName = getCommandRequired(m_cmd_thing_name);
+        returnData.input_signingRegion = getCommandRequired(m_cmd_region, m_cmd_signing_region);
         returnData.input_ca = getCommandOrDefault(m_cmd_ca_file, null);
-        returnData.input_cert = getCommandRequired(m_cmd_cert_file, "");
-        returnData.input_key = getCommandRequired(m_cmd_key_file, "");
+        returnData.input_cert = getCommandRequired(m_cmd_cert_file);
+        returnData.input_key = getCommandRequired(m_cmd_key_file);
         returnData.input_proxyHost = getCommandOrDefault(m_cmd_proxy_host, "");
         returnData.input_proxyPort = Integer.parseInt(getCommandOrDefault(m_cmd_proxy_port, "0"));
         returnData.input_topic = getCommandOrDefault(m_cmd_topic, "test/topic");
@@ -425,17 +429,17 @@ public class CommandLineUtils {
         sendArguments(args);
 
         SampleCommandLineData returnData = new SampleCommandLineData();
-        returnData.input_endpoint = getCommandRequired(m_cmd_endpoint, "");
+        returnData.input_endpoint = getCommandRequired(m_cmd_endpoint);
         returnData.input_ca = getCommandOrDefault(m_cmd_ca_file, "");
         returnData.input_clientId = getCommandOrDefault(m_cmd_client_id, "test-" + UUID.randomUUID().toString());
         returnData.input_port = Integer.parseInt(getCommandOrDefault(m_cmd_port, "8883"));
         returnData.input_proxyHost = getCommandOrDefault(m_cmd_proxy_host, "");
         returnData.input_proxyPort = Integer.parseInt(getCommandOrDefault(m_cmd_proxy_port, "0"));
-        returnData.input_keystore = getCommandRequired(m_cmd_javakeystore_path, "");
-        returnData.input_keystorePassword = getCommandRequired(m_cmd_javakeystore_password, "");
+        returnData.input_keystore = getCommandRequired(m_cmd_javakeystore_path);
+        returnData.input_keystorePassword = getCommandRequired(m_cmd_javakeystore_password);
         returnData.input_keystoreFormat = getCommandOrDefault(m_cmd_javakeystore_format, "PKCS12");
-        returnData.input_certificateAlias = getCommandRequired(m_cmd_javakeystore_certificate, "");
-        returnData.input_certificatePassword = getCommandRequired(m_cmd_javakeystore_key_password, "");
+        returnData.input_certificateAlias = getCommandRequired(m_cmd_javakeystore_certificate);
+        returnData.input_certificatePassword = getCommandRequired(m_cmd_javakeystore_key_password);
         return returnData;
     }
 
@@ -449,13 +453,13 @@ public class CommandLineUtils {
         sendArguments(args);
 
         SampleCommandLineData returnData = new SampleCommandLineData();
-        returnData.input_endpoint = getCommandRequired(m_cmd_endpoint, "");
-        returnData.input_cert = getCommandRequired(m_cmd_cert_file, "");
-        returnData.input_key = getCommandRequired(m_cmd_key_file, "");
+        returnData.input_endpoint = getCommandRequired(m_cmd_endpoint);
+        returnData.input_cert = getCommandRequired(m_cmd_cert_file);
+        returnData.input_key = getCommandRequired(m_cmd_key_file);
         returnData.input_ca = getCommandOrDefault(m_cmd_ca_file, "");
         returnData.input_clientId = getCommandOrDefault(m_cmd_client_id, "test-" + UUID.randomUUID().toString());
         returnData.input_port = Integer.parseInt(getCommandOrDefault(m_cmd_port, "8883"));
-        returnData.input_thingName = getCommandRequired(m_cmd_thing_name, "");
+        returnData.input_thingName = getCommandRequired(m_cmd_thing_name);
         return returnData;
     }
 
@@ -471,9 +475,9 @@ public class CommandLineUtils {
         sendArguments(args);
 
         SampleCommandLineData returnData = new SampleCommandLineData();
-        returnData.input_endpoint = getCommandRequired(m_cmd_endpoint, "");
-        returnData.input_cert = getCommandRequired(m_cmd_cert_file, "");
-        returnData.input_key = getCommandRequired(m_cmd_key_file, "");
+        returnData.input_endpoint = getCommandRequired(m_cmd_endpoint);
+        returnData.input_cert = getCommandRequired(m_cmd_cert_file);
+        returnData.input_key = getCommandRequired(m_cmd_key_file);
         returnData.input_ca = getCommandOrDefault(m_cmd_ca_file, "");
         returnData.input_clientId = getCommandOrDefault(m_cmd_client_id, "test-" + UUID.randomUUID().toString());
         returnData.input_port = Integer.parseInt(getCommandOrDefault(m_cmd_port, "8883"));
@@ -497,9 +501,9 @@ public class CommandLineUtils {
         sendArguments(args);
 
         SampleCommandLineData returnData = new SampleCommandLineData();
-        returnData.input_endpoint = getCommandRequired(m_cmd_endpoint, "");
-        returnData.input_cert = getCommandRequired(m_cmd_cert_file, "");
-        returnData.input_key = getCommandRequired(m_cmd_key_file, "");
+        returnData.input_endpoint = getCommandRequired(m_cmd_endpoint);
+        returnData.input_cert = getCommandRequired(m_cmd_cert_file);
+        returnData.input_key = getCommandRequired(m_cmd_key_file);
         returnData.input_ca = getCommandOrDefault(m_cmd_ca_file, "");
         returnData.input_clientId = getCommandOrDefault(m_cmd_client_id, "test-" + UUID.randomUUID().toString());
         returnData.input_port = Integer.parseInt(getCommandOrDefault(m_cmd_port, "8883"));
@@ -525,13 +529,13 @@ public class CommandLineUtils {
         sendArguments(args);
 
         SampleCommandLineData returnData = new SampleCommandLineData();
-        returnData.input_endpoint = getCommandRequired(m_cmd_endpoint, "");
-        returnData.input_cert = getCommandRequired(m_cmd_cert_file, "");
+        returnData.input_endpoint = getCommandRequired(m_cmd_endpoint);
+        returnData.input_cert = getCommandRequired(m_cmd_cert_file);
         returnData.input_ca = getCommandOrDefault(m_cmd_ca_file, "");
         returnData.input_clientId = getCommandOrDefault(m_cmd_client_id, "test-" + UUID.randomUUID().toString());
         returnData.input_port = Integer.parseInt(getCommandOrDefault(m_cmd_port, "8883"));
-        returnData.input_pkcs11LibPath = getCommandRequired(m_cmd_pkcs11_lib, "");
-        returnData.input_pkcs11UserPin = getCommandRequired(m_cmd_pkcs11_pin, "");
+        returnData.input_pkcs11LibPath = getCommandRequired(m_cmd_pkcs11_lib);
+        returnData.input_pkcs11UserPin = getCommandRequired(m_cmd_pkcs11_pin);
         returnData.input_pkcs11TokenLabel = getCommandOrDefault(m_cmd_pkcs11_token, "");
         returnData.input_pkcs11SlotId = null;
         if (hasCommand(m_cmd_pkcs11_slot)) {
@@ -557,9 +561,9 @@ public class CommandLineUtils {
         sendArguments(args);
 
         SampleCommandLineData returnData = new SampleCommandLineData();
-        returnData.input_endpoint = getCommandRequired(m_cmd_endpoint, "");
+        returnData.input_endpoint = getCommandRequired(m_cmd_endpoint);
         returnData.input_ca = getCommandOrDefault(m_cmd_ca_file, "");
-        returnData.input_signingRegion = getCommandRequired(m_cmd_signing_region, "");
+        returnData.input_signingRegion = getCommandRequired(m_cmd_signing_region, m_cmd_region);
         returnData.input_clientId = getCommandOrDefault(m_cmd_client_id, "test-" + UUID.randomUUID().toString());
         returnData.input_port = Integer.parseInt(getCommandOrDefault(m_cmd_port, "443"));
         returnData.input_proxyHost = getCommandOrDefault(m_cmd_proxy_host, "");
@@ -577,8 +581,8 @@ public class CommandLineUtils {
         sendArguments(args);
 
         SampleCommandLineData returnData = new SampleCommandLineData();
-        returnData.input_endpoint = getCommandRequired("endpoint", "");
-        returnData.input_cert = getCommandRequired("cert", "");
+        returnData.input_endpoint = getCommandRequired("endpoint");
+        returnData.input_cert = getCommandRequired("cert");
         returnData.input_ca = getCommandOrDefault("ca", "");
         returnData.input_clientId = getCommandOrDefault("client_id", "test-" + UUID.randomUUID().toString());
         returnData.input_port = Integer.parseInt(getCommandOrDefault("port", "8883"));
@@ -599,18 +603,18 @@ public class CommandLineUtils {
          * Gather the input from the command line
          */
         SampleCommandLineData returnData = new SampleCommandLineData();
-        returnData.input_endpoint = getCommandRequired(m_cmd_endpoint, "");
+        returnData.input_endpoint = getCommandRequired(m_cmd_endpoint);
         returnData.input_ca = getCommandOrDefault(m_cmd_ca_file, "");
-        returnData.input_signingRegion = getCommandRequired(m_cmd_signing_region, "");
+        returnData.input_signingRegion = getCommandRequired(m_cmd_signing_region, m_cmd_region);
         returnData.input_clientId = getCommandOrDefault(m_cmd_client_id, "test-" + UUID.randomUUID().toString());
         returnData.input_port = Integer.parseInt(getCommandOrDefault(m_cmd_port, "443"));
         returnData.input_proxyHost = getCommandOrDefault(m_cmd_proxy_host, "");
         returnData.input_proxyPort = Integer.parseInt(getCommandOrDefault(m_cmd_proxy_port, "0"));
-        returnData.input_x509Endpoint = getCommandRequired(m_cmd_x509_endpoint, "");
-        returnData.input_x509Role = getCommandRequired(m_cmd_x509_role, "");
-        returnData.input_x509ThingName = getCommandRequired(m_cmd_x509_thing_name, "");
-        returnData.input_x509Cert = getCommandRequired(m_cmd_x509_cert_file, "");
-        returnData.input_x509Key = getCommandRequired(m_cmd_x509_key_file, "");
+        returnData.input_x509Endpoint = getCommandRequired(m_cmd_x509_endpoint);
+        returnData.input_x509Role = getCommandRequired(m_cmd_x509_role);
+        returnData.input_x509ThingName = getCommandRequired(m_cmd_x509_thing_name);
+        returnData.input_x509Cert = getCommandRequired(m_cmd_x509_cert_file);
+        returnData.input_x509Key = getCommandRequired(m_cmd_x509_key_file);
         returnData.input_x509Ca = getCommandOrDefault(m_cmd_x509_ca_file, null);
         return returnData;
     }
@@ -625,9 +629,9 @@ public class CommandLineUtils {
         sendArguments(args);
 
         SampleCommandLineData returnData = new SampleCommandLineData();
-        returnData.input_endpoint = getCommandRequired(m_cmd_endpoint, "");
-        returnData.input_pkcs12File = getCommandRequired(m_cmd_pkcs12_file, "");
-        returnData.input_pkcs12Password = getCommandRequired(m_cmd_pkcs12_password, "");
+        returnData.input_endpoint = getCommandRequired(m_cmd_endpoint);
+        returnData.input_pkcs12File = getCommandRequired(m_cmd_pkcs12_file);
+        returnData.input_pkcs12Password = getCommandRequired(m_cmd_pkcs12_password);
         returnData.input_ca = getCommandOrDefault(m_cmd_ca_file, "");
         returnData.input_clientId = getCommandOrDefault(m_cmd_client_id, "test-" + UUID.randomUUID().toString());
         returnData.input_port = Integer.parseInt(getCommandOrDefault(m_cmd_port, "8883"));
