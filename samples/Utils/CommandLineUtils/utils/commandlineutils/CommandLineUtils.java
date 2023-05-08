@@ -581,10 +581,10 @@ public class CommandLineUtils {
         sendArguments(args);
 
         SampleCommandLineData returnData = new SampleCommandLineData();
-        returnData.input_endpoint = getCommandRequired("endpoint");
-        returnData.input_cert = getCommandRequired("cert");
-        returnData.input_ca = getCommandOrDefault("ca", "");
-        returnData.input_clientId = getCommandOrDefault("client_id", "test-" + UUID.randomUUID().toString());
+        returnData.input_endpoint = getCommandRequired(m_cmd_endpoint);
+        returnData.input_cert = getCommandRequired(m_cmd_cert_file);
+        returnData.input_ca = getCommandOrDefault(m_cmd_ca_file, "");
+        returnData.input_clientId = getCommandOrDefault(m_cmd_client_id, "test-" + UUID.randomUUID().toString());
         returnData.input_port = Integer.parseInt(getCommandOrDefault("port", "8883"));
         return returnData;
     }
