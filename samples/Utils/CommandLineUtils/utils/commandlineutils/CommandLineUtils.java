@@ -585,7 +585,7 @@ public class CommandLineUtils {
         returnData.input_cert = getCommandRequired(m_cmd_cert_file);
         returnData.input_ca = getCommandOrDefault(m_cmd_ca_file, "");
         returnData.input_clientId = getCommandOrDefault(m_cmd_client_id, "test-" + UUID.randomUUID().toString());
-        returnData.input_port = Integer.parseInt(getCommandOrDefault("port", "8883"));
+        returnData.input_port = Integer.parseInt(getCommandOrDefault(m_cmd_port, "8883"));
         return returnData;
     }
 
