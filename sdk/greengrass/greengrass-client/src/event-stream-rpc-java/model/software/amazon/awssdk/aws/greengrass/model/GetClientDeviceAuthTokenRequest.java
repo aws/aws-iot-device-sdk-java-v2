@@ -39,6 +39,9 @@ public class GetClientDeviceAuthTokenRequest implements EventStreamJsonMessage {
     this.credential = Optional.empty();
   }
 
+  /**
+   * The client device's credentials.
+   */
   public CredentialDocument getCredential() {
     if (credential.isPresent()) {
       return credential.get();
@@ -46,10 +49,16 @@ public class GetClientDeviceAuthTokenRequest implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The client device's credentials.
+   */
   public void setCredential(final CredentialDocument credential) {
     this.credential = Optional.ofNullable(credential);
   }
 
+  /**
+   * The client device's credentials.
+   */
   public GetClientDeviceAuthTokenRequest withCredential(final CredentialDocument credential) {
     setCredential(credential);
     return this;

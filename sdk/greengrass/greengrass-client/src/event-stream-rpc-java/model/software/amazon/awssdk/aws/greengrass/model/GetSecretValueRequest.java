@@ -53,6 +53,9 @@ public class GetSecretValueRequest implements EventStreamJsonMessage {
     this.versionStage = Optional.empty();
   }
 
+  /**
+   * The name of the secret to get. You can specify either the Amazon Resource Name (ARN) or the friendly name of the secret.
+   */
   public String getSecretId() {
     if (secretId.isPresent()) {
       return secretId.get();
@@ -60,15 +63,24 @@ public class GetSecretValueRequest implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The name of the secret to get. You can specify either the Amazon Resource Name (ARN) or the friendly name of the secret.
+   */
   public void setSecretId(final String secretId) {
     this.secretId = Optional.ofNullable(secretId);
   }
 
+  /**
+   * The name of the secret to get. You can specify either the Amazon Resource Name (ARN) or the friendly name of the secret.
+   */
   public GetSecretValueRequest withSecretId(final String secretId) {
     setSecretId(secretId);
     return this;
   }
 
+  /**
+   * (Optional) The ID of the version to get. If you don't specify versionId or versionStage, this operation defaults to the version with the AWSCURRENT label.
+   */
   public String getVersionId() {
     if (versionId.isPresent()) {
       return versionId.get();
@@ -76,15 +88,24 @@ public class GetSecretValueRequest implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * (Optional) The ID of the version to get. If you don't specify versionId or versionStage, this operation defaults to the version with the AWSCURRENT label.
+   */
   public void setVersionId(final String versionId) {
     this.versionId = Optional.ofNullable(versionId);
   }
 
+  /**
+   * (Optional) The ID of the version to get. If you don't specify versionId or versionStage, this operation defaults to the version with the AWSCURRENT label.
+   */
   public GetSecretValueRequest withVersionId(final String versionId) {
     setVersionId(versionId);
     return this;
   }
 
+  /**
+   * (Optional) The staging label of the version to get. If you don't specify versionId or versionStage, this operation defaults to the version with the AWSCURRENT label.
+   */
   public String getVersionStage() {
     if (versionStage.isPresent()) {
       return versionStage.get();
@@ -92,10 +113,16 @@ public class GetSecretValueRequest implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * (Optional) The staging label of the version to get. If you don't specify versionId or versionStage, this operation defaults to the version with the AWSCURRENT label.
+   */
   public void setVersionStage(final String versionStage) {
     this.versionStage = Optional.ofNullable(versionStage);
   }
 
+  /**
+   * (Optional) The staging label of the version to get. If you don't specify versionId or versionStage, this operation defaults to the version with the AWSCURRENT label.
+   */
   public GetSecretValueRequest withVersionStage(final String versionStage) {
     setVersionStage(versionStage);
     return this;

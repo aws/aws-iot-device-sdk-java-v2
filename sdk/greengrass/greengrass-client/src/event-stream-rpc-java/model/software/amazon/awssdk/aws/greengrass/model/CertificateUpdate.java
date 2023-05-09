@@ -61,6 +61,9 @@ public class CertificateUpdate implements EventStreamJsonMessage {
     this.caCertificates = Optional.empty();
   }
 
+  /**
+   * The private key in pem format.
+   */
   public String getPrivateKey() {
     if (privateKey.isPresent()) {
       return privateKey.get();
@@ -68,15 +71,24 @@ public class CertificateUpdate implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The private key in pem format.
+   */
   public void setPrivateKey(final String privateKey) {
     this.privateKey = Optional.ofNullable(privateKey);
   }
 
+  /**
+   * The private key in pem format.
+   */
   public CertificateUpdate withPrivateKey(final String privateKey) {
     setPrivateKey(privateKey);
     return this;
   }
 
+  /**
+   * The public key in pem format.
+   */
   public String getPublicKey() {
     if (publicKey.isPresent()) {
       return publicKey.get();
@@ -84,15 +96,24 @@ public class CertificateUpdate implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The public key in pem format.
+   */
   public void setPublicKey(final String publicKey) {
     this.publicKey = Optional.ofNullable(publicKey);
   }
 
+  /**
+   * The public key in pem format.
+   */
   public CertificateUpdate withPublicKey(final String publicKey) {
     setPublicKey(publicKey);
     return this;
   }
 
+  /**
+   * The certificate in pem format.
+   */
   public String getCertificate() {
     if (certificate.isPresent()) {
       return certificate.get();
@@ -100,15 +121,24 @@ public class CertificateUpdate implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The certificate in pem format.
+   */
   public void setCertificate(final String certificate) {
     this.certificate = Optional.ofNullable(certificate);
   }
 
+  /**
+   * The certificate in pem format.
+   */
   public CertificateUpdate withCertificate(final String certificate) {
     setCertificate(certificate);
     return this;
   }
 
+  /**
+   * List of CA certificates in pem format.
+   */
   public List<String> getCaCertificates() {
     if (caCertificates.isPresent()) {
       return caCertificates.get();
@@ -116,10 +146,16 @@ public class CertificateUpdate implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * List of CA certificates in pem format.
+   */
   public void setCaCertificates(final List<String> caCertificates) {
     this.caCertificates = Optional.ofNullable(caCertificates);
   }
 
+  /**
+   * List of CA certificates in pem format.
+   */
   public CertificateUpdate withCaCertificates(final List<String> caCertificates) {
     setCaCertificates(caCertificates);
     return this;

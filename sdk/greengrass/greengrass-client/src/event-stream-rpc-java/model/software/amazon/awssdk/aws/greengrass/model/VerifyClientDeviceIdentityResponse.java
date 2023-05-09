@@ -40,6 +40,9 @@ public class VerifyClientDeviceIdentityResponse implements EventStreamJsonMessag
     this.isValidClientDevice = Optional.empty();
   }
 
+  /**
+   * Whether the client device's identity is valid.
+   */
   public Boolean isIsValidClientDevice() {
     if (isValidClientDevice.isPresent()) {
       return isValidClientDevice.get();
@@ -47,10 +50,16 @@ public class VerifyClientDeviceIdentityResponse implements EventStreamJsonMessag
     return null;
   }
 
+  /**
+   * Whether the client device's identity is valid.
+   */
   public void setIsValidClientDevice(final Boolean isValidClientDevice) {
     this.isValidClientDevice = Optional.ofNullable(isValidClientDevice);
   }
 
+  /**
+   * Whether the client device's identity is valid.
+   */
   public VerifyClientDeviceIdentityResponse withIsValidClientDevice(
       final Boolean isValidClientDevice) {
     setIsValidClientDevice(isValidClientDevice);

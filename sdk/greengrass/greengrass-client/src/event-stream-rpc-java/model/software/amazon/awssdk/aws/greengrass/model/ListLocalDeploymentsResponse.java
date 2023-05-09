@@ -40,6 +40,9 @@ public class ListLocalDeploymentsResponse implements EventStreamJsonMessage {
     this.localDeployments = Optional.empty();
   }
 
+  /**
+   * The list of local deployments.
+   */
   public List<LocalDeployment> getLocalDeployments() {
     if (localDeployments.isPresent()) {
       return localDeployments.get();
@@ -47,10 +50,16 @@ public class ListLocalDeploymentsResponse implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The list of local deployments.
+   */
   public void setLocalDeployments(final List<LocalDeployment> localDeployments) {
     this.localDeployments = Optional.ofNullable(localDeployments);
   }
 
+  /**
+   * The list of local deployments.
+   */
   public ListLocalDeploymentsResponse withLocalDeployments(
       final List<LocalDeployment> localDeployments) {
     setLocalDeployments(localDeployments);

@@ -39,6 +39,9 @@ public class SendConfigurationValidityReportRequest implements EventStreamJsonMe
     this.configurationValidityReport = Optional.empty();
   }
 
+  /**
+   * The report that tells Greengrass whether or not the configuration update is valid.
+   */
   public ConfigurationValidityReport getConfigurationValidityReport() {
     if (configurationValidityReport.isPresent()) {
       return configurationValidityReport.get();
@@ -46,11 +49,17 @@ public class SendConfigurationValidityReportRequest implements EventStreamJsonMe
     return null;
   }
 
+  /**
+   * The report that tells Greengrass whether or not the configuration update is valid.
+   */
   public void setConfigurationValidityReport(
       final ConfigurationValidityReport configurationValidityReport) {
     this.configurationValidityReport = Optional.ofNullable(configurationValidityReport);
   }
 
+  /**
+   * The report that tells Greengrass whether or not the configuration update is valid.
+   */
   public SendConfigurationValidityReportRequest withConfigurationValidityReport(
       final ConfigurationValidityReport configurationValidityReport) {
     setConfigurationValidityReport(configurationValidityReport);

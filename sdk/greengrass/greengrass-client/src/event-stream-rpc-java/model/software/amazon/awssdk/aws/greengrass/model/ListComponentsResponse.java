@@ -40,6 +40,9 @@ public class ListComponentsResponse implements EventStreamJsonMessage {
     this.components = Optional.empty();
   }
 
+  /**
+   * The list of components.
+   */
   public List<ComponentDetails> getComponents() {
     if (components.isPresent()) {
       return components.get();
@@ -47,10 +50,16 @@ public class ListComponentsResponse implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The list of components.
+   */
   public void setComponents(final List<ComponentDetails> components) {
     this.components = Optional.ofNullable(components);
   }
 
+  /**
+   * The list of components.
+   */
   public ListComponentsResponse withComponents(final List<ComponentDetails> components) {
     setComponents(components);
     return this;

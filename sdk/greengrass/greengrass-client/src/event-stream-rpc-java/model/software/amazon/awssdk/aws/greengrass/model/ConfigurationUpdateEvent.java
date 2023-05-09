@@ -47,6 +47,9 @@ public class ConfigurationUpdateEvent implements EventStreamJsonMessage {
     this.keyPath = Optional.empty();
   }
 
+  /**
+   * The name of the component.
+   */
   public String getComponentName() {
     if (componentName.isPresent()) {
       return componentName.get();
@@ -54,15 +57,24 @@ public class ConfigurationUpdateEvent implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The name of the component.
+   */
   public void setComponentName(final String componentName) {
     this.componentName = Optional.ofNullable(componentName);
   }
 
+  /**
+   * The name of the component.
+   */
   public ConfigurationUpdateEvent withComponentName(final String componentName) {
     setComponentName(componentName);
     return this;
   }
 
+  /**
+   * The key path to the configuration value that updated.
+   */
   public List<String> getKeyPath() {
     if (keyPath.isPresent()) {
       return keyPath.get();
@@ -70,10 +82,16 @@ public class ConfigurationUpdateEvent implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The key path to the configuration value that updated.
+   */
   public void setKeyPath(final List<String> keyPath) {
     this.keyPath = Optional.ofNullable(keyPath);
   }
 
+  /**
+   * The key path to the configuration value that updated.
+   */
   public ConfigurationUpdateEvent withKeyPath(final List<String> keyPath) {
     setKeyPath(keyPath);
     return this;

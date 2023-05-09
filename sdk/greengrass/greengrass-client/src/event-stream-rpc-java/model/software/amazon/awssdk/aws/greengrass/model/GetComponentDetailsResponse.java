@@ -39,6 +39,9 @@ public class GetComponentDetailsResponse implements EventStreamJsonMessage {
     this.componentDetails = Optional.empty();
   }
 
+  /**
+   * The component's details.
+   */
   public ComponentDetails getComponentDetails() {
     if (componentDetails.isPresent()) {
       return componentDetails.get();
@@ -46,10 +49,16 @@ public class GetComponentDetailsResponse implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The component's details.
+   */
   public void setComponentDetails(final ComponentDetails componentDetails) {
     this.componentDetails = Optional.ofNullable(componentDetails);
   }
 
+  /**
+   * The component's details.
+   */
   public GetComponentDetailsResponse withComponentDetails(final ComponentDetails componentDetails) {
     setComponentDetails(componentDetails);
     return this;

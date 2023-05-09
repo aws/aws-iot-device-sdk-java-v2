@@ -53,6 +53,9 @@ public class RunWithInfo implements EventStreamJsonMessage {
     this.systemResourceLimits = Optional.empty();
   }
 
+  /**
+   * (Optional) The POSIX system user and, optionally, group to use to run this component on Linux core devices.
+   */
   public String getPosixUser() {
     if (posixUser.isPresent()) {
       return posixUser.get();
@@ -60,15 +63,24 @@ public class RunWithInfo implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * (Optional) The POSIX system user and, optionally, group to use to run this component on Linux core devices.
+   */
   public void setPosixUser(final String posixUser) {
     this.posixUser = Optional.ofNullable(posixUser);
   }
 
+  /**
+   * (Optional) The POSIX system user and, optionally, group to use to run this component on Linux core devices.
+   */
   public RunWithInfo withPosixUser(final String posixUser) {
     setPosixUser(posixUser);
     return this;
   }
 
+  /**
+   * (Optional) The Windows user to use to run this component on Windows core devices.
+   */
   public String getWindowsUser() {
     if (windowsUser.isPresent()) {
       return windowsUser.get();
@@ -76,15 +88,24 @@ public class RunWithInfo implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * (Optional) The Windows user to use to run this component on Windows core devices.
+   */
   public void setWindowsUser(final String windowsUser) {
     this.windowsUser = Optional.ofNullable(windowsUser);
   }
 
+  /**
+   * (Optional) The Windows user to use to run this component on Windows core devices.
+   */
   public RunWithInfo withWindowsUser(final String windowsUser) {
     setWindowsUser(windowsUser);
     return this;
   }
 
+  /**
+   * (Optional) The system resource limits to apply to this component's processes.
+   */
   public SystemResourceLimits getSystemResourceLimits() {
     if (systemResourceLimits.isPresent()) {
       return systemResourceLimits.get();
@@ -92,10 +113,16 @@ public class RunWithInfo implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * (Optional) The system resource limits to apply to this component's processes.
+   */
   public void setSystemResourceLimits(final SystemResourceLimits systemResourceLimits) {
     this.systemResourceLimits = Optional.ofNullable(systemResourceLimits);
   }
 
+  /**
+   * (Optional) The system resource limits to apply to this component's processes.
+   */
   public RunWithInfo withSystemResourceLimits(final SystemResourceLimits systemResourceLimits) {
     setSystemResourceLimits(systemResourceLimits);
     return this;

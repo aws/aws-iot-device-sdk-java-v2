@@ -47,6 +47,9 @@ public class PreComponentUpdateEvent implements EventStreamJsonMessage {
     this.isGgcRestarting = Optional.empty();
   }
 
+  /**
+   * The ID of the AWS IoT Greengrass deployment that updates the component.
+   */
   public String getDeploymentId() {
     if (deploymentId.isPresent()) {
       return deploymentId.get();
@@ -54,15 +57,24 @@ public class PreComponentUpdateEvent implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The ID of the AWS IoT Greengrass deployment that updates the component.
+   */
   public void setDeploymentId(final String deploymentId) {
     this.deploymentId = Optional.ofNullable(deploymentId);
   }
 
+  /**
+   * The ID of the AWS IoT Greengrass deployment that updates the component.
+   */
   public PreComponentUpdateEvent withDeploymentId(final String deploymentId) {
     setDeploymentId(deploymentId);
     return this;
   }
 
+  /**
+   * Whether or not Greengrass needs to restart to apply the update.
+   */
   public Boolean isIsGgcRestarting() {
     if (isGgcRestarting.isPresent()) {
       return isGgcRestarting.get();
@@ -70,10 +82,16 @@ public class PreComponentUpdateEvent implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * Whether or not Greengrass needs to restart to apply the update.
+   */
   public void setIsGgcRestarting(final Boolean isGgcRestarting) {
     this.isGgcRestarting = Optional.ofNullable(isGgcRestarting);
   }
 
+  /**
+   * Whether or not Greengrass needs to restart to apply the update.
+   */
   public PreComponentUpdateEvent withIsGgcRestarting(final Boolean isGgcRestarting) {
     setIsGgcRestarting(isGgcRestarting);
     return this;

@@ -39,6 +39,9 @@ public class CreateLocalDeploymentResponse implements EventStreamJsonMessage {
     this.deploymentId = Optional.empty();
   }
 
+  /**
+   * The ID of the local deployment that the request created.
+   */
   public String getDeploymentId() {
     if (deploymentId.isPresent()) {
       return deploymentId.get();
@@ -46,10 +49,16 @@ public class CreateLocalDeploymentResponse implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The ID of the local deployment that the request created.
+   */
   public void setDeploymentId(final String deploymentId) {
     this.deploymentId = Optional.ofNullable(deploymentId);
   }
 
+  /**
+   * The ID of the local deployment that the request created.
+   */
   public CreateLocalDeploymentResponse withDeploymentId(final String deploymentId) {
     setDeploymentId(deploymentId);
     return this;

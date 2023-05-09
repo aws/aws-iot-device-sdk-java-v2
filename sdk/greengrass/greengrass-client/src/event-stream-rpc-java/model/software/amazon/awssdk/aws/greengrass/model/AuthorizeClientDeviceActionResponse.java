@@ -40,6 +40,9 @@ public class AuthorizeClientDeviceActionResponse implements EventStreamJsonMessa
     this.isAuthorized = Optional.empty();
   }
 
+  /**
+   * Whether the client device is authorized to perform the operation on the resource.
+   */
   public Boolean isIsAuthorized() {
     if (isAuthorized.isPresent()) {
       return isAuthorized.get();
@@ -47,10 +50,16 @@ public class AuthorizeClientDeviceActionResponse implements EventStreamJsonMessa
     return null;
   }
 
+  /**
+   * Whether the client device is authorized to perform the operation on the resource.
+   */
   public void setIsAuthorized(final Boolean isAuthorized) {
     this.isAuthorized = Optional.ofNullable(isAuthorized);
   }
 
+  /**
+   * Whether the client device is authorized to perform the operation on the resource.
+   */
   public AuthorizeClientDeviceActionResponse withIsAuthorized(final Boolean isAuthorized) {
     setIsAuthorized(isAuthorized);
     return this;

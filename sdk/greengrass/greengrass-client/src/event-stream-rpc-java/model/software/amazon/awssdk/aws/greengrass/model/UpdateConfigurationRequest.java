@@ -56,6 +56,9 @@ public class UpdateConfigurationRequest implements EventStreamJsonMessage {
     this.valueToMerge = Optional.empty();
   }
 
+  /**
+   * (Optional) The key path to the container node (the object) to update. Specify a list where each entry is the key for a single level in the configuration object. Defaults to the root of the configuration object.
+   */
   public List<String> getKeyPath() {
     if (keyPath.isPresent()) {
       return keyPath.get();
@@ -63,15 +66,24 @@ public class UpdateConfigurationRequest implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * (Optional) The key path to the container node (the object) to update. Specify a list where each entry is the key for a single level in the configuration object. Defaults to the root of the configuration object.
+   */
   public void setKeyPath(final List<String> keyPath) {
     this.keyPath = Optional.ofNullable(keyPath);
   }
 
+  /**
+   * (Optional) The key path to the container node (the object) to update. Specify a list where each entry is the key for a single level in the configuration object. Defaults to the root of the configuration object.
+   */
   public UpdateConfigurationRequest withKeyPath(final List<String> keyPath) {
     setKeyPath(keyPath);
     return this;
   }
 
+  /**
+   * The current Unix epoch time in milliseconds. This operation uses this timestamp to resolve concurrent updates to the key. If the key in the component configuration has a greater timestamp than the timestamp in the request, then the request fails.
+   */
   public Instant getTimestamp() {
     if (timestamp.isPresent()) {
       return timestamp.get();
@@ -79,15 +91,24 @@ public class UpdateConfigurationRequest implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The current Unix epoch time in milliseconds. This operation uses this timestamp to resolve concurrent updates to the key. If the key in the component configuration has a greater timestamp than the timestamp in the request, then the request fails.
+   */
   public void setTimestamp(final Instant timestamp) {
     this.timestamp = Optional.ofNullable(timestamp);
   }
 
+  /**
+   * The current Unix epoch time in milliseconds. This operation uses this timestamp to resolve concurrent updates to the key. If the key in the component configuration has a greater timestamp than the timestamp in the request, then the request fails.
+   */
   public UpdateConfigurationRequest withTimestamp(final Instant timestamp) {
     setTimestamp(timestamp);
     return this;
   }
 
+  /**
+   * The configuration object to merge at the location that you specify in keyPath.
+   */
   public Map<String, Object> getValueToMerge() {
     if (valueToMerge.isPresent()) {
       return valueToMerge.get();
@@ -95,10 +116,16 @@ public class UpdateConfigurationRequest implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The configuration object to merge at the location that you specify in keyPath.
+   */
   public void setValueToMerge(final Map<String, Object> valueToMerge) {
     this.valueToMerge = Optional.ofNullable(valueToMerge);
   }
 
+  /**
+   * The configuration object to merge at the location that you specify in keyPath.
+   */
   public UpdateConfigurationRequest withValueToMerge(final Map<String, Object> valueToMerge) {
     setValueToMerge(valueToMerge);
     return this;

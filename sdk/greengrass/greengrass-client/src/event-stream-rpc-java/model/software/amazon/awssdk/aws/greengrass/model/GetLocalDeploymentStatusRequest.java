@@ -39,6 +39,9 @@ public class GetLocalDeploymentStatusRequest implements EventStreamJsonMessage {
     this.deploymentId = Optional.empty();
   }
 
+  /**
+   * The ID of the local deployment to get.
+   */
   public String getDeploymentId() {
     if (deploymentId.isPresent()) {
       return deploymentId.get();
@@ -46,10 +49,16 @@ public class GetLocalDeploymentStatusRequest implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The ID of the local deployment to get.
+   */
   public void setDeploymentId(final String deploymentId) {
     this.deploymentId = Optional.ofNullable(deploymentId);
   }
 
+  /**
+   * The ID of the local deployment to get.
+   */
   public GetLocalDeploymentStatusRequest withDeploymentId(final String deploymentId) {
     setDeploymentId(deploymentId);
     return this;

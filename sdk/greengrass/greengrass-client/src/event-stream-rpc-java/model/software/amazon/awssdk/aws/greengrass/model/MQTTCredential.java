@@ -60,6 +60,9 @@ public class MQTTCredential implements EventStreamJsonMessage {
     this.password = Optional.empty();
   }
 
+  /**
+   * The client ID to used to connect.
+   */
   public String getClientId() {
     if (clientId.isPresent()) {
       return clientId.get();
@@ -67,15 +70,24 @@ public class MQTTCredential implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The client ID to used to connect.
+   */
   public void setClientId(final String clientId) {
     this.clientId = Optional.ofNullable(clientId);
   }
 
+  /**
+   * The client ID to used to connect.
+   */
   public MQTTCredential withClientId(final String clientId) {
     setClientId(clientId);
     return this;
   }
 
+  /**
+   * The client certificate in pem format.
+   */
   public String getCertificatePem() {
     if (certificatePem.isPresent()) {
       return certificatePem.get();
@@ -83,15 +95,24 @@ public class MQTTCredential implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The client certificate in pem format.
+   */
   public void setCertificatePem(final String certificatePem) {
     this.certificatePem = Optional.ofNullable(certificatePem);
   }
 
+  /**
+   * The client certificate in pem format.
+   */
   public MQTTCredential withCertificatePem(final String certificatePem) {
     setCertificatePem(certificatePem);
     return this;
   }
 
+  /**
+   * The username. (unused).
+   */
   public String getUsername() {
     if (username.isPresent()) {
       return username.get();
@@ -99,15 +120,24 @@ public class MQTTCredential implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The username. (unused).
+   */
   public void setUsername(final String username) {
     this.username = Optional.ofNullable(username);
   }
 
+  /**
+   * The username. (unused).
+   */
   public MQTTCredential withUsername(final String username) {
     setUsername(username);
     return this;
   }
 
+  /**
+   * The password. (unused).
+   */
   public String getPassword() {
     if (password.isPresent()) {
       return password.get();
@@ -115,10 +145,16 @@ public class MQTTCredential implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The password. (unused).
+   */
   public void setPassword(final String password) {
     this.password = Optional.ofNullable(password);
   }
 
+  /**
+   * The password. (unused).
+   */
   public MQTTCredential withPassword(final String password) {
     setPassword(password);
     return this;
