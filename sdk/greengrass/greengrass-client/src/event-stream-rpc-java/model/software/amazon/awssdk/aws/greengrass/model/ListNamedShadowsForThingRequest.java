@@ -54,6 +54,9 @@ public class ListNamedShadowsForThingRequest implements EventStreamJsonMessage {
     this.pageSize = Optional.empty();
   }
 
+  /**
+   * The name of the thing.
+   */
   public String getThingName() {
     if (thingName.isPresent()) {
       return thingName.get();
@@ -61,15 +64,24 @@ public class ListNamedShadowsForThingRequest implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The name of the thing.
+   */
   public void setThingName(final String thingName) {
     this.thingName = Optional.ofNullable(thingName);
   }
 
+  /**
+   * The name of the thing.
+   */
   public ListNamedShadowsForThingRequest withThingName(final String thingName) {
     setThingName(thingName);
     return this;
   }
 
+  /**
+   * (Optional) The token to retrieve the next set of results. This value is returned on paged results and is used in the call that returns the next page.
+   */
   public String getNextToken() {
     if (nextToken.isPresent()) {
       return nextToken.get();
@@ -77,15 +89,24 @@ public class ListNamedShadowsForThingRequest implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * (Optional) The token to retrieve the next set of results. This value is returned on paged results and is used in the call that returns the next page.
+   */
   public void setNextToken(final String nextToken) {
     this.nextToken = Optional.ofNullable(nextToken);
   }
 
+  /**
+   * (Optional) The token to retrieve the next set of results. This value is returned on paged results and is used in the call that returns the next page.
+   */
   public ListNamedShadowsForThingRequest withNextToken(final String nextToken) {
     setNextToken(nextToken);
     return this;
   }
 
+  /**
+   * (Optional) The number of shadow names to return in each call. Value must be between 1 and 100. Default is 25.
+   */
   public Integer getPageSize() {
     if (pageSize.isPresent()) {
       return pageSize.get();
@@ -93,10 +114,16 @@ public class ListNamedShadowsForThingRequest implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * (Optional) The number of shadow names to return in each call. Value must be between 1 and 100. Default is 25.
+   */
   public void setPageSize(final Integer pageSize) {
     this.pageSize = Optional.ofNullable(pageSize);
   }
 
+  /**
+   * (Optional) The number of shadow names to return in each call. Value must be between 1 and 100. Default is 25.
+   */
   public ListNamedShadowsForThingRequest withPageSize(final Integer pageSize) {
     setPageSize(pageSize);
     return this;

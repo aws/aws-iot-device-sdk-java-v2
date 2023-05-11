@@ -40,6 +40,9 @@ public class GetThingShadowResponse implements EventStreamJsonMessage {
     this.payload = Optional.empty();
   }
 
+  /**
+   * The response state document as a JSON encoded blob.
+   */
   public byte[] getPayload() {
     if (payload.isPresent()) {
       return payload.get();
@@ -47,10 +50,16 @@ public class GetThingShadowResponse implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The response state document as a JSON encoded blob.
+   */
   public void setPayload(final byte[] payload) {
     this.payload = Optional.ofNullable(payload);
   }
 
+  /**
+   * The response state document as a JSON encoded blob.
+   */
   public GetThingShadowResponse withPayload(final byte[] payload) {
     setPayload(payload);
     return this;

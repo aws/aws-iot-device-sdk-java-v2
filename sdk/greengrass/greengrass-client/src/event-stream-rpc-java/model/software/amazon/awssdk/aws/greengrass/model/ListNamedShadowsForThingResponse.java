@@ -55,6 +55,9 @@ public class ListNamedShadowsForThingResponse implements EventStreamJsonMessage 
     this.nextToken = Optional.empty();
   }
 
+  /**
+   * The list of shadow names.
+   */
   public List<String> getResults() {
     if (results.isPresent()) {
       return results.get();
@@ -62,15 +65,24 @@ public class ListNamedShadowsForThingResponse implements EventStreamJsonMessage 
     return null;
   }
 
+  /**
+   * The list of shadow names.
+   */
   public void setResults(final List<String> results) {
     this.results = Optional.ofNullable(results);
   }
 
+  /**
+   * The list of shadow names.
+   */
   public ListNamedShadowsForThingResponse withResults(final List<String> results) {
     setResults(results);
     return this;
   }
 
+  /**
+   * (Optional) The date and time that the response was generated.
+   */
   public Instant getTimestamp() {
     if (timestamp.isPresent()) {
       return timestamp.get();
@@ -78,15 +90,24 @@ public class ListNamedShadowsForThingResponse implements EventStreamJsonMessage 
     return null;
   }
 
+  /**
+   * (Optional) The date and time that the response was generated.
+   */
   public void setTimestamp(final Instant timestamp) {
     this.timestamp = Optional.ofNullable(timestamp);
   }
 
+  /**
+   * (Optional) The date and time that the response was generated.
+   */
   public ListNamedShadowsForThingResponse withTimestamp(final Instant timestamp) {
     setTimestamp(timestamp);
     return this;
   }
 
+  /**
+   * (Optional) The token value to use in paged requests to retrieve the next page in the sequence. This token isn't present when there are no more shadow names to return.
+   */
   public String getNextToken() {
     if (nextToken.isPresent()) {
       return nextToken.get();
@@ -94,10 +115,16 @@ public class ListNamedShadowsForThingResponse implements EventStreamJsonMessage 
     return null;
   }
 
+  /**
+   * (Optional) The token value to use in paged requests to retrieve the next page in the sequence. This token isn't present when there are no more shadow names to return.
+   */
   public void setNextToken(final String nextToken) {
     this.nextToken = Optional.ofNullable(nextToken);
   }
 
+  /**
+   * (Optional) The token value to use in paged requests to retrieve the next page in the sequence. This token isn't present when there are no more shadow names to return.
+   */
   public ListNamedShadowsForThingResponse withNextToken(final String nextToken) {
     setNextToken(nextToken);
     return this;

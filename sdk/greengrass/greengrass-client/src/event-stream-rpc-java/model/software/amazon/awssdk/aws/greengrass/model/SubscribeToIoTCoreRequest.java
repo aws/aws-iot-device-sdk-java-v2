@@ -46,6 +46,9 @@ public class SubscribeToIoTCoreRequest implements EventStreamJsonMessage {
     this.qos = Optional.empty();
   }
 
+  /**
+   * The topic to which to subscribe. Supports MQTT wildcards.
+   */
   public String getTopicName() {
     if (topicName.isPresent()) {
       return topicName.get();
@@ -53,10 +56,16 @@ public class SubscribeToIoTCoreRequest implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The topic to which to subscribe. Supports MQTT wildcards.
+   */
   public void setTopicName(final String topicName) {
     this.topicName = Optional.ofNullable(topicName);
   }
 
+  /**
+   * The topic to which to subscribe. Supports MQTT wildcards.
+   */
   public SubscribeToIoTCoreRequest withTopicName(final String topicName) {
     setTopicName(topicName);
     return this;
@@ -69,6 +78,9 @@ public class SubscribeToIoTCoreRequest implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The MQTT QoS to use.
+   */
   public String getQosAsString() {
     if (qos.isPresent()) {
       return qos.get();
@@ -76,19 +88,31 @@ public class SubscribeToIoTCoreRequest implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The MQTT QoS to use.
+   */
   public void setQos(final String qos) {
     this.qos = Optional.ofNullable(qos);
   }
 
+  /**
+   * The MQTT QoS to use.
+   */
   public SubscribeToIoTCoreRequest withQos(final String qos) {
     setQos(qos);
     return this;
   }
 
+  /**
+   * The MQTT QoS to use.
+   */
   public void setQos(final QOS qos) {
     this.qos = Optional.ofNullable(qos.getValue());
   }
 
+  /**
+   * The MQTT QoS to use.
+   */
   public SubscribeToIoTCoreRequest withQos(final QOS qos) {
     setQos(qos);
     return this;

@@ -39,6 +39,9 @@ public class GetLocalDeploymentStatusResponse implements EventStreamJsonMessage 
     this.deployment = Optional.empty();
   }
 
+  /**
+   * The local deployment.
+   */
   public LocalDeployment getDeployment() {
     if (deployment.isPresent()) {
       return deployment.get();
@@ -46,10 +49,16 @@ public class GetLocalDeploymentStatusResponse implements EventStreamJsonMessage 
     return null;
   }
 
+  /**
+   * The local deployment.
+   */
   public void setDeployment(final LocalDeployment deployment) {
     this.deployment = Optional.ofNullable(deployment);
   }
 
+  /**
+   * The local deployment.
+   */
   public GetLocalDeploymentStatusResponse withDeployment(final LocalDeployment deployment) {
     setDeployment(deployment);
     return this;

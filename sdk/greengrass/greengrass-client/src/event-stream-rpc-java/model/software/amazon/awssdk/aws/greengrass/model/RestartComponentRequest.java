@@ -39,6 +39,9 @@ public class RestartComponentRequest implements EventStreamJsonMessage {
     this.componentName = Optional.empty();
   }
 
+  /**
+   * The name of the component.
+   */
   public String getComponentName() {
     if (componentName.isPresent()) {
       return componentName.get();
@@ -46,10 +49,16 @@ public class RestartComponentRequest implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The name of the component.
+   */
   public void setComponentName(final String componentName) {
     this.componentName = Optional.ofNullable(componentName);
   }
 
+  /**
+   * The name of the component.
+   */
   public RestartComponentRequest withComponentName(final String componentName) {
     setComponentName(componentName);
     return this;

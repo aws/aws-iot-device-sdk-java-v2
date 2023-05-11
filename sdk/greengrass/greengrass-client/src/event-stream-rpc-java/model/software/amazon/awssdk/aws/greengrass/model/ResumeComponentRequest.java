@@ -39,6 +39,9 @@ public class ResumeComponentRequest implements EventStreamJsonMessage {
     this.componentName = Optional.empty();
   }
 
+  /**
+   * The name of the component to resume.
+   */
   public String getComponentName() {
     if (componentName.isPresent()) {
       return componentName.get();
@@ -46,10 +49,16 @@ public class ResumeComponentRequest implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The name of the component to resume.
+   */
   public void setComponentName(final String componentName) {
     this.componentName = Optional.ofNullable(componentName);
   }
 
+  /**
+   * The name of the component to resume.
+   */
   public ResumeComponentRequest withComponentName(final String componentName) {
     setComponentName(componentName);
     return this;

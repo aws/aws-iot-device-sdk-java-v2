@@ -46,6 +46,9 @@ public class SubscribeToTopicRequest implements EventStreamJsonMessage {
     this.receiveMode = Optional.empty();
   }
 
+  /**
+   * The topic to subscribe to. Supports MQTT-style wildcards.
+   */
   public String getTopic() {
     if (topic.isPresent()) {
       return topic.get();
@@ -53,10 +56,16 @@ public class SubscribeToTopicRequest implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The topic to subscribe to. Supports MQTT-style wildcards.
+   */
   public void setTopic(final String topic) {
     this.topic = Optional.ofNullable(topic);
   }
 
+  /**
+   * The topic to subscribe to. Supports MQTT-style wildcards.
+   */
   public SubscribeToTopicRequest withTopic(final String topic) {
     setTopic(topic);
     return this;
@@ -69,6 +78,9 @@ public class SubscribeToTopicRequest implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * (Optional) The behavior that specifies whether the component receives messages from itself.
+   */
   public String getReceiveModeAsString() {
     if (receiveMode.isPresent()) {
       return receiveMode.get();
@@ -76,19 +88,31 @@ public class SubscribeToTopicRequest implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * (Optional) The behavior that specifies whether the component receives messages from itself.
+   */
   public void setReceiveMode(final String receiveMode) {
     this.receiveMode = Optional.ofNullable(receiveMode);
   }
 
+  /**
+   * (Optional) The behavior that specifies whether the component receives messages from itself.
+   */
   public SubscribeToTopicRequest withReceiveMode(final String receiveMode) {
     setReceiveMode(receiveMode);
     return this;
   }
 
+  /**
+   * (Optional) The behavior that specifies whether the component receives messages from itself.
+   */
   public void setReceiveMode(final ReceiveMode receiveMode) {
     this.receiveMode = Optional.ofNullable(receiveMode.getValue());
   }
 
+  /**
+   * (Optional) The behavior that specifies whether the component receives messages from itself.
+   */
   public SubscribeToTopicRequest withReceiveMode(final ReceiveMode receiveMode) {
     setReceiveMode(receiveMode);
     return this;

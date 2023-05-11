@@ -47,6 +47,9 @@ public class JsonMessage implements EventStreamJsonMessage {
     this.context = Optional.empty();
   }
 
+  /**
+   * The JSON message as an object.
+   */
   public Map<String, Object> getMessage() {
     if (message.isPresent()) {
       return message.get();
@@ -54,17 +57,23 @@ public class JsonMessage implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The JSON message as an object.
+   */
   public void setMessage(final Map<String, Object> message) {
     this.message = Optional.ofNullable(message);
   }
 
+  /**
+   * The JSON message as an object.
+   */
   public JsonMessage withMessage(final Map<String, Object> message) {
     setMessage(message);
     return this;
   }
 
   /**
-   * The context is ignored if used in PublishMessage.
+   * The context of the message, such as the topic where the message was published.
    */
   public MessageContext getContext() {
     if (context.isPresent()) {
@@ -74,14 +83,14 @@ public class JsonMessage implements EventStreamJsonMessage {
   }
 
   /**
-   * The context is ignored if used in PublishMessage.
+   * The context of the message, such as the topic where the message was published.
    */
   public void setContext(final MessageContext context) {
     this.context = Optional.ofNullable(context);
   }
 
   /**
-   * The context is ignored if used in PublishMessage.
+   * The context of the message, such as the topic where the message was published.
    */
   public JsonMessage withContext(final MessageContext context) {
     setContext(context);

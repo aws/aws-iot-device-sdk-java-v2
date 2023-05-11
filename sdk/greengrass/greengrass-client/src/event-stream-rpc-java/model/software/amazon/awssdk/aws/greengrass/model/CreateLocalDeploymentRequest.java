@@ -83,6 +83,9 @@ public class CreateLocalDeploymentRequest implements EventStreamJsonMessage {
     this.artifactsDirectoryPath = Optional.empty();
   }
 
+  /**
+   * The thing group name the deployment is targeting. If the group name is not specified, "LOCAL_DEPLOYMENT" will be used.
+   */
   public String getGroupName() {
     if (groupName.isPresent()) {
       return groupName.get();
@@ -90,15 +93,24 @@ public class CreateLocalDeploymentRequest implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The thing group name the deployment is targeting. If the group name is not specified, "LOCAL_DEPLOYMENT" will be used.
+   */
   public void setGroupName(final String groupName) {
     this.groupName = Optional.ofNullable(groupName);
   }
 
+  /**
+   * The thing group name the deployment is targeting. If the group name is not specified, "LOCAL_DEPLOYMENT" will be used.
+   */
   public CreateLocalDeploymentRequest withGroupName(final String groupName) {
     setGroupName(groupName);
     return this;
   }
 
+  /**
+   * Map of component name to version. Components will be added to the group's existing root components.
+   */
   public Map<String, String> getRootComponentVersionsToAdd() {
     if (rootComponentVersionsToAdd.isPresent()) {
       return rootComponentVersionsToAdd.get();
@@ -106,16 +118,25 @@ public class CreateLocalDeploymentRequest implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * Map of component name to version. Components will be added to the group's existing root components.
+   */
   public void setRootComponentVersionsToAdd(final Map<String, String> rootComponentVersionsToAdd) {
     this.rootComponentVersionsToAdd = Optional.ofNullable(rootComponentVersionsToAdd);
   }
 
+  /**
+   * Map of component name to version. Components will be added to the group's existing root components.
+   */
   public CreateLocalDeploymentRequest withRootComponentVersionsToAdd(
       final Map<String, String> rootComponentVersionsToAdd) {
     setRootComponentVersionsToAdd(rootComponentVersionsToAdd);
     return this;
   }
 
+  /**
+   * List of components that need to be removed from the group, for example if new artifacts were loaded in this request but recipe version did not change.
+   */
   public List<String> getRootComponentsToRemove() {
     if (rootComponentsToRemove.isPresent()) {
       return rootComponentsToRemove.get();
@@ -123,16 +144,25 @@ public class CreateLocalDeploymentRequest implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * List of components that need to be removed from the group, for example if new artifacts were loaded in this request but recipe version did not change.
+   */
   public void setRootComponentsToRemove(final List<String> rootComponentsToRemove) {
     this.rootComponentsToRemove = Optional.ofNullable(rootComponentsToRemove);
   }
 
+  /**
+   * List of components that need to be removed from the group, for example if new artifacts were loaded in this request but recipe version did not change.
+   */
   public CreateLocalDeploymentRequest withRootComponentsToRemove(
       final List<String> rootComponentsToRemove) {
     setRootComponentsToRemove(rootComponentsToRemove);
     return this;
   }
 
+  /**
+   * Map of component names to configuration.
+   */
   public Map<String, Map<String, Object>> getComponentToConfiguration() {
     if (componentToConfiguration.isPresent()) {
       return componentToConfiguration.get();
@@ -140,17 +170,26 @@ public class CreateLocalDeploymentRequest implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * Map of component names to configuration.
+   */
   public void setComponentToConfiguration(
       final Map<String, Map<String, Object>> componentToConfiguration) {
     this.componentToConfiguration = Optional.ofNullable(componentToConfiguration);
   }
 
+  /**
+   * Map of component names to configuration.
+   */
   public CreateLocalDeploymentRequest withComponentToConfiguration(
       final Map<String, Map<String, Object>> componentToConfiguration) {
     setComponentToConfiguration(componentToConfiguration);
     return this;
   }
 
+  /**
+   * Map of component names to component run as info.
+   */
   public Map<String, RunWithInfo> getComponentToRunWithInfo() {
     if (componentToRunWithInfo.isPresent()) {
       return componentToRunWithInfo.get();
@@ -158,16 +197,25 @@ public class CreateLocalDeploymentRequest implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * Map of component names to component run as info.
+   */
   public void setComponentToRunWithInfo(final Map<String, RunWithInfo> componentToRunWithInfo) {
     this.componentToRunWithInfo = Optional.ofNullable(componentToRunWithInfo);
   }
 
+  /**
+   * Map of component names to component run as info.
+   */
   public CreateLocalDeploymentRequest withComponentToRunWithInfo(
       final Map<String, RunWithInfo> componentToRunWithInfo) {
     setComponentToRunWithInfo(componentToRunWithInfo);
     return this;
   }
 
+  /**
+   * All recipes files in this directory will be copied over to the Greengrass package store.
+   */
   public String getRecipeDirectoryPath() {
     if (recipeDirectoryPath.isPresent()) {
       return recipeDirectoryPath.get();
@@ -175,15 +223,24 @@ public class CreateLocalDeploymentRequest implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * All recipes files in this directory will be copied over to the Greengrass package store.
+   */
   public void setRecipeDirectoryPath(final String recipeDirectoryPath) {
     this.recipeDirectoryPath = Optional.ofNullable(recipeDirectoryPath);
   }
 
+  /**
+   * All recipes files in this directory will be copied over to the Greengrass package store.
+   */
   public CreateLocalDeploymentRequest withRecipeDirectoryPath(final String recipeDirectoryPath) {
     setRecipeDirectoryPath(recipeDirectoryPath);
     return this;
   }
 
+  /**
+   * All artifact files in this directory will be copied over to the Greengrass package store.
+   */
   public String getArtifactsDirectoryPath() {
     if (artifactsDirectoryPath.isPresent()) {
       return artifactsDirectoryPath.get();
@@ -191,10 +248,16 @@ public class CreateLocalDeploymentRequest implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * All artifact files in this directory will be copied over to the Greengrass package store.
+   */
   public void setArtifactsDirectoryPath(final String artifactsDirectoryPath) {
     this.artifactsDirectoryPath = Optional.ofNullable(artifactsDirectoryPath);
   }
 
+  /**
+   * All artifact files in this directory will be copied over to the Greengrass package store.
+   */
   public CreateLocalDeploymentRequest withArtifactsDirectoryPath(
       final String artifactsDirectoryPath) {
     setArtifactsDirectoryPath(artifactsDirectoryPath);

@@ -46,6 +46,9 @@ public class PublishToTopicRequest implements EventStreamJsonMessage {
     this.publishMessage = Optional.empty();
   }
 
+  /**
+   * The topic to publish the message.
+   */
   public String getTopic() {
     if (topic.isPresent()) {
       return topic.get();
@@ -53,15 +56,24 @@ public class PublishToTopicRequest implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The topic to publish the message.
+   */
   public void setTopic(final String topic) {
     this.topic = Optional.ofNullable(topic);
   }
 
+  /**
+   * The topic to publish the message.
+   */
   public PublishToTopicRequest withTopic(final String topic) {
     setTopic(topic);
     return this;
   }
 
+  /**
+   * The message to publish.
+   */
   public PublishMessage getPublishMessage() {
     if (publishMessage.isPresent()) {
       return publishMessage.get();
@@ -69,10 +81,16 @@ public class PublishToTopicRequest implements EventStreamJsonMessage {
     return null;
   }
 
+  /**
+   * The message to publish.
+   */
   public void setPublishMessage(final PublishMessage publishMessage) {
     this.publishMessage = Optional.ofNullable(publishMessage);
   }
 
+  /**
+   * The message to publish.
+   */
   public PublishToTopicRequest withPublishMessage(final PublishMessage publishMessage) {
     setPublishMessage(publishMessage);
     return this;

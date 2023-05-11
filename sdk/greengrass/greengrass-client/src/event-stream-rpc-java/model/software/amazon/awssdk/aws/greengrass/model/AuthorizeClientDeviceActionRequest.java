@@ -53,6 +53,9 @@ public class AuthorizeClientDeviceActionRequest implements EventStreamJsonMessag
     this.resource = Optional.empty();
   }
 
+  /**
+   * The session token for the client device from GetClientDeviceAuthToken.
+   */
   public String getClientDeviceAuthToken() {
     if (clientDeviceAuthToken.isPresent()) {
       return clientDeviceAuthToken.get();
@@ -60,16 +63,25 @@ public class AuthorizeClientDeviceActionRequest implements EventStreamJsonMessag
     return null;
   }
 
+  /**
+   * The session token for the client device from GetClientDeviceAuthToken.
+   */
   public void setClientDeviceAuthToken(final String clientDeviceAuthToken) {
     this.clientDeviceAuthToken = Optional.ofNullable(clientDeviceAuthToken);
   }
 
+  /**
+   * The session token for the client device from GetClientDeviceAuthToken.
+   */
   public AuthorizeClientDeviceActionRequest withClientDeviceAuthToken(
       final String clientDeviceAuthToken) {
     setClientDeviceAuthToken(clientDeviceAuthToken);
     return this;
   }
 
+  /**
+   * The operation to authorize.
+   */
   public String getOperation() {
     if (operation.isPresent()) {
       return operation.get();
@@ -77,15 +89,24 @@ public class AuthorizeClientDeviceActionRequest implements EventStreamJsonMessag
     return null;
   }
 
+  /**
+   * The operation to authorize.
+   */
   public void setOperation(final String operation) {
     this.operation = Optional.ofNullable(operation);
   }
 
+  /**
+   * The operation to authorize.
+   */
   public AuthorizeClientDeviceActionRequest withOperation(final String operation) {
     setOperation(operation);
     return this;
   }
 
+  /**
+   * The resource the client device performs the operation on.
+   */
   public String getResource() {
     if (resource.isPresent()) {
       return resource.get();
@@ -93,10 +114,16 @@ public class AuthorizeClientDeviceActionRequest implements EventStreamJsonMessag
     return null;
   }
 
+  /**
+   * The resource the client device performs the operation on.
+   */
   public void setResource(final String resource) {
     this.resource = Optional.ofNullable(resource);
   }
 
+  /**
+   * The resource the client device performs the operation on.
+   */
   public AuthorizeClientDeviceActionRequest withResource(final String resource) {
     setResource(resource);
     return this;

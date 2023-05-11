@@ -39,6 +39,9 @@ public class VerifyClientDeviceIdentityRequest implements EventStreamJsonMessage
     this.credential = Optional.empty();
   }
 
+  /**
+   * The client device's credentials.
+   */
   public ClientDeviceCredential getCredential() {
     if (credential.isPresent()) {
       return credential.get();
@@ -46,10 +49,16 @@ public class VerifyClientDeviceIdentityRequest implements EventStreamJsonMessage
     return null;
   }
 
+  /**
+   * The client device's credentials.
+   */
   public void setCredential(final ClientDeviceCredential credential) {
     this.credential = Optional.ofNullable(credential);
   }
 
+  /**
+   * The client device's credentials.
+   */
   public VerifyClientDeviceIdentityRequest withCredential(final ClientDeviceCredential credential) {
     setCredential(credential);
     return this;
