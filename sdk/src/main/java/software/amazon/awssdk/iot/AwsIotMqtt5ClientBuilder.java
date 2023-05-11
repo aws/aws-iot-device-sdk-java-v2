@@ -483,7 +483,7 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
      * @return - The AwsIotMqtt5ClientBuilder
      */
     public AwsIotMqtt5ClientBuilder withMaxReconnectDelayMs(Long maxReconnectDelayMs) {
-        this.config.withMinReconnectDelayMs(maxReconnectDelayMs);
+        this.config.withMaxReconnectDelayMs(maxReconnectDelayMs);
         return this;
     }
 
