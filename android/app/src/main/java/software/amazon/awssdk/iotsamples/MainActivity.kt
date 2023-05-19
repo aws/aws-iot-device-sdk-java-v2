@@ -7,6 +7,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.TextView
+// import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.io.OutputStream
@@ -85,6 +86,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     private fun onSampleComplete() {
         runOnUiThread() {
+            writeToConsole("Sample Complete\n")
             sampleSelect?.isEnabled = true
         }
     }
@@ -105,6 +107,10 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         }
     }
 
+    // private fun assetAdd(assetName: String, defaultValue: String) : String {
+
+    // }
+
     private fun runSample(name: String) {
         val classLoader = Thread.currentThread().contextClassLoader
         val sampleClass = classLoader.loadClass(name);
@@ -112,44 +118,78 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
             clearConsole()
             writeToConsole("Could not find sample '${name}'")
         }
+        writeToConsole("Running sample '${name}'\n")
 
         thread(name="sample_runner", contextClassLoader = classLoader) {
-            // find resources, copy them into the cache so samples can get paths to them
-            val resourceNames = listOf("AmazonRootCA1.pem", "certificate.pem", "privatekey.pem")
-            val resourceMap = HashMap<String, String>()
-            for (resourceName in resourceNames) {
-                resources.assets.open(resourceName).use { res ->
-                    val cachedName = "${externalCacheDir}/${resourceName}"
-                    FileOutputStream(cachedName).use { cachedRes ->
-                        res.copyTo(cachedRes)
-                    }
 
-                    resourceMap[resourceName] = cachedName
+            var isResourcesFound: Boolean = true
+            val args = mutableListOf<String?>()
+            var resourceNames = mutableListOf<String>()
+            val resourceMap = HashMap<String, String>()
+
+            // All samples require endpoint.txt
+            resourceNames.add("endpoint.txt")
+
+            // Add required files for Samples here
+            if (name == "pubsub.PubSub" || name == "jobs.JobsSample" || name == "shadow.ShadowSample"){
+                resourceNames.add("certificate.pem")
+                resourceNames.add("privatekey.pem")
+            }
+
+            // Copy to cache and get file locations for required files
+            for (resourceName in resourceNames) {
+                try {
+                    resources.assets.open(resourceName).use { res ->
+                        val cachedName = "${externalCacheDir}/${resourceName}"
+                        FileOutputStream(cachedName).use { cachedRes ->
+                            res.copyTo(cachedRes)
+                        }
+                        resourceMap[resourceName] = cachedName
+                    }
+                } catch (e: Exception) {
+                    isResourcesFound = false;
+                    writeToConsole(e.toString())
+                    writeToConsole("\n'${resourceName}' must be in the assets folder for sample to run.\n")
+                    break
                 }
             }
 
-            val args = mutableListOf(
-                "--endpoint", assetContents("endpoint.txt"),
-                "--rootca", resourceMap["AmazonRootCA1.pem"],
-                "--cert", resourceMap["certificate.pem"],
-                "--key", resourceMap["privatekey.pem"],
-                "--port", assetContentsOr("port.txt", "8883"),
-                "--clientId", assetContentsOr("clientId.txt", "android-java-crt-test")
-            )
-            if (name == "pubsub.PubSub") {
+            if(isResourcesFound) {
                 args.addAll(arrayOf(
-                    "--topic", assetContentsOr("topic.txt", "test/topic"),
-                    "--message", assetContentsOr("message.txt", "Hello World From Android")))
-            } else if (name in arrayOf("jobs.JobsSample", "shadow.ShadowSample")) {
-                args.addAll(arrayOf(
-                    "--thingName", assetContentsOr("thingName.txt", "aws-iot-unit-test")
-                ))
-            }
-            val main = sampleClass.getMethod("main", Array<String>::class.java)
-            try {
-                main.invoke(null, args.toTypedArray())
-            } catch (e: Exception) {
-                writeToConsole(e.toString())
+                    "--endpoint", assetContents("endpoint.txt"),
+                    "--cert", resourceMap["certificate.pem"],
+                    "--key", resourceMap["privatekey.pem"],
+                    "--port", assetContentsOr("port.txt", "8883"),
+                    "--client_id", assetContentsOr("clientId.txt", "android-java-crt-test")))
+
+                // Check for optional root CA file
+                try {
+                    resources.assets.open("rootca.pem").use { res ->
+                        val cachedName = "${externalCacheDir}/rootca.pem"
+                        FileOutputStream(cachedName).use { cachedRes ->
+                            res.copyTo(cachedRes)
+                        }
+                        args.addAll(arrayOf("--ca_file", cachedName))
+                    }
+                } catch (e: Exception) {}
+
+                if (name == "pubsub.PubSub") {
+                    args.addAll(arrayOf(
+                        "--topic", assetContentsOr("topic.txt", "test/topic"),
+                        "--message", assetContentsOr("message.txt", "Hello World From Android")))
+                } else if (name in arrayOf("jobs.JobsSample", "shadow.ShadowSample")) {
+                    args.addAll(arrayOf(
+                        "--thing_name", assetContentsOr("thingName.txt", "aws-iot-unit-test")
+                    ))
+                }
+
+                val main = sampleClass.getMethod("main", Array<String>::class.java)
+
+                try {
+                    main.invoke(null, args.toTypedArray())
+                } catch (e: Exception) {
+                    writeToConsole(e.toString())
+                }
             }
             onSampleComplete();
         }
