@@ -106,10 +106,6 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         }
     }
 
-    // private fun assetAdd(assetName: String, defaultValue: String) : String {
-
-    // }
-
     private fun runSample(name: String) {
         val classLoader = Thread.currentThread().contextClassLoader
         val sampleClass = classLoader.loadClass(name);
