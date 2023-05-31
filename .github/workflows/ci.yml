@@ -278,6 +278,19 @@ jobs:
         run: |
           python3 ./deviceadvisor/script/DATestRun.py
 
+  android:
+    name: Android
+    # ubuntu-20.04 comes with Android tooling, see: https://github.com/actions/virtual-environments/blob/main/images/linux/Ubuntu2004-README.md#android
+    runs-on: ubuntu-20.04 # latest
+    steps:
+      - name: Checkout Sources
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: Build ${{ env.PACKAGE_NAME }}
+        run: |
+          ./android/gradlew :android:build
+
   # check that docs can still build
   check-docs:
     runs-on: ubuntu-20.04 # latest
