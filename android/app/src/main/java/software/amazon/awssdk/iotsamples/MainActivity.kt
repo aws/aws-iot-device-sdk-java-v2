@@ -108,7 +108,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     private fun runSample(name: String) {
         val classLoader = Thread.currentThread().contextClassLoader
-        val sampleClass = classLoader.loadClass(name);
+        val sampleClass = classLoader?.loadClass(name);
         if (sampleClass == null) {
             clearConsole()
             writeToConsole("Could not find sample '${name}'")
@@ -178,10 +178,10 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                     ))
                 }
 
-                val main = sampleClass.getMethod("main", Array<String>::class.java)
+                val main = sampleClass?.getMethod("main", Array<String>::class.java)
 
                 try {
-                    main.invoke(null, args.toTypedArray())
+                    main?.invoke(null, args.toTypedArray())
                 } catch (e: Exception) {
                     writeToConsole(e.toString())
                 }

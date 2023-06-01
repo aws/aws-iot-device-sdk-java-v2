@@ -1,10 +1,9 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion 30
-    buildToolsVersion "30.0.2"
+    buildToolsVersion "30.0.3"
 
     defaultConfig {
         applicationId "software.amazon.awssdk.iotsamples"
@@ -20,7 +19,6 @@ android {
     sourceSets {
         main {
             java.srcDir '../../samples/Utils/CommandLineUtils'
-            java.srcDir '../../samples/CognitoConnect/src/main/java'
             java.srcDir '../../samples/BasicPubSub/src/main/java'
             java.srcDir '../../samples/Jobs/src/main/java'
             java.srcDir '../../samples/Shadow/src/main/java'
