@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Class for performing network-based discovery of the connectivity properties of registered greengrass cores
@@ -36,10 +38,18 @@ public class DiscoveryClient implements AutoCloseable {
     private final HttpClientConnectionManager httpClientConnectionManager;
 
     /**
+     * We need to use a custom executor to avoid leaving threads alive when the discovery client is closed
+     * It also fixes issues with the SecurityManager as well - as created ExecutorServices created via code
+     * inherit the permissions of the application, unlike the default common thread pool.
+     */
+    private final ExecutorService executorService;
+
+    /**
      *
      * @param config Greengrass discovery client configuration
      */
     public DiscoveryClient(final DiscoveryClientConfig config) {
+        this.executorService = Executors.newFixedThreadPool(1);
         this.httpClientConnectionManager = HttpClientConnectionManager.create(
                 new HttpClientConnectionManagerOptions()
                     .withClientBootstrap(config.getBootstrap())
@@ -102,11 +112,11 @@ public class DiscoveryClient implements AutoCloseable {
             catch(InterruptedException | ExecutionException e) {
                 throw new RuntimeException(e.getMessage(), e);
             }
-        });
+        }, executorService);
     }
 
     private static String getHostname(final DiscoveryClientConfig config) {
-        //allow greengrass server endpoint to be manualy set for unique endpoints
+        //allow greengrass server endpoint to be manually set for unique endpoints
         if (config.getGGServerName().equals("")) {
             return String.format("greengrass-ats.iot.%s.%s",
                 config.getRegion(), AWS_DOMAIN_SUFFIX_MAP.getOrDefault(config.getRegion(), AWS_DOMAIN_DEFAULT));
@@ -119,6 +129,9 @@ public class DiscoveryClient implements AutoCloseable {
     public void close() {
         if(httpClientConnectionManager != null) {
             httpClientConnectionManager.close();
+        }
+        if (executorService != null) {
+            executorService.shutdown();
         }
     }
 }
