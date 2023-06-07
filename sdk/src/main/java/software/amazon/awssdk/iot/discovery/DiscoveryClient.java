@@ -12,6 +12,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Class for performing network-based discovery of the connectivity properties of registered greengrass cores
@@ -35,11 +38,26 @@ public class DiscoveryClient implements AutoCloseable {
     private final HttpClientConnectionManager httpClientConnectionManager;
 
     /**
+     * We need to use a code defined executor to avoid leaving threads alive when the discovery client is closed
+     * It also fixes issues with the SecurityManager as well - as created ExecutorServices created via code
+     * inherit the permissions of the application, unlike the default common thread pool that is used by default
+     * with supplyAsync otherwise.
+     */
+    private ExecutorService executorService = null;
+    private boolean cleanExecutor = false;
+
+    /**
      *
      * @param config Greengrass discovery client configuration
      */
     public DiscoveryClient(final DiscoveryClientConfig config) {
-        this.httpClientConnectionManager = HttpClientConnectionManager.create(
+        executorService = config.getDiscoveryExecutor();
+        if (executorService == null) {
+            // If an executor is not set, then create one and make sure to clean it when finished.
+            executorService = Executors.newFixedThreadPool(1);
+            cleanExecutor = true;
+        }
+        httpClientConnectionManager = HttpClientConnectionManager.create(
                 new HttpClientConnectionManagerOptions()
                     .withClientBootstrap(config.getBootstrap())
                     .withProxyOptions(config.getProxyOptions())
@@ -59,57 +77,49 @@ public class DiscoveryClient implements AutoCloseable {
         if(thingName == null) {
             throw new IllegalArgumentException("ThingName cannot be null!");
         }
-
-        CompletableFuture<DiscoverResponse> result = new CompletableFuture<>();
-        // We create and start a thread so it executes asynchronously and independently from the main process. The thread will set the
-        // result CompletableFuture when it is done or if an exception occurs.
-        new Thread(() -> {
-            try {
-                try (final HttpClientConnection connection = httpClientConnectionManager.acquireConnection().get()) {
-                    final String requestHttpPath =  "/greengrass/discover/thing/" + thingName;
-                    final HttpHeader[] headers = new HttpHeader[] {
-                            new HttpHeader("host", httpClientConnectionManager.getUri().getHost())
-                    };
-                    final HttpRequest request = new HttpRequest("GET", requestHttpPath, headers, null);
-                    //we are storing everything until we get the entire response
-                    final CompletableFuture<Integer> responseComplete = new CompletableFuture<>();
-                    final StringBuilder jsonBodyResponseBuilder = new StringBuilder();
-                    final Map<String, String> responseInfo = new HashMap<>();
-
-                    try (final HttpStream stream = connection.makeRequest(request, new HttpStreamResponseHandler() {
-                            @Override
-                            public void onResponseHeaders(HttpStream stream, int responseStatusCode, int blockType, HttpHeader[] httpHeaders) {
-                                Arrays.stream(httpHeaders).forEach(header -> {
-                                    responseInfo.put(header.getName(), header.getValue());
-                                });
-                            }
-                            @Override
-                            public int onResponseBody(HttpStream stream, byte bodyBytes[]) {
-                                jsonBodyResponseBuilder.append(new String(bodyBytes, StandardCharsets.UTF_8));
-                                return bodyBytes.length;
-                            }
-                            @Override
-                            public void onResponseComplete(HttpStream httpStream, int errorCode) {
-                                responseComplete.complete(errorCode);
-                            }
-                         }))
-                         {
-                            stream.activate();
-                            responseComplete.get();
-                            if (stream.getResponseStatusCode() != 200) {
-                                throw new RuntimeException(String.format("Error %s(%d); RequestId: %s",
-                                        HTTP_HEADER_ERROR_TYPE, stream.getResponseStatusCode(), HTTP_HEADER_REQUEST_ID));
-                            }
-                            final String responseString = jsonBodyResponseBuilder.toString();
-                            result.complete(GSON.fromJson(new StringReader(responseString), DiscoverResponse.class));
+        return CompletableFuture.supplyAsync(() -> {
+            try(final HttpClientConnection connection = httpClientConnectionManager.acquireConnection().get()) {
+                final String requestHttpPath =  "/greengrass/discover/thing/" + thingName;
+                final HttpHeader[] headers = new HttpHeader[] {
+                        new HttpHeader("host", httpClientConnectionManager.getUri().getHost())
+                };
+                final HttpRequest request = new HttpRequest("GET", requestHttpPath, headers, null);
+                //we are storing everything until we get the entire response
+                final CompletableFuture<Integer> responseComplete = new CompletableFuture<>();
+                final StringBuilder jsonBodyResponseBuilder = new StringBuilder();
+                final Map<String, String> responseInfo = new HashMap<>();
+                try(final HttpStream stream = connection.makeRequest(request, new HttpStreamResponseHandler() {
+                        @Override
+                        public void onResponseHeaders(HttpStream stream, int responseStatusCode, int blockType, HttpHeader[] httpHeaders) {
+                            Arrays.stream(httpHeaders).forEach(header -> {
+                                responseInfo.put(header.getName(), header.getValue());
+                            });
                         }
+                        @Override
+                        public int onResponseBody(HttpStream stream, byte bodyBytes[]) {
+                            jsonBodyResponseBuilder.append(new String(bodyBytes, StandardCharsets.UTF_8));
+                            return bodyBytes.length;
+                        }
+                        @Override
+                        public void onResponseComplete(HttpStream httpStream, int errorCode) {
+                            responseComplete.complete(errorCode);
+                        }})) {
+                    stream.activate();
+                    responseComplete.get();
+                    if (stream.getResponseStatusCode() != 200) {
+                        throw new RuntimeException(String.format("Error %s(%d); RequestId: %s",
+                                HTTP_HEADER_ERROR_TYPE, stream.getResponseStatusCode(), HTTP_HEADER_REQUEST_ID));
+                    }
+                    final String responseString = jsonBodyResponseBuilder.toString();
+                    return GSON.fromJson(new StringReader(responseString), DiscoverResponse.class);
+                } catch (InterruptedException | ExecutionException e) {
+                    throw new RuntimeException(e);
                 }
-            } catch(Exception ex) {
-                result.completeExceptionally(ex);
             }
-        }).start();
-
-        return result;
+            catch(InterruptedException | ExecutionException e) {
+                throw new RuntimeException(e.getMessage(), e);
+            }
+        }, executorService);
     }
 
     private static String getHostname(final DiscoveryClientConfig config) {
@@ -126,6 +136,10 @@ public class DiscoveryClient implements AutoCloseable {
     public void close() {
         if(httpClientConnectionManager != null) {
             httpClientConnectionManager.close();
+        }
+        if (cleanExecutor == true && executorService != null) {
+            executorService.shutdown();
+            executorService = null;
         }
     }
 }

@@ -1,5 +1,7 @@
 package software.amazon.awssdk.iot.discovery;
 
+import java.util.concurrent.ExecutorService;
+
 import software.amazon.awssdk.crt.http.HttpProxyOptions;
 import software.amazon.awssdk.crt.io.ClientBootstrap;
 import software.amazon.awssdk.crt.io.SocketOptions;
@@ -17,6 +19,7 @@ public class DiscoveryClientConfig implements AutoCloseable {
     final private int maxConnections;
     final private HttpProxyOptions proxyOptions;
     final private String ggServerName;
+    private ExecutorService discoveryExecutor;
 
     /**
      * Constructor for DiscoveryClientConfig creates the correct endpoint if not in a special region
@@ -44,6 +47,7 @@ public class DiscoveryClientConfig implements AutoCloseable {
         this.maxConnections = maxConnections;
         this.proxyOptions = proxyOptions;
         this.ggServerName = "";
+        this.discoveryExecutor = null;
     }
 
     /**
@@ -70,7 +74,7 @@ public class DiscoveryClientConfig implements AutoCloseable {
 
     /**
      * Default Constructor for DiscoveryClientConfig that allows the specification of a specific ggServerName to use in special regions
-     * 
+     *
      * @param bootstrap client bootstrap to use to establish network connections
      * @param tlsContextOptions tls configuration for client network connections.  For greengrass discovery, the
      *                          tls context must be initialized with the certificate and private key of the
@@ -94,6 +98,7 @@ public class DiscoveryClientConfig implements AutoCloseable {
         this.maxConnections = maxConnections;
         this.proxyOptions = proxyOptions;
         this.ggServerName = ggServerName;
+        this.discoveryExecutor = null;
     }
 
     /**
@@ -162,6 +167,27 @@ public class DiscoveryClientConfig implements AutoCloseable {
 
     public String getGGServerName() {
         return ggServerName;
+    }
+
+    /**
+     * @return the executor set for this discover client, if one is set.
+     */
+    public ExecutorService getDiscoveryExecutor() {
+        return this.discoveryExecutor;
+    }
+
+    /**
+     * Sets the executor that is used when calling discover().
+     * If set using this function, you are expected to close/shutdown the executor when finished with it.
+     *
+     * If it is not set, the discovery client will internally manage its own executor.
+     *
+     * @param override The executor to use
+     * @return The client config
+     */
+    public DiscoveryClientConfig setDiscoveryExecutor(ExecutorService override) {
+        this.discoveryExecutor = override;
+        return this;
     }
 
     @Override
