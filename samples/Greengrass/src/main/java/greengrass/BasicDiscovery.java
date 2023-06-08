@@ -23,6 +23,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static software.amazon.awssdk.iot.discovery.DiscoveryClient.TLS_EXT_ALPN;
 
@@ -30,6 +32,13 @@ import utils.commandlineutils.CommandLineUtils;
 
 public class BasicDiscovery {
 
+    // When run normally, we want to exit nicely even if something goes wrong.
+    // When run from CI, we want to let an exception escape which in turn causes the
+    // exec:java task to return a non-zero exit code.
+    static String ciPropValue = System.getProperty("aws.crt.ci");
+    static boolean isCI = ciPropValue != null && Boolean.valueOf(ciPropValue);
+
+    // Needed to access command line input data in getClientFromDiscovery
     static String input_thingName;
     static String input_certPath;
     static String input_keyPath;
@@ -49,27 +58,6 @@ public class BasicDiscovery {
         input_certPath = cmdData.input_cert;
         input_keyPath = cmdData.input_key;
 
-        // ---- Verify file loads ----
-        // Get the absolute CA file path
-        final File rootCaFile = new File(cmdData.input_ca);
-        if (!rootCaFile.isFile()) {
-            throw new RuntimeException("Cannot load root CA from path: " + rootCaFile.getAbsolutePath());
-        }
-        cmdData.input_ca = rootCaFile.getAbsolutePath();
-
-        final File certFile = new File(cmdData.input_cert);
-        if (!certFile.isFile()) {
-            throw new RuntimeException("Cannot load certificate from path: " + certFile.getAbsolutePath());
-        }
-        cmdData.input_cert = certFile.getAbsolutePath();
-
-        final File keyFile = new File(cmdData.input_key);
-        if (!keyFile.isFile()) {
-            throw new RuntimeException("Cannot load private key from path: " + keyFile.getAbsolutePath());
-        }
-        cmdData.input_key = keyFile.getAbsolutePath();
-        // ----------------------------
-
         try(final TlsContextOptions tlsCtxOptions = TlsContextOptions.createWithMtlsFromPath(cmdData.input_cert, cmdData.input_key)) {
             if(TlsContextOptions.isAlpnSupported()) {
                 tlsCtxOptions.withAlpnList(TLS_EXT_ALPN);
@@ -84,48 +72,84 @@ public class BasicDiscovery {
                 proxyOptions.setPort(cmdData.input_proxyPort);
             }
 
-            try(final DiscoveryClientConfig discoveryClientConfig =
-                        new DiscoveryClientConfig(tlsCtxOptions,
-                        new SocketOptions(), cmdData.input_signingRegion, 1, proxyOptions);
-                final DiscoveryClient discoveryClient = new DiscoveryClient(discoveryClientConfig);
-                final MqttClientConnection connection = getClientFromDiscovery(discoveryClient)) {
+            try (
+                final SocketOptions socketOptions = new SocketOptions();
+                final DiscoveryClientConfig discoveryClientConfig =
+                    new DiscoveryClientConfig(tlsCtxOptions, socketOptions, cmdData.input_signingRegion, 1, proxyOptions);
+                final DiscoveryClient discoveryClient = new DiscoveryClient(discoveryClientConfig)) {
 
-                if ("subscribe".equals(cmdData.input_mode) || "both".equals(cmdData.input_mode)) {
-                    final CompletableFuture<Integer> subFuture = connection.subscribe(cmdData.input_topic, QualityOfService.AT_MOST_ONCE, message -> {
-                        System.out.println(String.format("Message received on topic %s: %s",
-                                message.getTopic(), new String(message.getPayload(), StandardCharsets.UTF_8)));
-                    });
-
-                    subFuture.get();
+                DiscoverResponse response = discoveryClient.discover(input_thingName).get(60, TimeUnit.SECONDS);
+                if (isCI) {
+                    System.out.println("Received a greengrass discovery result! Not showing result in CI for possible data sensitivity.");
+                } else {
+                    printGreengrassGroupList(response.getGGGroups(), "");
                 }
 
-                final Scanner scanner = new Scanner(System.in);
-                while (true) {
-                    String input = null;
-                    if ("publish".equals(cmdData.input_mode) || "both".equals(cmdData.input_mode)) {
-                        System.out.println("Enter the message you want to publish to topic " + cmdData.input_topic + " and press Enter. " +
-                                "Type 'exit' or 'quit' to exit this program: ");
-                        input = scanner.nextLine();
-                    }
+                if (cmdData.inputPrintDiscoverRespOnly == false) {
+                    try (final MqttClientConnection connection = getClientFromDiscovery(discoveryClient)) {
+                        if ("subscribe".equals(cmdData.input_mode) || "both".equals(cmdData.input_mode)) {
+                            final CompletableFuture<Integer> subFuture = connection.subscribe(cmdData.input_topic, QualityOfService.AT_MOST_ONCE, message -> {
+                                System.out.println(String.format("Message received on topic %s: %s",
+                                        message.getTopic(), new String(message.getPayload(), StandardCharsets.UTF_8)));
+                            });
+                            subFuture.get();
+                        }
 
-                    if ("exit".equals(input) || "quit".equals(input)) {
-                        System.out.println("Terminating...");
-                        break;
-                    }
+                        final Scanner scanner = new Scanner(System.in);
+                        while (true) {
+                            String input = null;
+                            if ("publish".equals(cmdData.input_mode) || "both".equals(cmdData.input_mode)) {
+                                System.out.println("Enter the message you want to publish to topic " + cmdData.input_topic + " and press Enter. " +
+                                        "Type 'exit' or 'quit' to exit this program: ");
+                                input = scanner.nextLine();
+                            }
 
-                    if ("publish".equals(cmdData.input_mode) || "both".equals(cmdData.input_mode)) {
-                        final CompletableFuture<Integer> publishResult = connection.publish(new MqttMessage(cmdData.input_topic,
-                                input.getBytes(StandardCharsets.UTF_8), QualityOfService.AT_MOST_ONCE, false));
-                        Integer result = publishResult.get();
+                            if ("exit".equals(input) || "quit".equals(input)) {
+                                System.out.println("Terminating...");
+                                break;
+                            }
+
+                            if ("publish".equals(cmdData.input_mode) || "both".equals(cmdData.input_mode)) {
+                                final CompletableFuture<Integer> publishResult = connection.publish(new MqttMessage(cmdData.input_topic,
+                                        input.getBytes(StandardCharsets.UTF_8), QualityOfService.AT_MOST_ONCE, false));
+                                Integer result = publishResult.get();
+                            }
+                        }
                     }
                 }
             }
-        } catch (CrtRuntimeException | InterruptedException | ExecutionException ex) {
+        } catch (CrtRuntimeException | InterruptedException | ExecutionException | TimeoutException ex) {
             System.out.println("Exception thrown: " + ex.toString());
             ex.printStackTrace();
         }
         CrtResource.waitForNoResources();
         System.out.println("Complete!");
+    }
+
+    private static void printGreengrassGroupList(List<GGGroup> groupList, String prefix)
+    {
+        for (int i = 0; i < groupList.size(); i++) {
+            GGGroup group = groupList.get(i);
+            System.out.println(prefix + "Group ID: " + group.getGGGroupId());
+            printGreengrassCoreList(group.getCores(), "  ");
+        }
+    }
+    private static void printGreengrassCoreList(List<GGCore> coreList, String prefix)
+    {
+        for (int i = 0; i < coreList.size(); i++) {
+            GGCore core = coreList.get(i);
+            System.out.println(prefix + "Thing ARN: " + core.getThingArn());
+            printGreengrassConnectivityList(core.getConnectivity(), prefix + "  ");
+        }
+    }
+    private static void printGreengrassConnectivityList(List<ConnectivityInfo> connectivityList, String prefix)
+    {
+        for (int i = 0; i < connectivityList.size(); i++) {
+            ConnectivityInfo connectivityInfo = connectivityList.get(i);
+            System.out.println(prefix + "Connectivity ID: " + connectivityInfo.getId());
+            System.out.println(prefix + "Connectivity Host Address: " + connectivityInfo.getHostAddress());
+            System.out.println(prefix + "Connectivity Port: " + connectivityInfo.getPortNumber());
+        }
     }
 
     private static MqttClientConnection getClientFromDiscovery(final DiscoveryClient discoveryClient
