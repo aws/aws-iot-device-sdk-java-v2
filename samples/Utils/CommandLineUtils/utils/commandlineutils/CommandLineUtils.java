@@ -470,13 +470,14 @@ public class CommandLineUtils {
 
         SampleCommandLineData returnData = new SampleCommandLineData();
         parseCommonLoggingCommands(returnData);
-        parseCommonMQTTCommands(returnData);
         parseKeyAndCertCommands(returnData);
-        parseCommonProxyCommands(returnData);
+        returnData.input_ca = getCommandOrDefault(m_cmd_ca_file, null);
         returnData.input_thingName = getCommandRequired(m_cmd_thing_name);
         returnData.input_signingRegion = getCommandRequired(m_cmd_region, m_cmd_signing_region);
         returnData.input_topic = getCommandOrDefault(m_cmd_topic, "test/topic");
         returnData.input_mode = getCommandOrDefault(m_cmd_mode, "Hello World!");
+        returnData.input_proxyHost = getCommandOrDefault(m_cmd_proxy_host, "");
+        returnData.input_proxyPort = Integer.parseInt(getCommandOrDefault(m_cmd_proxy_port, "0"));
         returnData.inputPrintDiscoverRespOnly = hasCommand(m_cmd_print_discover_resp_only);
         return returnData;
     }
