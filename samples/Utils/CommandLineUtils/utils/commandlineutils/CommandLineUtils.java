@@ -241,6 +241,7 @@ public class CommandLineUtils {
             returnData.input_topic = getCommandOrDefault(m_cmd_topic, "test/topic");
             returnData.input_message = getCommandOrDefault(m_cmd_message, "Hello World!");
         }
+        returnData.input_count = Integer.parseInt(getCommandOrDefault(m_cmd_count, "10"));
     }
 
     private void parseCommonProxyCommands(SampleCommandLineData returnData) {
