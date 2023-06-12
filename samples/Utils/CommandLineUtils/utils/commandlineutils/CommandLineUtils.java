@@ -198,20 +198,20 @@ public class CommandLineUtils {
      */
 
     private void parseCommonLoggingCommands(SampleCommandLineData returnData){
-        returnData.input_verbosity = getCommandOrDefault(m_cmd_verbosity, "None");
-        returnData.input_log_destination = getCommandOrDefault(m_cmd_log_destination, "Stderr");
-        returnData.input_log_file_name = getCommandOrDefault(m_cmd_log_file_name, "log.txt");
+        String verbosity = getCommandOrDefault(m_cmd_verbosity, "None");
+        String log_destination = getCommandOrDefault(m_cmd_log_destination, "Stderr");
+        String log_file_name = getCommandOrDefault(m_cmd_log_file_name, "log.txt");
 
-        if(returnData.input_verbosity != "None"){
-            switch (returnData.input_log_destination) {
+        if(verbosity != "None"){
+            switch (log_destination) {
                 case "Stderr":
-                    Log.initLoggingToStderr(LogLevel.valueOf(returnData.input_verbosity));
+                    Log.initLoggingToStderr(LogLevel.valueOf(verbosity));
                     break;
                 case "Stdout":
-                    Log.initLoggingToStdout(LogLevel.valueOf(returnData.input_verbosity));
+                    Log.initLoggingToStdout(LogLevel.valueOf(verbosity));
                     break;
                 case "File":
-                    Log.initLoggingToFile(LogLevel.valueOf(returnData.input_verbosity), returnData.input_log_file_name);
+                    Log.initLoggingToFile(LogLevel.valueOf(verbosity), log_file_name);
                     break;
                 default:
                     break;
@@ -269,10 +269,6 @@ public class CommandLineUtils {
 
     public class SampleCommandLineData
     {
-        // Logs
-        public String input_log_destination;
-        public String input_verbosity;
-        public String input_log_file_name;
         // General use
         public String input_endpoint;
         public String input_cert;
