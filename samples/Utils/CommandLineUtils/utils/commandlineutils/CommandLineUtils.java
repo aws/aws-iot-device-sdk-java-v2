@@ -330,6 +330,8 @@ public class CommandLineUtils {
         // PKCS12
         public String input_pkcs12File;
         public String input_pkcs12Password;
+        // Greengrass Basic Discovery
+        public Boolean inputPrintDiscoverRespOnly;
     }
 
     public SampleCommandLineData parseSampleInputBasicConnect(String[] args)
@@ -463,6 +465,7 @@ public class CommandLineUtils {
         registerCommand(m_cmd_thing_name, "<str>", "The name of the IoT thing.");
         registerCommand(m_cmd_topic, "<str>", "Topic to subscribe/publish to (optional, default='test/topic').");
         registerCommand(m_cmd_mode, "<str>", "Mode options: 'both', 'publish', or 'subscribe' (optional, default='both').");
+        registerCommand(m_cmd_print_discover_resp_only, "<str>", "Exists the sample after printing the discovery result (optional, default='False')");
         sendArguments(args);
 
         SampleCommandLineData returnData = new SampleCommandLineData();
@@ -474,6 +477,7 @@ public class CommandLineUtils {
         returnData.input_signingRegion = getCommandRequired(m_cmd_region, m_cmd_signing_region);
         returnData.input_topic = getCommandOrDefault(m_cmd_topic, "test/topic");
         returnData.input_mode = getCommandOrDefault(m_cmd_mode, "Hello World!");
+        returnData.inputPrintDiscoverRespOnly = hasCommand(m_cmd_print_discover_resp_only);
         return returnData;
     }
 
@@ -782,6 +786,7 @@ public class CommandLineUtils {
     private static final String m_cmd_pkcs12_file = "pkcs12_file";
     private static final String m_cmd_pkcs12_password = "pkcs12_password";
     private static final String m_cmd_region = "region";
+    private static final String m_cmd_print_discover_resp_only = "print_discover_resp_only";
 }
 
 class CommandLineOption {
