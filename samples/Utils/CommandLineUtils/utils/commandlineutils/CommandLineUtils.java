@@ -230,6 +230,11 @@ public class CommandLineUtils {
         returnData.input_key = getCommandRequired(m_cmd_key_file);
     }
 
+    private void parseClientIdAndPort(SampleCommandLineData returnData) {
+        returnData.input_clientId = getCommandOrDefault(m_cmd_client_id, "test-" + UUID.randomUUID().toString());
+        returnData.input_port = Integer.parseInt(getCommandOrDefault(m_cmd_port, "8883"));
+    }
+
     private void parseCommonTopicMessageCommands(SampleCommandLineData returnData)
     {
         String ciPropValue = System.getProperty("aws.crt.ci");
@@ -257,11 +262,6 @@ public class CommandLineUtils {
         returnData.input_x509Cert = getCommandRequired(m_cmd_x509_cert_file);
         returnData.input_x509Key = getCommandRequired(m_cmd_x509_key_file);
         returnData.input_x509Ca = getCommandOrDefault(m_cmd_x509_ca_file, null);
-    }
-
-    private void parseClientIdAndPort(SampleCommandLineData returnData) {
-        returnData.input_clientId = getCommandOrDefault(m_cmd_client_id, "test-" + UUID.randomUUID().toString());
-        returnData.input_port = Integer.parseInt(getCommandOrDefault(m_cmd_port, "8883"));
     }
 
     /**
