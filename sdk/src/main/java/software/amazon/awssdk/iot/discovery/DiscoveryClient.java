@@ -15,6 +15,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Class for performing network-based discovery of the connectivity properties of registered greengrass cores
@@ -137,9 +138,20 @@ public class DiscoveryClient implements AutoCloseable {
         if(httpClientConnectionManager != null) {
             httpClientConnectionManager.close();
         }
-        if (cleanExecutor == true && executorService != null) {
+        if (cleanExecutor == true) {
             executorService.shutdown();
-            executorService = null;
+            try{
+                // Give the executorService 30 seconds to finish existing tasks. If it takes longer, force it to shutdown
+                if(!executorService.awaitTermination(30,TimeUnit.SECONDS)){
+                    executorService.shutdownNow();
+                }
+            } catch (InterruptedException ie){
+                // If current thread is interrupted, force executorService shutdown
+                executorService.shutdownNow();
+                // Preserve interrupt status
+                Thread.currentThread().interrupt();
+            }
         }
+        executorService = null;
     }
 }

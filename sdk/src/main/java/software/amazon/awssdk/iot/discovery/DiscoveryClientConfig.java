@@ -170,7 +170,7 @@ public class DiscoveryClientConfig implements AutoCloseable {
     }
 
     /**
-     * @return the executor set for this discover client, if one is set.
+     * @return the ExecutorService set for this discover client config. Returns null if one hasn't been set.
      */
     public ExecutorService getDiscoveryExecutor() {
         return this.discoveryExecutor;
