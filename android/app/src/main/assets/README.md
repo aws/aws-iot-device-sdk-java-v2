@@ -5,12 +5,14 @@
 Files must be placed in the assets directory for the sample app to connect to IoT Core.
 ## Required by all samples:
 * endpoint.txt - IoT ATS Endpoint
+
+## Requiret to run BasicPubSub, Jobs, and Shadow samples
 * certificate.pem - IoT Thing Certificate
 * privatekey.pem - IoT Thing Private Key
-
 ## Required to run Cognito Client sample:
 * cognitoIdentity.txt - Cognito identity ID
 * signingRegion.txt - Signing region
+
 
 ## Optional files:
 * rootca.pem - override the default system trust store
