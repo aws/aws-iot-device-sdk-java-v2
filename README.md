@@ -142,12 +142,10 @@ dependencies {
     implementation 'software.amazon.awssdk.crt:android:0.22.1'
 }
 ```
+[Android IoT Samples README](./android/app/src/main/assets/README.md)
 
 Replace `0.22.1` in `software.amazon.awssdk.crt:android:0.22.1` with the latest version of the CRT.
 Look up the latest CRT version here: https://github.com/awslabs/aws-crt-java/releases
-
-#### Caution
-You will need to override and provide a ROOT_CERTIFICATE manually from one of the following [certificates](https://www.amazontrust.com/repository/). For overriding default trust store you can use following [method](https://github.com/aws/aws-iot-device-sdk-java-v2/blob/ed802dce740895bcd3b0b91de30ec49407e34a87/sdk/src/main/java/software/amazon/awssdk/iot/AwsIotMqttConnectionBuilder.java#L151-L160). It's a [known problem](https://github.com/aws/aws-iot-device-sdk-java-v2/issues/157).
 
 ## Samples
 

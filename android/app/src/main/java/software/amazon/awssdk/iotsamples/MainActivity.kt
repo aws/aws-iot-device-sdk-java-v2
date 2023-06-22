@@ -17,7 +17,8 @@ import kotlin.concurrent.thread
 val SAMPLES = mapOf(
     "Publish/Subscribe Sample" to "pubsub.PubSub",
     "Jobs Client Sample" to "jobs.JobsSample",
-    "Shadow Client Sample" to "shadow.ShadowSample"
+    "Shadow Client Sample" to "shadow.ShadowSample",
+    "Cognito Client Sample" to "cognitoconnect.CognitoConnect"
 )
 
 class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
@@ -126,9 +127,16 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
             resourceNames.add("endpoint.txt")
 
             // Add required files for Samples here
-            if (name == "pubsub.PubSub" || name == "jobs.JobsSample" || name == "shadow.ShadowSample"){
-                resourceNames.add("certificate.pem")
-                resourceNames.add("privatekey.pem")
+            when(name) {
+                "pubsub.PubSub", "jobs.JobsSample", "shadow.ShadowSample" -> {
+                    resourceNames.add("certificate.pem")
+                    resourceNames.add("privatekey.pem")
+                }
+
+                "cognitoconnect.CognitoConnect" -> {
+                    resourceNames.add("cognitoIdentity.txt")
+                    resourceNames.add("signingRegion.txt")
+                }
             }
 
             // Copy to cache and get file locations for required files
@@ -150,12 +158,34 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
             }
 
             if(isResourcesFound) {
-                args.addAll(arrayOf(
-                    "--endpoint", assetContents("endpoint.txt"),
-                    "--cert", resourceMap["certificate.pem"],
-                    "--key", resourceMap["privatekey.pem"],
-                    "--port", assetContentsOr("port.txt", "8883"),
-                    "--client_id", assetContentsOr("clientId.txt", "android-java-crt-test")))
+                args.addAll(arrayOf("--endpoint", assetContents("endpoint.txt")))
+
+                when(name) {
+                    "pubsub.PubSub" -> {
+                        args.addAll(arrayOf(
+                            "--cert", resourceMap["certificate.pem"],
+                            "--key", resourceMap["privatekey.pem"],
+                            "--port", assetContentsOr("port.txt", "8883"),
+                            "--client_id", assetContentsOr("clientId.txt", "android-java-crt-test"),
+                            "--topic", assetContentsOr("topic.txt", "test/topic"),
+                            "--message", assetContentsOr("message.txt", "Hello World From Android")))
+                    }
+
+                    "jobs.JobsSample", "shadow.ShadowSample" -> {
+                        args.addAll(arrayOf(
+                            "--cert", resourceMap["certificate.pem"],
+                            "--key", resourceMap["privatekey.pem"],
+                            "--port", assetContentsOr("port.txt", "8883"),
+                            "--client_id", assetContentsOr("clientId.txt", "android-java-crt-test"),
+                            "--thing_name", assetContentsOr("thingName.txt", "aws-iot-unit-test")))
+                    }
+
+                    "cognitoconnect.CognitoConnect" -> {
+                        args.addAll(arrayOf(
+                            "--signing_region", assetContents("signingRegion.txt"),
+                            "--cognito_identity", assetContents("cognitoIdentity.txt")))
+                    }
+                }
 
                 // Check for optional root CA file
                 try {
@@ -167,16 +197,6 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                         args.addAll(arrayOf("--ca_file", cachedName))
                     }
                 } catch (e: Exception) {}
-
-                if (name == "pubsub.PubSub") {
-                    args.addAll(arrayOf(
-                        "--topic", assetContentsOr("topic.txt", "test/topic"),
-                        "--message", assetContentsOr("message.txt", "Hello World From Android")))
-                } else if (name in arrayOf("jobs.JobsSample", "shadow.ShadowSample")) {
-                    args.addAll(arrayOf(
-                        "--thing_name", assetContentsOr("thingName.txt", "aws-iot-unit-test")
-                    ))
-                }
 
                 val main = sampleClass?.getMethod("main", Array<String>::class.java)
 

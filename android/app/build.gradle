@@ -22,6 +22,7 @@ android {
             java.srcDir '../../samples/BasicPubSub/src/main/java'
             java.srcDir '../../samples/Jobs/src/main/java'
             java.srcDir '../../samples/Shadow/src/main/java'
+            java.srcDir '../../samples/CognitoConnect/src/main/java'
             java.srcDir 'src/main/java'
         }
     }
