@@ -3,10 +3,15 @@ version: 0.2
 phases:
   build:
     commands:
+      - echo Build started on `date`
       - cd android
       - chmod +x ./gradlew
       - ./gradlew assembleDebug
-  artifacts:
-    files:
-      - './app/build/outputs/**/*.apk'
-    discard-paths: yes
+  post_build:
+    commands:
+      - echo Build completed on `date`
+
+artifacts:
+  files:
+    - './app/build/outputs/**/*.apk'
+  discard-paths: yes
