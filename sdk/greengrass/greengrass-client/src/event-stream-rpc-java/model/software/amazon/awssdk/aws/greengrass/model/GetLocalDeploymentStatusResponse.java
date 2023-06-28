@@ -33,7 +33,7 @@ public class GetLocalDeploymentStatusResponse implements EventStreamJsonMessage 
       serialize = true,
       deserialize = true
   )
-  private Optional<LocalDeployment> deployment;
+  private Optional<LocalDeploymentStatus> deployment;
 
   public GetLocalDeploymentStatusResponse() {
     this.deployment = Optional.empty();
@@ -42,7 +42,7 @@ public class GetLocalDeploymentStatusResponse implements EventStreamJsonMessage 
   /**
    * The local deployment.
    */
-  public LocalDeployment getDeployment() {
+  public LocalDeploymentStatus getDeployment() {
     if (deployment.isPresent()) {
       return deployment.get();
     }
@@ -52,14 +52,14 @@ public class GetLocalDeploymentStatusResponse implements EventStreamJsonMessage 
   /**
    * The local deployment.
    */
-  public void setDeployment(final LocalDeployment deployment) {
+  public void setDeployment(final LocalDeploymentStatus deployment) {
     this.deployment = Optional.ofNullable(deployment);
   }
 
   /**
    * The local deployment.
    */
-  public GetLocalDeploymentStatusResponse withDeployment(final LocalDeployment deployment) {
+  public GetLocalDeploymentStatusResponse withDeployment(final LocalDeploymentStatus deployment) {
     setDeployment(deployment);
     return this;
   }

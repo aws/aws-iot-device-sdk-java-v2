@@ -15,13 +15,13 @@ import java.util.Objects;
 import java.util.Optional;
 import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
 
-public class LocalDeployment implements EventStreamJsonMessage {
-  public static final String APPLICATION_MODEL_TYPE = "aws.greengrass#LocalDeployment";
+public class LocalDeploymentStatus implements EventStreamJsonMessage {
+  public static final String APPLICATION_MODEL_TYPE = "aws.greengrass#LocalDeploymentStatus";
 
-  public static final LocalDeployment VOID;
+  public static final LocalDeploymentStatus VOID;
 
   static {
-    VOID = new LocalDeployment() {
+    VOID = new LocalDeploymentStatus() {
       @Override
       public boolean isVoid() {
         return true;
@@ -47,14 +47,21 @@ public class LocalDeployment implements EventStreamJsonMessage {
   )
   private Optional<String> createdOn;
 
-  public LocalDeployment() {
+  @Expose(
+      serialize = true,
+      deserialize = true
+  )
+  private Optional<DeploymentStatusDetails> deploymentStatusDetails;
+
+  public LocalDeploymentStatus() {
     this.deploymentId = Optional.empty();
     this.status = Optional.empty();
     this.createdOn = Optional.empty();
+    this.deploymentStatusDetails = Optional.empty();
   }
 
   /**
-   * The ID of the local deployment.
+   * THe ID of the local deployment.
    */
   public String getDeploymentId() {
     if (deploymentId.isPresent()) {
@@ -64,16 +71,16 @@ public class LocalDeployment implements EventStreamJsonMessage {
   }
 
   /**
-   * The ID of the local deployment.
+   * THe ID of the local deployment.
    */
   public void setDeploymentId(final String deploymentId) {
     this.deploymentId = Optional.ofNullable(deploymentId);
   }
 
   /**
-   * The ID of the local deployment.
+   * THe ID of the local deployment.
    */
-  public LocalDeployment withDeploymentId(final String deploymentId) {
+  public LocalDeploymentStatus withDeploymentId(final String deploymentId) {
     setDeploymentId(deploymentId);
     return this;
   }
@@ -105,7 +112,7 @@ public class LocalDeployment implements EventStreamJsonMessage {
   /**
    * The status of the local deployment.
    */
-  public LocalDeployment withStatus(final String status) {
+  public LocalDeploymentStatus withStatus(final String status) {
     setStatus(status);
     return this;
   }
@@ -120,7 +127,7 @@ public class LocalDeployment implements EventStreamJsonMessage {
   /**
    * The status of the local deployment.
    */
-  public LocalDeployment withStatus(final DeploymentStatus status) {
+  public LocalDeploymentStatus withStatus(final DeploymentStatus status) {
     setStatus(status);
     return this;
   }
@@ -145,8 +152,34 @@ public class LocalDeployment implements EventStreamJsonMessage {
   /**
    * (Optional) The timestamp at which the local deployment was created in MM/dd/yyyy hh:mm:ss format
    */
-  public LocalDeployment withCreatedOn(final String createdOn) {
+  public LocalDeploymentStatus withCreatedOn(final String createdOn) {
     setCreatedOn(createdOn);
+    return this;
+  }
+
+  /**
+   * (Optional) The status details of the local deployment.
+   */
+  public DeploymentStatusDetails getDeploymentStatusDetails() {
+    if (deploymentStatusDetails.isPresent()) {
+      return deploymentStatusDetails.get();
+    }
+    return null;
+  }
+
+  /**
+   * (Optional) The status details of the local deployment.
+   */
+  public void setDeploymentStatusDetails(final DeploymentStatusDetails deploymentStatusDetails) {
+    this.deploymentStatusDetails = Optional.ofNullable(deploymentStatusDetails);
+  }
+
+  /**
+   * (Optional) The status details of the local deployment.
+   */
+  public LocalDeploymentStatus withDeploymentStatusDetails(
+      final DeploymentStatusDetails deploymentStatusDetails) {
+    setDeploymentStatusDetails(deploymentStatusDetails);
     return this;
   }
 
@@ -158,18 +191,19 @@ public class LocalDeployment implements EventStreamJsonMessage {
   @Override
   public boolean equals(Object rhs) {
     if (rhs == null) return false;
-    if (!(rhs instanceof LocalDeployment)) return false;
+    if (!(rhs instanceof LocalDeploymentStatus)) return false;
     if (this == rhs) return true;
-    final LocalDeployment other = (LocalDeployment)rhs;
+    final LocalDeploymentStatus other = (LocalDeploymentStatus)rhs;
     boolean isEquals = true;
     isEquals = isEquals && this.deploymentId.equals(other.deploymentId);
     isEquals = isEquals && this.status.equals(other.status);
     isEquals = isEquals && this.createdOn.equals(other.createdOn);
+    isEquals = isEquals && this.deploymentStatusDetails.equals(other.deploymentStatusDetails);
     return isEquals;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(deploymentId, status, createdOn);
+    return Objects.hash(deploymentId, status, createdOn, deploymentStatusDetails);
   }
 }
