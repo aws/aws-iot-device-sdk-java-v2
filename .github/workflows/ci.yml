@@ -294,13 +294,22 @@ jobs:
           ./gradlew build
 
   android-device-farm:
-    name: Android Emulated
+    name: Android Device Farm
     runs-on: ubuntu-20.04 # latest
+    permissions:
+      # These permissions needed to interact with GitHub's OIDC Token endpoint
+      id-token: write
+      contents: read
     steps:
       - name: Checkout Sources
         uses: actions/checkout@v3
         with:
             submodules: true
+      - name: Configure AWS credentials for S3 Upload
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ env.CI_IOT_CONTAINERS }} # Change this to a role with S3 permission
+          aws-region: us-west-2 # Device Farm only available in us-west-2 region
       # Setup JDK 11
       - name: set up JDK 11
         uses: actions/setup-java@v3
@@ -313,6 +322,8 @@ jobs:
           cd android
           ./gradlew assembledebug
       - run: echo "Build status report=${{ job.status }}."
+      # - name: Upload apk to S3
+
 
   # check that docs can still build
   check-docs:
