@@ -293,7 +293,7 @@ jobs:
           cd android
           ./gradlew build
 
-  android-emulated:
+  android-device-farm:
     name: Android Emulated
     runs-on: ubuntu-20.04 # latest
     steps:
@@ -307,11 +307,11 @@ jobs:
         with:
           java-version: '11'
           distribution: 'temurin'
-          cache: gradle
+          cache: 'gradle'
       - name: Build ${{ env.PACKAGE_NAME }}
         run: |
           cd android
-          ./gradlew build
+          ./gradlew assembledebug
       - run: echo "Build status report=${{ job.status }}."
 
   # check that docs can still build
