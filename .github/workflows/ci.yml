@@ -299,18 +299,13 @@ jobs:
     runs-on: ubuntu-20.04 # latest
     permissions:
       # These permissions needed to interact with GitHub's OIDC Token endpoint
-      id-token: write
-      contents: read
+      id-token: write # This is required for requesting the JWT
+      # contents: read
     steps:
       - name: Checkout Sources
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
         with:
             submodules: true
-      - name: Configure AWS credentials for S3 Upload
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          role-to-assume: ${{ env.CI_ANDROID_DEVICE_TESTING_ROLE }}
-          aws-region: us-east-1 # Device Farm only available in us-west-2 region
       # Setup JDK 11
       - name: set up JDK 11
         uses: actions/setup-java@v3
@@ -318,6 +313,11 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
           cache: 'gradle'
+      - name: Configure AWS credentials for S3 Upload
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ env.CI_ANDROID_DEVICE_TESTING_ROLE }}
+          aws-region: us-west-2 # Device Farm only available in us-west-2 region
       - name: Build ${{ env.PACKAGE_NAME }}
         run: |
           cd android
