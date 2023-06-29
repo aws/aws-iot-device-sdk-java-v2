@@ -310,7 +310,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v1
         with:
           role-to-assume: ${{ env.CI_ANDROID_DEVICE_TESTING_ROLE }}
-          aws-region: us-west-2 # Device Farm only available in us-west-2 region
+          aws-region: us-east-1 # Device Farm only available in us-west-2 region
       # Setup JDK 11
       - name: set up JDK 11
         uses: actions/setup-java@v3
