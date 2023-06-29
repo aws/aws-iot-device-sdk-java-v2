@@ -307,7 +307,7 @@ jobs:
         with:
             submodules: true
       - name: Configure AWS credentials for S3 Upload
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v1
         with:
           role-to-assume: ${{ env.CI_ANDROID_DEVICE_TESTING_ROLE }}
           aws-region: us-west-2 # Device Farm only available in us-west-2 region
