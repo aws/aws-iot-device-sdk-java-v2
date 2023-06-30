@@ -74,6 +74,9 @@ jobs:
           device_farm_upload_arn=$(jq ".upload.arn" device_file.json | cut -f2 -d\")
           echo "$device_farm_upload_arn"
           cd android/app/build/outputs/apk/debug
+          echo "Uploading $device_file_name to device farm"
           curl -T app-debug.apk "$device_farm_upload_url"
+          echo "Scheduling run"
+          aws devicefarm schedule-run --project-arn "arn:aws:devicefarm:us-west-2:180635532705:project:ee67d437-f890-4c6b-a2eb-8d5ed201252f" --app-arn "$device_farm_upload_arn" --name "$device_file_name" --test type=BUILTIN_FUZZ
           echo "Deleting file from device farm"
           aws devicefarm delete-upload --arn "$device_farm_upload_arn"
