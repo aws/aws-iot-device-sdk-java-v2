@@ -67,4 +67,5 @@ jobs:
       - name: Create Device Farm Run
         run: |
           device_farm_upload_url=$(aws devicefarm create-upload --project-arn "arn:aws:devicefarm:us-west-2:180635532705:project:ee67d437-f890-4c6b-a2eb-8d5ed201252f" --name "Test.apk" --type ANDROID_APP --region us-west-2 --query "upload.url")
-          echo "device_farm_upload_url=$device_farm_upload_url"
+          cd android/app/build/outputs/apk/debug
+          curt -T app-debug.apk "$device_farm_upload_url"
