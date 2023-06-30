@@ -65,7 +65,10 @@ jobs:
       #     cd android/app/build/outputs/apk/debug
       #     aws s3 mv app-debug.apk s3://iot-sdk-java-v2-ci-android-device-us-west-2
       - name: Create Device Farm Run
+      # gets a url to upload to. The file will be saved to the project Uploads as what's listed in --test
         run: |
-          device_farm_upload_url=$(aws devicefarm create-upload --project-arn "arn:aws:devicefarm:us-west-2:180635532705:project:ee67d437-f890-4c6b-a2eb-8d5ed201252f" --name "Test.apk" --type ANDROID_APP --region us-west-2 --query "upload.url" | cut -f2 -d\")
+          aws devicefarm create-upload --project-arn "arn:aws:devicefarm:us-west-2:180635532705:project:ee67d437-f890-4c6b-a2eb-8d5ed201252f" --name "CI-${{ github.run_id }}-${{ github.run_number }}.apk" --type ANDROID_APP --region us-west-2 > device_file.json
+          device_farm_upload_url=$(jq ".upload.url" device_file.json | cut -f2 -d\")
+          device_farm_upload_arn=$(jq ".upload.arn" device_file.json | cut -f2 -d\")
           cd android/app/build/outputs/apk/debug
           curl -T app-debug.apk "$device_farm_upload_url"
