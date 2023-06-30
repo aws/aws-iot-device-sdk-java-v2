@@ -73,7 +73,7 @@ jobs:
           device_farm_upload_arn=$(jq ".upload.arn" device_file.json | cut -f2 -d\")
           cd android/app/build/outputs/apk/debug
           curl -T app-debug.apk "$device_farm_upload_url"
-      -name: Clean up Device Farm Run
+      - name: Clean up Device Farm Run
         run: |
           echo "Deleting file from device farm"
           aws devicefarm delete-upload "$device_farm_upload_arn"
