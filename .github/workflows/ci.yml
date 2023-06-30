@@ -70,7 +70,9 @@ jobs:
           device_file_name="CI-${{ github.run_id }}-${{ github.run_number }}.apk"
           aws devicefarm create-upload --project-arn "arn:aws:devicefarm:us-west-2:180635532705:project:ee67d437-f890-4c6b-a2eb-8d5ed201252f" --name "$device_file_name" --type ANDROID_APP --region us-west-2 > device_file.json
           device_farm_upload_url=$(jq ".upload.url" device_file.json | cut -f2 -d\")
+          echo "$device_farm_upload_url"
           device_farm_upload_arn=$(jq ".upload.arn" device_file.json | cut -f2 -d\")
+          echo "$device_farm_upload_arn"
           cd android/app/build/outputs/apk/debug
           curl -T app-debug.apk "$device_farm_upload_url"
       - name: Clean up Device Farm Run
