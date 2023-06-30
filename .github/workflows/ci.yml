@@ -66,7 +66,7 @@ jobs:
       #     aws s3 mv app-debug.apk s3://iot-sdk-java-v2-ci-android-device-us-west-2
       - name: Create Device Farm Run
         run: |
-        aws devicefarm create-upload --project-arn "arn:aws:devicefarm:us-west-2:180635532705:project:ee67d437-f890-4c6b-a2eb-8d5ed201252f" --name "Test.apk" --type ANDROID_APP > df.json
-        echo "DEVICE_FARM_URL=$(jq '.url' df.json)"
+          aws devicefarm create-upload --project-arn "arn:aws:devicefarm:us-west-2:180635532705:project:ee67d437-f890-4c6b-a2eb-8d5ed201252f" --name "Test.apk" --type ANDROID_APP > df.json
+          echo "DEVICE_FARM_URL=$(jq '.url' df.json)"
           DEVICE_FARM_URL=$(  | jq '.url' )
           echo "${{ env.DEVICE_FARM_URL }}"
