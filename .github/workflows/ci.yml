@@ -76,4 +76,4 @@ jobs:
       - name: Clean up Device Farm Run
         run: |
           echo "Deleting file from device farm"
-          aws devicefarm delete-upload "$device_farm_upload_arn"
+          aws devicefarm delete-upload --arn "$device_farm_upload_arn"
