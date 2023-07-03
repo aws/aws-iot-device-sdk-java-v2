@@ -88,6 +88,7 @@ jobs:
           device_farm_run_arn=$(jq ".run.arn" scheduled_run.json | cut -f2 -d\")
           aws devicefarm get-run --arn $device_farm_run_arn --region us-west-2  > run_results.json
           device_farm_run_status=$(jq ".run.status" run_results.json | cut -f2 -d\")
+          echo "Run status:$device_farm_run_status"
           echo "Deleting file from device farm"
           aws devicefarm delete-upload --arn "$device_farm_upload_arn"
 
