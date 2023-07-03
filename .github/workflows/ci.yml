@@ -64,6 +64,11 @@ jobs:
       #   run: |
       #     cd android/app/build/outputs/apk/debug
       #     aws s3 mv app-debug.apk s3://iot-sdk-java-v2-ci-android-device-us-west-2
+      - name: Python Script
+        run: |
+          echo "Attempting to run python script"
+          python3 -m pip install boto3
+          python3 ./utils/run_android_ci.py
       - name: Create Device Farm Run
       # gets a url to upload to. The file will be saved to the project Uploads as what's listed in --test
         run: |
@@ -79,7 +84,10 @@ jobs:
           echo "Sleeping for 10s to allow AWS to process the uploaded apk"
           sleep 10s
           echo "Scheduling run"
-          aws devicefarm schedule-run --project-arn "arn:aws:devicefarm:us-west-2:180635532705:project:ee67d437-f890-4c6b-a2eb-8d5ed201252f" --app-arn "$device_farm_upload_arn" --device-pool-arn "arn:aws:devicefarm:us-west-2:180635532705:devicepool:ee67d437-f890-4c6b-a2eb-8d5ed201252f/79f3baaa-b80e-4d4d-86a8-075aadbac4d0" --name "$device_file_name" --test type=BUILTIN_FUZZ
+          aws devicefarm schedule-run --project-arn "arn:aws:devicefarm:us-west-2:180635532705:project:ee67d437-f890-4c6b-a2eb-8d5ed201252f" --app-arn "$device_farm_upload_arn" --device-pool-arn "arn:aws:devicefarm:us-west-2:180635532705:devicepool:ee67d437-f890-4c6b-a2eb-8d5ed201252f/79f3baaa-b80e-4d4d-86a8-075aadbac4d0" --name "$device_file_name" --test type=BUILTIN_FUZZ > scheduled_run.json
+          device_farm_run_arn=$(jq ".run.arn" scheduled_run.json | cut -f2 -d\")
+          aws devicefarm get-run --arn $device_farm_run_arn --region us-west-2  > run_results.json
+          device_farm_run_status=$(jq ".run.status" run_results.json | cut -f2 -d\")
           echo "Deleting file from device farm"
           aws devicefarm delete-upload --arn "$device_farm_upload_arn"
 
