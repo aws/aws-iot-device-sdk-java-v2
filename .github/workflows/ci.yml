@@ -76,7 +76,12 @@ jobs:
           cd android/app/build/outputs/apk/debug
           echo "Uploading $device_file_name to device farm"
           curl -T app-debug.apk "$device_farm_upload_url"
+          echo "Sleeping for 10s to allow AWS to process the uploaded apk"
+          sleep 10s
           echo "Scheduling run"
           aws devicefarm schedule-run --project-arn "arn:aws:devicefarm:us-west-2:180635532705:project:ee67d437-f890-4c6b-a2eb-8d5ed201252f" --app-arn "$device_farm_upload_arn" --device-pool-arn "arn:aws:devicefarm:us-west-2:180635532705:devicepool:ee67d437-f890-4c6b-a2eb-8d5ed201252f/79f3baaa-b80e-4d4d-86a8-075aadbac4d0" --name "$device_file_name" --test type=BUILTIN_FUZZ
           echo "Deleting file from device farm"
           aws devicefarm delete-upload --arn "$device_farm_upload_arn"
+
+# Need to wait for the apk to be processed by device farm. Sleep for a few before trying to schedule the run.
+# aws devicefarm schedule-run --project-arn "arn:aws:devicefarm:us-west-2:180635532705:project:ee67d437-f890-4c6b-a2eb-8d5ed201252f" --app-arn "arn:aws:devicefarm:us-west-2:180635532705:upload:ee67d437-f890-4c6b-a2eb-8d5ed201252f/0a60cfd1-34db-4625-b4f2-f0bf2adee3a8" --device-pool-arn "arn:aws:devicefarm:us-west-2:180635532705:devicepool:ee67d437-f890-4c6b-a2eb-8d5ed201252f/79f3baaa-b80e-4d4d-86a8-075aadbac4d0" --name "manual_test_run" --test type=BUILTIN_FUZZ --region us-west-2
