@@ -20,13 +20,13 @@ def main():
     print(current_folder)
 
     try:
-        iot_client = boto3.client('devicefarm')
+        client = boto3.client('devicefarm')
     except Exception:
         print("Error - could not make Boto3 client. Credentials likely could not be sourced")
         return -1
 
     create_upload_response = client.create_upload(
-        name=`PythonTest.apk`,
+        name='PythonTest.apk',
         type='BUILTIN_FUZZ',
         projectArn='arn:aws:devicefarm:us-west-2:180635532705:project:ee67d437-f890-4c6b-a2eb-8d5ed201252f'
     )
