@@ -73,6 +73,12 @@ public class CreateLocalDeploymentRequest implements EventStreamJsonMessage {
   )
   private Optional<String> artifactsDirectoryPath;
 
+  @Expose(
+      serialize = true,
+      deserialize = true
+  )
+  private Optional<String> failureHandlingPolicy;
+
   public CreateLocalDeploymentRequest() {
     this.groupName = Optional.empty();
     this.rootComponentVersionsToAdd = Optional.empty();
@@ -81,6 +87,7 @@ public class CreateLocalDeploymentRequest implements EventStreamJsonMessage {
     this.componentToRunWithInfo = Optional.empty();
     this.recipeDirectoryPath = Optional.empty();
     this.artifactsDirectoryPath = Optional.empty();
+    this.failureHandlingPolicy = Optional.empty();
   }
 
   /**
@@ -264,6 +271,55 @@ public class CreateLocalDeploymentRequest implements EventStreamJsonMessage {
     return this;
   }
 
+  public FailureHandlingPolicy getFailureHandlingPolicy() {
+    if (failureHandlingPolicy.isPresent()) {
+      return FailureHandlingPolicy.get(failureHandlingPolicy.get());
+    }
+    return null;
+  }
+
+  /**
+   * Deployment failure handling policy.
+   */
+  public String getFailureHandlingPolicyAsString() {
+    if (failureHandlingPolicy.isPresent()) {
+      return failureHandlingPolicy.get();
+    }
+    return null;
+  }
+
+  /**
+   * Deployment failure handling policy.
+   */
+  public void setFailureHandlingPolicy(final String failureHandlingPolicy) {
+    this.failureHandlingPolicy = Optional.ofNullable(failureHandlingPolicy);
+  }
+
+  /**
+   * Deployment failure handling policy.
+   */
+  public CreateLocalDeploymentRequest withFailureHandlingPolicy(
+      final String failureHandlingPolicy) {
+    setFailureHandlingPolicy(failureHandlingPolicy);
+    return this;
+  }
+
+  /**
+   * Deployment failure handling policy.
+   */
+  public void setFailureHandlingPolicy(final FailureHandlingPolicy failureHandlingPolicy) {
+    this.failureHandlingPolicy = Optional.ofNullable(failureHandlingPolicy.getValue());
+  }
+
+  /**
+   * Deployment failure handling policy.
+   */
+  public CreateLocalDeploymentRequest withFailureHandlingPolicy(
+      final FailureHandlingPolicy failureHandlingPolicy) {
+    setFailureHandlingPolicy(failureHandlingPolicy);
+    return this;
+  }
+
   @Override
   public String getApplicationModelType() {
     return APPLICATION_MODEL_TYPE;
@@ -283,11 +339,12 @@ public class CreateLocalDeploymentRequest implements EventStreamJsonMessage {
     isEquals = isEquals && this.componentToRunWithInfo.equals(other.componentToRunWithInfo);
     isEquals = isEquals && this.recipeDirectoryPath.equals(other.recipeDirectoryPath);
     isEquals = isEquals && this.artifactsDirectoryPath.equals(other.artifactsDirectoryPath);
+    isEquals = isEquals && this.failureHandlingPolicy.equals(other.failureHandlingPolicy);
     return isEquals;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(groupName, rootComponentVersionsToAdd, rootComponentsToRemove, componentToConfiguration, componentToRunWithInfo, recipeDirectoryPath, artifactsDirectoryPath);
+    return Objects.hash(groupName, rootComponentVersionsToAdd, rootComponentsToRemove, componentToConfiguration, componentToRunWithInfo, recipeDirectoryPath, artifactsDirectoryPath, failureHandlingPolicy);
   }
 }

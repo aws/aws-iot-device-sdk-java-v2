@@ -19,6 +19,8 @@ import java.util.Set;
 import software.amazon.awssdk.aws.greengrass.model.AuthorizeClientDeviceActionRequest;
 import software.amazon.awssdk.aws.greengrass.model.AuthorizeClientDeviceActionResponse;
 import software.amazon.awssdk.aws.greengrass.model.BinaryMessage;
+import software.amazon.awssdk.aws.greengrass.model.CancelLocalDeploymentRequest;
+import software.amazon.awssdk.aws.greengrass.model.CancelLocalDeploymentResponse;
 import software.amazon.awssdk.aws.greengrass.model.CertificateOptions;
 import software.amazon.awssdk.aws.greengrass.model.CertificateType;
 import software.amazon.awssdk.aws.greengrass.model.CertificateUpdate;
@@ -42,7 +44,10 @@ import software.amazon.awssdk.aws.greengrass.model.DeferComponentUpdateResponse;
 import software.amazon.awssdk.aws.greengrass.model.DeleteThingShadowRequest;
 import software.amazon.awssdk.aws.greengrass.model.DeleteThingShadowResponse;
 import software.amazon.awssdk.aws.greengrass.model.DeploymentStatus;
+import software.amazon.awssdk.aws.greengrass.model.DeploymentStatusDetails;
+import software.amazon.awssdk.aws.greengrass.model.DetailedDeploymentStatus;
 import software.amazon.awssdk.aws.greengrass.model.FailedUpdateConditionCheckError;
+import software.amazon.awssdk.aws.greengrass.model.FailureHandlingPolicy;
 import software.amazon.awssdk.aws.greengrass.model.GetClientDeviceAuthTokenRequest;
 import software.amazon.awssdk.aws.greengrass.model.GetClientDeviceAuthTokenResponse;
 import software.amazon.awssdk.aws.greengrass.model.GetComponentDetailsRequest;
@@ -152,6 +157,10 @@ public class GreengrassCoreIPCServiceModel extends EventStreamRPCServiceModel {
   public static final String AUTHORIZE_CLIENT_DEVICE_ACTION = SERVICE_NAMESPACE + "#" + "AuthorizeClientDeviceAction";
 
   private static final AuthorizeClientDeviceActionOperationContext _AUTHORIZE_CLIENT_DEVICE_ACTION_OPERATION_CONTEXT = new AuthorizeClientDeviceActionOperationContext();
+
+  public static final String CANCEL_LOCAL_DEPLOYMENT = SERVICE_NAMESPACE + "#" + "CancelLocalDeployment";
+
+  private static final CancelLocalDeploymentOperationContext _CANCEL_LOCAL_DEPLOYMENT_OPERATION_CONTEXT = new CancelLocalDeploymentOperationContext();
 
   public static final String CREATE_DEBUG_PASSWORD = SERVICE_NAMESPACE + "#" + "CreateDebugPassword";
 
@@ -284,6 +293,8 @@ public class GreengrassCoreIPCServiceModel extends EventStreamRPCServiceModel {
   static {
     SERVICE_OPERATION_MODEL_MAP.put(AUTHORIZE_CLIENT_DEVICE_ACTION, _AUTHORIZE_CLIENT_DEVICE_ACTION_OPERATION_CONTEXT);
     SERVICE_OPERATION_SET.add(AUTHORIZE_CLIENT_DEVICE_ACTION);
+    SERVICE_OPERATION_MODEL_MAP.put(CANCEL_LOCAL_DEPLOYMENT, _CANCEL_LOCAL_DEPLOYMENT_OPERATION_CONTEXT);
+    SERVICE_OPERATION_SET.add(CANCEL_LOCAL_DEPLOYMENT);
     SERVICE_OPERATION_MODEL_MAP.put(CREATE_DEBUG_PASSWORD, _CREATE_DEBUG_PASSWORD_OPERATION_CONTEXT);
     SERVICE_OPERATION_SET.add(CREATE_DEBUG_PASSWORD);
     SERVICE_OPERATION_MODEL_MAP.put(CREATE_LOCAL_DEPLOYMENT, _CREATE_LOCAL_DEPLOYMENT_OPERATION_CONTEXT);
@@ -351,6 +362,8 @@ public class GreengrassCoreIPCServiceModel extends EventStreamRPCServiceModel {
     SERVICE_OBJECT_MODEL_MAP.put(AuthorizeClientDeviceActionRequest.APPLICATION_MODEL_TYPE, AuthorizeClientDeviceActionRequest.class);
     SERVICE_OBJECT_MODEL_MAP.put(AuthorizeClientDeviceActionResponse.APPLICATION_MODEL_TYPE, AuthorizeClientDeviceActionResponse.class);
     SERVICE_OBJECT_MODEL_MAP.put(BinaryMessage.APPLICATION_MODEL_TYPE, BinaryMessage.class);
+    SERVICE_OBJECT_MODEL_MAP.put(CancelLocalDeploymentRequest.APPLICATION_MODEL_TYPE, CancelLocalDeploymentRequest.class);
+    SERVICE_OBJECT_MODEL_MAP.put(CancelLocalDeploymentResponse.APPLICATION_MODEL_TYPE, CancelLocalDeploymentResponse.class);
     SERVICE_OBJECT_MODEL_MAP.put(CertificateOptions.APPLICATION_MODEL_TYPE, CertificateOptions.class);
     SERVICE_OBJECT_MODEL_MAP.put(CertificateType.APPLICATION_MODEL_TYPE, CertificateType.class);
     SERVICE_OBJECT_MODEL_MAP.put(CertificateUpdate.APPLICATION_MODEL_TYPE, CertificateUpdate.class);
@@ -374,7 +387,10 @@ public class GreengrassCoreIPCServiceModel extends EventStreamRPCServiceModel {
     SERVICE_OBJECT_MODEL_MAP.put(DeleteThingShadowRequest.APPLICATION_MODEL_TYPE, DeleteThingShadowRequest.class);
     SERVICE_OBJECT_MODEL_MAP.put(DeleteThingShadowResponse.APPLICATION_MODEL_TYPE, DeleteThingShadowResponse.class);
     SERVICE_OBJECT_MODEL_MAP.put(DeploymentStatus.APPLICATION_MODEL_TYPE, DeploymentStatus.class);
+    SERVICE_OBJECT_MODEL_MAP.put(DeploymentStatusDetails.APPLICATION_MODEL_TYPE, DeploymentStatusDetails.class);
+    SERVICE_OBJECT_MODEL_MAP.put(DetailedDeploymentStatus.APPLICATION_MODEL_TYPE, DetailedDeploymentStatus.class);
     SERVICE_OBJECT_MODEL_MAP.put(FailedUpdateConditionCheckError.APPLICATION_MODEL_TYPE, FailedUpdateConditionCheckError.class);
+    SERVICE_OBJECT_MODEL_MAP.put(FailureHandlingPolicy.APPLICATION_MODEL_TYPE, FailureHandlingPolicy.class);
     SERVICE_OBJECT_MODEL_MAP.put(GetClientDeviceAuthTokenRequest.APPLICATION_MODEL_TYPE, GetClientDeviceAuthTokenRequest.class);
     SERVICE_OBJECT_MODEL_MAP.put(GetClientDeviceAuthTokenResponse.APPLICATION_MODEL_TYPE, GetClientDeviceAuthTokenResponse.class);
     SERVICE_OBJECT_MODEL_MAP.put(GetComponentDetailsRequest.APPLICATION_MODEL_TYPE, GetComponentDetailsRequest.class);
@@ -481,6 +497,10 @@ public class GreengrassCoreIPCServiceModel extends EventStreamRPCServiceModel {
   public static AuthorizeClientDeviceActionOperationContext getAuthorizeClientDeviceActionModelContext(
       ) {
     return _AUTHORIZE_CLIENT_DEVICE_ACTION_OPERATION_CONTEXT;
+  }
+
+  public static CancelLocalDeploymentOperationContext getCancelLocalDeploymentModelContext() {
+    return _CANCEL_LOCAL_DEPLOYMENT_OPERATION_CONTEXT;
   }
 
   public static CreateDebugPasswordOperationContext getCreateDebugPasswordModelContext() {
