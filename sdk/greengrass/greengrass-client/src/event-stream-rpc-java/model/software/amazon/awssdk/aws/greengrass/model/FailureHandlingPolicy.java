@@ -14,35 +14,26 @@ import java.util.HashMap;
 import java.util.Map;
 import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
 
-public enum DeploymentStatus implements EventStreamJsonMessage {
-  @SerializedName("QUEUED")
-  QUEUED("QUEUED"),
+public enum FailureHandlingPolicy implements EventStreamJsonMessage {
+  @SerializedName("ROLLBACK")
+  ROLLBACK("ROLLBACK"),
 
-  @SerializedName("IN_PROGRESS")
-  IN_PROGRESS("IN_PROGRESS"),
+  @SerializedName("DO_NOTHING")
+  DO_NOTHING("DO_NOTHING");
 
-  @SerializedName("SUCCEEDED")
-  SUCCEEDED("SUCCEEDED"),
+  public static final String APPLICATION_MODEL_TYPE = "aws.greengrass#FailureHandlingPolicy";
 
-  @SerializedName("FAILED")
-  FAILED("FAILED"),
-
-  @SerializedName("CANCELED")
-  CANCELED("CANCELED");
-
-  public static final String APPLICATION_MODEL_TYPE = "aws.greengrass#DeploymentStatus";
-
-  private static final Map<String, DeploymentStatus> lookup = new HashMap<String, DeploymentStatus>();
+  private static final Map<String, FailureHandlingPolicy> lookup = new HashMap<String, FailureHandlingPolicy>();
 
   static {
-    for (DeploymentStatus value:DeploymentStatus.values()) {
+    for (FailureHandlingPolicy value:FailureHandlingPolicy.values()) {
       lookup.put(value.getValue(), value);
     }
   }
 
   String value;
 
-  DeploymentStatus(String value) {
+  FailureHandlingPolicy(String value) {
     this.value = value;
   }
 
@@ -55,7 +46,7 @@ public enum DeploymentStatus implements EventStreamJsonMessage {
     return APPLICATION_MODEL_TYPE;
   }
 
-  public static DeploymentStatus get(String value) {
+  public static FailureHandlingPolicy get(String value) {
     return lookup.get(value);
   }
 }

@@ -9,6 +9,7 @@ package software.amazon.awssdk.aws.greengrass;
 
 import java.util.Optional;
 import software.amazon.awssdk.aws.greengrass.model.AuthorizeClientDeviceActionRequest;
+import software.amazon.awssdk.aws.greengrass.model.CancelLocalDeploymentRequest;
 import software.amazon.awssdk.aws.greengrass.model.CertificateUpdateEvent;
 import software.amazon.awssdk.aws.greengrass.model.ComponentUpdatePolicyEvents;
 import software.amazon.awssdk.aws.greengrass.model.ConfigurationUpdateEvents;
@@ -53,6 +54,10 @@ import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
 public interface GreengrassCoreIPC {
   AuthorizeClientDeviceActionResponseHandler authorizeClientDeviceAction(
       final AuthorizeClientDeviceActionRequest request,
+      final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler);
+
+  CancelLocalDeploymentResponseHandler cancelLocalDeployment(
+      final CancelLocalDeploymentRequest request,
       final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler);
 
   CreateDebugPasswordResponseHandler createDebugPassword(final CreateDebugPasswordRequest request,
