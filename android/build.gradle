@@ -20,6 +20,9 @@ buildscript {
 
 allprojects {
     repositories {
+        maven {
+            url "https://aws.oss.sonatype.org/content/repositories/softwareamazon-5984/"
+        }
         google()
         mavenCentral()
     }

@@ -157,7 +157,9 @@ afterEvaluate {
                 url = version.endsWith('SNAPSHOT') ? snapshotRepo : releaseRepo
             }
             mavenLocal()
-
+            maven {
+                url "https://aws.oss.sonatype.org/content/repositories/softwareamazon-5984/"
+            }
         }
     }
 }
