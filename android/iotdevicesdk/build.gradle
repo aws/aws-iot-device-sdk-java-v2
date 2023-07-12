@@ -86,11 +86,11 @@ android {
 }
 
 repositories {
+    maven {
+        url "https://aws.oss.sonatype.org/content/repositories/softwareamazon-5984/"
+    }
     mavenLocal()
     mavenCentral()
-    maven {
-        url "https://aws.oss.sonatype.org/content/repositories/snapshots"
-    }
 }
 
 dependencies {
