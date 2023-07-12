@@ -63,9 +63,14 @@ jobs:
           - alpine-3.16-x64
           - alpine-3.16-arm64
           - openwrt-x64-openjdk8
+    permissions:
+      id-token: write # This is required for requesting the JWT
     steps:
       - name: configure AWS credentials (containers)
         uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ env.CI_IOT_CONTAINERS }}
+          aws-region: ${{ env.AWS_DEFAULT_REGION }}
       - name: Install qemu/docker
         run: docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
       - name: Checkout Sources
@@ -84,9 +89,14 @@ jobs:
   # resolution.
   linux-musl-armv7:
     runs-on: ubuntu-20.04 # latest
+    permissions:
+      id-token: write # This is required for requesting the JWT
     steps:
       - name: configure AWS credentials (containers)
         uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ env.CI_IOT_CONTAINERS }}
+          aws-region: ${{ env.AWS_DEFAULT_REGION }}
       - name: Install qemu/docker
         run: docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
       - name: Checkout Sources
