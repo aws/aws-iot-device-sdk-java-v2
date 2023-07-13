@@ -15,11 +15,12 @@ import boto3  # - for launching sample
 
 current_folder = os.path.dirname(pathlib.Path(__file__).resolve())
 current_folder += "/"
+current_working_directory = os.getcwd()
 
 def main():
     print("Testing python script.\n")
-    print("current_folder:")
-    print(current_folder)
+    print("current_folder: " + current_folder)
+    print("current working dir: " + current_working_directory)
 
     try:
         client = boto3.client('devicefarm', region_name='us-west-2')
@@ -46,7 +47,7 @@ def main():
     upload_file_name = 'CI-githubRunID-GithubRunNumber.apk'
 
     print("Uploading device file to device farm")
-    files = {upload_file_name: open('publish-release.sh', 'rb')}
+    files = {upload_file_name: open(current_folder + 'publish-release.sh', 'rb')}
     r = requests.post(device_farm_upload_url, files=files)
 
     print('file uploaded attempted')
