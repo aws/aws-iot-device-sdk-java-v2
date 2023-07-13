@@ -17,6 +17,8 @@ import boto3  # - for launching sample
 parser = argparse.ArgumentParser(description="Utility script to upload and run Android Device tests on AWS Device Farm for CI")
 parser.add_argument('--run_id', required=True, help="A unique number for each workflow run within a repository")
 parser.add_argument('--run_number', required=True, help="A unique number for each run of a particular workflow in a repository")
+parser.add_argument('--project_arn', required=True, help="Arn for the Device Farm Project the apk will be tested on")
+parser.add_argument('--device_pool_arn', required=True, help="Arn for device pool of the Device Farm Project the apk will be tested on")
 
 current_working_directory = os.getcwd()
 build_file_location = current_working_directory + '/android/app/build/outputs/apk/debug/app-debug.apk'
@@ -25,6 +27,8 @@ def main():
     args = parser.parse_args()
     run_id = args.run_id
     run_number = args.run_number
+    project_arn = args.project_arn
+    device_pool_arn = args.device_pool_arn
 
     print("Beginning Android Device Farm Setup\n")
 
@@ -44,7 +48,7 @@ def main():
     print('Upload file name: ' + upload_file_name)
 
     create_upload_response = client.create_upload(
-        projectArn='arn:aws:devicefarm:us-west-2:180635532705:project:ee67d437-f890-4c6b-a2eb-8d5ed201252f',
+        projectArn=project_arn,
         name=upload_file_name,
         type='ANDROID_APP'
     )
@@ -65,9 +69,9 @@ def main():
     print('scheduling run')
 
     schedule_run_response = client.schedule_run(
-        projectArn='arn:aws:devicefarm:us-west-2:180635532705:project:ee67d437-f890-4c6b-a2eb-8d5ed201252f',
+        projectArn=project_arn,
         appArn=device_farm_upload_arn,
-        devicePoolArn='arn:aws:devicefarm:us-west-2:180635532705:devicepool:ee67d437-f890-4c6b-a2eb-8d5ed201252f/79f3baaa-b80e-4d4d-86a8-075aadbac4d0',
+        devicePoolArn=device_pool_arn,
         name=upload_file_name,
         test={
             'type': 'BUILTIN_FUZZ'
