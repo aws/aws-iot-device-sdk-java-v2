@@ -4,10 +4,6 @@
 # Built-in
 import argparse
 import os
-import subprocess
-import pathlib
-import sys
-import json
 import time
 
 # Following needs to be installed via pip
