@@ -330,7 +330,7 @@ jobs:
           python3 -m pip install requests
           python3 ./utils/run_android_ci.py \
           --run_id ${{ github.run_id }} \
-          --run_number ${{ github.run_attempt }} \
+          --run_attempt ${{ github.run_attempt }} \
           --project_arn arn:aws:devicefarm:us-west-2:180635532705:project:ee67d437-f890-4c6b-a2eb-8d5ed201252f \
           --device_pool_arn arn:aws:devicefarm:us-west-2:180635532705:devicepool:ee67d437-f890-4c6b-a2eb-8d5ed201252f/79f3baaa-b80e-4d4d-86a8-075aadbac4d0
 
