@@ -16,7 +16,7 @@ import boto3  # - for launching sample
 
 parser = argparse.ArgumentParser(description="Utility script to upload and run Android Device tests on AWS Device Farm for CI")
 parser.add_argument('--run_id', required=True, help="A unique number for each workflow run within a repository")
-parser.add_argument('--run_number', required=True, help="A unique number for each run of a particular workflow in a repository")
+parser.add_argument('--run_attempt', required=True, help="A unique number for each run of a particular workflow in a repository")
 parser.add_argument('--project_arn', required=True, help="Arn for the Device Farm Project the apk will be tested on")
 parser.add_argument('--device_pool_arn', required=True, help="Arn for device pool of the Device Farm Project the apk will be tested on")
 
@@ -26,7 +26,7 @@ build_file_location = current_working_directory + '/android/app/build/outputs/ap
 def main():
     args = parser.parse_args()
     run_id = args.run_id
-    run_number = args.run_number
+    run_attempt = args.run_attempt
     project_arn = args.project_arn
     device_pool_arn = args.device_pool_arn
 
@@ -44,7 +44,7 @@ def main():
 
     #Upload the build apk file to Device Farm
 
-    upload_file_name = 'CI-' + run_id + '-' + run_number + '.apk'
+    upload_file_name = 'CI-' + run_id + '-' + run_attempt + '.apk'
     print('Upload file name: ' + upload_file_name)
 
     create_upload_response = client.create_upload(
