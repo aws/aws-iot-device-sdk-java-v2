@@ -14,15 +14,19 @@ import time
 import requests # - for uploading files
 import boto3  # - for launching sample
 
-current_folder = os.path.dirname(pathlib.Path(__file__).resolve())
-current_folder += "/"
+parser = argparse.ArgumentParser(description="Utility script to upload and run Android Device tests on AWS Device Farm for CI")
+parser.add_argument('--run_id', required=True, help="A unique number for each workflow run within a repository")
+parser.add_argument('--run_number', required=True, help="A unique number for each run of a particular workflow in a repository")
+
 current_working_directory = os.getcwd()
 build_file_location = current_working_directory + '/android/app/build/outputs/apk/debug/app-debug.apk'
 
 def main():
-    print("Testing python script.\n")
-    print("current_folder: " + current_folder)
-    print("current working dir: " + current_working_directory)
+    args = parser.parse_args()
+    run_id = args.run_id
+    run_number = args.run_number
+
+    print("Beginning Android Device Farm Setup\n")
 
     # Create Boto3 client for Device Farm
 
@@ -36,7 +40,8 @@ def main():
 
     #Upload the build apk file to Device Farm
 
-    upload_file_name = 'CI-githubRunID-GithubRunNumber.apk'
+    upload_file_name = 'CI-' + run_id + '-' + run_number + '.apk'
+    print('Upload file name: ' + upload_file_name)
 
     create_upload_response = client.create_upload(
         projectArn='arn:aws:devicefarm:us-west-2:180635532705:project:ee67d437-f890-4c6b-a2eb-8d5ed201252f',
@@ -51,7 +56,7 @@ def main():
     with open(build_file_location, 'rb') as f:
         data = f.read()
     r = requests.put(device_farm_upload_url, data=data)
-    print('file upload response')
+    print('file upload response:')
     print(r)
 
     print('sleeping for 10 seconds to allow AWS to process the uploaded apk package')
@@ -75,26 +80,29 @@ def main():
     device_farm_run_arn = schedule_run_response['run']['arn']
 
     get_run_response = client.get_run(arn=device_farm_run_arn)
-    print(get_run_response)
 
     while get_run_response['run']['result'] == 'PENDING':
-        print('current run result: ' + get_run_response['run']['result'])
-        time.sleep(5)
+        time.sleep(10)
         get_run_response = client.get_run(arn=device_farm_run_arn)
 
     print('run result: ' + get_run_response['run']['result'])
 
     is_success = True
-
     if get_run_response['run']['result'] != 'PASSED':
         print('run has failed with result ' + get_run_response['run']['result'])
         is_success = False
 
-
+    # Clean up
+    client.delete_upload(
+        arn=device_farm_upload_arn
+    )
+    print(upload_file_name + ' deleted from Device Farm Project')
 
     if is_success == False:
+        print('Exiting with fail')
         exit -1
 
+    print('Exiting with success')
 
 
 
