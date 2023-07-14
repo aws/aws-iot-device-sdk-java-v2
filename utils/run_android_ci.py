@@ -5,6 +5,7 @@
 import argparse
 import os
 import time
+import datetime
 
 # Following needs to be installed via pip
 import requests # - for uploading files
@@ -29,7 +30,6 @@ def main():
     print("Beginning Android Device Farm Setup\n")
 
     # Create Boto3 client for Device Farm
-
     try:
         client = boto3.client('devicefarm', region_name='us-west-2')
     except Exception:
@@ -38,17 +38,16 @@ def main():
     print("Boto3 client established")
 
 
-    #Upload the build apk file to Device Farm
-
+    # Upload the build apk file to Device Farm
     upload_file_name = 'CI-' + run_id + '-' + run_attempt + '.apk'
     print('Upload file name: ' + upload_file_name)
 
+    # Setup upload to Device Farm project
     create_upload_response = client.create_upload(
         projectArn=project_arn,
         name=upload_file_name,
         type='ANDROID_APP'
     )
-
     device_farm_upload_arn = create_upload_response['upload']['arn']
     device_farm_upload_url = create_upload_response['upload']['url']
 
@@ -56,11 +55,10 @@ def main():
     with open(build_file_location, 'rb') as f:
         data = f.read()
     r = requests.put(device_farm_upload_url, data=data)
-    print('file upload response:')
-    print(r)
+    print('File upload status code: ' + str(r.status_code) + ' reason: ' + r.reason)
 
-    print('sleeping for 10 seconds to allow AWS to process the uploaded apk package')
-    time.sleep(10)
+    print('Sleeping for 5 seconds to allow AWS to process the uploaded apk package')
+    time.sleep(5)
 
     print('scheduling run')
 
@@ -76,16 +74,21 @@ def main():
             'jobTimeoutMinutes': 20
         }
     )
-    print(schedule_run_response)
+
     device_farm_run_arn = schedule_run_response['run']['arn']
 
-    get_run_response = client.get_run(arn=device_farm_run_arn)
+    run_start_time = schedule_run_response['run']['started']
+    run_start_date_time = run_start_time.strftime("%m/%d/%Y, %H:%M:%S")
+    print('run scheduled at ' + run_start_date_time)
 
+    get_run_response = client.get_run(arn=device_farm_run_arn)
     while get_run_response['run']['result'] == 'PENDING':
         time.sleep(10)
         get_run_response = client.get_run(arn=device_farm_run_arn)
 
-    print('run result: ' + get_run_response['run']['result'])
+    run_end_time = datetime.datetime.now()
+    run_end_date_time = run_end_time.strftime("%m/%d/%Y, %H:%M:%S")
+    print('Run ended at ' + run_end_date_time + ' with result: ' + get_run_response['run']['result'])
 
     is_success = True
     if get_run_response['run']['result'] != 'PASSED':
@@ -93,18 +96,16 @@ def main():
         is_success = False
 
     # Clean up
+    print('Deleting' + upload_file_name + ' Device Farm project')
     client.delete_upload(
         arn=device_farm_upload_arn
     )
-    print(upload_file_name + ' deleted from Device Farm Project')
 
     if is_success == False:
         print('Exiting with fail')
         exit -1
 
     print('Exiting with success')
-
-
 
 if __name__ == "__main__":
     main()
