@@ -55,6 +55,60 @@ jobs:
         ./linux-container-ci.sh ${{ env.BUILDER_VERSION }} aws-crt-${{ matrix.image }} build -p ${{ env.PACKAGE_NAME }}
     # NOTE: we cannot run samples or DeviceAdvisor here due to container restrictions
 
+  linux-musl:
+    runs-on: ubuntu-22.04 # latest
+    strategy:
+      matrix:
+        image:
+          - alpine-3.16-x64
+          - alpine-3.16-arm64
+          - openwrt-x64-openjdk8
+    permissions:
+      id-token: write # This is required for requesting the JWT
+    steps:
+      - name: configure AWS credentials (containers)
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ env.CI_IOT_CONTAINERS }}
+          aws-region: ${{ env.AWS_DEFAULT_REGION }}
+      - name: Install qemu/docker
+        run: docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+      - name: Checkout Sources
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Build ${{ env.PACKAGE_NAME }}
+        run: |
+          aws s3 cp s3://aws-crt-test-stuff/ci/${{ env.BUILDER_VERSION }}/linux-container-ci.sh ./linux-container-ci.sh && chmod a+x ./linux-container-ci.sh
+          ./linux-container-ci.sh ${{ env.BUILDER_VERSION }} aws-crt-${{ matrix.image }} build -p ${{ env.PACKAGE_NAME }}
+
+  # armv7 needs its own action due to inability to differentiate at runtime armv6 vs armv7 in the jvm:
+  #
+  # At build time we can properly figure out that we're targeting armv7.
+  # At run time we have to force armv7 (via environment variable) in order to achieve proper resource path
+  # resolution.
+  linux-musl-armv7:
+    runs-on: ubuntu-20.04 # latest
+    permissions:
+      id-token: write # This is required for requesting the JWT
+    steps:
+      - name: configure AWS credentials (containers)
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ env.CI_IOT_CONTAINERS }}
+          aws-region: ${{ env.AWS_DEFAULT_REGION }}
+      - name: Install qemu/docker
+        run: docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+      - name: Checkout Sources
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Build ${{ env.PACKAGE_NAME }}
+        run: |
+          export AWS_CRT_ARCH=armv7
+          aws s3 cp s3://aws-crt-test-stuff/ci/${{ env.BUILDER_VERSION }}/linux-container-ci.sh ./linux-container-ci.sh && chmod a+x ./linux-container-ci.sh
+          ./linux-container-ci.sh ${{ env.BUILDER_VERSION }} aws-crt-alpine-3.16-armv7 build -p ${{ env.PACKAGE_NAME }}
+  
   raspberry:
     runs-on: ubuntu-20.04 # latest
     strategy:
