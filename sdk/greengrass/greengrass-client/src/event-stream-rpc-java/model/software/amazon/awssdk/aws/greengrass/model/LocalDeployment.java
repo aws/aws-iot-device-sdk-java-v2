@@ -41,9 +41,23 @@ public class LocalDeployment implements EventStreamJsonMessage {
   )
   private Optional<String> status;
 
+  @Expose(
+      serialize = true,
+      deserialize = true
+  )
+  private Optional<String> createdOn;
+
+  @Expose(
+      serialize = true,
+      deserialize = true
+  )
+  private Optional<DeploymentStatusDetails> deploymentStatusDetails;
+
   public LocalDeployment() {
     this.deploymentId = Optional.empty();
     this.status = Optional.empty();
+    this.createdOn = Optional.empty();
+    this.deploymentStatusDetails = Optional.empty();
   }
 
   /**
@@ -118,6 +132,57 @@ public class LocalDeployment implements EventStreamJsonMessage {
     return this;
   }
 
+  /**
+   * (Optional) The timestamp at which the local deployment was created in MM/dd/yyyy hh:mm:ss format
+   */
+  public String getCreatedOn() {
+    if (createdOn.isPresent()) {
+      return createdOn.get();
+    }
+    return null;
+  }
+
+  /**
+   * (Optional) The timestamp at which the local deployment was created in MM/dd/yyyy hh:mm:ss format
+   */
+  public void setCreatedOn(final String createdOn) {
+    this.createdOn = Optional.ofNullable(createdOn);
+  }
+
+  /**
+   * (Optional) The timestamp at which the local deployment was created in MM/dd/yyyy hh:mm:ss format
+   */
+  public LocalDeployment withCreatedOn(final String createdOn) {
+    setCreatedOn(createdOn);
+    return this;
+  }
+
+  /**
+   * (Optional) The status details of the local deployment.
+   */
+  public DeploymentStatusDetails getDeploymentStatusDetails() {
+    if (deploymentStatusDetails.isPresent()) {
+      return deploymentStatusDetails.get();
+    }
+    return null;
+  }
+
+  /**
+   * (Optional) The status details of the local deployment.
+   */
+  public void setDeploymentStatusDetails(final DeploymentStatusDetails deploymentStatusDetails) {
+    this.deploymentStatusDetails = Optional.ofNullable(deploymentStatusDetails);
+  }
+
+  /**
+   * (Optional) The status details of the local deployment.
+   */
+  public LocalDeployment withDeploymentStatusDetails(
+      final DeploymentStatusDetails deploymentStatusDetails) {
+    setDeploymentStatusDetails(deploymentStatusDetails);
+    return this;
+  }
+
   @Override
   public String getApplicationModelType() {
     return APPLICATION_MODEL_TYPE;
@@ -132,11 +197,13 @@ public class LocalDeployment implements EventStreamJsonMessage {
     boolean isEquals = true;
     isEquals = isEquals && this.deploymentId.equals(other.deploymentId);
     isEquals = isEquals && this.status.equals(other.status);
+    isEquals = isEquals && this.createdOn.equals(other.createdOn);
+    isEquals = isEquals && this.deploymentStatusDetails.equals(other.deploymentStatusDetails);
     return isEquals;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(deploymentId, status);
+    return Objects.hash(deploymentId, status, createdOn, deploymentStatusDetails);
   }
 }

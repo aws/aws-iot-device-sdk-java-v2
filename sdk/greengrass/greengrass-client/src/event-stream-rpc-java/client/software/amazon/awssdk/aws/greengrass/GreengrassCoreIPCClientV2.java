@@ -28,6 +28,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import software.amazon.awssdk.aws.greengrass.model.AuthorizeClientDeviceActionRequest;
 import software.amazon.awssdk.aws.greengrass.model.AuthorizeClientDeviceActionResponse;
+import software.amazon.awssdk.aws.greengrass.model.CancelLocalDeploymentRequest;
+import software.amazon.awssdk.aws.greengrass.model.CancelLocalDeploymentResponse;
 import software.amazon.awssdk.aws.greengrass.model.CertificateUpdateEvent;
 import software.amazon.awssdk.aws.greengrass.model.ComponentUpdatePolicyEvents;
 import software.amazon.awssdk.aws.greengrass.model.ConfigurationUpdateEvents;
@@ -165,6 +167,31 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
   public CompletableFuture<AuthorizeClientDeviceActionResponse> authorizeClientDeviceActionAsync(
       final AuthorizeClientDeviceActionRequest request) {
     return client.authorizeClientDeviceAction(request, Optional.empty()).getResponse();
+  }
+
+  /**
+   * Perform the cancelLocalDeployment operation synchronously.
+   *
+   * @throws InterruptedException if thread is interrupted while waiting for the response
+   * @return the response
+   *
+   * @param request request object
+   */
+  public CancelLocalDeploymentResponse cancelLocalDeployment(
+      final CancelLocalDeploymentRequest request) throws InterruptedException {
+    return getResponse(this.cancelLocalDeploymentAsync(request));
+  }
+
+  /**
+   * Perform the cancelLocalDeployment operation asynchronously.
+   *
+   * @return a future which resolves to the response
+   *
+   * @param request request object
+   */
+  public CompletableFuture<CancelLocalDeploymentResponse> cancelLocalDeploymentAsync(
+      final CancelLocalDeploymentRequest request) {
+    return client.cancelLocalDeployment(request, Optional.empty()).getResponse();
   }
 
   /**

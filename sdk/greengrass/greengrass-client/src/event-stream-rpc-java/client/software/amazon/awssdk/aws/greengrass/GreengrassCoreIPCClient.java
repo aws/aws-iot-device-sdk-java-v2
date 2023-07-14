@@ -10,6 +10,7 @@ package software.amazon.awssdk.aws.greengrass;
 import java.lang.Override;
 import java.util.Optional;
 import software.amazon.awssdk.aws.greengrass.model.AuthorizeClientDeviceActionRequest;
+import software.amazon.awssdk.aws.greengrass.model.CancelLocalDeploymentRequest;
 import software.amazon.awssdk.aws.greengrass.model.CertificateUpdateEvent;
 import software.amazon.awssdk.aws.greengrass.model.ComponentUpdatePolicyEvents;
 import software.amazon.awssdk.aws.greengrass.model.ConfigurationUpdateEvents;
@@ -64,6 +65,14 @@ public class GreengrassCoreIPCClient extends EventStreamRPCClient implements Gre
       final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler) {
     final AuthorizeClientDeviceActionOperationContext operationContext = GreengrassCoreIPCServiceModel.getAuthorizeClientDeviceActionModelContext();
     return new AuthorizeClientDeviceActionResponseHandler(doOperationInvoke(operationContext, request, streamResponseHandler));
+  }
+
+  @Override
+  public CancelLocalDeploymentResponseHandler cancelLocalDeployment(
+      final CancelLocalDeploymentRequest request,
+      final Optional<StreamResponseHandler<EventStreamJsonMessage>> streamResponseHandler) {
+    final CancelLocalDeploymentOperationContext operationContext = GreengrassCoreIPCServiceModel.getCancelLocalDeploymentModelContext();
+    return new CancelLocalDeploymentResponseHandler(doOperationInvoke(operationContext, request, streamResponseHandler));
   }
 
   @Override
