@@ -65,7 +65,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         sampleSelect = findViewById<Spinner>(R.id.sampleSelect);
 
         val samples = SAMPLES.keys.toMutableList()
-        samples.add(0, "Please select a sample")
+        samples.add(0, "Please select a test")
         val samplesAdapter = ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, samples)
         sampleSelect?.adapter = samplesAdapter
 
@@ -218,8 +218,12 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
         clearConsole()
         val sampleName = parent?.getItemAtPosition(pos).toString()
+        writeToConsole("sampleName:"+sampleName)
         val sampleClassName = SAMPLES[sampleName]
+        writeToConsole("sampleClassName")
+
         if (sampleClassName != null) {
+            writeToConsole("sampleClassName != null")
             return runSample(sampleClassName)
         }
     }
