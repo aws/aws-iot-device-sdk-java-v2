@@ -325,6 +325,7 @@ jobs:
       - name: Build ${{ env.PACKAGE_NAME }}
         run: |
           cd android
+          git fetch --tags
           git describe --tags
           ./gradlew assembledebug
           ./gradlew publishToMavenLocal
