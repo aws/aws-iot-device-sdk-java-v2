@@ -326,11 +326,13 @@ jobs:
         run: |
           cd android
           ./gradlew assembledebug
+          ./gradlew publishToMavenLocal
           echo "Build status report=${{ job.status }}."
 
       - name: Setup Android Test Files
         run: |
-          cd ../sdk/tests/android/testapp/src/main/assets
+          pwd
+          cd sdk/tests/android/testapp/src/main/assets
           cert=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/PubSub/cert" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$cert" > certificate.pem
           key=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/PubSub/key" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$key" > privatekey.pem
           endpoint=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/endpoint" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$endpoint" > endpoint.txt
