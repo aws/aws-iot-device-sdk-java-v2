@@ -342,6 +342,7 @@ jobs:
           ls -a
           git describe --tags
           pwd
+          cd sdk/tests/android/testapp/src/main/assets
           cd ../../..
           ../../../../android/gradlew assembledebug
           cd ../../../..
