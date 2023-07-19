@@ -18,7 +18,7 @@ parser.add_argument('--project_arn', required=True, help="Arn for the Device Far
 parser.add_argument('--device_pool_arn', required=True, help="Arn for device pool of the Device Farm Project the apk will be tested on")
 
 current_working_directory = os.getcwd()
-build_file_location = current_working_directory + '/android/app/build/outputs/apk/debug/app-debug.apk'
+build_file_location = current_working_directory + '/sdk/tests/android/testapp/build/outputs/apk/debug/testapp-debug.apk'
 
 def main():
     args = parser.parse_args()
