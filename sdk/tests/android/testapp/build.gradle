@@ -67,7 +67,6 @@ repositories {
 dependencies {
     api 'software.amazon.awssdk.iotdevicesdk:aws-iot-device-sdk-android:1.14.0'
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    // implementation project(":iotdevicesdk")
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.core:core:1.2.0'
@@ -77,7 +76,3 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 }
-
-// task clean(type: Delete){
-//     delete rootProject.buildDir
-// }
