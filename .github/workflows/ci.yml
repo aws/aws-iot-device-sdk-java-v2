@@ -326,7 +326,6 @@ jobs:
       - name: Build ${{ env.PACKAGE_NAME }}
         run: |
           cd android
-          git describe --tags
           ./gradlew assembledebug
           ./gradlew publishToMavenLocal
           echo "Build status report=${{ job.status }}."
@@ -337,12 +336,6 @@ jobs:
           cert=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/PubSub/cert" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$cert" > certificate.pem
           key=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/PubSub/key" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$key" > privatekey.pem
           endpoint=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/endpoint" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$endpoint" > endpoint.txt
-          ls -a
-          cd /home/runner/.m2/repository/software/amazon/awssdk/iotdevicesdk/aws-iot-device-sdk-android/
-          ls -a
-          git describe --tags
-          pwd
-          cd sdk/tests/android/testapp/src/main/assets
           cd ../../..
           ../../../../android/gradlew assembledebug
           cd ../../../..
