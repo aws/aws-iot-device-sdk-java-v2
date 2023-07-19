@@ -70,6 +70,9 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         sampleSelect?.adapter = samplesAdapter
 
         sampleSelect?.onItemSelectedListener = this
+
+        runSample("pubsub.PubSub")
+        throw RuntimeException("Testing a runtime exception")
     }
 
     private fun clearConsole() {
@@ -205,6 +208,8 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                 } catch (e: Exception) {
                     writeToConsole(e.toString())
                 }
+            } else {
+                throw RuntimeException("Required resources missing")
             }
             onSampleComplete();
         }
