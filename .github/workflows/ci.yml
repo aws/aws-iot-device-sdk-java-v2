@@ -307,6 +307,7 @@ jobs:
         uses: actions/checkout@v2
         with:
             submodules: true
+        run: git fetch --prune --unshallow # get tags for gradle build to have proper versioning
       # Setup JDK 11
       - name: set up JDK 11
         uses: actions/setup-java@v3
@@ -325,7 +326,6 @@ jobs:
       - name: Build ${{ env.PACKAGE_NAME }}
         run: |
           cd android
-          git fetch --tags
           git describe --tags
           ./gradlew assembledebug
           ./gradlew publishToMavenLocal
