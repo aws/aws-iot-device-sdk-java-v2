@@ -13,6 +13,7 @@ import java.io.FileOutputStream
 import java.io.OutputStream
 import java.io.PrintStream
 import java.lang.Exception
+import java.util.UUID
 import kotlin.concurrent.thread
 
 val SAMPLES = mapOf(
@@ -22,7 +23,7 @@ val SAMPLES = mapOf(
     "Cognito Client Sample" to "cognitoconnect.CognitoConnect"
 )
 
-class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
+class MainActivity : AppCompatActivity() {
 
     private class StreamTee(val source: OutputStream, val log: (message: String) -> Unit)
         : PrintStream(source, true) {
@@ -71,7 +72,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         val samplesAdapter = ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, samples)
         sampleSelect?.adapter = samplesAdapter
 
-        sampleSelect?.onItemSelectedListener = this
+        // sampleSelect?.onItemSelectedListener = this
 
         runSampleTests()
     }
@@ -132,6 +133,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
             val args = mutableListOf<String?>()
             var resourceNames = mutableListOf<String>()
             val resourceMap = HashMap<String, String>()
+            val generatedClientId = "android_test_client_" + UUID.randomUUID().toString()
 
             // All samples require endpoint.txt
             resourceNames.add("endpoint.txt")
@@ -177,7 +179,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                             "--cert", resourceMap["certificate.pem"],
                             "--key", resourceMap["privatekey.pem"],
                             "--port", assetContentsOr("port.txt", "8883"),
-                            "--client_id", assetContentsOr("clientId.txt", "android-java-crt-test"),
+                            "--client_id", generatedClientId,
                             "--topic", assetContentsOr("topic.txt", "test/topic"),
                             "--message", assetContentsOr("message.txt", "Hello World From Android")))
                     }
@@ -187,7 +189,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                             "--cert", resourceMap["certificate.pem"],
                             "--key", resourceMap["privatekey.pem"],
                             "--port", assetContentsOr("port.txt", "8883"),
-                            "--client_id", assetContentsOr("clientId.txt", "android-java-crt-test"),
+                            "--client_id", generatedClientId,
                             "--thing_name", assetContentsOr("thingName.txt", "aws-iot-unit-test")))
                     }
 
@@ -223,21 +225,21 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         }
     }
 
-    override fun onNothingSelected(p0: AdapterView<*>?) {
-        clearConsole()
-        writeToConsole("Please select a sample above")
-    }
+    // override fun onNothingSelected(p0: AdapterView<*>?) {
+    //     clearConsole()
+    //     writeToConsole("Please select a sample above")
+    // }
 
-    override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
-        clearConsole()
-        val sampleName = parent?.getItemAtPosition(pos).toString()
-        writeToConsole("sampleName:"+sampleName)
-        val sampleClassName = SAMPLES[sampleName]
-        writeToConsole("sampleClassName")
+    // override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
+    //     clearConsole()
+    //     val sampleName = parent?.getItemAtPosition(pos).toString()
+    //     writeToConsole("sampleName:"+sampleName)
+    //     val sampleClassName = SAMPLES[sampleName]
+    //     writeToConsole("sampleClassName")
 
-        if (sampleClassName != null) {
-            writeToConsole("sampleClassName != null")
-            return runSample(sampleClassName)
-        }
-    }
+    //     if (sampleClassName != null) {
+    //         writeToConsole("sampleClassName != null")
+    //         return runSample(sampleClassName)
+    //     }
+    // }
 }
