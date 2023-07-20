@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d("TAG_TEST", "TEST MESSAGE onCreate")
+        // Log.d("TAG_TEST", "TEST MESSAGE onCreate") Shows up with tag on both Logcat file and Logs
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
@@ -85,6 +85,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     private fun writeToConsole(message: String) {
         runOnUiThread() {
             console?.append(message)
+            Log.d("Console", message)
         }
     }
 
