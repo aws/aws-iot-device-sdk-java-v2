@@ -71,8 +71,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
         sampleSelect?.onItemSelectedListener = this
 
-        runSample("pubsub.PubSub")
-        throw RuntimeException("Testing a runtime exception")
+        runSampleTests()
     }
 
     private fun clearConsole() {
@@ -108,6 +107,11 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         } catch (fnf: FileNotFoundException) {
             defaultValue
         }
+    }
+
+    private fun runSampleTests(){
+        runSample("pubsub.PubSub")
+        // throw RuntimeException("Testing a runtime exception")
     }
 
     private fun runSample(name: String) {
@@ -161,7 +165,8 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
             }
 
             if(isResourcesFound) {
-                args.addAll(arrayOf("--endpoint", assetContents("endpoint.txt")))
+                args.addAll(arrayOf("--endpoint", assetContents("endpoint.txt"),
+                "verbosity", "Trace"))
 
                 when(name) {
                     "pubsub.PubSub" -> {
