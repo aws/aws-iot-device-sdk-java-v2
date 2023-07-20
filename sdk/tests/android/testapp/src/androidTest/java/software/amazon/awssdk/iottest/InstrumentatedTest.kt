@@ -20,6 +20,5 @@ class ExampleInstrumentedTest {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
         assertEquals("software.amazon.awssdk.iottest", appContext.packageName)
-        assertEquals("software.amazon.awssdk.fail", appContext.packageName)
     }
 }
