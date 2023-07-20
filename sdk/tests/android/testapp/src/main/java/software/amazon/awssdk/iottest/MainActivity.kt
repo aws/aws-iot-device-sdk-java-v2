@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d("TAG_TEST", "TEST MESSAGE")
+        Log.d("TAG_TEST", "TEST MESSAGE onCreate")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
