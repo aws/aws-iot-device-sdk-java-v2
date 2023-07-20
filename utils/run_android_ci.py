@@ -60,6 +60,9 @@ def main():
 
     device_farm_upload_status = client.get_upload(arn=device_farm_upload_arn)
     while device_farm_upload_status['upload']['status'] != 'SUCCEEDED':
+        if device_farm_upload_status['upload']['status'] == 'FAILED':
+            print('Upload failed to process')
+            exit -1
         time.sleep(1)
         device_farm_upload_status = client.get_upload(arn=device_farm_upload_arn)
 
@@ -80,6 +83,9 @@ def main():
 
     device_farm_upload_status = client.get_upload(arn=device_farm_instrumentation_upload_arn)
     while device_farm_upload_status['upload']['status'] != 'SUCCEEDED':
+        if device_farm_upload_status['upload']['status'] == 'FAILED':
+            print('Upload failed to process')
+            exit -1
         time.sleep(1)
         device_farm_upload_status = client.get_upload(arn=device_farm_instrumentation_upload_arn)
 
