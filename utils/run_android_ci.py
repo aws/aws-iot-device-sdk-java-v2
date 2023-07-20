@@ -58,6 +58,11 @@ def main():
     r = requests.put(device_farm_upload_url, data=data)
     print('File upload status code: ' + str(r.status_code) + ' reason: ' + r.reason)
 
+    device_farm_upload_status = client.get_upload(arn=device_farm_upload_arn)
+    while device_farm_upload_status['upload']['status'] != 'SUCCEEDED':
+        time.sleep(1)
+        device_farm_upload_status = client.get_upload(arn=device_farm_upload_arn)
+
     # Upload the instrumentation test package to Device Farm
     upload_test_file_name = 'CI-' + run_id + '-' + run_attempt + 'tests.apk'
     create_upload_response = client.create_upload(
@@ -73,8 +78,10 @@ def main():
     r_instrumentation = requests.put(device_farm_instrumentation_upload_url, data=dataInsturmentation)
     print('File upload status code: ' + str(r_instrumentation.status_code) + ' reason: ' + r_instrumentation.reason)
 
-    print('Sleeping for 5 seconds to allow AWS to process the uploaded apk packages')
-    time.sleep(5)
+    device_farm_upload_status = client.get_upload(arn=device_farm_instrumentation_upload_arn)
+    while device_farm_upload_status['upload']['status'] != 'SUCCEEDED':
+        time.sleep(1)
+        device_farm_upload_status = client.get_upload(arn=device_farm_instrumentation_upload_arn)
 
     print('scheduling run')
 
