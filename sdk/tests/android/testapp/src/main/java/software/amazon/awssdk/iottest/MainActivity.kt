@@ -3,6 +3,7 @@ package software.amazon.awssdk.iottest
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.util.Log
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
@@ -56,6 +57,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d("TAG_TEST", "TEST MESSAGE")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
