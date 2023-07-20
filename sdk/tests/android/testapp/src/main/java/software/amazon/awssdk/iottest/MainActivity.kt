@@ -16,12 +16,12 @@ import java.lang.Exception
 import java.util.UUID
 import kotlin.concurrent.thread
 
-val SAMPLES = mapOf(
-    "Publish/Subscribe Sample" to "pubsub.PubSub",
-    "Jobs Client Sample" to "jobs.JobsSample",
-    "Shadow Client Sample" to "shadow.ShadowSample",
-    "Cognito Client Sample" to "cognitoconnect.CognitoConnect"
-)
+// val SAMPLES = mapOf(
+//     "Publish/Subscribe Sample" to "pubsub.PubSub",
+//     "Jobs Client Sample" to "jobs.JobsSample",
+//     "Shadow Client Sample" to "shadow.ShadowSample",
+//     "Cognito Client Sample" to "cognitoconnect.CognitoConnect"
+// )
 
 class MainActivity : AppCompatActivity() {
 
@@ -50,7 +50,6 @@ class MainActivity : AppCompatActivity() {
     private val stderr : StreamTee;
 
     private var console: TextView? = null;
-    private var sampleSelect: Spinner? = null;
 
     init {
         stdout = StreamTee(System.out) { writeToConsole(it) }
@@ -65,22 +64,7 @@ class MainActivity : AppCompatActivity() {
         console = findViewById<TextView>(R.id.console)
         console?.isEnabled = false
 
-        sampleSelect = findViewById<Spinner>(R.id.sampleSelect);
-
-        val samples = SAMPLES.keys.toMutableList()
-        samples.add(0, "Please select a test")
-        val samplesAdapter = ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, samples)
-        sampleSelect?.adapter = samplesAdapter
-
-        // sampleSelect?.onItemSelectedListener = this
-
         runSampleTests()
-    }
-
-    private fun clearConsole() {
-        runOnUiThread() {
-            console?.text = ""
-        }
     }
 
     private fun writeToConsole(message: String) {
@@ -93,7 +77,6 @@ class MainActivity : AppCompatActivity() {
     private fun onSampleComplete() {
         runOnUiThread() {
             writeToConsole("Sample Complete\n")
-            sampleSelect?.isEnabled = true
         }
     }
 
@@ -115,14 +98,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun runSampleTests(){
         runSample("pubsub.PubSub")
-        // throw RuntimeException("Testing a runtime exception")
     }
 
     private fun runSample(name: String) {
         val classLoader = Thread.currentThread().contextClassLoader
         val sampleClass = classLoader?.loadClass(name);
         if (sampleClass == null) {
-            clearConsole()
             writeToConsole("Could not find sample '${name}'")
         }
         writeToConsole("Running sample '${name}'\n")
@@ -224,22 +205,4 @@ class MainActivity : AppCompatActivity() {
             onSampleComplete();
         }
     }
-
-    // override fun onNothingSelected(p0: AdapterView<*>?) {
-    //     clearConsole()
-    //     writeToConsole("Please select a sample above")
-    // }
-
-    // override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
-    //     clearConsole()
-    //     val sampleName = parent?.getItemAtPosition(pos).toString()
-    //     writeToConsole("sampleName:"+sampleName)
-    //     val sampleClassName = SAMPLES[sampleName]
-    //     writeToConsole("sampleClassName")
-
-    //     if (sampleClassName != null) {
-    //         writeToConsole("sampleClassName != null")
-    //         return runSample(sampleClassName)
-    //     }
-    // }
 }

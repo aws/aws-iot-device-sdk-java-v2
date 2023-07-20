@@ -19,6 +19,7 @@ parser.add_argument('--device_pool_arn', required=True, help="Arn for device poo
 
 current_working_directory = os.getcwd()
 build_file_location = current_working_directory + '/sdk/tests/android/testapp/build/outputs/apk/debug/testapp-debug.apk'
+test_file_location = current_working_directory + '/sdk/tests/android/testapp/build/outputs/apk/androidTest/debug/testapp-debug-androidTest.apk'
 
 def main():
     args = parser.parse_args()
@@ -51,24 +52,52 @@ def main():
     device_farm_upload_arn = create_upload_response['upload']['arn']
     device_farm_upload_url = create_upload_response['upload']['url']
 
-    print("Uploading build apk to Device Farm")
+    # Upload project apk
     with open(build_file_location, 'rb') as f:
         data = f.read()
     r = requests.put(device_farm_upload_url, data=data)
     print('File upload status code: ' + str(r.status_code) + ' reason: ' + r.reason)
 
-    print('Sleeping for 5 seconds to allow AWS to process the uploaded apk package')
+    # Upload the instrumentation test package to Device Farm
+    upload_test_file_name = 'CI-' + run_id + '-' + run_attempt + 'tests.apk'
+    create_upload_response = client.create_upload(
+        projectArn=project_arn,
+        name=upload_test_file_name,
+        type='INSTRUMENTATION_TEST_PACKAGE'
+    )
+    device_farm_instrumentation_upload_arn = create_upload_response['upload']['arn']
+    device_farm_instrumentation_upload_url = create_upload_response['upload']['url']
+
+    with open(test_file_location, 'rb') as f:
+        dataInsturmentation = f.read()
+    r_instrumentation = requests.put(device_farm_instrumentation_upload_url, data=dataInsturmentation)
+    print('File upload status code: ' + str(r_instrumentation.status_code) + ' reason: ' + r_instrumentation.reason)
+
+    print('Sleeping for 5 seconds to allow AWS to process the uploaded apk packages')
     time.sleep(5)
 
     print('scheduling run')
 
+    # schedule_run_response = client.schedule_run(
+    #     projectArn=project_arn,
+    #     appArn=device_farm_upload_arn,
+    #     devicePoolArn=device_pool_arn,
+    #     name=upload_file_name,
+    #     test={
+    #         'type': 'BUILTIN_FUZZ'
+    #     },
+    #     executionConfiguration={
+    #         'jobTimeoutMinutes': 20
+    #     }
+    # )
     schedule_run_response = client.schedule_run(
         projectArn=project_arn,
         appArn=device_farm_upload_arn,
         devicePoolArn=device_pool_arn,
         name=upload_file_name,
         test={
-            'type': 'BUILTIN_FUZZ'
+            'type': 'INSTRUMENTATION',
+            'testPackageArn': device_farm_instrumentation_upload_arn
         },
         executionConfiguration={
             'jobTimeoutMinutes': 20
@@ -99,6 +128,9 @@ def main():
     print('Deleting' + upload_file_name + ' Device Farm project')
     client.delete_upload(
         arn=device_farm_upload_arn
+    )
+    client.delete_upload(
+        arn=device_farm_instrumentation_upload_arn
     )
 
     if is_success == False:
