@@ -68,7 +68,7 @@ public class CommandLineUtils {
         if (hasCommand(m_cmd_help))
         {
             printHelp();
-            System.exit(-1);
+            throw new Exception("Help argument called");
         }
     }
 
@@ -105,8 +105,7 @@ public class CommandLineUtils {
         }
         printHelp();
         System.out.println("Missing required argument: --" + command + "\n");
-        System.exit(-1);
-        return "";
+        throw new Exception("Missing required argument");
     }
 
     public String getCommandRequired(String command, String commandAlt){
