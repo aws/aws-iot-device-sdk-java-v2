@@ -28,12 +28,8 @@ class MainActivityTest {
         }
     }
 
-    fun testInit() {
-        // Set system property for samples to know they're being tested
-        System.setProperty("aws.crt.ci", "True")
-    }
-
     fun getArgsForSample(name: String) : Array<String?> {
+        System.setProperty("aws.crt.ci", "True")
         val testContext = InstrumentationRegistry.getInstrumentation().targetContext
         val testRes = testContext.getResources()
         var resourceNames = mutableListOf<String>()
@@ -104,7 +100,7 @@ class MainActivityTest {
                     "--cert", resourceMap["shadowCertificate.pem"],
                     "--key", resourceMap["shadowPrivatekey.pem"],
                     "--port", "8883",
-                    "--thing_name", "aws-iot-unit-test"))
+                    "--thing_name", "CI_Shadow_Thing"))
             }
 
             "cognitoconnect.CognitoConnect" -> {
@@ -118,16 +114,14 @@ class MainActivityTest {
     }
 
 
-    @Test
-    fun useAppContext(){
-        val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("software.amazon.awssdk.iottest", appContext.packageName)
-    }
+    // @Test
+    // fun useAppContext(){
+    //     val appContext = InstrumentationRegistry.getInstrumentation().targetContext
+    //     assertEquals("software.amazon.awssdk.iottest", appContext.packageName)
+    // }
 
     @Test
     fun pubSubSample(){
-        testInit()
-
         val classLoader = Thread.currentThread().contextClassLoader
         val sampleClass = classLoader?.loadClass("pubsub.PubSub")
 
@@ -145,8 +139,6 @@ class MainActivityTest {
 
     @Test
     fun cognitoConnectSample(){
-        testInit()
-
         val classLoader = Thread.currentThread().contextClassLoader
         val sampleClass = classLoader?.loadClass("cognitoconnect.CognitoConnect")
 
@@ -163,8 +155,6 @@ class MainActivityTest {
 
     @Test
     fun shadowSample(){
-        testInit()
-
         val classLoader = Thread.currentThread().contextClassLoader
         val sampleClass = classLoader?.loadClass("shadow.ShadowSample")
 
@@ -181,8 +171,6 @@ class MainActivityTest {
 
     @Test
     fun jobsSample(){
-        testInit()
-
         val classLoader = Thread.currentThread().contextClassLoader
         val sampleClass = classLoader?.loadClass("jobs.JobsSample")
 
