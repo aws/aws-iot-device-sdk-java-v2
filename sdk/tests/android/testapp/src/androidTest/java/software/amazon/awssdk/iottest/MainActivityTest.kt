@@ -93,16 +93,16 @@ class MainActivityTest {
 
             "jobs.JobsSample"  -> {
                 args.addAll(arrayOf(
-                    "--cert", resourceMap["certificate.pem"],
-                    "--key", resourceMap["privatekey.pem"],
+                    "--cert", resourceMap["jobsCertificate.pem"],
+                    "--key", resourceMap["jobsPrivatekey.pem"],
                     "--port", "8883",
                     "--thing_name", "CI_Jobs_Thing"))
             }
 
             "shadow.ShadowSample" -> {
                 args.addAll(arrayOf(
-                    "--cert", resourceMap["certificate.pem"],
-                    "--key", resourceMap["privatekey.pem"],
+                    "--cert", resourceMap["shadowCertificate.pem"],
+                    "--key", resourceMap["shadowPrivatekey.pem"],
                     "--port", "8883",
                     "--thing_name", "aws-iot-unit-test"))
             }
