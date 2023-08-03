@@ -9,8 +9,6 @@ import org.junit.runner.RunWith
 import org.junit.Before
 import org.junit.Assert.*
 
-import android.util.Log
-import kotlin.concurrent.thread
 import java.lang.System
 import java.io.FileOutputStream
 
@@ -38,6 +36,7 @@ class MainActivityTest {
 
         resourceNames.add("endpoint.txt")
 
+        // Add sample specific file loading here
         when(name) {
             "pubsub.PubSub" -> {
                 resourceNames.add("pubSubCertificate.pem")
@@ -59,6 +58,7 @@ class MainActivityTest {
             }
         }
 
+        // Load resource into a cached location for use by sample
         for(resourceName in resourceNames) {
             try {
                 testRes.assets.open(resourceName).use { res->
@@ -70,14 +70,17 @@ class MainActivityTest {
                 }
             }
             catch (e: Exception) {
+                // If a file that's supposed to be here is missing, fail the test
                 fail(e.toString())
             }
         }
 
+        // Args for all samples
         args.addAll(arrayOf(
             "--endpoint", assetContents("endpoint.txt"),
             "--verbosity", "Debug"))
 
+        // Set sample specific args
         when(name){
             "pubsub.PubSub" -> {
                 args.addAll(arrayOf(
@@ -113,20 +116,10 @@ class MainActivityTest {
         return args.toTypedArray()
     }
 
-
-    // @Test
-    // fun useAppContext(){
-    //     val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-    //     assertEquals("software.amazon.awssdk.iottest", appContext.packageName)
-    // }
-
-    @Test
-    fun pubSubSample(){
+    fun runSample(name: String) {
         val classLoader = Thread.currentThread().contextClassLoader
-        val sampleClass = classLoader?.loadClass("pubsub.PubSub")
-
-        val sampleArgs = getArgsForSample("pubsub.PubSub")
-
+        val sampleClass = classLoader?.loadClass(name)
+        val sampleArgs = getArgsForSample(name)
         val main = sampleClass?.getMethod("main", Array<String>::class.java)
 
         try {
@@ -135,53 +128,25 @@ class MainActivityTest {
         catch (e:Exception) {
             fail(e.cause.toString())
         }
+    }
+
+    @Test
+    fun pubSubSample(){
+        runSample("pubsub.PubSub")
     }
 
     @Test
     fun cognitoConnectSample(){
-        val classLoader = Thread.currentThread().contextClassLoader
-        val sampleClass = classLoader?.loadClass("cognitoconnect.CognitoConnect")
-
-        val sampleArgs = getArgsForSample("cognitoconnect.CognitoConnect")
-        val main = sampleClass?.getMethod("main", Array<String>::class.java)
-
-        try {
-            main?.invoke(null, sampleArgs)
-        }
-        catch (e:Exception) {
-            fail(e.cause.toString())
-        }
+        runSample("cognitoconnect.CognitoConnect")
     }
 
     @Test
     fun shadowSample(){
-        val classLoader = Thread.currentThread().contextClassLoader
-        val sampleClass = classLoader?.loadClass("shadow.ShadowSample")
-
-        val sampleArgs = getArgsForSample("shadow.ShadowSample")
-        val main = sampleClass?.getMethod("main", Array<String>::class.java)
-
-        try {
-            main?.invoke(null, sampleArgs)
-        }
-        catch (e:Exception) {
-            fail(e.cause.toString())
-        }
+        runSample("shadow.ShadowSample")
     }
 
     @Test
     fun jobsSample(){
-        val classLoader = Thread.currentThread().contextClassLoader
-        val sampleClass = classLoader?.loadClass("jobs.JobsSample")
-
-        val sampleArgs = getArgsForSample("jobs.JobsSample")
-        val main = sampleClass?.getMethod("main", Array<String>::class.java)
-
-        try {
-            main?.invoke(null, sampleArgs)
-        }
-        catch (e:Exception) {
-            fail(e.cause.toString())
-        }
+        runSample("jobs.JobsSample")
     }
 }
