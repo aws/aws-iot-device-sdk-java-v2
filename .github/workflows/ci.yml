@@ -335,20 +335,6 @@ jobs:
         run: |
           python3 ./deviceadvisor/script/DATestRun.py
 
-  android:
-    name: Android
-    # ubuntu-20.04 comes with Android tooling, see: https://github.com/actions/virtual-environments/blob/main/images/linux/Ubuntu2004-README.md#android
-    runs-on: ubuntu-20.04 # latest
-    steps:
-      - name: Checkout Sources
-        uses: actions/checkout@v3
-        with:
-          submodules: true
-      - name: Build ${{ env.PACKAGE_NAME }}
-        run: |
-          cd android
-          ./gradlew build
-
   android-device-farm:
     name: Android Device Farm
     runs-on: ubuntu-20.04 # latest
@@ -374,8 +360,6 @@ jobs:
         with:
           role-to-assume: ${{ env.CI_ANDROID_DEVICE_TESTING_ROLE }}
           aws-region: ${{ env.AWS_DEVICE_FARM_REGION }} # Device Farm only available in us-west-2 region
-      # - name: Set up test sample credentials
-      # - name: Build android test app
 
       - name: Build ${{ env.PACKAGE_NAME }}
         run: |
