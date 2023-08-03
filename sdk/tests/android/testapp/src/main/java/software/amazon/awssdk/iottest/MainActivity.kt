@@ -16,13 +16,6 @@ import java.lang.Exception
 import java.util.UUID
 import kotlin.concurrent.thread
 
-// val SAMPLES = mapOf(
-//     "Publish/Subscribe Sample" to "pubsub.PubSub",
-//     "Jobs Client Sample" to "jobs.JobsSample",
-//     "Shadow Client Sample" to "shadow.ShadowSample",
-//     "Cognito Client Sample" to "cognitoconnect.CognitoConnect"
-// )
-
 class MainActivity : AppCompatActivity() {
 
     private class StreamTee(val source: OutputStream, val log: (message: String) -> Unit)
@@ -57,7 +50,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // Log.d("TAG_TEST", "TEST MESSAGE onCreate") Shows up with tag on both Logcat file and Logs
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
