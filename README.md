@@ -19,11 +19,11 @@ to Java by the [aws-crt-java](https://github.com/awslabs/aws-crt-java) package.
 
 *__Jump To:__*
 
-* [Installation](#Installation)
+* [Installation](#installation)
 * [Samples](samples)
-* [Getting Help](#Getting-Help)
+* [Getting Help](#getting-help)
 * [FAQ](./documents/FAQ.md)
-* [Giving Feedback and Contributions](#Giving-Feedback-and-Contributions)
+* [Giving Feedback and Contributions](#giving-feedback-and-contributions)
 * [MQTT5 User Guide](./documents/MQTT5_Userguide.md)
 
 ## What's New
