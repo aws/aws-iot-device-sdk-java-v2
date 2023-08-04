@@ -91,18 +91,6 @@ def main():
 
     print('scheduling run')
 
-    # schedule_run_response = client.schedule_run(
-    #     projectArn=project_arn,
-    #     appArn=device_farm_upload_arn,
-    #     devicePoolArn=device_pool_arn,
-    #     name=upload_file_name,
-    #     test={
-    #         'type': 'BUILTIN_FUZZ'
-    #     },
-    #     executionConfiguration={
-    #         'jobTimeoutMinutes': 20
-    #     }
-    # )
     schedule_run_response = client.schedule_run(
         projectArn=project_arn,
         appArn=device_farm_upload_arn,
