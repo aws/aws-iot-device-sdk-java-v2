@@ -124,8 +124,8 @@ class MainActivityTest {
 
             "mqtt5.pubsub.PubSub" -> {
                 args.addAll(arrayOf(
-                    "--cert", resourceMap["mqtt5PubSubCertificate"],
-                    "--key", resourceMap["mqtt5PubSubPrivatekey"],
+                    "--cert", resourceMap["mqtt5PubSubCertificate.pem"],
+                    "--key", resourceMap["mqtt5PubSubPrivatekey.pem"],
                     "--message", "message.txt", "Hello World From Android"
                 ))
             }
