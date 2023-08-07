@@ -63,8 +63,8 @@ class MainActivityTest {
             }
 
             "mqtt5.pubsub.PubSub" -> {
-                resourceNames.add("mqtt5PubSubCertificate")
-                resourceNames.add("mqtt5PubSubPrivatekey")
+                resourceNames.add("mqtt5PubSubCertificate.pem")
+                resourceNames.add("mqtt5PubSubPrivatekey.pem")
             }
         }
 
