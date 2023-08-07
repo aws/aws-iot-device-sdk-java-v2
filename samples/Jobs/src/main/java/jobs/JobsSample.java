@@ -177,8 +177,7 @@ public class JobsSample {
 
                 // If sample is running in CI, there should be at least one job
                 if (isCI == true) {
-                    System.out.println("ERROR: No jobs queued in CI! At least one job should be queued!");
-                    System.exit(1);
+                    throw new RuntimeException("No jobs queued in CI! At least one job should be queued!");
                 }
             }
 

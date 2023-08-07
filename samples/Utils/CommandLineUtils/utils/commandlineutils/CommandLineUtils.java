@@ -27,6 +27,7 @@ public class CommandLineUtils {
     private String programName;
     private final HashMap<String, CommandLineOption> registeredCommands = new HashMap<>();
     private List<String> commandArguments;
+    private boolean isCI;
 
     /**
      * Functions for registering and command line arguments
@@ -68,7 +69,11 @@ public class CommandLineUtils {
         if (hasCommand(m_cmd_help))
         {
             printHelp();
-            System.exit(-1);
+            if (isCI == true) {
+                throw new RuntimeException("Help argument called");
+            } else {
+                System.exit(-1);
+            }
         }
     }
 
@@ -105,7 +110,12 @@ public class CommandLineUtils {
         }
         printHelp();
         System.out.println("Missing required argument: --" + command + "\n");
-        System.exit(-1);
+
+        if (isCI == true) {
+            throw new RuntimeException("Missing required argument");
+        } else {
+            System.exit(-1);
+        }
         return "";
     }
 
@@ -129,6 +139,11 @@ public class CommandLineUtils {
             messageOne += " --" + commandName + " " + registeredCommands.get(commandName).exampleInput;
             System.out.println("* " + commandName + "\t\t" + registeredCommands.get(commandName).helpOutput);
         }
+    }
+
+    public void determineIfCI() {
+        String ciPropValue = System.getProperty("aws.crt.ci");
+        isCI = ciPropValue != null && Boolean.valueOf(ciPropValue);
     }
 
     /**
@@ -237,8 +252,6 @@ public class CommandLineUtils {
 
     private void parseCommonTopicMessageCommands(SampleCommandLineData returnData)
     {
-        String ciPropValue = System.getProperty("aws.crt.ci");
-        boolean isCI = ciPropValue != null && Boolean.valueOf(ciPropValue);
         if (isCI == true) {
             returnData.input_topic = getCommandOrDefault(m_cmd_topic, "test/topic/" + UUID.randomUUID().toString());
             returnData.input_message = getCommandOrDefault(m_cmd_message, "Hello World!");
@@ -692,6 +705,7 @@ public class CommandLineUtils {
     {
         CommandLineUtils cmdUtils = new CommandLineUtils();
         cmdUtils.registerProgramName(sampleName);
+        cmdUtils.determineIfCI();
 
         if (sampleName.equals("BasicConnect")) {
             return cmdUtils.parseSampleInputBasicConnect(args);

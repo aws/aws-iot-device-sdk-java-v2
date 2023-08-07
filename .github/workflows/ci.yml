@@ -13,6 +13,7 @@ env:
   PACKAGE_NAME: aws-iot-device-sdk-java-v2
   RUN: ${{ github.run_id }}-${{ github.run_number }}
   AWS_DEFAULT_REGION: us-east-1
+  AWS_DEVICE_FARM_REGION: us-west-2 # Device Farm only available in us-west-2 region
   DA_TOPIC: test/da
   DA_SHADOW_PROPERTY: datest
   DA_SHADOW_VALUE_SET: ON
@@ -28,6 +29,7 @@ env:
   CI_DEVICE_ADVISOR: arn:aws:iam::180635532705:role/CI_DeviceAdvisor_Role
   CI_X509_ROLE: arn:aws:iam::180635532705:role/CI_X509_Role
   CI_MQTT5_ROLE: arn:aws:iam::180635532705:role/CI_MQTT5_Role
+  CI_ANDROID_DEVICE_TESTING_ROLE: arn:aws:iam::180635532705:role/CI_Android_Device_Testing_Role
 
 jobs:
   linux-compat:
@@ -45,7 +47,7 @@ jobs:
       id-token: write # This is required for requesting the JWT
     steps:
     - name: configure AWS credentials (containers)
-      uses: aws-actions/configure-aws-credentials@v1
+      uses: aws-actions/configure-aws-credentials@v2
       with:
         role-to-assume: ${{ env.CI_IOT_CONTAINERS }}
         aws-region: ${{ env.AWS_DEFAULT_REGION }}
@@ -120,7 +122,7 @@ jobs:
       id-token: write # This is required for requesting the JWT
     steps:
     - name: configure AWS credentials (containers)
-      uses: aws-actions/configure-aws-credentials@v1
+      uses: aws-actions/configure-aws-credentials@v2
       with:
         role-to-assume: ${{ env.CI_IOT_CONTAINERS }}
         aws-region: ${{ env.AWS_DEFAULT_REGION }}
@@ -157,7 +159,7 @@ jobs:
         python -c "from urllib.request import urlretrieve; urlretrieve('${{ env.BUILDER_HOST }}/${{ env.BUILDER_SOURCE }}/${{ env.BUILDER_VERSION }}/builder.pyz?run=${{ env.RUN }}', 'builder.pyz')"
         python builder.pyz build -p ${{ env.PACKAGE_NAME }} --spec=downstream
     - name: configure AWS credentials (MQTT5)
-      uses: aws-actions/configure-aws-credentials@v1
+      uses: aws-actions/configure-aws-credentials@v2
       with:
         role-to-assume: ${{ env.CI_MQTT5_ROLE }}
         aws-region: ${{ env.AWS_DEFAULT_REGION }}
@@ -172,7 +174,7 @@ jobs:
         python -m pip install boto3
         mvn install -DskipTests
     - name: configure AWS credentials (PubSub)
-      uses: aws-actions/configure-aws-credentials@v1
+      uses: aws-actions/configure-aws-credentials@v2
       with:
         role-to-assume: ${{ env.CI_PUBSUB_ROLE }}
         aws-region: ${{ env.AWS_DEFAULT_REGION }}
@@ -183,7 +185,7 @@ jobs:
       run: |
         python ./utils/run_sample_ci.py --file ./.github/workflows/ci_run_windows_cert_connect_cfg.json
     - name: configure AWS credentials (MQTT5)
-      uses: aws-actions/configure-aws-credentials@v1
+      uses: aws-actions/configure-aws-credentials@v2
       with:
         role-to-assume: ${{ env.CI_MQTT5_ROLE }}
         aws-region: ${{ env.AWS_DEFAULT_REGION }}
@@ -191,7 +193,7 @@ jobs:
       run: |
         python3 ./utils/run_sample_ci.py --file ./.github/workflows/ci_run_mqtt5_pubsub_cfg.json
     - name: configure AWS credentials (Device Advisor)
-      uses: aws-actions/configure-aws-credentials@v1
+      uses: aws-actions/configure-aws-credentials@v2
       with:
         role-to-assume: ${{ env.CI_DEVICE_ADVISOR }}
         aws-region: ${{ env.AWS_DEFAULT_REGION }}
@@ -225,7 +227,7 @@ jobs:
         chmod a+x builder
         ./builder build -p ${{ env.PACKAGE_NAME }} --spec=downstream
     - name: configure AWS credentials (MQTT5)
-      uses: aws-actions/configure-aws-credentials@v1
+      uses: aws-actions/configure-aws-credentials@v2
       with:
         role-to-assume: ${{ env.CI_MQTT5_ROLE }}
         aws-region: ${{ env.AWS_DEFAULT_REGION }}
@@ -239,7 +241,7 @@ jobs:
         python3 -m pip install boto3
         mvn install -Dmaven.test.skip=true
     - name: configure AWS credentials (PubSub)
-      uses: aws-actions/configure-aws-credentials@v1
+      uses: aws-actions/configure-aws-credentials@v2
       with:
         role-to-assume: ${{ env.CI_PUBSUB_ROLE }}
         aws-region: ${{ env.AWS_DEFAULT_REGION }}
@@ -254,7 +256,7 @@ jobs:
         openssl pkcs12 -export -in /tmp/certificate.pem -inkey /tmp/privatekey.pem -out ./pkcs12-key.p12 -name PubSub_Thing_Alias -password pass:$pkcs12_password
         python3 ./utils/run_sample_ci.py --file ./.github/workflows/ci_run_pkcs12_connect_cfg.json
     - name: configure AWS credentials (MQTT5)
-      uses: aws-actions/configure-aws-credentials@v1
+      uses: aws-actions/configure-aws-credentials@v2
       with:
         role-to-assume: ${{ env.CI_MQTT5_ROLE }}
         aws-region: ${{ env.AWS_DEFAULT_REGION }}
@@ -262,7 +264,7 @@ jobs:
       run: |
         python3 ./utils/run_sample_ci.py --file ./.github/workflows/ci_run_mqtt5_pubsub_cfg.json
     - name: configure AWS credentials (Device Advisor)
-      uses: aws-actions/configure-aws-credentials@v1
+      uses: aws-actions/configure-aws-credentials@v2
       with:
         role-to-assume: ${{ env.CI_DEVICE_ADVISOR }}
         aws-region: ${{ env.AWS_DEFAULT_REGION }}
@@ -296,7 +298,7 @@ jobs:
           mvn -B test -Daws.crt.debugnative=true
           mvn install -Dmaven.test.skip
       - name: configure AWS credentials (MQTT5)
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           role-to-assume: ${{ env.CI_MQTT5_ROLE }}
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
@@ -309,7 +311,7 @@ jobs:
         run: |
           python3 -m pip install boto3
       - name: configure AWS credentials (PubSub)
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           role-to-assume: ${{ env.CI_PUBSUB_ROLE }}
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
@@ -317,7 +319,7 @@ jobs:
         run: |
           python3 ./utils/run_sample_ci.py --file ./.github/workflows/ci_run_pubsub_cfg.json
       - name: configure AWS credentials (MQTT5)
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           role-to-assume: ${{ env.CI_MQTT5_ROLE }}
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
@@ -325,7 +327,7 @@ jobs:
         run: |
           python3 ./utils/run_sample_ci.py --file ./.github/workflows/ci_run_mqtt5_pubsub_cfg.json
       - name: configure AWS credentials (Device Advisor)
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           role-to-assume: ${{ env.CI_DEVICE_ADVISOR }}
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
@@ -333,19 +335,65 @@ jobs:
         run: |
           python3 ./deviceadvisor/script/DATestRun.py
 
-  android:
-    name: Android
-    # ubuntu-20.04 comes with Android tooling, see: https://github.com/actions/virtual-environments/blob/main/images/linux/Ubuntu2004-README.md#android
+  android-device-farm:
+    name: Android Device Farm
     runs-on: ubuntu-20.04 # latest
+    permissions:
+      # These permissions needed to interact with GitHub's OIDC Token endpoint
+      id-token: write # This is required for requesting the JWT
     steps:
       - name: Checkout Sources
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
         with:
-          submodules: true
+            submodules: true
+            fetch-depth: 0
+      # Setup JDK 11
+      - name: set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+          cache: 'gradle'
+      - name: Configure AWS credentials for Device Farm
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ env.CI_ANDROID_DEVICE_TESTING_ROLE }}
+          aws-region: ${{ env.AWS_DEVICE_FARM_REGION }}
+
       - name: Build ${{ env.PACKAGE_NAME }}
         run: |
           cd android
-          ./gradlew build
+          ./gradlew assembledebug
+          ./gradlew publishToMavenLocal
+          echo "Build status report=${{ job.status }}."
+
+      - name: Setup Android Test Files
+        run: |
+          cd sdk/tests/android/testapp/src/main/assets
+          endpoint=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/endpoint" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$endpoint" > endpoint.txt
+          pubSubCert=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/PubSub/cert" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$pubSubCert" > pubSubCertificate.pem
+          pubSubKey=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/PubSub/key" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$pubSubKey" > pubSubPrivatekey.pem
+          cognitoIdentity=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/Cognito/identity_id" --query "SecretString" | cut -f2 -d\") && echo -e "$cognitoIdentity" > cognitoIdentity.txt
+          jobsCert=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/Jobs/cert" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$jobsCert" > jobsCertificate.pem
+          jobsKey=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/Jobs/key" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$jobsKey" > jobsPrivatekey.pem
+          shadowCert=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/Shadow/cert" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$shadowCert" > shadowCertificate.pem
+          shadowKey=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/Shadow/key" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$shadowKey" > shadowPrivatekey.pem
+          cd ../../..
+          ../../../../android/gradlew assembledebug
+          ../../../../android/gradlew assembleAndroidTest
+          cd ../../../..
+
+      - name: Python Script
+        run: |
+          echo "Attempting to run python script"
+          python3 -m pip install boto3
+          python3 -m pip install requests
+          python3 ./utils/run_android_ci.py \
+          --region ${{ env.AWS_DEVICE_FARM_REGION }} \
+          --run_id ${{ github.run_id }} \
+          --run_attempt ${{ github.run_attempt }} \
+          --project_arn $(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/DeviceFarm/ProjectArn" --query "SecretString" | cut -f5 -d\" | cut -f1 -d'\') \
+          --device_pool_arn $(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/DeviceFarm/DevicePoolArn" --query "SecretString" | cut -f5 -d\" | cut -f1 -d'\')
 
   # check that docs can still build
   check-docs:
@@ -406,7 +454,7 @@ jobs:
           sudo apt-get install softhsm -y
           softhsm2-util --version
       - name: configure AWS credentials (Connect and PubSub)
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           role-to-assume: ${{ env.CI_PUBSUB_ROLE }}
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
@@ -437,7 +485,7 @@ jobs:
           keytool -importkeystore -srckeystore /tmp/pkcs12-key.p12 -destkeystore ./java_keystore.keys -srcstoretype PKCS12 -alias PubSub_Thing_Alias -srcstorepass $pkcs12_password -deststorepass $pkcs12_password
           python3 ./utils/run_sample_ci.py --file ./.github/workflows/ci_run_keystore_connect_cfg.json
       - name: configure AWS credentials (Cognito)
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           role-to-assume: ${{ env.CI_COGNITO_ROLE }}
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
@@ -445,7 +493,7 @@ jobs:
         run: |
           python3 ./utils/run_sample_ci.py --file ./.github/workflows/ci_run_cognito_connect_cfg.json
       - name: configure AWS credentials (Custom Authorizer)
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           role-to-assume: ${{ env.CI_CUSTOM_AUTHORIZER_ROLE }}
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
@@ -453,7 +501,7 @@ jobs:
         run: |
           python3 ./utils/run_sample_ci.py --file ./.github/workflows/ci_run_custom_authorizer_connect_cfg.json
       - name: configure AWS credentials (Shadow)
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           role-to-assume: ${{ env.CI_SHADOW_ROLE }}
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
@@ -461,7 +509,7 @@ jobs:
         run: |
           python3 ./utils/run_sample_ci.py --file ./.github/workflows/ci_run_shadow_cfg.json
       - name: configure AWS credentials (Jobs)
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           role-to-assume: ${{ env.CI_JOBS_ROLE }}
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
@@ -469,7 +517,7 @@ jobs:
         run: |
           python3 ./utils/run_sample_ci.py --file ./.github/workflows/ci_run_jobs_cfg.json
       - name: configure AWS credentials (Fleet provisioning)
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           role-to-assume: ${{ env.CI_FLEET_PROVISIONING_ROLE }}
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
@@ -480,7 +528,7 @@ jobs:
           python3 ./utils/run_sample_ci.py --file ./.github/workflows/ci_run_fleet_provisioning_cfg.json --input_uuid ${Sample_UUID}
           python3 utils/delete_iot_thing_ci.py --thing_name "Fleet_Thing_${Sample_UUID}" --region "us-east-1"
       - name: configure AWS credentials (X509)
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           role-to-assume: ${{ env.CI_X509_ROLE }}
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
@@ -488,7 +536,7 @@ jobs:
         run: |
           python3 ./utils/run_sample_ci.py --file ./.github/workflows/ci_run_x509_connect_cfg.json
       - name: configure AWS credentials (MQTT5)
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           role-to-assume: ${{ env.CI_MQTT5_ROLE }}
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
@@ -499,7 +547,7 @@ jobs:
         run: |
           python3 ./utils/run_sample_ci.py --file ./.github/workflows/ci_run_mqtt5_shared_subscription_cfg.json
       - name: configure AWS credentials (Greengrass)
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           role-to-assume: ${{ env.CI_GREENGRASS_ROLE }}
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
