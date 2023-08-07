@@ -3,6 +3,7 @@
 
 # Built-in
 import argparse
+import sys
 import os
 import time
 import datetime
@@ -12,6 +13,7 @@ import requests # - for uploading files
 import boto3  # - for launching sample
 
 parser = argparse.ArgumentParser(description="Utility script to upload and run Android Device tests on AWS Device Farm for CI")
+parser.add_argument('--region', required=True, help="The AWS region device farm project is located")
 parser.add_argument('--run_id', required=True, help="A unique number for each workflow run within a repository")
 parser.add_argument('--run_attempt', required=True, help="A unique number for each attempt of a particular workflow run in a repository")
 parser.add_argument('--project_arn', required=True, help="Arn for the Device Farm Project the apk will be tested on")
@@ -23,6 +25,7 @@ test_file_location = current_working_directory + '/sdk/tests/android/testapp/bui
 
 def main():
     args = parser.parse_args()
+    region = args.region
     run_id = args.run_id
     run_attempt = args.run_attempt
     project_arn = args.project_arn
@@ -32,10 +35,10 @@ def main():
 
     # Create Boto3 client for Device Farm
     try:
-        client = boto3.client('devicefarm', region_name='us-west-2')
+        client = boto3.client('devicefarm', region_name=region)
     except Exception:
         print("Error - could not make Boto3 client. Credentials likely could not be sourced")
-        return -1
+        sys.exit(-1)
     print("Boto3 client established")
 
 
@@ -62,7 +65,7 @@ def main():
     while device_farm_upload_status['upload']['status'] != 'SUCCEEDED':
         if device_farm_upload_status['upload']['status'] == 'FAILED':
             print('Upload failed to process')
-            exit -1
+            sys.exit(-1)
         time.sleep(1)
         device_farm_upload_status = client.get_upload(arn=device_farm_upload_arn)
 
@@ -77,15 +80,15 @@ def main():
     device_farm_instrumentation_upload_url = create_upload_response['upload']['url']
 
     with open(test_file_location, 'rb') as f:
-        dataInsturmentation = f.read()
-    r_instrumentation = requests.put(device_farm_instrumentation_upload_url, data=dataInsturmentation)
+        data_instrumentation = f.read()
+    r_instrumentation = requests.put(device_farm_instrumentation_upload_url, data=data_instrumentation)
     print('File upload status code: ' + str(r_instrumentation.status_code) + ' reason: ' + r_instrumentation.reason)
 
     device_farm_upload_status = client.get_upload(arn=device_farm_instrumentation_upload_arn)
     while device_farm_upload_status['upload']['status'] != 'SUCCEEDED':
         if device_farm_upload_status['upload']['status'] == 'FAILED':
             print('Upload failed to process')
-            exit -1
+            sys.exit(-1)
         time.sleep(1)
         device_farm_upload_status = client.get_upload(arn=device_farm_instrumentation_upload_arn)
 
@@ -126,7 +129,7 @@ def main():
         is_success = False
 
     # Clean up
-    print('Deleting' + upload_file_name + ' Device Farm project')
+    print('Deleting ' + upload_file_name + ' Device Farm project')
     client.delete_upload(
         arn=device_farm_upload_arn
     )
@@ -136,7 +139,7 @@ def main():
 
     if is_success == False:
         print('Exiting with fail')
-        exit -1
+        sys.exit(-1)
 
     print('Exiting with success')
 
