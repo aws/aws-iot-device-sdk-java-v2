@@ -13,7 +13,7 @@ env:
   PACKAGE_NAME: aws-iot-device-sdk-java-v2
   RUN: ${{ github.run_id }}-${{ github.run_number }}
   AWS_DEFAULT_REGION: us-east-1
-  AWS_DEVICE_FARM_REGION: us-west-2
+  AWS_DEVICE_FARM_REGION: us-west-2 # Device Farm only available in us-west-2 region
   DA_TOPIC: test/da
   DA_SHADOW_PROPERTY: datest
   DA_SHADOW_VALUE_SET: ON
@@ -341,7 +341,6 @@ jobs:
     permissions:
       # These permissions needed to interact with GitHub's OIDC Token endpoint
       id-token: write # This is required for requesting the JWT
-      # contents: read
     steps:
       - name: Checkout Sources
         uses: actions/checkout@v2
@@ -359,7 +358,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v2
         with:
           role-to-assume: ${{ env.CI_ANDROID_DEVICE_TESTING_ROLE }}
-          aws-region: ${{ env.AWS_DEVICE_FARM_REGION }} # Device Farm only available in us-west-2 region
+          aws-region: ${{ env.AWS_DEVICE_FARM_REGION }}
 
       - name: Build ${{ env.PACKAGE_NAME }}
         run: |
@@ -387,9 +386,11 @@ jobs:
       - name: Python Script
         run: |
           echo "Attempting to run python script"
+          echo ${{ eng.AWS_DEVICE_FARM_REGION }}
           python3 -m pip install boto3
           python3 -m pip install requests
           python3 ./utils/run_android_ci.py \
+          --region ${{ env.AWS_DEVICE_FARM_REGION }} \
           --run_id ${{ github.run_id }} \
           --run_attempt ${{ github.run_attempt }} \
           --project_arn $(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/DeviceFarm/ProjectArn" --query "SecretString" | cut -f5 -d\" | cut -f1 -d'\') \
