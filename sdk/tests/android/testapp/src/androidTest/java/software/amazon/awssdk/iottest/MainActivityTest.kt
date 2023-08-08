@@ -61,6 +61,11 @@ class MainActivityTest {
             "cognitoconnect.CognitoConnect" -> {
                 resourceNames.add("cognitoIdentity.txt")
             }
+
+            "mqtt5.pubsub.PubSub" -> {
+                resourceNames.add("mqtt5PubSubCertificate.pem")
+                resourceNames.add("mqtt5PubSubPrivatekey.pem")
+            }
         }
 
         // Load resource into a cached location for use by sample
@@ -116,6 +121,14 @@ class MainActivityTest {
                     "--signing_region", "us-east-1",
                     "--cognito_identity", assetContents("cognitoIdentity.txt")))
             }
+
+            "mqtt5.pubsub.PubSub" -> {
+                args.addAll(arrayOf(
+                    "--cert", resourceMap["mqtt5PubSubCertificate.pem"],
+                    "--key", resourceMap["mqtt5PubSubPrivatekey.pem"],
+                    "--message", "message.txt", "Hello World From Android"
+                ))
+            }
         }
 
         return args.toTypedArray()
@@ -153,5 +166,10 @@ class MainActivityTest {
     @Test
     fun jobsSample(){
         runSample("jobs.JobsSample")
+    }
+
+    @Test
+    fun mqtt5PubSubSample(){
+        runSample("mqtt5.pubsub.PubSub")
     }
 }
