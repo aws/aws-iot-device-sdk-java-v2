@@ -360,6 +360,9 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      * @return {@link AwsIotMqttConnectionBuilder}
      */
     public AwsIotMqttConnectionBuilder withTimeoutMs(int timeoutMs) {
+        if (this.config.getSocketOptions() == null) {
+            this.withSocketOptions(new SocketOptions());
+        }
         this.config.getSocketOptions().connectTimeoutMs = timeoutMs;
         return this;
     }
