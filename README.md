@@ -98,7 +98,7 @@ cd aws-crt-java
 mvn install -Dmaven.test.skip=true
 # Clone the SDK repository
 git clone https://github.com/awslabs/aws-iot-device-sdk-java-v2.git
-cd ../aws-iot-device-sdk-java-v2
+cd aws-iot-device-sdk-java-v2
 # Compile and install
 mvn clean install
 ```
