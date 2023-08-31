@@ -8,10 +8,13 @@ package shadow;
 import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.crt.CrtResource;
 import software.amazon.awssdk.crt.CrtRuntimeException;
-import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
-import software.amazon.awssdk.crt.mqtt.MqttClientConnectionEvents;
+import software.amazon.awssdk.crt.mqtt.MqttException;
 import software.amazon.awssdk.crt.mqtt.QualityOfService;
-import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
+import software.amazon.awssdk.crt.mqtt5.packets.*;
+import software.amazon.awssdk.crt.mqtt5.*;
+import software.amazon.awssdk.crt.mqtt5.Mqtt5ClientOptions;
+import software.amazon.awssdk.crt.mqtt5.Mqtt5Client;
+import software.amazon.awssdk.iot.AwsIotMqtt5ClientBuilder;
 import software.amazon.awssdk.iot.iotshadow.IotShadowClient;
 import software.amazon.awssdk.iot.iotshadow.model.ErrorResponse;
 import software.amazon.awssdk.iot.iotshadow.model.GetShadowRequest;
@@ -29,9 +32,85 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.Scanner;
 
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
 import utils.commandlineutils.CommandLineUtils;
 
 public class ShadowSample {
+
+    static final class SampleLifecycleEvents implements Mqtt5ClientOptions.LifecycleEvents {
+        CompletableFuture<Void> connectedFuture = new CompletableFuture<>();
+        CompletableFuture<Void> stoppedFuture = new CompletableFuture<>();
+
+        @Override
+        public void onAttemptingConnect(Mqtt5Client client, OnAttemptingConnectReturn onAttemptingConnectReturn) {
+            System.out.println("Mqtt5 Client: Attempting connection...");
+        }
+
+        @Override
+        public void onConnectionSuccess(Mqtt5Client client, OnConnectionSuccessReturn onConnectionSuccessReturn) {
+            System.out.println("Mqtt5 Client: Connection success, client ID: "
+                + onConnectionSuccessReturn.getNegotiatedSettings().getAssignedClientID());
+            connectedFuture.complete(null);
+        }
+
+        @Override
+        public void onConnectionFailure(Mqtt5Client client, OnConnectionFailureReturn onConnectionFailureReturn) {
+            String errorString = CRT.awsErrorString(onConnectionFailureReturn.getErrorCode());
+            System.out.println("Mqtt5 Client: Connection failed with error: " + errorString);
+            connectedFuture.completeExceptionally(new Exception("Could not connect: " + errorString));
+        }
+
+        @Override
+        public void onDisconnection(Mqtt5Client client, OnDisconnectionReturn onDisconnectionReturn) {
+            System.out.println("Mqtt5 Client: Disconnected");
+            DisconnectPacket disconnectPacket = onDisconnectionReturn.getDisconnectPacket();
+            if (disconnectPacket != null) {
+                System.out.println("\tDisconnection packet code: " + disconnectPacket.getReasonCode());
+                System.out.println("\tDisconnection packet reason: " + disconnectPacket.getReasonString());
+            }
+        }
+
+        @Override
+        public void onStopped(Mqtt5Client client, OnStoppedReturn onStoppedReturn) {
+            System.out.println("Mqtt5 Client: Stopped");
+            stoppedFuture.complete(null);
+        }
+    }
+
+    static final class SamplePublishEvents implements Mqtt5ClientOptions.PublishEvents {
+        CountDownLatch messagesReceived;
+
+        SamplePublishEvents(int messageCount) {
+            messagesReceived = new CountDownLatch(messageCount);
+        }
+
+        @Override
+        public void onMessageReceived(Mqtt5Client client, PublishReturn publishReturn) {
+            PublishPacket publishPacket = publishReturn.getPublishPacket();
+            if (publishPacket == null) {
+                messagesReceived.countDown();
+                return;
+            }
+
+            System.out.println("Publish received on topic: " + publishPacket.getTopic());
+            System.out.println("Message: " + new String(publishPacket.getPayload()));
+
+            List<UserProperty> packetProperties = publishPacket.getUserProperties();
+            if (packetProperties != null) {
+                for (int i = 0; i < packetProperties.size(); i++) {
+                    UserProperty property = packetProperties.get(i);
+                    System.out.println("\twith UserProperty: (" + property.key + ", " + property.value + ")");
+                }
+            }
+
+            messagesReceived.countDown();
+        }
+    }
+
 
     // When run normally, we want to get input from the console
     // When run from CI, we want to automatically make changes to the shadow document
@@ -42,7 +121,6 @@ public class ShadowSample {
     final static String SHADOW_PROPERTY = "color";
     final static String SHADOW_VALUE_DEFAULT = "off";
 
-    static MqttClientConnection connection;
     static IotShadowClient shadow;
     static String localValue = null;
     static CompletableFuture<Void> gotResponse;
@@ -194,46 +272,38 @@ public class ShadowSample {
         CommandLineUtils.SampleCommandLineData cmdData = CommandLineUtils.getInputForIoTSample("Shadow", args);
         input_thingName = cmdData.input_thingName;
 
-        MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
-            @Override
-            public void onConnectionInterrupted(int errorCode) {
-                if (errorCode != 0) {
-                    System.out.println("Connection interrupted: " + errorCode + ": " + CRT.awsErrorString(errorCode));
-                }
-            }
-
-            @Override
-            public void onConnectionResumed(boolean sessionPresent) {
-                System.out.println("Connection resumed: " + (sessionPresent ? "existing session" : "clean session"));
-            }
-        };
-
         try {
 
             /**
-             * Create the MQTT connection from the builder
+             * Create the MQTT5 client from the builder
              */
-            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(cmdData.input_cert, cmdData.input_key);
-            if (cmdData.input_ca != "") {
-                builder.withCertificateAuthorityFromPath(null, cmdData.input_ca);
-            }
-            builder.withConnectionEventCallbacks(callbacks)
-                .withClientId(cmdData.input_clientId)
-                .withEndpoint(cmdData.input_endpoint)
-                .withPort((short)cmdData.input_port)
-                .withCleanSession(true)
-                .withProtocolOperationTimeoutMs(60000);
-            MqttClientConnection connection = builder.build();
+            SampleLifecycleEvents lifecycleEvents = new SampleLifecycleEvents();
+            SamplePublishEvents publishEvents = new SamplePublishEvents(cmdData.input_count);
+
+            AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newDirectMqttBuilderWithMtlsFromPath(
+                    cmdData.input_endpoint, cmdData.input_cert, cmdData.input_key);
+            ConnectPacket.ConnectPacketBuilder connectProperties = new ConnectPacket.ConnectPacketBuilder();
+            connectProperties.withClientId(cmdData.input_clientId);
+            builder.withConnectProperties(connectProperties);
+            builder.withLifeCycleEvents(lifecycleEvents);
+            builder.withPublishEvents(publishEvents);
+            Mqtt5Client client = builder.build();
             builder.close();
 
-            // Create the shadow client
-            shadow = new IotShadowClient(connection);
+            try
+            {
+                // Create the shadow client
+                shadow = new IotShadowClient(client);
+            }
+            catch(Exception e)
+            {
+                throw new RuntimeException("Failed to create shadow client.");
+            }
 
             // Connect
-            CompletableFuture<Boolean> connected = connection.connect();
+            client.start();
             try {
-                boolean sessionPresent = connected.get();
-                System.out.println("Connected to " + (!sessionPresent ? "clean" : "existing") + " session!");
+                lifecycleEvents.connectedFuture.get(60, TimeUnit.SECONDS);
             } catch (Exception ex) {
                 throw new RuntimeException("Exception occurred during connect", ex);
             }
@@ -325,11 +395,13 @@ public class ShadowSample {
             }
 
             // Disconnect
-            CompletableFuture<Void> disconnected = connection.disconnect();
-            disconnected.get();
-
-            // Close the connection now that we are completely done with it.
-            connection.close();
+            client.stop(null);
+            try {
+                lifecycleEvents.stoppedFuture.get(60, TimeUnit.SECONDS);
+            } catch (Exception ex) {
+                System.out.println("Exception encountered: " + ex.toString());
+                System.exit(1);
+            }
 
         } catch (CrtRuntimeException | InterruptedException | ExecutionException ex) {
             System.out.println("Exception encountered: " + ex.toString());

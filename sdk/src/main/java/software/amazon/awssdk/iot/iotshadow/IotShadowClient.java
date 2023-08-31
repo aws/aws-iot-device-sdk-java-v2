@@ -39,6 +39,7 @@ import java.nio.charset.StandardCharsets;
 
 import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
 import software.amazon.awssdk.crt.mqtt.QualityOfService;
+import software.amazon.awssdk.crt.mqtt5.Mqtt5Client;
 import software.amazon.awssdk.crt.mqtt.MqttException;
 import software.amazon.awssdk.crt.mqtt.MqttMessage;
 
@@ -71,6 +72,18 @@ public class IotShadowClient {
      */
     public IotShadowClient(MqttClientConnection connection) {
         this.connection = connection;
+    }
+
+    /**
+     * Constructs a new IotShadowClient
+     * @param connection The connection to use
+     */
+    public IotShadowClient(Mqtt5Client mqtt5Client) throws MqttException{
+        this.connection = mqtt5Client.NewConnection();
+        if(this.connection == null)
+        {
+            throw new MqttException("Failed to setup service client connection.");
+        }
     }
 
     private Gson getGson() {
