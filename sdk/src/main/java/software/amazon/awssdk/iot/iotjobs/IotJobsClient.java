@@ -37,6 +37,7 @@ import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
 import software.amazon.awssdk.crt.mqtt.QualityOfService;
 import software.amazon.awssdk.crt.mqtt.MqttException;
 import software.amazon.awssdk.crt.mqtt.MqttMessage;
+import software.amazon.awssdk.crt.mqtt5.Mqtt5Client;
 
 import software.amazon.awssdk.iot.Timestamp;
 import software.amazon.awssdk.iot.EnumSerializer;
@@ -65,6 +66,21 @@ public class IotJobsClient {
      */
     public IotJobsClient(MqttClientConnection connection) {
         this.connection = connection;
+    }
+
+    /**
+     * Constructs a new IotJobsClient from a mqtt5 client
+     * @param mqtt5Client The mqtt5 client to use
+     */
+    public IotJobsClient(Mqtt5Client mqtt5Client) throws MqttException{
+        try
+        {
+            this.connection = mqtt5Client.NewConnection();
+        }
+        catch(MqttException ex)
+        {
+            throw new MqttException("Failed to setup service client: " + ex.getMessage());
+        }
     }
 
     private Gson getGson() {
@@ -287,6 +303,7 @@ public class IotJobsClient {
 
     /**
      *
+     *
      * Once subscribed, `handler` is invoked each time a message matching
      * the `topic` is received. It is possible for such messages to arrive before
      * the SUBACK is received.
@@ -328,6 +345,7 @@ public class IotJobsClient {
     }
 
     /**
+     *
      *
      * Once subscribed, `handler` is invoked each time a message matching
      * the `topic` is received. It is possible for such messages to arrive before

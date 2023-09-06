@@ -41,6 +41,7 @@ import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
 import software.amazon.awssdk.crt.mqtt.QualityOfService;
 import software.amazon.awssdk.crt.mqtt.MqttException;
 import software.amazon.awssdk.crt.mqtt.MqttMessage;
+import software.amazon.awssdk.crt.mqtt5.Mqtt5Client;
 
 import software.amazon.awssdk.iot.Timestamp;
 import software.amazon.awssdk.iot.EnumSerializer;
@@ -71,6 +72,21 @@ public class IotShadowClient {
      */
     public IotShadowClient(MqttClientConnection connection) {
         this.connection = connection;
+    }
+
+    /**
+     * Constructs a new IotShadowClient from a mqtt5 client
+     * @param mqtt5Client The mqtt5 client to use
+     */
+    public IotShadowClient(Mqtt5Client mqtt5Client) throws MqttException{
+        try
+        {
+            this.connection = mqtt5Client.NewConnection();
+        }
+        catch(MqttException ex)
+        {
+            throw new MqttException("Failed to setup service client: " + ex.getMessage());
+        }
     }
 
     private Gson getGson() {
