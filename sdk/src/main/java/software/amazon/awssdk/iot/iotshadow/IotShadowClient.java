@@ -79,10 +79,13 @@ public class IotShadowClient {
      * @param connection The connection to use
      */
     public IotShadowClient(Mqtt5Client mqtt5Client) throws MqttException{
-        this.connection = mqtt5Client.NewConnection();
-        if(this.connection == null)
+        try
         {
-            throw new MqttException("Failed to setup service client connection.");
+            this.connection = mqtt5Client.NewConnection();
+        }
+        catch(MqttException ex)
+        {
+            throw new MqttException("Failed to setup service client connection: " + ex.getMessage());
         }
     }
 
