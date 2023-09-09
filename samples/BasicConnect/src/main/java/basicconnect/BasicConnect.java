@@ -12,6 +12,8 @@ import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnectionEvents;
 import software.amazon.awssdk.crt.http.HttpProxyOptions;
 import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
+import software.amazon.awssdk.crt.mqtt.OnConnectionSuccessReturn;
+import software.amazon.awssdk.crt.mqtt.OnConnectionFailureReturn;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.CompletableFuture;
@@ -60,6 +62,23 @@ public class BasicConnect {
             @Override
             public void onConnectionResumed(boolean sessionPresent) {
                 System.out.println("Connection resumed: " + (sessionPresent ? "existing session" : "clean session"));
+            }
+
+            @Override public
+            void onConnectionSuccess(OnConnectionSuccessReturn data) {
+                try{
+                    int n = 3;
+                    System.out.println(n/0);
+                } catch (ArithmeticException e) {
+                    e.printStackTrace();
+                }
+                System.out.println("Connection succeess2: " + (data.getSessionPresent() ? "existing session" : "clean session"));
+            }
+
+            @Override public
+            void onConnectionFailure(OnConnectionFailureReturn data) {
+                int errorCode = data.getErrorCode();
+                System.out.println("Connection failure: " + errorCode + ": " + CRT.awsErrorString(errorCode));
             }
         };
 
