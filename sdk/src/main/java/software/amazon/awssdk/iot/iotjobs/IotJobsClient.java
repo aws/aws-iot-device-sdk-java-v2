@@ -75,7 +75,7 @@ public class IotJobsClient {
     public IotJobsClient(Mqtt5Client mqtt5Client) throws MqttException{
         try
         {
-            this.connection = mqtt5Client.NewConnection();
+            this.connection = new MqttClientConnection(mqtt5Client, null);
         }
         catch(MqttException ex)
         {

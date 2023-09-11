@@ -63,7 +63,7 @@ public class IotIdentityClient {
     public IotIdentityClient(Mqtt5Client mqtt5Client) throws MqttException{
         try
         {
-            this.connection = mqtt5Client.NewConnection();
+            this.connection = new MqttClientConnection(mqtt5Client, null);
         }
         catch(MqttException ex)
         {
