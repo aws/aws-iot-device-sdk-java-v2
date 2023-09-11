@@ -69,6 +69,7 @@ public class IotJobsClient {
      * @param connection The connection to use
      */
     public IotJobsClient(MqttClientConnection connection) {
+        connection.addReferenceTo(connection);
         this.connection = connection;
     }
 
