@@ -143,7 +143,7 @@ For how to setup a Mqtt5 Client, please refer to [MQTT5 UserGuide](../../documen
   builder.close();
 
   // Create the shadow client
-  IotShadowClient shadowClient = new IotShadowClient(client);
+  IotShadowClient shadowClient = new IotShadowClient(connection);
 ```
 
 </td>

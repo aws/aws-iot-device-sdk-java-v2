@@ -29,12 +29,11 @@ import software.amazon.awssdk.iot.iotshadow.model.UpdateShadowSubscriptionReques
 
 import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ExecutionException;
 import java.util.Scanner;
 
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
+
 
 import utils.commandlineutils.CommandLineUtils;
 
@@ -365,11 +364,13 @@ public class Mqtt5ShadowSample {
                 System.exit(1);
             }
 
+            /* Close the client to free memory */
+            client.close();
+
         } catch (CrtRuntimeException | InterruptedException | ExecutionException ex) {
             System.out.println("Exception encountered: " + ex.toString());
             System.exit(1);
         }
-
         System.out.println("Complete!");
         CrtResource.waitForNoResources();
     }

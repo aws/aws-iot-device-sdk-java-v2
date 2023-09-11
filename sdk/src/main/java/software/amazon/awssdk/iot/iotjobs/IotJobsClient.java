@@ -60,6 +60,10 @@ public class IotJobsClient {
     private MqttClientConnection connection = null;
     private final Gson gson = getGson();
 
+    public void close() {
+      this.connection.close();
+    }
+
     /**
      * Constructs a new IotJobsClient
      * @param connection The connection to use
