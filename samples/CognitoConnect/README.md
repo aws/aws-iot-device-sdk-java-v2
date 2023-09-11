@@ -6,7 +6,8 @@ This sample is similar to the Websocket Connect sample, but instead of sourcing 
 
 On startup, the device connects to the server and then disconnects. This sample is for reference on connecting using Cognito.
 
-Your IoT Core Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-policies.html) must provide privileges for this sample to connect. Below is a sample policy that can be used on your IoT Core Thing that will allow this sample to run as intended.
+Your IoT Core Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-policies.html) must provide privileges for this sample to connect.
+Below is a sample policy that can be used on your IoT Core Thing that will allow this sample to run as intended.
 
 <details>
 <summary>(see sample policy)</summary>
@@ -38,6 +39,27 @@ Note that in a real application, you may want to avoid the use of wildcards in y
 ## How to run
 
 To run this sample, you need to have a Cognito identifier ID. You can get a Cognito identifier ID by creating a Cognito identity pool. For creating Cognito identity pools, please see the following page on the AWS documentation: [Tutorial: Creating an identity pool](https://docs.aws.amazon.com/cognito/latest/developerguide/tutorial-create-identity-pool.html)
+You should also add _iot:Connect_ permission to the role added to congnito  or the default role created automatically when creating the new identity (or create a new policy attached to the new role).
+<details>
+<summary> (see sample policy)</summary>
+<pre>
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "cognito-identity:GetCredentialsForIdentity",
+                "iot:Connect"
+            ],
+            "Resource": [
+                "*"
+            ]
+        }
+    ]
+}
+</pre>
+</details>
 
 **Note:** This sample assumes using an identity pool with unauthenticated identity access for the sake of convenience. Please follow best practices in a real world application based on the needs of your application and the intended use case.
 
