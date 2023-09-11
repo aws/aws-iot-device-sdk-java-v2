@@ -55,7 +55,7 @@ Modify [sdk/pom.xml](https://github.com/aws/aws-iot-device-sdk-java-v2/sdk/pom.x
 <dependency>
   <groupId>software.amazon.awssdk.iotdevicesdk</groupId>
   <artifactId>aws-iot-device-sdk</artifactId>
-  <version>1.1.1-SNAPSHOT</version>
+  <version>1.0.0-SNAPSHOT</version>
 </dependency>
 ```
 Note the version number matches the sdk version number in [aws-crt-java](https://github.com/awslabs/aws-crt-java/pom.xml)
