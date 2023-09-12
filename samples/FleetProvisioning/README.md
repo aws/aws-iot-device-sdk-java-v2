@@ -74,22 +74,35 @@ Note that in a real application, you may want to avoid the use of wildcards in y
 There are many different ways to run the Fleet Provisioning sample because of how many different ways there are to setup a Fleet Provisioning template in AWS IoT Core. **The easiest and most common way is to run the sample with the following**:
 
 ``` sh
-mvn compile exec:java -pl samples/FleetProvisioning -Dexec.mainClass="fleetprovisioning.FleetProvisioningSample" -Dexec.args="--endpoint <endpoint>
+mvn compile exec:java -pl samples/FleetProvisioning -Dexec.mainClass="fleetprovisioning.Mqtt5FleetProvisioningSample" -Dexec.args="--endpoint <endpoint>
 --cert <path to certificate> --key <path to private key> --template_name <template name> --template_parameters <template params>"
 ```
 
 You can also pass a Certificate Authority file (CA) if your certificate and key combination requires it:
 
 ``` sh
-mvn compile exec:java -pl samples/FleetProvisioning -Dexec.mainClass="fleetprovisioning.FleetProvisioningSample" -Dexec.args="--endpoint <endpoint> --ca_file <path to root CA>
+mvn compile exec:java -pl samples/FleetProvisioning -Dexec.mainClass="fleetprovisioning.Mqtt5FleetProvisioningSample" -Dexec.args="--endpoint <endpoint> --ca_file <path to root CA>
 --cert <path to certificate> --key <path to private key> --template_name <template name> --template_parameters <template params>"
 ```
 
 However, this is just one way using the `CreateKeysAndCertificate` workflow. Below are a detailed list of instructions with the different ways to connect. While the detailed instructions do not show it, you can pass `--ca_file` or use the `-P latest-release` Java profile as needed no matter which way you connect via Fleet Provisioning.
 
-### Fleet Provisioning Detailed Instructions
+Checkout the sample with Mqtt5 Client in file: [`Mqtt5FleetProvisioningSample.java`](./samples/FleetProvisioning/src/main/java/fleetprovisioning/Mqtt5FleetProvisioningSample.java)
 
-#### Aws Resource Setup
+### Run Mqtt3 Sample
+The Mqtt3 Sample is in the same Java Package as the Mqtt5 Sample, to run the Mqtt3 Sample replace the `mainClass` entry point with `fleetprovisioning.FleetProvisioningSample`.
+
+For Example:
+```sh
+mvn compile exec:java -pl samples/FleetProvisioning -Dexec.mainClass="fleetprovisioning.Mqtt5FleetProvisioningSample" -Dexec.args="--endpoint <endpoint>
+--cert <path to certificate> --key <path to private key> --template_name <template name> --template_parameters <template params>"
+```
+
+Checkout the sample with Mqtt3 Client in file: [`FleetProvisioningSample.java`](./samples/FleetProvisioning/src/main/java/fleetprovisioning/FleetProvisioningSample.java)
+
+## Fleet Provisioning Detailed Instructions
+
+### Aws Resource Setup
 
 Fleet provisioning requires some additional AWS resources be set up first. These steps assume you have the [AWS CLI](https://aws.amazon.com/cli/) installed and have your AWS credentials for the AWS CLI setup and with sufficient permissions to perform all of the operations in this guide. For instructions on how to setup AWS CLI, see the following: [Configuring the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html).
 
@@ -270,7 +283,7 @@ to perform the actual provisioning in the section below.
 To run the sample with your certificate and private key, use the following command:
 
 ``` sh
-mvn compile exec:java -pl samples/FleetProvisioning -Dexec.mainClass="fleetprovisioning.FleetProvisioningSample" -Dexec.args="--endpoint <endpoint>
+mvn compile exec:java -pl samples/FleetProvisioning -Dexec.mainClass="fleetprovisioning.Mqtt5FleetProvisioningSample" -Dexec.args="--endpoint <endpoint>
 --cert <path to certificate> --key <path to private key> --template_name <template name> --template_parameters '{\"SerialNumber\":\"1\",\"DeviceLocation\":\"Seattle\"}'"
 ```
 
@@ -306,7 +319,79 @@ aws iot create-provisioning-claim \
 Finally, you can also pass the certificate signing request while invoking the Fleet Provisioning sample.
 
 ``` sh
-mvn compile exec:java -pl samples/FleetProvisioning -Dexec.mainClass="fleetprovisioning.FleetProvisioningSample" -Dexec.args="--endpoint <endpoint>
+mvn compile exec:java -pl samples/FleetProvisioning -Dexec.mainClass="fleetprovisioning.Mqtt5FleetProvisioningSample" -Dexec.args="--endpoint <endpoint>
 --cert <path to certificate> --key <path to private key> --template_name <template name> --template_parameters '{\"SerialNumber\":\"1\",\"DeviceLocation\":\"Seattle\"}'  --csr <path to csr file>"
 ```
 
+## Service Client Notes
+### Difference relative to MQTT311 IotShadowClient
+The IotShadowClient with mqtt5 client is almost identical to mqtt3 one. We wrapped the Mqtt5Client into MqttClientConnection so that we could keep the same interface for IotShadowClient.
+The only difference is that you would need setup up a Mqtt5 Client for the IotShadowClient. For how to setup a Mqtt5 Client, please refer to [MQTT5 UserGuide](../../documents/MQTT5_Userguide.md) and [MQTT5 PubSub Sample](../Mqtt5/PubSub/)
+
+<table>
+<tr>
+<th>Create a IotShadowClient with Mqtt5</th>
+<th>Create a IotShadowClient with Mqtt311</th>
+</tr>
+<tr>
+<td>
+
+```Java
+  /**
+   * Create the MQTT5 client from the builder
+   */
+  AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newDirectMqttBuilderWithMtlsFromPath(
+          <input_endpoint>, <certificate>, <key>);
+  ConnectPacket.ConnectPacketBuilder connectProperties = new ConnectPacket.ConnectPacketBuilder();
+  /* Client id is mandatory to create a MqttClientConnection */
+  connectProperties.withClientId(cmdData.input_clientId);
+  builder.withConnectProperties(connectProperties);
+  Mqtt5Client client = builder.build();
+  builder.close();
+
+  // We wrap the Mqtt5Client into MqttClientConnection so that we can use the same interface for IoTShadowClient.
+  MqttClientConnection connection = new MqttClientConnection(client, null);
+  // Create the Shadow client
+  IotShadowClient Shadow = new IotShadowClient(connection);
+
+  ...
+  ...
+
+  /* Make sure to release the resources after use. */
+  connection.close();
+  client.close();
+```
+
+</td>
+<td>
+
+```Java
+  /**
+   * Create the MQTT3 Connection from the builder
+   */
+  AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(<certificate>, <key>);
+  builder.withClientId(cmdData.input_clientId)
+         .withEndpoint(cmdData.input_endpoint);
+  MqttClientConnection connection = builder.build();
+
+  builder.close();
+
+  // Create the Shadow client
+  IotShadowClient Shadow = new IotShadowClient(connection);
+
+  ...
+  ...
+
+  /* Make sure to release the resources after use. */
+  connection.close();
+```
+
+</td>
+</tr>
+</table>
+
+### mqtt.QualityOfService v.s. mqtt5.QoS
+As the service client interface is unchanged for Mqtt3 Connection and Mqtt5 Client,the IotShadowClient will use mqtt.QualityOfService instead of mqtt5.QoS even with a Mqtt5 Client.
+
+### Client Id
+As client id is mandatory to create the `MqttClientConnection`, or the constructor would throw an `MqttException`. Please make sure you assign a client id to Mqtt5Client before you create the `MqttClientConnection`.

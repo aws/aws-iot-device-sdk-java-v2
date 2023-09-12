@@ -72,6 +72,21 @@ Note that in a real application, you may want to avoid the use of wildcards in y
 
 ## How to run
 
+### Run Mqtt5 Shadow Sample
+To run the Shadow sample use the following command:
+
+``` sh
+mvn compile exec:java -pl samples/Shadow -Dexec.mainClass=shadow.Mqtt5ShadowSample -Dexec.args="--endpoint <endpoint> --cert <path to certificate> --key <path to private key> --thing_name <thing name>"
+```
+
+You can also pass a Certificate Authority file (CA) if your certificate and key combination requires it:
+
+``` sh
+mvn compile exec:java -pl samples/Shadow -Dexec.mainClass=shadow.Mqtt5ShadowSample -Dexec.args="--endpoint <endpoint> --ca_file <path to root CA> --cert <path to certificate> --key <path to private key> --thing_name <thing name>"
+```
+
+### Run Mqtt3 Shadow Sample
+
 To run the Shadow sample use the following command:
 
 ``` sh
@@ -83,3 +98,76 @@ You can also pass a Certificate Authority file (CA) if your certificate and key 
 ``` sh
 mvn compile exec:java -pl samples/Shadow -Dexec.mainClass=shadow.ShadowSample -Dexec.args="--endpoint <endpoint> --ca_file <path to root CA> --cert <path to certificate> --key <path to private key> --thing_name <thing name>"
 ```
+
+## Service Client Notes
+### Difference relative to MQTT311 IotShadowClient
+The IotShadowClient with mqtt5 client is almost identical to mqtt3 one. We wrapped the Mqtt5Client into MqttClientConnection so that we could keep the same interface for IotShadowClient.
+The only difference is that you would need setup up a Mqtt5 Client for the IotShadowClient. For how to setup a Mqtt5 Client, please refer to [MQTT5 UserGuide](../../documents/MQTT5_Userguide.md) and [MQTT5 PubSub Sample](../Mqtt5/PubSub/)
+
+<table>
+<tr>
+<th>Create a IotShadowClient with Mqtt5</th>
+<th>Create a IotShadowClient with Mqtt311</th>
+</tr>
+<tr>
+<td>
+
+```Java
+  /**
+   * Create the MQTT5 client from the builder
+   */
+  AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newDirectMqttBuilderWithMtlsFromPath(
+          <input_endpoint>, <certificate>, <key>);
+  ConnectPacket.ConnectPacketBuilder connectProperties = new ConnectPacket.ConnectPacketBuilder();
+  /* Client id is mandatory to create a MqttClientConnection */
+  connectProperties.withClientId(cmdData.input_clientId);
+  builder.withConnectProperties(connectProperties);
+  Mqtt5Client client = builder.build();
+  builder.close();
+
+  // We wrap the Mqtt5Client into MqttClientConnection so that we can use the same interface for IoTShadowClient.
+  MqttClientConnection connection = new MqttClientConnection(client, null);
+  // Create the Shadow client
+  IotShadowClient Shadow = new IotShadowClient(connection);
+
+  ...
+  ...
+
+  /* Make sure to release the resources after use. */
+  connection.close();
+  client.close();
+```
+
+</td>
+<td>
+
+```Java
+  /**
+   * Create the MQTT3 Connection from the builder
+   */
+  AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(<certificate>, <key>);
+  builder.withClientId(cmdData.input_clientId)
+         .withEndpoint(cmdData.input_endpoint);
+  MqttClientConnection connection = builder.build();
+
+  builder.close();
+
+  // Create the Shadow client
+  IotShadowClient Shadow = new IotShadowClient(connection);
+
+  ...
+  ...
+
+  /* Make sure to release the resources after use. */
+  connection.close();
+```
+
+</td>
+</tr>
+</table>
+
+### mqtt.QualityOfService v.s. mqtt5.QoS
+As the service client interface is unchanged for Mqtt3 Connection and Mqtt5 Client,the IotShadowClient will use mqtt.QualityOfService instead of mqtt5.QoS even with a Mqtt5 Client.
+
+### Client Id
+As client id is mandatory to create the `MqttClientConnection`, or the constructor would throw an `MqttException`. Please make sure you assign a client id to Mqtt5Client before you create the `MqttClientConnection`.
