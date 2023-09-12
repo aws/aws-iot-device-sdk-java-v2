@@ -80,7 +80,7 @@ public class IotJobsClient {
     public IotJobsClient(Mqtt5Client mqtt5Client) throws MqttException{
         try
         {
-            this.connection = new MqttClientConnection(mqtt5Client, null);
+            this.connection = MqttClientConnection.NewConnection(mqtt5Client, null);
         }
         catch(MqttException ex)
         {
