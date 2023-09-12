@@ -342,7 +342,6 @@ public class Mqtt5JobsSample {
 
             /* Close the client to free memory */
             client.close();
-            jobs.close();
 
         } catch (CrtRuntimeException | InterruptedException | ExecutionException ex) {
             System.out.println("Exception encountered: " + ex.toString());

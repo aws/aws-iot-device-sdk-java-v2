@@ -301,7 +301,6 @@ public class JobsSample {
 
             // Close the connection now that we are completely done with it.
             connection.close();
-            jobs.close();
 
         } catch (CrtRuntimeException | InterruptedException | ExecutionException ex) {
             System.out.println("Exception encountered: " + ex.toString());
