@@ -324,14 +324,14 @@ mvn compile exec:java -pl samples/FleetProvisioning -Dexec.mainClass="fleetprovi
 ```
 
 ## Service Client Notes
-### Difference relative to MQTT311 IotShadowClient
-The IotShadowClient with mqtt5 client is almost identical to mqtt3 one. We wrapped the Mqtt5Client into MqttClientConnection so that we could keep the same interface for IotShadowClient.
-The only difference is that you would need setup up a Mqtt5 Client for the IotShadowClient. For how to setup a Mqtt5 Client, please refer to [MQTT5 UserGuide](../../documents/MQTT5_Userguide.md) and [MQTT5 PubSub Sample](../Mqtt5/PubSub/)
+### Difference relative to MQTT311 IotIdentityClient (Fleet Provisioning)
+The IotIdentityClient with mqtt5 client is almost identical to the mqtt3 one. We wrapped the Mqtt5Client into MqttClientConnection so that we could keep the same interface for IotIdentityClient.
+The only difference is that you would need setup up a Mqtt5 Client for the IotIdentityClient. For how to setup a Mqtt5 Client, please refer to [MQTT5 UserGuide](../../documents/MQTT5_Userguide.md) and [MQTT5 PubSub Sample](../Mqtt5/PubSub/)
 
 <table>
 <tr>
-<th>Create a IotShadowClient with Mqtt5</th>
-<th>Create a IotShadowClient with Mqtt311</th>
+<th>Create a IotIdentityClient with Mqtt5</th>
+<th>Create a IotIdentityClient with Mqtt311</th>
 </tr>
 <tr>
 <td>
@@ -349,10 +349,10 @@ The only difference is that you would need setup up a Mqtt5 Client for the IotSh
   Mqtt5Client client = builder.build();
   builder.close();
 
-  // We wrap the Mqtt5Client into MqttClientConnection so that we can use the same interface for IoTShadowClient.
+  // We wrap the Mqtt5Client into MqttClientConnection so that we can use the same interface for IotIdentityClient.
   MqttClientConnection connection = new MqttClientConnection(client, null);
-  // Create the Shadow client
-  IotShadowClient Shadow = new IotShadowClient(connection);
+  // Create the Identity client
+  IotIdentityClient identity = new IotIdentityClient(connection);
 
   ...
   ...
@@ -376,8 +376,8 @@ The only difference is that you would need setup up a Mqtt5 Client for the IotSh
 
   builder.close();
 
-  // Create the Shadow client
-  IotShadowClient Shadow = new IotShadowClient(connection);
+  // Create the Identity client
+  IotIdentityClient identity = new IotIdentityClient(connection);
 
   ...
   ...
@@ -391,7 +391,7 @@ The only difference is that you would need setup up a Mqtt5 Client for the IotSh
 </table>
 
 ### mqtt.QualityOfService v.s. mqtt5.QoS
-As the service client interface is unchanged for Mqtt3 Connection and Mqtt5 Client,the IotShadowClient will use mqtt.QualityOfService instead of mqtt5.QoS even with a Mqtt5 Client.
+As the service client interface is unchanged for Mqtt3 Connection and Mqtt5 Client,the IotIdentityClient will use mqtt.QualityOfService instead of mqtt5.QoS even with a Mqtt5 Client.
 
 ### Client Id
 As client id is mandatory to create the `MqttClientConnection`, or the constructor would throw an `MqttException`. Please make sure you assign a client id to Mqtt5Client before you create the `MqttClientConnection`.
