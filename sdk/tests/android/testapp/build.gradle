@@ -43,7 +43,6 @@ android {
             java.srcDir '../../../../samples/Jobs/src/main/java'
             java.srcDir '../../../../samples/Shadow/src/main/java'
             java.srcDir '../../../../samples/CognitoConnect/src/main/java'
-            java.srcDir '../../../../samples/CustomAuthorizerConnect/src/main/java'
             java.srcDir 'src/main/java'
         }
     }

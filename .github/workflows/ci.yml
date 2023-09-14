@@ -379,8 +379,6 @@ jobs:
           shadowKey=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/Shadow/key" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$shadowKey" > shadowPrivatekey.pem
           mqtt5PubSubCert=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/mqtt5/us/mqtt5_thing/cert" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$mqtt5PubSubCert" > mqtt5PubSubCertificate.pem
           mqtt5PubSubKey=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/mqtt5/us/mqtt5_thing/key" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$mqtt5PubSubKey" > mqtt5PubSubPrivatekey.pem
-          customAuthName=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/CustomAuthorizer/name" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$customAuthName" > customAuthName.txt
-          customAuthPassword=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/CustomAuthorizer/name" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$customAuthPassword" > customAuthPassword.txt
           cd ../../..
           ../../../../android/gradlew assembledebug
           ../../../../android/gradlew assembleAndroidTest
