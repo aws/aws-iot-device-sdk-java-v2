@@ -66,6 +66,11 @@ class MainActivityTest {
                 resourceNames.add("mqtt5PubSubCertificate.pem")
                 resourceNames.add("mqtt5PubSubPrivatekey.pem")
             }
+
+            "customauthorizerconnect.CustomAuthorizerConnect" -> {
+                resourceNames.add("customAuthName.txt")
+                resourceNames.add("customAuthPassword.txt")
+            }
         }
 
         // Load resource into a cached location for use by sample
@@ -129,6 +134,13 @@ class MainActivityTest {
                     "--message", "message.txt", "Hello World From Android"
                 ))
             }
+
+            "customauthorizerconnect.CustomAuthorizerConnect" -> {
+                args.addAll(arrayOf(
+                    "--customAuthName", resourceMap["customAuthName.txt"],
+                    "--customAuthPassword", resourceMap["customAuthPassword.txt"]
+                ))
+            }
         }
 
         return args.toTypedArray()
@@ -171,5 +183,10 @@ class MainActivityTest {
     @Test
     fun mqtt5PubSubSample(){
         runSample("mqtt5.pubsub.PubSub")
+    }
+
+    @Test
+    fun customAuthorizerSample(){
+        runSample("customauthorizerconnect.CustomAuthorizerConnect")
     }
 }
