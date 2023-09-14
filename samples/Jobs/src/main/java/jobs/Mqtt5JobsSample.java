@@ -223,14 +223,16 @@ public class Mqtt5JobsSample {
                 DescribeJobExecutionSubscriptionRequest subscriptionRequest = new DescribeJobExecutionSubscriptionRequest();
                 subscriptionRequest.thingName = cmdData.input_thingName;
                 subscriptionRequest.jobId = jobId;
-                jobs.SubscribeToDescribeJobExecutionAccepted(
+                CompletableFuture<Integer> subscribed = jobs.SubscribeToDescribeJobExecutionAccepted(
                         subscriptionRequest,
                         QualityOfService.AT_LEAST_ONCE,
                         Mqtt5JobsSample::onDescribeJobExecutionAccepted);
-                jobs.SubscribeToDescribeJobExecutionRejected(
+                subscribed.get();
+                subscribed = jobs.SubscribeToDescribeJobExecutionRejected(
                         subscriptionRequest,
                         QualityOfService.AT_LEAST_ONCE,
                         Mqtt5JobsSample::onRejectedError);
+                subscribed.get();
 
                 DescribeJobExecutionRequest publishRequest = new DescribeJobExecutionRequest();
                 publishRequest.thingName = cmdData.input_thingName;
@@ -251,14 +253,16 @@ public class Mqtt5JobsSample {
                         StartNextPendingJobExecutionSubscriptionRequest subscriptionRequest = new StartNextPendingJobExecutionSubscriptionRequest();
                         subscriptionRequest.thingName = cmdData.input_thingName;
 
-                        jobs.SubscribeToStartNextPendingJobExecutionAccepted(
+                        CompletableFuture<Integer> subscribed = jobs.SubscribeToStartNextPendingJobExecutionAccepted(
                                 subscriptionRequest,
                                 QualityOfService.AT_LEAST_ONCE,
                                 Mqtt5JobsSample::onStartNextPendingJobExecutionAccepted);
-                        jobs.SubscribeToStartNextPendingJobExecutionRejected(
+                        subscribed.get();
+                        subscribed = jobs.SubscribeToStartNextPendingJobExecutionRejected(
                                 subscriptionRequest,
                                 QualityOfService.AT_LEAST_ONCE,
                                 Mqtt5JobsSample::onRejectedError);
+                        subscribed.get();
 
                         StartNextPendingJobExecutionRequest publishRequest = new StartNextPendingJobExecutionRequest();
                         publishRequest.thingName = cmdData.input_thingName;
@@ -275,17 +279,19 @@ public class Mqtt5JobsSample {
                         UpdateJobExecutionSubscriptionRequest subscriptionRequest = new UpdateJobExecutionSubscriptionRequest();
                         subscriptionRequest.thingName = cmdData.input_thingName;
                         subscriptionRequest.jobId = currentJobId;
-                        jobs.SubscribeToUpdateJobExecutionAccepted(
+                        CompletableFuture<Integer> subscribed =  jobs.SubscribeToUpdateJobExecutionAccepted(
                                 subscriptionRequest,
                                 QualityOfService.AT_LEAST_ONCE,
                                 (response) -> {
                                     System.out.println("Marked job " + currentJobId + " IN_PROGRESS");
                                     gotResponse.complete(null);
                                 });
-                        jobs.SubscribeToUpdateJobExecutionRejected(
+                        subscribed.get();
+                        subscribed = jobs.SubscribeToUpdateJobExecutionRejected(
                                 subscriptionRequest,
                                 QualityOfService.AT_LEAST_ONCE,
                                 Mqtt5JobsSample::onRejectedError);
+                        subscribed.get();
 
                         UpdateJobExecutionRequest publishRequest = new UpdateJobExecutionRequest();
                         publishRequest.thingName = cmdData.input_thingName;
@@ -308,17 +314,19 @@ public class Mqtt5JobsSample {
                         UpdateJobExecutionSubscriptionRequest subscriptionRequest = new UpdateJobExecutionSubscriptionRequest();
                         subscriptionRequest.thingName = cmdData.input_thingName;
                         subscriptionRequest.jobId = currentJobId;
-                        jobs.SubscribeToUpdateJobExecutionAccepted(
+                        CompletableFuture<Integer> subscribed = jobs.SubscribeToUpdateJobExecutionAccepted(
                                 subscriptionRequest,
                                 QualityOfService.AT_LEAST_ONCE,
                                 (response) -> {
                                     System.out.println("Marked job " + currentJobId + " SUCCEEDED");
                                     gotResponse.complete(null);
                                 });
-                        jobs.SubscribeToUpdateJobExecutionRejected(
+                        subscribed.get();
+                        subscribed = jobs.SubscribeToUpdateJobExecutionRejected(
                                 subscriptionRequest,
                                 QualityOfService.AT_LEAST_ONCE,
                                 Mqtt5JobsSample::onRejectedError);
+                        subscribed.get();
 
                         UpdateJobExecutionRequest publishRequest = new UpdateJobExecutionRequest();
                         publishRequest.thingName = cmdData.input_thingName;
