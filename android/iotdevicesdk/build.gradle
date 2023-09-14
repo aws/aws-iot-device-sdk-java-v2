@@ -71,10 +71,12 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField("String", "VERSION_NAME", "\"" + gitVersionName() + "\"")
         }
         debug {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField("String", "VERSION_NAME", "\"" + gitVersionName() + "\"")
         }
     }
 
@@ -82,7 +84,6 @@ android {
         sourceCompatibility = 1.8
         targetCompatibility = 1.8
     }
-    ndkVersion '23.1.7779620'
 }
 
 repositories {
