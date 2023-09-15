@@ -44,7 +44,7 @@
      // When run normally, we want to check for jobs and process them
      // When run from CI, we want to just check for jobs
      static String ciPropValue = System.getProperty("aws.crt.ci");
-     static boolean isCI = ciPropValue != null && Boolean.valueOf(ciPropValue);
+     static boolean isCI = true;
 
      static CompletableFuture<Void> gotResponse;
      static List<String> availableJobs = new LinkedList<>();
