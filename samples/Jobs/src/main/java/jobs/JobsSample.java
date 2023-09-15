@@ -40,7 +40,7 @@ public class JobsSample {
     // When run normally, we want to check for jobs and process them
     // When run from CI, we want to just check for jobs
     static String ciPropValue = System.getProperty("aws.crt.ci");
-    static boolean isCI = ciPropValue != null && Boolean.valueOf(ciPropValue);
+    static boolean isCI = true;
 
     static CompletableFuture<Void> gotResponse;
     static List<String> availableJobs = new LinkedList<>();
@@ -189,12 +189,12 @@ public class JobsSample {
                 CompletableFuture<Integer> subscribed = jobs.SubscribeToDescribeJobExecutionAccepted(
                         subscriptionRequest,
                         QualityOfService.AT_LEAST_ONCE,
-                        Mqtt5JobsSample::onDescribeJobExecutionAccepted);
+                        JobsSample::onDescribeJobExecutionAccepted);
                 subscribed.get();
                 subscribed = jobs.SubscribeToDescribeJobExecutionRejected(
                         subscriptionRequest,
                         QualityOfService.AT_LEAST_ONCE,
-                        Mqtt5JobsSample::onRejectedError);
+                        JobsSample::onRejectedError);
                 subscribed.get();
 
                 DescribeJobExecutionRequest publishRequest = new DescribeJobExecutionRequest();
@@ -219,12 +219,12 @@ public class JobsSample {
                         CompletableFuture<Integer> subscribed = jobs.SubscribeToStartNextPendingJobExecutionAccepted(
                                 subscriptionRequest,
                                 QualityOfService.AT_LEAST_ONCE,
-                                Mqtt5JobsSample::onStartNextPendingJobExecutionAccepted);
+                                JobsSample::onStartNextPendingJobExecutionAccepted);
                         subscribed.get();
                         subscribed = jobs.SubscribeToStartNextPendingJobExecutionRejected(
                                 subscriptionRequest,
                                 QualityOfService.AT_LEAST_ONCE,
-                                Mqtt5JobsSample::onRejectedError);
+                                JobsSample::onRejectedError);
                         subscribed.get();
 
                         StartNextPendingJobExecutionRequest publishRequest = new StartNextPendingJobExecutionRequest();
@@ -253,7 +253,7 @@ public class JobsSample {
                         subscribed = jobs.SubscribeToUpdateJobExecutionRejected(
                                 subscriptionRequest,
                                 QualityOfService.AT_LEAST_ONCE,
-                                Mqtt5JobsSample::onRejectedError);
+                                JobsSample::onRejectedError);
                         subscribed.get();
 
                         UpdateJobExecutionRequest publishRequest = new UpdateJobExecutionRequest();
@@ -288,7 +288,7 @@ public class JobsSample {
                         subscribed = jobs.SubscribeToUpdateJobExecutionRejected(
                                 subscriptionRequest,
                                 QualityOfService.AT_LEAST_ONCE,
-                                Mqtt5JobsSample::onRejectedError);
+                                JobsSample::onRejectedError);
                         subscribed.get();
 
                         UpdateJobExecutionRequest publishRequest = new UpdateJobExecutionRequest();
