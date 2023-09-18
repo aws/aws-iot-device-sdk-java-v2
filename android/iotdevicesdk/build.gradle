@@ -1,6 +1,7 @@
 import java.util.regex.Pattern
 
 apply plugin: 'com.android.library'
+apply plugin: 'signing' // Needed for OpenPGP signatures required to publish to MAven Central Repository
 
 Properties getGitTag() {
     def gitTag = "git describe --tags".execute().text.trim()
@@ -50,7 +51,6 @@ android {
         targetSdkVersion 30
         versionCode = gitVersionCode()
         versionName = gitVersionName()
-        ndkVersion "23.1.7779620"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'consumer-rules.pro'
     }
@@ -129,6 +129,15 @@ task androidDocsJar(type: Jar) {
 
 afterEvaluate {
     publishing {
+        repositories {
+            maven {
+                def snapshotRepo = "https://aws.oss.sonatype.org/content/repositories/snapshots"
+                def releaseRepo = "https://aws.oss.sonatype.org/"
+                url = version.endsWith('SNAPSHOT') ? snapshotRepo : releaseRepo
+            }
+            mavenLocal()
+        }
+
         publications {
             release(MavenPublication) {
                 from components.release
@@ -148,14 +157,16 @@ afterEvaluate {
             }
 
         }
-        repositories {
-            maven {
-                def snapshotRepo = "https://aws.oss.sonatype.org/content/repositories/snapshots"
-                def releaseRepo = "https://aws.oss.sonatype.org/"
-                url = version.endsWith('SNAPSHOT') ? snapshotRepo : releaseRepo
-            }
-            mavenLocal()
 
+        if (project.hasProperty("signingKey") && project.hasProperty("signingPassword")) {
+            signing {
+                useInMemoryPgpKeys(
+                    (String) project.property("signingKey"),
+                    (String) project.property("signingPassword")
+                )
+                println("key=" + project.property("signingKey"))
+                sign(publications)
+            }
         }
     }
 }
