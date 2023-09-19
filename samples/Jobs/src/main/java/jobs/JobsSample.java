@@ -186,16 +186,14 @@ public class JobsSample {
                 DescribeJobExecutionSubscriptionRequest subscriptionRequest = new DescribeJobExecutionSubscriptionRequest();
                 subscriptionRequest.thingName = cmdData.input_thingName;
                 subscriptionRequest.jobId = jobId;
-                CompletableFuture<Integer> subscribed = jobs.SubscribeToDescribeJobExecutionAccepted(
+                jobs.SubscribeToDescribeJobExecutionAccepted(
                         subscriptionRequest,
                         QualityOfService.AT_LEAST_ONCE,
                         JobsSample::onDescribeJobExecutionAccepted);
-                subscribed.get();
-                subscribed = jobs.SubscribeToDescribeJobExecutionRejected(
+                jobs.SubscribeToDescribeJobExecutionRejected(
                         subscriptionRequest,
                         QualityOfService.AT_LEAST_ONCE,
                         JobsSample::onRejectedError);
-                subscribed.get();
 
                 DescribeJobExecutionRequest publishRequest = new DescribeJobExecutionRequest();
                 publishRequest.thingName = cmdData.input_thingName;
@@ -216,16 +214,14 @@ public class JobsSample {
                         StartNextPendingJobExecutionSubscriptionRequest subscriptionRequest = new StartNextPendingJobExecutionSubscriptionRequest();
                         subscriptionRequest.thingName = cmdData.input_thingName;
 
-                        CompletableFuture<Integer> subscribed = jobs.SubscribeToStartNextPendingJobExecutionAccepted(
+                        jobs.SubscribeToStartNextPendingJobExecutionAccepted(
                                 subscriptionRequest,
                                 QualityOfService.AT_LEAST_ONCE,
                                 JobsSample::onStartNextPendingJobExecutionAccepted);
-                        subscribed.get();
-                        subscribed = jobs.SubscribeToStartNextPendingJobExecutionRejected(
+                        jobs.SubscribeToStartNextPendingJobExecutionRejected(
                                 subscriptionRequest,
                                 QualityOfService.AT_LEAST_ONCE,
                                 JobsSample::onRejectedError);
-                        subscribed.get();
 
                         StartNextPendingJobExecutionRequest publishRequest = new StartNextPendingJobExecutionRequest();
                         publishRequest.thingName = cmdData.input_thingName;
@@ -242,19 +238,17 @@ public class JobsSample {
                         UpdateJobExecutionSubscriptionRequest subscriptionRequest = new UpdateJobExecutionSubscriptionRequest();
                         subscriptionRequest.thingName = cmdData.input_thingName;
                         subscriptionRequest.jobId = currentJobId;
-                        CompletableFuture<Integer> subscribed =  jobs.SubscribeToUpdateJobExecutionAccepted(
+                        jobs.SubscribeToUpdateJobExecutionAccepted(
                                 subscriptionRequest,
                                 QualityOfService.AT_LEAST_ONCE,
                                 (response) -> {
                                     System.out.println("Marked job " + currentJobId + " IN_PROGRESS");
                                     gotResponse.complete(null);
                                 });
-                        subscribed.get();
-                        subscribed = jobs.SubscribeToUpdateJobExecutionRejected(
+                        jobs.SubscribeToUpdateJobExecutionRejected(
                                 subscriptionRequest,
                                 QualityOfService.AT_LEAST_ONCE,
                                 JobsSample::onRejectedError);
-                        subscribed.get();
 
                         UpdateJobExecutionRequest publishRequest = new UpdateJobExecutionRequest();
                         publishRequest.thingName = cmdData.input_thingName;
@@ -277,19 +271,17 @@ public class JobsSample {
                         UpdateJobExecutionSubscriptionRequest subscriptionRequest = new UpdateJobExecutionSubscriptionRequest();
                         subscriptionRequest.thingName = cmdData.input_thingName;
                         subscriptionRequest.jobId = currentJobId;
-                        CompletableFuture<Integer> subscribed = jobs.SubscribeToUpdateJobExecutionAccepted(
+                        jobs.SubscribeToUpdateJobExecutionAccepted(
                                 subscriptionRequest,
                                 QualityOfService.AT_LEAST_ONCE,
                                 (response) -> {
                                     System.out.println("Marked job " + currentJobId + " SUCCEEDED");
                                     gotResponse.complete(null);
                                 });
-                        subscribed.get();
-                        subscribed = jobs.SubscribeToUpdateJobExecutionRejected(
+                        jobs.SubscribeToUpdateJobExecutionRejected(
                                 subscriptionRequest,
                                 QualityOfService.AT_LEAST_ONCE,
                                 JobsSample::onRejectedError);
-                        subscribed.get();
 
                         UpdateJobExecutionRequest publishRequest = new UpdateJobExecutionRequest();
                         publishRequest.thingName = cmdData.input_thingName;
