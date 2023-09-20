@@ -100,8 +100,8 @@ mvn compile exec:java -pl samples/Shadow -Dexec.mainClass=shadow.ShadowSample -D
 ```
 
 ## Service Client Notes
-### Difference relative to MQTT311 IotShadowClient
-The IotShadowClient with mqtt5 client is almost identical to mqtt3 one. We wrapped the Mqtt5Client into MqttClientConnection so that we could keep the same interface for IotShadowClient.
+### Difference between MQTT5 and MQTT311 IotShadowClient
+The IotShadowClient with Mqtt5 client is almost identical to Mqtt3 one. We wrapped the Mqtt5Client into MqttClientConnection so that we could keep the same interface for IotShadowClient.
 The only difference is that you would need setup up a Mqtt5 Client for the IotShadowClient. For how to setup a Mqtt5 Client, please refer to [MQTT5 UserGuide](../../documents/MQTT5_Userguide.md) and [MQTT5 PubSub Sample](../Mqtt5/PubSub/)
 
 <table>

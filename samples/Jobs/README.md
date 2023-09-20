@@ -98,8 +98,8 @@ mvn compile exec:java -pl samples/Jobs -Dexec.mainClass=jobs.JobsSample -Dexec.a
 
 
 ## Service Client Notes
-### Difference relative to MQTT311 IotJobsClient
-The IotJobsClient with mqtt5 client is almost identical to mqtt3 one. We wrapped the Mqtt5Client into MqttClientConnection so that we could keep the same interface for IotJobsClient.
+### Difference between MQTT5 and MQTT311 IotJobsClient
+The IotJobsClient with Mqtt5 client is almost identical to Mqtt3 one. We wrapped the Mqtt5Client into MqttClientConnection so that we could keep the same interface for IotJobsClient.
 The only difference is that you would need setup up a Mqtt5 Client for the IotJobsClient. For how to setup a Mqtt5 Client, please refer to [MQTT5 UserGuide](../../documents/MQTT5_Userguide.md) and [MQTT5 PubSub Sample](../Mqtt5/PubSub/)
 
 <table>

@@ -98,11 +98,11 @@ mvn compile exec:java -pl samples/FleetProvisioning -Dexec.mainClass="fleetprovi
 --cert <path to certificate> --key <path to private key> --template_name <template name> --template_parameters <template params>"
 ```
 
-Checkout the sample with Mqtt3 Client in file: [`FleetProvisioningSample.java`](./samples/FleetProvisioning/src/main/java/fleetprovisioning/FleetProvisioningSample.java)
+The Mqtt3 Client sample can be found in file:: [`FleetProvisioningSample.java`](./samples/FleetProvisioning/src/main/java/fleetprovisioning/FleetProvisioningSample.java)
 
 ## Fleet Provisioning Detailed Instructions
 
-### Aws Resource Setup
+### AWS Resource Setup
 
 Fleet provisioning requires some additional AWS resources be set up first. These steps assume you have the [AWS CLI](https://aws.amazon.com/cli/) installed and have your AWS credentials for the AWS CLI setup and with sufficient permissions to perform all of the operations in this guide. For instructions on how to setup AWS CLI, see the following: [Configuring the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html).
 
@@ -324,8 +324,8 @@ mvn compile exec:java -pl samples/FleetProvisioning -Dexec.mainClass="fleetprovi
 ```
 
 ## Service Client Notes
-### Difference relative to MQTT311 IotIdentityClient (Fleet Provisioning)
-The IotIdentityClient with mqtt5 client is almost identical to the mqtt3 one. We wrapped the Mqtt5Client into MqttClientConnection so that we could keep the same interface for IotIdentityClient.
+### Difference between MQTT5 and MQTT311 IotIdentityClient (Fleet Provisioning)
+The IotIdentityClient with Mqtt5 client is almost identical to the Mqtt3 one. We wrapped the Mqtt5Client into MqttClientConnection so that we could keep the same interface for IotIdentityClient.
 The only difference is that you would need setup up a Mqtt5 Client for the IotIdentityClient. For how to setup a Mqtt5 Client, please refer to [MQTT5 UserGuide](../../documents/MQTT5_Userguide.md) and [MQTT5 PubSub Sample](../Mqtt5/PubSub/)
 
 <table>
