@@ -25,6 +25,7 @@ to Java by the [aws-crt-java](https://github.com/awslabs/aws-crt-java) package.
 * [FAQ](./documents/FAQ.md)
 * [Giving Feedback and Contributions](#giving-feedback-and-contributions)
 * [MQTT5 User Guide](./documents/MQTT5_Userguide.md)
+* [DEVELOPING](./documents/DEVELOPING.md)
 
 ## What's New
 
