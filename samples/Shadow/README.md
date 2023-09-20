@@ -171,3 +171,68 @@ As the service client interface is unchanged for Mqtt3 Connection and Mqtt5 Clie
 
 ### Client Id
 As client id is mandatory to create the `MqttClientConnection`, or the constructor would throw an `MqttException`. Please make sure you assign a client id to Mqtt5Client before you create the `MqttClientConnection`.
+
+### Lifecycle Events / Connection Interface
+You should NOT mix the connection operations between Mqtt5 Client and the wrapped MqttClientConnection.
+A Good Example Would be:
+```Java
+  Mqtt5Client client = builder.build();
+  // We wrap the Mqtt5Client into MqttClientConnection
+  MqttClientConnection connection = new MqttClientConnection(client, null);
+
+  // Start the connection using Mqtt5 Interface
+  client.start();
+
+  ...
+  ...
+
+  // As you start the connection using Mqtt5 Interface, you should stop it
+  // with Mqtt5 Interface
+  client.stop();
+
+  /* Make sure to release the resources after use. */
+  connection.close();
+  client.close();
+
+```
+or
+```Java
+  Mqtt5Client client = builder.build();
+  // We wrap the Mqtt5Client into MqttClientConnection
+  MqttClientConnection connection = new MqttClientConnection(client, null);
+
+  // Connect throw the MqttClientConnection Interface
+  connection.connect();
+
+  ...
+  ...
+
+  // As you start the connection using MqttClientConnection Interface, you should stop it
+  // with MqttClientConnection Interface here
+  connection.disconnect();
+
+  /* Make sure to release the resources after use. */
+  connection.close();
+  client.close();
+
+```
+
+DO NOT DO THIS:
+```Java
+  Mqtt5Client client = builder.build();
+  // We wrap the Mqtt5Client into MqttClientConnection
+  MqttClientConnection connection = new MqttClientConnection(client, null);
+
+  // Connect through the Mqtt5 Client Interface
+  client.start();
+
+  ...
+  ...
+
+  // ERROR!!! The disconnect() here would not work
+  connection.disconnect();
+
+  /* Make sure to release the resources after use. */
+  connection.close();
+  client.close();
+```
