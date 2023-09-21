@@ -98,7 +98,7 @@ mvn compile exec:java -pl samples/FleetProvisioning -Dexec.mainClass="fleetprovi
 --cert <path to certificate> --key <path to private key> --template_name <template name> --template_parameters <template params>"
 ```
 
-The Mqtt3 Client sample can be found in file:: [`FleetProvisioningSample.java`](./samples/FleetProvisioning/src/main/java/fleetprovisioning/FleetProvisioningSample.java)
+The Mqtt3 Client sample can be found in file: [`FleetProvisioningSample.java`](./samples/FleetProvisioning/src/main/java/fleetprovisioning/FleetProvisioningSample.java)
 
 ## Fleet Provisioning Detailed Instructions
 
