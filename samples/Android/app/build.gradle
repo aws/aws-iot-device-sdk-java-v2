@@ -1,3 +1,21 @@
+buildscript {
+    ext.kotlin_version = '1.5.0'
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath "com.android.tools.build:gradle:7.1.2"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+repositories {
+    google()
+    mavenLocal()
+    mavenCentral()
+}
+
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
@@ -18,11 +36,11 @@ android {
 
     sourceSets {
         main {
-            java.srcDir '../../samples/Utils/CommandLineUtils'
-            java.srcDir '../../samples/BasicPubSub/src/main/java'
-            java.srcDir '../../samples/Jobs/src/main/java'
-            java.srcDir '../../samples/Shadow/src/main/java'
-            java.srcDir '../../samples/CognitoConnect/src/main/java'
+            java.srcDir '../..Utils/CommandLineUtils'
+            java.srcDir '../..BasicPubSub/src/main/java'
+            java.srcDir '../..Jobs/src/main/java'
+            java.srcDir '../..Shadow/src/main/java'
+            java.srcDir '../..CognitoConnect/src/main/java'
             java.srcDir 'src/main/java'
         }
     }
@@ -40,14 +58,9 @@ android {
     ndkVersion '23.1.7779620'
 }
 
-repositories {
-    mavenLocal()
-    mavenCentral()
-}
-
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation project(":iotdevicesdk")
+    api 'software.amazon.awssdk.iotdevicesdk:aws-iot-device-sdk-android:1.17.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.core:core:1.2.0'
