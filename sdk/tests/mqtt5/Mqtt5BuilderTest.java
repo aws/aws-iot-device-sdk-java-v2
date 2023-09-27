@@ -310,9 +310,9 @@ public class Mqtt5BuilderTest {
         assumeTrue(mqtt5IoTCoreSigningAuthorizerTokenSignature != null);
 
         AwsIotMqtt5ClientBuilder.MqttConnectCustomAuthConfig customAuthConfig = new AwsIotMqtt5ClientBuilder.MqttConnectCustomAuthConfig();
-        customAuthConfig.authorizerName = mqtt5IoTCoreNoSigningAuthorizerName;
-        customAuthConfig.username = mqtt5IoTCoreNoSigningAuthorizerUsername;
-        customAuthConfig.password = mqtt5IoTCoreNoSigningAuthorizerPassword.getBytes();
+        customAuthConfig.authorizerName = mqtt5IoTCoreSigningAuthorizerName;
+        customAuthConfig.username = mqtt5IoTCoreSigningAuthorizerUsername;
+        customAuthConfig.password = mqtt5IoTCoreSigningAuthorizerPassword.getBytes();
         customAuthConfig.tokenValue = mqtt5IoTCoreSigningAuthorizerToken;
         customAuthConfig.tokenKeyName = mqtt5IoTCoreSigningAuthorizerTokenKeyName;
         customAuthConfig.tokenSignature = mqtt5IoTCoreSigningAuthorizerTokenSignature;
@@ -374,9 +374,9 @@ public class Mqtt5BuilderTest {
         assumeTrue(mqtt5IoTCoreSigningAuthorizerTokenSignature != null);
 
         AwsIotMqtt5ClientBuilder.MqttConnectCustomAuthConfig customAuthConfig = new AwsIotMqtt5ClientBuilder.MqttConnectCustomAuthConfig();
-        customAuthConfig.authorizerName = mqtt5IoTCoreNoSigningAuthorizerName;
-        customAuthConfig.username = mqtt5IoTCoreNoSigningAuthorizerUsername;
-        customAuthConfig.password = mqtt5IoTCoreNoSigningAuthorizerPassword.getBytes();
+        customAuthConfig.authorizerName = mqtt5IoTCoreSigningAuthorizerName;
+        customAuthConfig.username = mqtt5IoTCoreSigningAuthorizerUsername;
+        customAuthConfig.password = mqtt5IoTCoreSigningAuthorizerPassword.getBytes();
         customAuthConfig.tokenValue = mqtt5IoTCoreSigningAuthorizerToken;
         customAuthConfig.tokenKeyName = mqtt5IoTCoreSigningAuthorizerTokenKeyName;
         customAuthConfig.tokenSignature = mqtt5IoTCoreSigningAuthorizerTokenSignature;
