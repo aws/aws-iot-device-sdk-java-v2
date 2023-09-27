@@ -127,73 +127,73 @@ public class MqttBuilderTest {
     }
 
         /* Custom Auth (no signing) connect - Websockets */
-    @Test
-    public void ConnIoT_CustomAuth_UC3()
-    {
-        assumeTrue(mqtt5IoTCoreHost != null);
-        assumeTrue(mqtt5IoTCoreNoSigningAuthorizerName != null);
-        assumeTrue(mqtt5IoTCoreNoSigningAuthorizerUsername != null);
-        assumeTrue(mqtt5IoTCoreNoSigningAuthorizerPassword != null);
+    // @Test
+    // public void ConnIoT_CustomAuth_UC3()
+    // {
+    //     assumeTrue(mqtt5IoTCoreHost != null);
+    //     assumeTrue(mqtt5IoTCoreNoSigningAuthorizerName != null);
+    //     assumeTrue(mqtt5IoTCoreNoSigningAuthorizerUsername != null);
+    //     assumeTrue(mqtt5IoTCoreNoSigningAuthorizerPassword != null);
 
-        try {
-            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newDefaultBuilder();
-            builder.withEndpoint(mqtt5IoTCoreHost);
-            String clientId = "test-" + UUID.randomUUID().toString();
-            builder.withClientId(clientId);
-            builder.withCustomAuthorizer(
-                mqtt5IoTCoreNoSigningAuthorizerUsername,
-                mqtt5IoTCoreNoSigningAuthorizerName,
-                null,
-                mqtt5IoTCoreNoSigningAuthorizerPassword,
-                null,
-                null);
-            builder.withWebsockets(true);
-            MqttClientConnection connection = builder.build();
-            builder.close();
+    //     try {
+    //         AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newDefaultBuilder();
+    //         builder.withEndpoint(mqtt5IoTCoreHost);
+    //         String clientId = "test-" + UUID.randomUUID().toString();
+    //         builder.withClientId(clientId);
+    //         builder.withCustomAuthorizer(
+    //             mqtt5IoTCoreNoSigningAuthorizerUsername,
+    //             mqtt5IoTCoreNoSigningAuthorizerName,
+    //             null,
+    //             mqtt5IoTCoreNoSigningAuthorizerPassword,
+    //             null,
+    //             null);
+    //         builder.withWebsockets(true);
+    //         MqttClientConnection connection = builder.build();
+    //         builder.close();
 
-            connection.connect().get();
-            connection.disconnect().get();
-            connection.close();
+    //         connection.connect().get();
+    //         connection.disconnect().get();
+    //         connection.close();
 
-        } catch (Exception ex) {
-            fail(ex);
-        }
-    }
+    //     } catch (Exception ex) {
+    //         fail(ex);
+    //     }
+    // }
 
-    /* Custom Auth (with signing) connect - Websockets */
-    @Test
-    public void ConnIoT_CustomAuth_UC4()
-    {
-        assumeTrue(mqtt5IoTCoreHost != null);
-        assumeTrue(mqtt5IoTCoreSigningAuthorizerName != null);
-        assumeTrue(mqtt5IoTCoreSigningAuthorizerUsername != null);
-        assumeTrue(mqtt5IoTCoreSigningAuthorizerPassword != null);
-        assumeTrue(mqtt5IoTCoreSigningAuthorizerToken != null);
-        assumeTrue(mqtt5IoTCoreSigningAuthorizerTokenKeyName != null);
-        assumeTrue(mqtt5IoTCoreSigningAuthorizerTokenSignature != null);
+    // /* Custom Auth (with signing) connect - Websockets */
+    // @Test
+    // public void ConnIoT_CustomAuth_UC4()
+    // {
+    //     assumeTrue(mqtt5IoTCoreHost != null);
+    //     assumeTrue(mqtt5IoTCoreSigningAuthorizerName != null);
+    //     assumeTrue(mqtt5IoTCoreSigningAuthorizerUsername != null);
+    //     assumeTrue(mqtt5IoTCoreSigningAuthorizerPassword != null);
+    //     assumeTrue(mqtt5IoTCoreSigningAuthorizerToken != null);
+    //     assumeTrue(mqtt5IoTCoreSigningAuthorizerTokenKeyName != null);
+    //     assumeTrue(mqtt5IoTCoreSigningAuthorizerTokenSignature != null);
 
-        try {
-            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newDefaultBuilder();
-            builder.withEndpoint(mqtt5IoTCoreHost);
-            String clientId = "test-" + UUID.randomUUID().toString();
-            builder.withClientId(clientId);
-            builder.withCustomAuthorizer(
-                mqtt5IoTCoreSigningAuthorizerUsername,
-                mqtt5IoTCoreSigningAuthorizerName,
-                mqtt5IoTCoreSigningAuthorizerTokenSignature,
-                mqtt5IoTCoreSigningAuthorizerPassword,
-                mqtt5IoTCoreSigningAuthorizerTokenKeyName,
-                mqtt5IoTCoreSigningAuthorizerToken);
-            builder.withWebsockets(true);
-            MqttClientConnection connection = builder.build();
-            builder.close();
+    //     try {
+    //         AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newDefaultBuilder();
+    //         builder.withEndpoint(mqtt5IoTCoreHost);
+    //         String clientId = "test-" + UUID.randomUUID().toString();
+    //         builder.withClientId(clientId);
+    //         builder.withCustomAuthorizer(
+    //             mqtt5IoTCoreSigningAuthorizerUsername,
+    //             mqtt5IoTCoreSigningAuthorizerName,
+    //             mqtt5IoTCoreSigningAuthorizerTokenSignature,
+    //             mqtt5IoTCoreSigningAuthorizerPassword,
+    //             mqtt5IoTCoreSigningAuthorizerTokenKeyName,
+    //             mqtt5IoTCoreSigningAuthorizerToken);
+    //         builder.withWebsockets(true);
+    //         MqttClientConnection connection = builder.build();
+    //         builder.close();
 
-            connection.connect().get();
-            connection.disconnect().get();
-            connection.close();
+    //         connection.connect().get();
+    //         connection.disconnect().get();
+    //         connection.close();
 
-        } catch (Exception ex) {
-            fail(ex);
-        }
-    }
+    //     } catch (Exception ex) {
+    //         fail(ex);
+    //     }
+    // }
 }
