@@ -20,6 +20,7 @@ import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
 public class MqttBuilderTest {
 
     private String mqtt5IoTCoreHost;
+    private String mqtt5IoTCoreRegion;
 
     private String mqtt5IoTCoreNoSigningAuthorizerName;
     private String mqtt5IoTCoreNoSigningAuthorizerUsername;
@@ -34,6 +35,7 @@ public class MqttBuilderTest {
 
     private void populateTestingEnvironmentVariables() {
         mqtt5IoTCoreHost = System.getenv("AWS_TEST_MQTT5_IOT_CORE_HOST");
+        mqtt5IoTCoreRegion = System.getenv("AWS_TEST_MQTT5_IOT_CORE_REGION");
 
         mqtt5IoTCoreNoSigningAuthorizerName = System.getenv("AWS_TEST_MQTT5_IOT_CORE_NO_SIGNING_AUTHORIZER_NAME");
         mqtt5IoTCoreNoSigningAuthorizerUsername = System.getenv("AWS_TEST_MQTT5_IOT_CORE_NO_SIGNING_AUTHORIZER_USERNAME");
@@ -127,73 +129,77 @@ public class MqttBuilderTest {
     }
 
         /* Custom Auth (no signing) connect - Websockets */
-    // @Test
-    // public void ConnIoT_CustomAuth_UC3()
-    // {
-    //     assumeTrue(mqtt5IoTCoreHost != null);
-    //     assumeTrue(mqtt5IoTCoreNoSigningAuthorizerName != null);
-    //     assumeTrue(mqtt5IoTCoreNoSigningAuthorizerUsername != null);
-    //     assumeTrue(mqtt5IoTCoreNoSigningAuthorizerPassword != null);
+    @Test
+    public void ConnIoT_CustomAuth_UC3()
+    {
+        assumeTrue(mqtt5IoTCoreHost != null);
+        assumeTrue(mqtt5IoTCoreRegion != null);
+        assumeTrue(mqtt5IoTCoreNoSigningAuthorizerName != null);
+        assumeTrue(mqtt5IoTCoreNoSigningAuthorizerUsername != null);
+        assumeTrue(mqtt5IoTCoreNoSigningAuthorizerPassword != null);
 
-    //     try {
-    //         AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newDefaultBuilder();
-    //         builder.withEndpoint(mqtt5IoTCoreHost);
-    //         String clientId = "test-" + UUID.randomUUID().toString();
-    //         builder.withClientId(clientId);
-    //         builder.withCustomAuthorizer(
-    //             mqtt5IoTCoreNoSigningAuthorizerUsername,
-    //             mqtt5IoTCoreNoSigningAuthorizerName,
-    //             null,
-    //             mqtt5IoTCoreNoSigningAuthorizerPassword,
-    //             null,
-    //             null);
-    //         builder.withWebsockets(true);
-    //         MqttClientConnection connection = builder.build();
-    //         builder.close();
+        try {
+            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newDefaultBuilder();
+            builder.withEndpoint(mqtt5IoTCoreHost);
+            String clientId = "test-" + UUID.randomUUID().toString();
+            builder.withClientId(clientId);
+            builder.withCustomAuthorizer(
+                mqtt5IoTCoreNoSigningAuthorizerUsername,
+                mqtt5IoTCoreNoSigningAuthorizerName,
+                null,
+                mqtt5IoTCoreNoSigningAuthorizerPassword,
+                null,
+                null);
+            builder.withWebsockets(true);
+            builder.withWebsocketSigningRegion(mqtt5IoTCoreRegion);
+            MqttClientConnection connection = builder.build();
+            builder.close();
 
-    //         connection.connect().get();
-    //         connection.disconnect().get();
-    //         connection.close();
+            connection.connect().get();
+            connection.disconnect().get();
+            connection.close();
 
-    //     } catch (Exception ex) {
-    //         fail(ex);
-    //     }
-    // }
+        } catch (Exception ex) {
+            fail(ex);
+        }
+    }
 
-    // /* Custom Auth (with signing) connect - Websockets */
-    // @Test
-    // public void ConnIoT_CustomAuth_UC4()
-    // {
-    //     assumeTrue(mqtt5IoTCoreHost != null);
-    //     assumeTrue(mqtt5IoTCoreSigningAuthorizerName != null);
-    //     assumeTrue(mqtt5IoTCoreSigningAuthorizerUsername != null);
-    //     assumeTrue(mqtt5IoTCoreSigningAuthorizerPassword != null);
-    //     assumeTrue(mqtt5IoTCoreSigningAuthorizerToken != null);
-    //     assumeTrue(mqtt5IoTCoreSigningAuthorizerTokenKeyName != null);
-    //     assumeTrue(mqtt5IoTCoreSigningAuthorizerTokenSignature != null);
+    /* Custom Auth (with signing) connect - Websockets */
+    @Test
+    public void ConnIoT_CustomAuth_UC4()
+    {
+        assumeTrue(mqtt5IoTCoreHost != null);
+        assumeTrue(mqtt5IoTCoreRegion != null);
+        assumeTrue(mqtt5IoTCoreSigningAuthorizerName != null);
+        assumeTrue(mqtt5IoTCoreSigningAuthorizerUsername != null);
+        assumeTrue(mqtt5IoTCoreSigningAuthorizerPassword != null);
+        assumeTrue(mqtt5IoTCoreSigningAuthorizerToken != null);
+        assumeTrue(mqtt5IoTCoreSigningAuthorizerTokenKeyName != null);
+        assumeTrue(mqtt5IoTCoreSigningAuthorizerTokenSignature != null);
 
-    //     try {
-    //         AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newDefaultBuilder();
-    //         builder.withEndpoint(mqtt5IoTCoreHost);
-    //         String clientId = "test-" + UUID.randomUUID().toString();
-    //         builder.withClientId(clientId);
-    //         builder.withCustomAuthorizer(
-    //             mqtt5IoTCoreSigningAuthorizerUsername,
-    //             mqtt5IoTCoreSigningAuthorizerName,
-    //             mqtt5IoTCoreSigningAuthorizerTokenSignature,
-    //             mqtt5IoTCoreSigningAuthorizerPassword,
-    //             mqtt5IoTCoreSigningAuthorizerTokenKeyName,
-    //             mqtt5IoTCoreSigningAuthorizerToken);
-    //         builder.withWebsockets(true);
-    //         MqttClientConnection connection = builder.build();
-    //         builder.close();
+        try {
+            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newDefaultBuilder();
+            builder.withEndpoint(mqtt5IoTCoreHost);
+            String clientId = "test-" + UUID.randomUUID().toString();
+            builder.withClientId(clientId);
+            builder.withCustomAuthorizer(
+                mqtt5IoTCoreSigningAuthorizerUsername,
+                mqtt5IoTCoreSigningAuthorizerName,
+                mqtt5IoTCoreSigningAuthorizerTokenSignature,
+                mqtt5IoTCoreSigningAuthorizerPassword,
+                mqtt5IoTCoreSigningAuthorizerTokenKeyName,
+                mqtt5IoTCoreSigningAuthorizerToken);
+            builder.withWebsockets(true);
+            builder.withWebsocketSigningRegion(mqtt5IoTCoreRegion);
+            MqttClientConnection connection = builder.build();
+            builder.close();
 
-    //         connection.connect().get();
-    //         connection.disconnect().get();
-    //         connection.close();
+            connection.connect().get();
+            connection.disconnect().get();
+            connection.close();
 
-    //     } catch (Exception ex) {
-    //         fail(ex);
-    //     }
-    // }
+        } catch (Exception ex) {
+            fail(ex);
+        }
+    }
 }
