@@ -48,18 +48,13 @@ files linked below.
 # Build and install sample app
 
 ``` sh
-cd samples/Android
-# Create a workspace directory to hold all the SDK files
-mkdir sdk-workspace
-cd sdk-workspace
-# Clone the SDK repository
-# (Use the latest version of the SDK here instead of "v1.17.0)
-git clone --branch v1.17.0 --recurse-submodules https://github.com/aws/aws-iot-device-sdk-java-v2.git
-# Compile and install the SDK for Android
-cd aws-iot-device-sdk-java-v2/android
-./gradlew build
-# Install SDK locally
-./gradlew publishToMavenLocal
+# Change to the app directory
+cd samples/Android/app
+# Use gradlew from the android folder to build the sample app
+../../../android/gradlew build
+
+# Install it to a connected Device
+../../../android/gradlew installDebug
 ```
 
 # Links to sample README
