@@ -92,5 +92,5 @@ or replace with `1.0.0-SNAPSHOT` to use the SDK built and installed from source.
 Look up the latest SDK version here: https://github.com/aws/aws-iot-device-sdk-java-v2/releases
 
 ## Samples App
-[Android IoT Samples App README](./samples/Android/README.md)
+[Android IoT Samples App README](../samples/Android/README.md)
 
