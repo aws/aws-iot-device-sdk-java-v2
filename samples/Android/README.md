@@ -2,7 +2,7 @@
 [**Return to AWS IoT Device SDK for Android README**](../../documents/ANDROID.md)
 
 The Android sample builds an app that can be installed and run on an Android Device. The app builds and allows you
-to run the following [samples](#links-to-sample-readme) from aws-iot-device-sdk-java-v2:
+to run the following [samples](#links-to-individual-sample-readme-files) from aws-iot-device-sdk-java-v2:
 * BasicPubSub
 * Mqtt5PubSub
 * Jobs

@@ -8,7 +8,7 @@
 * [Mac-Only TLS Behavior](#mac-only-tls-behavior)
 * [How do debug in VSCode?](#how-do-debug-in-vscode)
 * [What certificates do I need?](#what-certificates-do-i-need)
-* [How do I build and use the Android SDK](#how-do-i-build-and-use-the-android-sdk)
+* [How do I build and use the Android SDK?](#how-do-i-build-and-use-the-android-sdk)
 * [I still have more questions about this sdk?](#i-still-have-more-questions-about-this-sdk)
 
 ### Where should I start?
