@@ -33,10 +33,10 @@ a dependency of the aws-iot-device-sdk-android library.
 
 ### Minimum requirements
 * Java 11+ ([Download and Install Java](https://www.java.com/en/download/help/download_options.html))
-  * [Set JAVA_HOME](./documents/PREREQUISITES.md#set-java_home)
+  * [Set JAVA_HOME](./PREREQUISITES.md#set-java_home)
 * Gradle 7.4.2 ([Download and Install Gradle](https://gradle.org/install/))
 * Android SDK 26 ([Doanload SDK Manager](https://developer.android.com/tools/releases/platform-tools#downloads))
-  * [Set ANDROID_HOME](./documents/PREREQUISITES.md#set-android_home)
+  * [Set ANDROID_HOME](./PREREQUISITES.md#set-android_home)
 
 ### Build and install IoT Device SDK from source
 Supports API 26 or newer.
