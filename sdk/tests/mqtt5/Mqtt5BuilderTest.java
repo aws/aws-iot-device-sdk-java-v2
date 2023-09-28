@@ -442,15 +442,15 @@ public class Mqtt5BuilderTest {
         assumeTrue(mqtt5IoTCoreSigningAuthorizerName != null);
         assumeTrue(mqtt5IoTCoreSigningAuthorizerUsername != null);
         assumeTrue(mqtt5IoTCoreSigningAuthorizerPassword != null);
-        assumeTrue(mqtt5IoTCoreSigningAuthorizerTokenKeyName != null);
+        assumeTrue(mqtt5IoTCoreSigningAuthorizerToken != null);
         assumeTrue(mqtt5IoTCoreSigningAuthorizerTokenSignature != null);
 
         AwsIotMqtt5ClientBuilder.MqttConnectCustomAuthConfig customAuthConfig = new AwsIotMqtt5ClientBuilder.MqttConnectCustomAuthConfig();
         customAuthConfig.authorizerName = mqtt5IoTCoreSigningAuthorizerName;
         customAuthConfig.username = mqtt5IoTCoreSigningAuthorizerUsername;
         customAuthConfig.password = mqtt5IoTCoreSigningAuthorizerPassword.getBytes();
-        customAuthConfig.tokenValue = "Invalid Token";
-        customAuthConfig.tokenKeyName = mqtt5IoTCoreSigningAuthorizerTokenKeyName;
+        customAuthConfig.tokenValue = mqtt5IoTCoreSigningAuthorizerToken;
+        customAuthConfig.tokenKeyName = "Invalid Token";
         customAuthConfig.tokenSignature = mqtt5IoTCoreSigningAuthorizerTokenSignature;
 
         AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newWebsocketMqttBuilderWithCustomAuth(
