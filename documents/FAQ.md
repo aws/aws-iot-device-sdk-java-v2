@@ -8,6 +8,7 @@
 * [Mac-Only TLS Behavior](#mac-only-tls-behavior)
 * [How do debug in VSCode?](#how-do-debug-in-vscode)
 * [What certificates do I need?](#what-certificates-do-i-need)
+* [How do I build and use the Android SDK?](#how-do-i-build-and-use-the-android-sdk)
 * [I still have more questions about this sdk?](#i-still-have-more-questions-about-this-sdk)
 
 ### Where should I start?
@@ -110,6 +111,8 @@ Here is an example launch.json file to run the pubsub sample
         * You should have generated/downloaded private and public keys that will be used to verify that communications are coming from you
         * When using samples you only need the private key and it will look like this: `--key abcde12345-private.pem.key`
 
+### How do I build and use the Android SDK?
+Instructions for building, installing, and use of the Android SDK can be found [here](../documents/ANDROID.md)
 ### I still have more questions about this sdk?
 
 * [Here](https://docs.aws.amazon.com/iot/latest/developerguide/what-is-aws-iot.html) are the AWS IoT Core docs for more details about IoT Core

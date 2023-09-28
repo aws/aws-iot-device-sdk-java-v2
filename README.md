@@ -20,6 +20,7 @@ to Java by the [aws-crt-java](https://github.com/awslabs/aws-crt-java) package.
 *__Jump To:__*
 
 * [Installation](#installation)
+* [Android](./documents/ANDROID.md)
 * [Samples](samples)
 * [Getting Help](#getting-help)
 * [FAQ](./documents/FAQ.md)
@@ -103,51 +104,6 @@ cd aws-iot-device-sdk-java-v2
 # Compile and install
 mvn clean install
 ```
-
-#### Android
-
-Supports API 26 or newer.
-NOTE: The shadow sample does not currently complete on android due to its dependence on stdin keyboard input.
-
-``` sh
-# Create a workspace directory to hold all the SDK files
-mkdir sdk-workspace
-cd sdk-workspace
-# Clone the CRT repository
-#     (Use the latest version of the CRT here instead of "v0.27.3")
-git clone --branch v0.27.3 --recurse-submodules https://github.com/awslabs/aws-crt-java.git
-# Compile and install the CRT for Android
-cd aws-crt-java/android
-./gradlew connectedCheck # optional, will run the unit tests on any connected devices/emulators
-./gradlew publishToMavenLocal
-# Clone the SDK repository
-cd ../..
-git clone https://github.com/awslabs/aws-iot-device-sdk-java-v2.git
-# Compile and install
-cd aws-iot-device-sdk-java-v2/android
-./gradlew publishToMavenLocal
-./gradlew installDebug # optional, will install the IoTSamples app to any connected devices/emulators
-```
-
-Add the following to your project's build.gradle:
-
-``` groovy
-repositories {
-    mavenCentral()
-    maven {
-        url System.getenv('HOME') + "/.m2/repository"
-    }
-}
-
-dependencies {
-    implementation 'software.amazon.awssdk.crt:android:0.27.3'
-}
-```
-[Android IoT Samples README](./android/app/src/main/assets/README.md)
-
-Replace `0.27.3` in `software.amazon.awssdk.crt:android:0.27.3` with the latest version of the CRT.
-Look up the latest CRT version here: https://github.com/awslabs/aws-crt-java/releases
-
 ## Samples
 
 [Samples README](samples)
