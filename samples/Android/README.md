@@ -14,14 +14,14 @@ to run the following [samples](#links-to-sample-readme) from aws-iot-device-sdk-
 * [Prerequisites](#prerequisites)
   * [Files required to run samples](#files-required-to-run-samples)
 * [Build and install sample app](#build-and-install-sample-app)
-* [Links to sample README](#links-to-sample-readme)
+* [Links to sample README](#links-to-individual-sample-readme-files)
 
 
 # Prerequisites
 The individual samples within the app require specific files to operate. The files must be placed in the
 `app/src/main/assets` directory prior to building for the sample app to connect to IoT Core and complete
 succesfully. The names of the files must be exactly as provided. Explanations for what each file and
-associated argument are doing can be found in the individual [Sample README](#links-to-sample-readme)
+associated argument are doing can be found in the individual [Sample README](#links-to-individual-sample-readme-files)
 files linked below.
 
 ## Files required to run samples
@@ -57,7 +57,7 @@ cd samples/Android/app
 ../../../android/gradlew installDebug
 ```
 
-# Links to sample README
+# Links to individual sample README files
 The following links will provide more details on the individual samples available in the
 Android sample app.
 

@@ -58,21 +58,12 @@ def main():
         update(filepath='README.md',
             preceded_by=r'--branch v',
             followed_by=r' .*aws-crt-java.git')
-        # update(filepath='README.md',
-        #     preceded_by=r"implementation 'software.amazon.awssdk.crt:android:",
-        #     followed_by=r"'")
         update(filepath='android/iotdevicesdk/build.gradle',
             preceded_by=r"api 'software.amazon.awssdk.crt:aws-crt-android:",
             followed_by=r"'")
         update(filepath='README.md',
             preceded_by=r'Use the latest version of the CRT here instead of ".*',
             followed_by=r'"')
-        # update(filepath='README.md',
-        #     preceded_by=r"Replace `",
-        #     followed_by=r"` in .* with the latest version of the CRT.")
-        # update(filepath='README.md',
-        #     preceded_by=r"Replace .* in `software.amazon.awssdk.crt:android:",
-        #     followed_by=r"` with the latest version of the CRT.")
 
 
 def update(*, filepath, preceded_by, followed_by, force_version=None):
