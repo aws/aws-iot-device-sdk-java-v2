@@ -128,7 +128,7 @@ public class MqttBuilderTest {
         }
     }
 
-        /* Custom Auth (no signing) connect - Websockets */
+    /* Custom Auth (no signing) connect - Websockets */
     @Test
     public void ConnIoT_CustomAuth_UC3()
     {
