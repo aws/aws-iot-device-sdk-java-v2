@@ -1,3 +1,5 @@
+#!/bin/bash
+
 set -ex
 set -o pipefail # Ensure if any part of a pipeline fails, it propogates the error through the pipeline
 
