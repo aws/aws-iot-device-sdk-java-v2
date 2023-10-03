@@ -27,7 +27,7 @@ if (project.hasProperty("sonatypeUsername") && project.hasProperty("sonatypePass
     nexusPublishing {
         repositories {
             create("awsNexus") {
-                nexusUrl.set(uri("htpps://aws.oss.sonatype.org/service/local/"))
+                nexusUrl.set(uri("https://aws.oss.sonatype.org/service/local/"))
                 snapshotRepositoryUrl.set(uri("https://aws.oss.sonatype.org/content/repositories/snapshots/"))
                 username.set(project.property("sonatypeUsername") as String)
                 password.set(project.property("sonatypePassword") as String)
