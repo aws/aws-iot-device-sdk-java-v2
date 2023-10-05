@@ -362,7 +362,6 @@ jobs:
         uses: actions/checkout@v2
         with:
             submodules: true
-            fetch-depth: 0
       # Setup JDK 11
       - name: set up JDK 11
         uses: actions/setup-java@v3
@@ -380,7 +379,7 @@ jobs:
         run: |
           cd android
           ./gradlew assembledebug
-          ./gradlew publishToMavenLocal
+          ./gradlew publishToMavenLocal -PnewVersion="1.0.0-SNAPSHOT"
           echo "Build status report=${{ job.status }}."
 
       - name: Setup Android Test Files
