@@ -144,7 +144,8 @@ afterEvaluate {
 
                 groupId = 'software.amazon.awssdk.iotdevicesdk'
                 artifactId = 'aws-iot-device-sdk-android'
-                version = android.defaultConfig.versionName
+                version = project.hasProperty('newVersion') ? project.property('newVersion') : android.defaultConfig.versionName
+                // version = android.defaultConfig.versionName
 
                 pom {
                     name.set("software.amazon.awssdk.iotdevicesdk:aws-iot-device-sdk-android")

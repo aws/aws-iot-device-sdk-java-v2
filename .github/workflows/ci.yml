@@ -363,7 +363,7 @@ jobs:
         run: |
           cd android
           ./gradlew assembledebug
-          ./gradlew publishToMavenLocal
+          ./gradlew publishToMavenLocal -PnewVersion="1.0.0-SNAPSHOT"
           echo "Build status report=${{ job.status }}."
 
       - name: Setup Android Test Files
