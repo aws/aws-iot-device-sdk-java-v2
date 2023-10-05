@@ -145,7 +145,6 @@ afterEvaluate {
                 groupId = 'software.amazon.awssdk.iotdevicesdk'
                 artifactId = 'aws-iot-device-sdk-android'
                 version = project.hasProperty('newVersion') ? project.property('newVersion') : android.defaultConfig.versionName
-                // version = android.defaultConfig.versionName
 
                 pom {
                     name.set("software.amazon.awssdk.iotdevicesdk:aws-iot-device-sdk-android")
@@ -171,38 +170,6 @@ afterEvaluate {
                     }
                 }
             }
-
-            // debug(MavenPublication) {
-            //     from components.debug
-
-            //     groupId = 'software.amazon.awssdk.iotdevicesdk'
-            //     artifactId = 'aws-iot-device-sdk-android'
-            //     version = '1.0.0-SNAPSHOT'
-
-            //     pom {
-            //         name.set("software.amazon.awssdk.iotdevicesdk:aws-iot-device-sdk-android")
-            //         description.set("AWS IoT Device SDK Java Android")
-            //         url.set("https://github.com/aws/aws-iot-device-sdk-java-v2")
-            //         licenses {
-            //             license {
-            //                 name.set("The Apache License, Version 2.0")
-            //                 url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
-            //             }
-            //         }
-            //         developers {
-            //             developer {
-            //                 id.set("iot-device-sdk-team")
-            //                 name.set("AWS IoT Device SDK Team")
-            //                 email.set("iot-device-sdk-team@amazon.com")
-            //             }
-            //         }
-            //         scm {
-            //             connection.set("scm:git:git://github.com/aws/aws-iot-device-sdk-java-v2.git")
-            //             developerConnection.set("scm:git:ssh://github.com/aws/aws-iot-device-sdk-java-v2.git")
-            //             url.set("https://github.com/aws/aws-iot-device-sdk-java-v2")
-            //         }
-            //     }
-            // }
         }
 
         if (project.hasProperty("signingKey") && project.hasProperty("signingPassword")) {
