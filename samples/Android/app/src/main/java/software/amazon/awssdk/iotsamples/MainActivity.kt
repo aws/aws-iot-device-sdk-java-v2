@@ -114,10 +114,11 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     private fun runSample(name: String) {
         val classLoader = Thread.currentThread().contextClassLoader
-        val sampleClass = classLoader?.loadClass(name);
+        val sampleClass = try { classLoader?.loadClass(name) } catch(e:Exception) { null }
         if (sampleClass == null) {
             clearConsole()
             writeToConsole("Could not find sample '${name}'")
+            return
         }
         writeToConsole("Running sample '${name}'\n")
 
