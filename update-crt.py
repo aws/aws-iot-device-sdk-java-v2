@@ -113,7 +113,7 @@ def update_samples():
     for sample_folder in sample_folders:
         sample_files = os.walk(sample_folder).__next__()[2]
         for file in sample_files:
-            if file.endswith(".xml"):
+            if file.endswith(".xml") and not file.startswith("AndroidManifest"):
                 update(filepath=sample_folder + "/" + file,
                     preceded_by=r'<artifactId>aws-iot-device-sdk</artifactId>\s*<version>',
                     followed_by=r'</version>',
