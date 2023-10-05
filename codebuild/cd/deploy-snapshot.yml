@@ -12,7 +12,17 @@ phases:
     commands:
       - sudo add-apt-repository ppa:openjdk-r/ppa
       - sudo apt-get update -y
-      - sudo apt-get install openjdk-8-jdk-headless maven -y -f
+      # Android requires 11 for gradle
+      - sudo apt-get install openjdk-11-jdk-headless maven wget unzip -y -f
+      # install android sdk
+      - wget --quiet https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip
+      - export ANDROID_SDK_ROOT=$CODEBUILD_SRC_DIR/android-sdk
+      - mkdir -p $ANDROID_SDK_ROOT/cmdline-tools
+      - unzip commandlinetools-linux-7583922_latest.zip -d $ANDROID_SDK_ROOT/cmdline-tools
+      # This weird path needed for cmd tool to work
+      - mv $ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools $ANDROID_SDK_ROOT/cmdline-tools/latest
+      # install android build tools
+      - echo y | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --install "build-tools;30.0.3" "platforms;android-30" "ndk;21.4.7075529"
       - echo "\nBuild version data:"
       - echo "\nJava Version:"; java -version
       - echo "\nMaven Version:"; mvn --version
@@ -48,17 +58,25 @@ phases:
       - cd $CODEBUILD_SRC_DIR/aws-iot-device-sdk-java-v2/sdk
       # update the CRT dependency to the latest released version
       - mvn -B versions:use-latest-versions -Dincludes=software.amazon.awssdk.crt*
+
       # update the version to match the git tag, make a snapshot version we can test
       - mvn -B versions:set -DnewVersion=${PKG_VERSION}-SNAPSHOT
-
       # do a full build/deploy, but skip tests, since the shared libs were artifacts above
       - mvn -B deploy -Prelease -Dmaven.test.skip=true -Dgpg.passphrase=$GPG_PASSPHRASE
+
       # update the version to match the git tag, make a staging release which we will release once snapshot testing passes
       - mvn -B versions:set -DnewVersion=${PKG_VERSION}
       - mvn -B deploy -Prelease -Dmaven.test.skip=true -Dgpg.passphrase=$GPG_PASSPHRASE | tee /tmp/deploy.log
       - cat /tmp/deploy.log | grep "Created staging repository with ID" | cut -d\" -f2 | tee /tmp/repositoryId.txt
+
       # Store the repository ID in a secret for use later
       - aws secretsmanager update-secret --secret-id cd/aws-iot-device-sdk-java-v2/repository-id --secret-string "$(cat /tmp/repositoryId.txt)" --region us-east-1
+
+      # delploy android
+      - cd $CODEBUILD_SRC_DIR/aws-iot-device-sdk-java-v2
+      - ./codebuild/cd/deploy-snapshot-android.sh
+      # Store the repository ID in a secret for use later
+      - aws secretsmanager update-secret --secret-id cd/aws-iot-device-sdk-java-v2/repository-id-android --secret-string "$(cat /tmp/android_repositoryId.txt)" --region us-east-1
 
 artifacts:
   discard-paths: yes
@@ -66,6 +84,7 @@ artifacts:
     - $CODEBUILD_SRC_DIR/aws-iot-device-sdk-java-v2/target/aws-crt-*.jar
     - $CODEBUILD_SRC_DIR/aws-iot-device-sdk-java-v2/target/aws-crt-*.asc
     - /tmp/repositoryId.txt
+    - /tmp/android_repositoryId.txt
 
 cache:
   paths:
