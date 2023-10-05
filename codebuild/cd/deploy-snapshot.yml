@@ -12,7 +12,6 @@ phases:
     commands:
       - sudo add-apt-repository ppa:openjdk-r/ppa
       - sudo apt-get update -y
-      # - sudo apt-get install openjdk-8-jdk-headless maven -y -f
       # Android requires 11 for gradle
       - sudo apt-get install openjdk-11-jdk-headless maven wget unzip -y -f
       # install android sdk
