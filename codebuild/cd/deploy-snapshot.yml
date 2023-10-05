@@ -77,7 +77,7 @@ phases:
       - cd $CODEBUILD_SRC_DIR/aws-iot-device-sdk-java-v2
       - ./codebuild/cd/deploy-snapshot-android.sh
       # Store the repository ID in a secret for use later
-      - secretsmanager update-secret --secret-id cd/aws-iot-device-sdk-java-v2/repository-id-android --secret-string "$(cat /tmp/android_repositoryId.txt)" --region us-east-1
+      - aws secretsmanager update-secret --secret-id cd/aws-iot-device-sdk-java-v2/repository-id-android --secret-string "$(cat /tmp/android_repositoryId.txt)" --region us-east-1
 
 artifacts:
   discard-paths: yes
