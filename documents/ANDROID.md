@@ -59,7 +59,7 @@ cd aws-iot-device-sdk-java-v2/android
 ## Consuming IoT Device SDK Android
 
 ### Consuming from Maven
-##### NOTE: aws-iot-device-sdk-android is not currently available in Maven but will be shortly. For now, please publish to maven locally and [Consume from locally installed](#consuming-from-locally-installed)
+(#consuming-from-locally-installed)
 Consuming this SDK via Maven is the preferred method of consuming it and using it within your application. To consume
 IoT Device SDK Android in your application, add the following to your `build.gradle` repositories and dependencies:
 
