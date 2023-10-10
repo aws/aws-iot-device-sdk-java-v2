@@ -163,6 +163,12 @@ jobs:
       with:
         role-to-assume: ${{ env.CI_MQTT5_ROLE }}
         aws-region: ${{ env.AWS_DEFAULT_REGION }}
+    - name: MQTT311 tests
+      shell: bash
+      run: |
+        source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt us-east-1
+        mvn test -Dtest=MqttBuilderTest -Dsurefire.failIfNoSpecifiedTests=false
+        source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt cleanup
     - name: MQTT5 tests
       shell: bash
       run: |
@@ -231,6 +237,11 @@ jobs:
       with:
         role-to-assume: ${{ env.CI_MQTT5_ROLE }}
         aws-region: ${{ env.AWS_DEFAULT_REGION }}
+    - name: MQTT311 tests
+      run: |
+        source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt us-east-1
+        mvn test -Dtest=MqttBuilderTest -DfailIfNoTests=false -Dsurefire.failIfNoSpecifiedTests=false
+        source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt cleanup
     - name: MQTT5 tests
       run: |
         source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt us-east-1
@@ -302,6 +313,11 @@ jobs:
         with:
           role-to-assume: ${{ env.CI_MQTT5_ROLE }}
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
+      - name: MQTT311 tests
+        run: |
+          source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt us-east-1
+          mvn test -Dtest=MqttBuilderTest -DfailIfNoTests=false
+          source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt cleanup
       - name: MQTT5 tests
         run: |
           source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt us-east-1
