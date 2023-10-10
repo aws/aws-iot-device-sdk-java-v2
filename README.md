@@ -12,10 +12,6 @@ This document provides information about the AWS IoT device SDK for Java V2. Thi
 * [API Docs](https://aws.github.io/aws-iot-device-sdk-java-v2/)
 * [MQTT5 User Guide](./documents/MQTT5_Userguide.md)
 
-## What's New
-
-The SDK now supports MQTT5. See the [MQTT5 User Guide](./documents/MQTT5_Userguide.md) or the [API Documentation](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/package-summary.html) for more information. There is also a [MQTT5 sample here](https://github.com/aws/aws-iot-device-sdk-java-v2/tree/main/samples#mqtt5-pubsub).
-
 ## Installation
 
 ### Minimum Requirements
@@ -81,7 +77,7 @@ The best way to interact with our team is through GitHub. You can open a [discus
 Please make sure to check out our resources too before opening an issue:
 
 * [FAQ](./documents/FAQ.md)
-* [Developer Guide](https://docs.aws.amazon.com/iot/latest/developerguide/what-is-aws-iot.html) ([source](https://github.com/awsdocs/aws-iot-docs))
+* [IoT Guide](https://docs.aws.amazon.com/iot/latest/developerguide/what-is-aws-iot.html) ([source](https://github.com/awsdocs/aws-iot-docs))
 * [MQTT5 User Guide](./documents/MQTT5_Userguide.md)
 * Check for similar [Issues](https://github.com/aws/aws-iot-device-sdk-java-v2/issues)
 * [AWS IoT Core Documentation](https://docs.aws.amazon.com/iot/)
@@ -92,6 +88,7 @@ Please make sure to check out our resources too before opening an issue:
 [Fleet Provisioning](https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html)
 is provided by code that been generated from a model of the service.
 * [Contributions Guidelines](./documents/CONTRIBUTING.md)
+* [DEVELOPING](./documents/DEVELOPING.md)
 
 ## License
 
