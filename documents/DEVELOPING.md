@@ -1,4 +1,4 @@
-# Developping Instructions
+# Developing Instructions
 
 Please first follow the instructions in the [main readme](../README.md)
 
