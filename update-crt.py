@@ -37,7 +37,7 @@ def main():
     if args.update_samples == True:
         update_samples()
     elif args.update_sdk_text == True:
-        sdk_version = get_latest_github_version("https://github.com/aws/aws-iot-device-sdk-java-v2.git")
+        sdk_version = args.version
         print (f"Latest SDK version: {sdk_version}")
         update(filepath='README.md',
             preceded_by=r'<artifactId>aws-iot-device-sdk</artifactId>\s*<version>',
@@ -106,14 +106,14 @@ def update(*, filepath, preceded_by, followed_by, force_version=None):
 
 
 def update_samples():
-    sdk_version = get_latest_github_version("https://github.com/aws/aws-iot-device-sdk-java-v2.git")
+    sdk_version = args.version
     print (f"Latest SDK version: {sdk_version}")
 
     sample_folders = [x[0] for x in os.walk("samples")]
     for sample_folder in sample_folders:
         sample_files = os.walk(sample_folder).__next__()[2]
         for file in sample_files:
-            if file.endswith(".xml"):
+            if file.endswith("pom.xml"):
                 update(filepath=sample_folder + "/" + file,
                     preceded_by=r'<artifactId>aws-iot-device-sdk</artifactId>\s*<version>',
                     followed_by=r'</version>',
