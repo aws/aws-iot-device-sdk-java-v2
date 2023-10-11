@@ -346,8 +346,7 @@ for test_name in DATestConfig['tests']:
 print(test_result, file=sys.stderr)
 failed = False
 for test in test_result:
-    if (test_result[test] != "PASS" and
-       test_result[test] != "PASS_WITH_WARNINGS"):
+    if (test_result[test] != "PASS" and test_result[test] != "PASS_WITH_WARNINGS"):
         print("[Device Advisor]Error: Test \"" + test +
               "\" Failed with status:" + test_result[test], file=sys.stderr)
         failed = True
