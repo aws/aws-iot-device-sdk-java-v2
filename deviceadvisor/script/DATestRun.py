@@ -9,19 +9,23 @@ from time import sleep
 
 ##############################################
 # Cleanup Certificates and Things and created certificate and private key file
+
+
 def delete_thing_with_certi(thingName, certiId, certiArn):
     client.detach_thing_principal(
-        thingName = thingName,
-        principal = certiArn)
+        thingName=thingName,
+        principal=certiArn)
     client.update_certificate(
-    certificateId =certiId,
-    newStatus ='INACTIVE')
-    client.delete_certificate(certificateId = certiId, forceDelete = True)
-    client.delete_thing(thingName = thingName)
+        certificateId=certiId,
+        newStatus='INACTIVE')
+    client.delete_certificate(certificateId=certiId, forceDelete=True)
+    client.delete_thing(thingName=thingName)
     os.remove(os.environ["DA_CERTI"])
     os.remove(os.environ["DA_KEY"])
 
 # Export the testing log and upload it to S3 bucket
+
+
 def process_logs(log_group, log_stream, thing_name):
     logs_client = boto3.client('logs')
     response = logs_client.get_log_events(
@@ -37,29 +41,35 @@ def process_logs(log_group, log_stream, thing_name):
     try:
         secrets_client = boto3.client(
             "secretsmanager", region_name=os.environ["AWS_DEFAULT_REGION"])
-        s3_bucket_name = secrets_client.get_secret_value(SecretId="ci/DeviceAdvisor/s3bucket")["SecretString"]
+        s3_bucket_name = secrets_client.get_secret_value(
+            SecretId="ci/DeviceAdvisor/s3bucket")["SecretString"]
         s3.Bucket(s3_bucket_name).upload_file(log_file, log_file)
-        print("[Device Advisor] Device Advisor Log file uploaded to "+ log_file)
+        print("[Device Advisor] Device Advisor Log file uploaded to " + log_file)
 
     except Exception:
-        print ("[Device Advisor] Error: could not store log in S3 bucket!")
+        print("[Device Advisor] Error: could not store log in S3 bucket!")
 
     os.remove(log_file)
 
 # Sleep for a random time
+
+
 def sleep_with_backoff(base, max):
     sleep(random.randint(base, max))
+
 
 ##############################################
 # Initialize variables
 # create aws clients
 try:
     client = boto3.client('iot', region_name=os.environ["AWS_DEFAULT_REGION"])
-    dataClient = boto3.client('iot-data', region_name=os.environ["AWS_DEFAULT_REGION"])
-    deviceAdvisor = boto3.client('iotdeviceadvisor', region_name=os.environ["AWS_DEFAULT_REGION"])
+    dataClient = boto3.client(
+        'iot-data', region_name=os.environ["AWS_DEFAULT_REGION"])
+    deviceAdvisor = boto3.client(
+        'iotdeviceadvisor', region_name=os.environ["AWS_DEFAULT_REGION"])
     s3 = boto3.resource('s3', region_name=os.environ["AWS_DEFAULT_REGION"])
 except Exception:
-    print ("[Device Advisor] Error: could not create boto3 clients.")
+    print("[Device Advisor] Error: could not create boto3 clients.")
     exit(-1)
 
 # const
@@ -87,7 +97,7 @@ shadowDefault = os.environ['DA_SHADOW_VALUE_DEFAULT']
 ##############################################
 # make sure sdk get installed
 print("[Device Advisor]Info: Start to build sdk...")
-subprocess.run("mvn clean install -Dmaven.test.skip=true", shell = True)
+subprocess.run("mvn clean install -Dmaven.test.skip=true", shell=True)
 
 # test result
 test_result = {}
@@ -111,7 +121,6 @@ for test_name in DATestConfig['tests']:
     except Exception:
         print("[Device Advisor] Error: Failed to create thing: " + thing_name)
         exit(-1)
-
 
     ##############################################
     # create certificate and keys used for testing
@@ -147,7 +156,7 @@ for test_name in DATestConfig['tests']:
 
     except Exception:
         try:
-            client.delete_thing(thingName = thing_name)
+            client.delete_thing(thingName=thing_name)
         except Exception:
             print("[Device Advisor] Error: Could not delete thing.")
         print("[Device Advisor] Error: Failed to create certificate.")
@@ -161,14 +170,15 @@ for test_name in DATestConfig['tests']:
     try:
         secrets_client = boto3.client(
             "secretsmanager", region_name=os.environ["AWS_DEFAULT_REGION"])
-        policy_name = secrets_client.get_secret_value(SecretId="ci/DeviceAdvisor/policy_name")["SecretString"]
-        client.attach_policy (
-            policyName= policy_name,
-            target = certificate_arn
+        policy_name = secrets_client.get_secret_value(
+            SecretId="ci/DeviceAdvisor/policy_name")["SecretString"]
+        client.attach_policy(
+            policyName=policy_name,
+            target=certificate_arn
         )
     except Exception as ex:
-        print (ex)
-        delete_thing_with_certi(thing_name, certificate_id, certificate_arn )
+        print(ex)
+        delete_thing_with_certi(thing_name, certificate_id, certificate_arn)
         print("[Device Advisor] Error: Failed to attach policy.")
         exit(-1)
 
@@ -178,12 +188,12 @@ for test_name in DATestConfig['tests']:
         print("[Device Advisor] Info: Attach certificate to test thing...")
         # attache the certificate to thing
         client.attach_thing_principal(
-            thingName = thing_name,
-            principal = create_cert_response['certificateArn']
+            thingName=thing_name,
+            principal=create_cert_response['certificateArn']
         )
 
     except Exception:
-        delete_thing_with_certi(thing_name, certificate_id ,certificate_arn )
+        delete_thing_with_certi(thing_name, certificate_id, certificate_arn)
         print("[Device Advisor] Error: Failed to attach certificate.")
         exit(-1)
 
@@ -196,24 +206,25 @@ for test_name in DATestConfig['tests']:
         # shadow does not exists, update will fail
         print("[Device Advisor] Info: About to update shadow.")
         payload_shadow = json.dumps(
-        {
-        "state": {
-            "desired": {
-                shadowProperty: shadowDefault
-                },
-            "reported": {
-                shadowProperty: shadowDefault
+            {
+                "state": {
+                    "desired": {
+                        shadowProperty: shadowDefault
+                    },
+                    "reported": {
+                        shadowProperty: shadowDefault
+                    }
                 }
-            }
-        })
+            })
         shadow_response = dataClient.update_thing_shadow(
-            thingName = thing_name,
-            payload = payload_shadow)
-        get_shadow_response = dataClient.get_thing_shadow(thingName = thing_name)
+            thingName=thing_name,
+            payload=payload_shadow)
+        get_shadow_response = dataClient.get_thing_shadow(thingName=thing_name)
         # make sure shadow is created before we go to next step
         print("[Device Advisor] Info: About to wait for shadow update.")
-        while(get_shadow_response is None):
-            get_shadow_response = dataClient.get_thing_shadow(thingName = thing_name)
+        while (get_shadow_response is None):
+            get_shadow_response = dataClient.get_thing_shadow(
+                thingName=thing_name)
 
         # start device advisor test
         # test_start_response
@@ -231,12 +242,12 @@ for test_name in DATestConfig['tests']:
                     'thingArn': create_thing_response['thingArn'],
                 },
                 'parallelRun': True
-        })
+            })
 
         # get DA endpoint
         print("[Device Advisor] Info: Getting Device Advisor endpoint.")
         endpoint_response = deviceAdvisor.get_endpoint(
-            thingArn = create_thing_response['thingArn']
+            thingArn=create_thing_response['thingArn']
         )
         os.environ['DA_ENDPOINT'] = endpoint_response['endpoint']
 
@@ -244,53 +255,62 @@ for test_name in DATestConfig['tests']:
         while True:
             cycle_number += 1
             if (cycle_number >= MAXIMUM_CYCLE_COUNT):
-                print(f"[Device Advisor] Error: {cycle_number} of cycles lasting {BACKOFF_BASE} to {BACKOFF_MAX} seconds have passed.")
-                raise Exception(f"ERROR - {cycle_number} of cycles lasting {BACKOFF_BASE} to {BACKOFF_MAX} seconds have passed.")
+                print(f"[Device Advisor] Error: {cycle_number} of cycles lasting {
+                      BACKOFF_BASE} to {BACKOFF_MAX} seconds have passed.")
+                raise Exception(f"ERROR - {cycle_number} of cycles lasting {
+                                BACKOFF_BASE} to {BACKOFF_MAX} seconds have passed.")
 
             # Add backoff to avoid TooManyRequestsException
             sleep_with_backoff(BACKOFF_BASE, BACKOFF_MAX)
-            print ("[Device Advisor] Info: About to get Device Advisor suite run.")
+            print("[Device Advisor] Info: About to get Device Advisor suite run.")
             test_result_responds = deviceAdvisor.get_suite_run(
                 suiteDefinitionId=DATestConfig['test_suite_ids'][test_name],
                 suiteRunId=test_start_response['suiteRunId']
             )
             # If the status is PENDING or the responds does not loaded, the test suite is still loading
             if (test_result_responds['status'] == 'PENDING' or
-            len(test_result_responds['testResult']['groups']) == 0 or # test group has not been loaded
-            len(test_result_responds['testResult']['groups'][0]['tests']) == 0 or #test case has not been loaded
-            test_result_responds['testResult']['groups'][0]['tests'][0]['status'] == 'PENDING'):
+                # test group has not been loaded
+                len(test_result_responds['testResult']['groups']) == 0 or
+                # test case has not been loaded
+                len(test_result_responds['testResult']['groups'][0]['tests']) == 0 or
+                    test_result_responds['testResult']['groups'][0]['tests'][0]['status'] == 'PENDING'):
                 continue
 
             # Start to run the test sample after the status turns into RUNNING
             elif (test_result_responds['status'] == 'RUNNING' and
-            test_result_responds['testResult']['groups'][0]['tests'][0]['status'] == 'RUNNING'):
-                print ("[Device Advisor] Info: About to get start Device Advisor companion test application.")
+                  test_result_responds['testResult']['groups'][0]['tests'][0]['status'] == 'RUNNING'):
+                print(
+                    "[Device Advisor] Info: About to get start Device Advisor companion test application.")
                 working_dir = os.getcwd()
-                exe_path = os.path.join("deviceadvisor/tests/",DATestConfig['test_exe_path'][test_name])
+                exe_path = os.path.join(
+                    "deviceadvisor/tests/", DATestConfig['test_exe_path'][test_name])
                 os.chdir(exe_path)
                 print(os.getcwd())
-                run_cmd = 'mvn clean compile exec:java -Dexec.mainClass='+DATestConfig['test_exe_path'][test_name] + '.' + DATestConfig['test_exe_path'][test_name]
+                run_cmd = 'mvn clean compile exec:java -Dexec.mainClass=' + \
+                    DATestConfig['test_exe_path'][test_name] + \
+                    '.' + DATestConfig['test_exe_path'][test_name]
                 print("run_cmd:" + run_cmd)
-                result = subprocess.run(run_cmd, shell = True, timeout= 60*2)
+                result = subprocess.run(run_cmd, shell=True, timeout=60*2)
                 os.chdir(working_dir)
             # If the test finalizing or store the test result
             elif (test_result_responds['status'] != 'RUNNING'):
                 test_result[test_name] = test_result_responds['status']
                 # If the test failed, upload the logs to S3 before clean up
-                if(test_result[test_name] != "PASS"):
-                    print ("[Device Advisor] Info: About to upload log to S3.")
+                if (test_result[test_name] != "PASS"):
+                    print("[Device Advisor] Info: About to upload log to S3.")
                     log_url = test_result_responds['testResult']['groups'][0]['tests'][0]['logUrl']
                     group_string = re.search('group=(.*);', log_url)
                     log_group = group_string.group(1)
                     stream_string = re.search('stream=(.*)', log_url)
                     log_stream = stream_string.group(1)
                     process_logs(log_group, log_stream, thing_name)
-                delete_thing_with_certi(thing_name, certificate_id ,certificate_arn )
+                delete_thing_with_certi(
+                    thing_name, certificate_id, certificate_arn)
                 break
 
     except Exception:
-        delete_thing_with_certi(thing_name, certificate_id ,certificate_arn)
-        print("[Device Advisor]Error: Failed to test: "+ test_name)
+        delete_thing_with_certi(thing_name, certificate_id, certificate_arn)
+        print("[Device Advisor]Error: Failed to test: " + test_name)
         did_at_least_one_test_fail = True
         sleep_with_backoff(BACKOFF_BASE, BACKOFF_MAX)
 
@@ -299,9 +319,10 @@ for test_name in DATestConfig['tests']:
 print(test_result)
 failed = False
 for test in test_result:
-    if(test_result[test] != "PASS" and
-    test_result[test] != "PASS_WITH_WARNINGS"):
-        print("[Device Advisor]Error: Test \"" + test + "\" Failed with status:" + test_result[test])
+    if (test_result[test] != "PASS" and
+       test_result[test] != "PASS_WITH_WARNINGS"):
+        print("[Device Advisor]Error: Test \"" + test +
+              "\" Failed with status:" + test_result[test])
         failed = True
 if failed:
     # if the test failed, we dont clean the Thing so that we can track the error
