@@ -2,6 +2,7 @@ import boto3
 import uuid
 import json
 import os
+import pprint
 import subprocess
 import re
 import random
@@ -99,6 +100,9 @@ shadowDefault = os.environ['DA_SHADOW_VALUE_DEFAULT']
 # make sure sdk get installed
 print("[Device Advisor]Info: Start to build sdk...", file=sys.stderr)
 subprocess.run("mvn clean install -Dmaven.test.skip=true", shell=True)
+
+# Pretty printer for Device Advisor responds
+pp = pprint.PrettyPrinter(stream=sys.stderr)
 
 # test result
 test_result = {}
@@ -278,7 +282,9 @@ for test_name in DATestConfig['tests']:
                 suiteDefinitionId=DATestConfig['test_suite_ids'][test_name],
                 suiteRunId=test_start_response['suiteRunId']
             )
-            print("[Device Advisor] Info: deviceAdvisor.get_suite_run respond: " + test_result_responds, file=sys.stderr)
+            print(
+                "[Device Advisor] Debug: deviceAdvisor.get_suite_run respond:", file=sys.stderr)
+            pp.pprint(test_result_responds)
             # If the status is PENDING or the responds does not loaded, the test suite is still loading
             if (test_result_responds['status'] == 'PENDING' or
                 # test group has not been loaded
@@ -297,13 +303,19 @@ for test_name in DATestConfig['tests']:
                 exe_path = os.path.join(
                     "deviceadvisor/tests/", DATestConfig['test_exe_path'][test_name])
                 os.chdir(exe_path)
-                print(os.getcwd(), file=sys.stderr)
+                print("[Device Advisor] Debug: CWD: " +
+                      os.getcwd(), file=sys.stderr)
                 run_cmd = 'mvn clean compile exec:java -Dexec.mainClass=' + \
                     DATestConfig['test_exe_path'][test_name] + \
                     '.' + DATestConfig['test_exe_path'][test_name]
-                print("run_cmd:" + run_cmd, file=sys.stderr)
+                print("[Device Advisor] Debug: run_cmd:" +
+                      run_cmd, file=sys.stderr)
                 result = subprocess.run(run_cmd, shell=True, timeout=60*2)
-                print("result: ", result, file=sys.stderr)
+                print("[Device Advisor] Debug: result: ",
+                      result, file=sys.stderr)
+                if result.returncode != 0:
+                    # TODO Rerun
+                    pass
                 os.chdir(working_dir)
             # If the test finalizing or store the test result
             elif (test_result_responds['status'] != 'RUNNING'):
@@ -322,10 +334,10 @@ for test_name in DATestConfig['tests']:
                     thing_name, certificate_id, certificate_arn)
                 break
 
-    except Exception:
+    except Exception as e:
         delete_thing_with_certi(thing_name, certificate_id, certificate_arn)
         print("[Device Advisor]Error: Failed to test: " +
-              test_name, file=sys.stderr)
+              test_name + ", exception: " + e, file=sys.stderr)
         did_at_least_one_test_fail = True
         sleep_with_backoff(BACKOFF_BASE, BACKOFF_MAX)
 
