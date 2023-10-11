@@ -5,6 +5,17 @@ import os
 import re
 import subprocess
 
+## USER GUIDE
+## update-crt.py is used for two purposes 1. update crt versions 2. update sdk version
+## 1. `Python update-crt.py`: Update the crt version in the sdk library to latest crt version released on Github
+## 2. `Python update-crt.py --crt_veresion=<major.minor.patch>`: Update the crt version in the sdk library to {<major.minor.patch>}
+## 3. `Python update-crt.py --update_samples --update_sdk_text`: Update the sdk version to latest sdk version released on Github
+## 4. `Python update-crt.py {<major.minor.patch>} --update_samples --update_sdk_text`: Update the sdk version to {<major.minor.patch>}
+## 5. `Python update-crt.py --check_consistency`: Update the sdk version to {<major.minor.patch>}
+
+
+
+
 VERSION_PATTERN = '\d+\.\d+\.\d+'
 
 parser = argparse.ArgumentParser(
@@ -13,7 +24,7 @@ parser.add_argument('version', nargs='?',
                     help='version to use (i.e. "0.1.2"). default: automatically detect latest version')
 parser.add_argument('--crt_version', nargs='?',
                     help='crt library version to use (i.e. "0.1.2"). default: automatically detect latest version')
-parser.add_argument('--check-consistency', action='store_true',
+parser.add_argument('--check_consistency', action='store_true',
                     help='Exit with error if version is inconsistent between files')
 parser.add_argument('--update_samples', action='store_true',
                     help="Update the SDK samples to the latest SDK release OR to the passed in version")
@@ -22,9 +33,9 @@ parser.add_argument('--update_sdk_text', action='store_true',
 args = parser.parse_args()
 
 consistency_version = None
-crt_version = None
-sdk_version = None
+
 def main():
+    global consistency_version
     if args.crt_version is None:
         crt_version = get_latest_github_version("https://github.com/awslabs/aws-crt-java.git")
     elif re.fullmatch(VERSION_PATTERN, args.crt_version) is None:
@@ -43,7 +54,9 @@ def main():
 
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-    # Check the sdk/pom.xml file first
+    # Update the CRT version
+    # Reset the consistency_version used to check
+    consistency_version = None
     update(filepath='sdk/pom.xml',
         preceded_by=r'<artifactId>aws-crt</artifactId>\s*<version>',
         followed_by=r'</version>',
@@ -53,6 +66,10 @@ def main():
         followed_by=r"'",
         update_version=crt_version)
 
+
+    # Update the SDK version
+    # Reset the consistency_version to be checked
+    consistency_version = None
     # Update other files specified by the args
     if args.update_samples or args.check_consistency:
         update_samples(sdk_version)
@@ -93,6 +110,7 @@ def update(*, filepath, preceded_by, followed_by, update_version=None):
             # file we scan, and then ensure all subsequent files use that version too
             for match in matches:
                 found_version = match[1]
+                global consistency_version
                 if consistency_version is None:
                     print(f'Found version {found_version} in: {filepath}')
                     consistency_version = found_version
