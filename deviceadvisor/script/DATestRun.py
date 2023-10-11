@@ -278,6 +278,7 @@ for test_name in DATestConfig['tests']:
                 suiteDefinitionId=DATestConfig['test_suite_ids'][test_name],
                 suiteRunId=test_start_response['suiteRunId']
             )
+            print("[Device Advisor] Info: deviceAdvisor.get_suite_run respond: " + test_result_responds, file=sys.stderr)
             # If the status is PENDING or the responds does not loaded, the test suite is still loading
             if (test_result_responds['status'] == 'PENDING' or
                 # test group has not been loaded
