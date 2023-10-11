@@ -266,6 +266,8 @@ for test_name in DATestConfig['tests']:
         os.environ['DA_ENDPOINT'] = endpoint_response['endpoint']
 
         cycle_number = 0
+        # This flag is needed to handle the case when some problem occurred on Device Advisor side (e.g. connect fails)
+        test_executed = False
         while True:
             cycle_number += 1
             if (cycle_number >= MAXIMUM_CYCLE_COUNT):
@@ -295,7 +297,7 @@ for test_name in DATestConfig['tests']:
                 continue
 
             # Start to run the test sample after the status turns into RUNNING
-            elif (test_result_responds['status'] == 'RUNNING' and
+            elif (not test_executed and test_result_responds['status'] == 'RUNNING' and
                   test_result_responds['testResult']['groups'][0]['tests'][0]['status'] == 'RUNNING'):
                 print(
                     "[Device Advisor] Info: About to get start Device Advisor companion test application.", file=sys.stderr)
@@ -313,9 +315,10 @@ for test_name in DATestConfig['tests']:
                 result = subprocess.run(run_cmd, shell=True, timeout=60*2)
                 print("[Device Advisor] Debug: result: ",
                       result, file=sys.stderr)
-                if result.returncode != 0:
-                    # TODO Rerun
-                    pass
+                if result.returncode == 0:
+                    # Once the SDK test completes successfully, we assume that Device Advisor service received
+                    # and processed all requests.
+                    test_executed = True
                 os.chdir(working_dir)
             # If the test finalizing or store the test result
             elif (test_result_responds['status'] != 'RUNNING'):
