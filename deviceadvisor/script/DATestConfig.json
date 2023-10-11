@@ -15,7 +15,7 @@
         "MQTT Publish" : "MQTTPublish",
         "MQTT Subscribe" : "MQTTSubscribe",
         "Shadow Publish" : "ShadowUpdate",
-        "Shadow Update" : "ShadowUpdate"
-        "Named Shadow Publish" : "ShadowUpdate",
+        "Shadow Update" : "ShadowUpdate",
+        "Named Shadow Publish" : "ShadowUpdate"
     }
 }
