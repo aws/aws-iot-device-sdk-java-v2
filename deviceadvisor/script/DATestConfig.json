@@ -6,7 +6,8 @@
         "MQTT Publish" : "gcjhujhhz50p",
         "MQTT Subscribe" : "nyiuiwx5yxtj",
         "Shadow Publish" : "fttdr8ufljnf",
-        "Shadow Update" : "ng9t8am2jnry"
+        "Shadow Update" : "ng9t8am2jnry",
+        "Named Shadow Publish" : "fttdr8ufljnf"
     },
     "test_exe_path" :
     {
@@ -15,5 +16,6 @@
         "MQTT Subscribe" : "MQTTSubscribe",
         "Shadow Publish" : "ShadowUpdate",
         "Shadow Update" : "ShadowUpdate"
+        "Named Shadow Publish" : "ShadowUpdate",
     }
 }
