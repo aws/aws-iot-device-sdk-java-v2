@@ -96,7 +96,7 @@ shadowDefault = os.environ['DA_SHADOW_VALUE_DEFAULT']
 
 ##############################################
 # make sure sdk get installed
-print("[Device Advisor]Info: Start to build sdk...")
+print("[Device Advisor]Info: Start to build sdk...", file=sys.stderr)
 subprocess.run("mvn clean install -Dmaven.test.skip=true", shell=True)
 
 # test result
@@ -112,20 +112,22 @@ for test_name in DATestConfig['tests']:
         # 'thingArn': 'string',
         # 'thingId': 'string'
         # }
-        print("[Device Advisor] Info: Started to create thing...")
+        print("[Device Advisor] Info: Started to create thing...", file=sys.stderr)
         create_thing_response = client.create_thing(
             thingName=thing_name
         )
         os.environ["DA_THING_NAME"] = thing_name
 
     except Exception:
-        print("[Device Advisor] Error: Failed to create thing: " + thing_name)
+        print("[Device Advisor] Error: Failed to create thing: " +
+              thing_name, file=sys.stderr)
         exit(-1)
 
     ##############################################
     # create certificate and keys used for testing
     try:
-        print("[Device Advisor]Info: Started to create certificate...")
+        print("[Device Advisor]Info: Started to create certificate...",
+              file=sys.stderr)
         # create_cert_response:
         # {
         # 'certificateArn': 'string',
@@ -158,8 +160,10 @@ for test_name in DATestConfig['tests']:
         try:
             client.delete_thing(thingName=thing_name)
         except Exception:
-            print("[Device Advisor] Error: Could not delete thing.")
-        print("[Device Advisor] Error: Failed to create certificate.")
+            print("[Device Advisor] Error: Could not delete thing.",
+                  file=sys.stderr)
+        print("[Device Advisor] Error: Failed to create certificate.",
+              file=sys.stderr)
         exit(-1)
 
     certificate_arn = create_cert_response['certificateArn']
@@ -177,15 +181,16 @@ for test_name in DATestConfig['tests']:
             target=certificate_arn
         )
     except Exception as ex:
-        print(ex)
+        print(ex, file=sys.stderr)
         delete_thing_with_certi(thing_name, certificate_id, certificate_arn)
-        print("[Device Advisor] Error: Failed to attach policy.")
+        print("[Device Advisor] Error: Failed to attach policy.", file=sys.stderr)
         exit(-1)
 
     ##############################################
     # attach certification to thing
     try:
-        print("[Device Advisor] Info: Attach certificate to test thing...")
+        print(
+            "[Device Advisor] Info: Attach certificate to test thing...", file=sys.stderr)
         # attache the certificate to thing
         client.attach_thing_principal(
             thingName=thing_name,
@@ -194,7 +199,8 @@ for test_name in DATestConfig['tests']:
 
     except Exception:
         delete_thing_with_certi(thing_name, certificate_id, certificate_arn)
-        print("[Device Advisor] Error: Failed to attach certificate.")
+        print("[Device Advisor] Error: Failed to attach certificate.",
+              file=sys.stderr)
         exit(-1)
 
     ##############################################
@@ -204,7 +210,7 @@ for test_name in DATestConfig['tests']:
         ######################################
         # set default shadow, for shadow update, if the
         # shadow does not exists, update will fail
-        print("[Device Advisor] Info: About to update shadow.")
+        print("[Device Advisor] Info: About to update shadow.", file=sys.stderr)
         payload_shadow = json.dumps(
             {
                 "state": {
@@ -221,7 +227,8 @@ for test_name in DATestConfig['tests']:
             payload=payload_shadow)
         get_shadow_response = dataClient.get_thing_shadow(thingName=thing_name)
         # make sure shadow is created before we go to next step
-        print("[Device Advisor] Info: About to wait for shadow update.")
+        print("[Device Advisor] Info: About to wait for shadow update.",
+              file=sys.stderr)
         while (get_shadow_response is None):
             get_shadow_response = dataClient.get_thing_shadow(
                 thingName=thing_name)
@@ -233,7 +240,8 @@ for test_name in DATestConfig['tests']:
         # 'suiteRunArn': 'string',
         # 'createdAt': datetime(2015, 1, 1)
         # }
-        print("[Device Advisor] Info: Start device advisor test: " + test_name)
+        print("[Device Advisor] Info: Start device advisor test: " +
+              test_name, file=sys.stderr)
         sleep_with_backoff(BACKOFF_BASE, BACKOFF_MAX)
         test_start_response = deviceAdvisor.start_suite_run(
             suiteDefinitionId=DATestConfig['test_suite_ids'][test_name],
@@ -245,7 +253,8 @@ for test_name in DATestConfig['tests']:
             })
 
         # get DA endpoint
-        print("[Device Advisor] Info: Getting Device Advisor endpoint.")
+        print("[Device Advisor] Info: Getting Device Advisor endpoint.",
+              file=sys.stderr)
         endpoint_response = deviceAdvisor.get_endpoint(
             thingArn=create_thing_response['thingArn']
         )
@@ -262,7 +271,8 @@ for test_name in DATestConfig['tests']:
 
             # Add backoff to avoid TooManyRequestsException
             sleep_with_backoff(BACKOFF_BASE, BACKOFF_MAX)
-            print("[Device Advisor] Info: About to get Device Advisor suite run.")
+            print(
+                "[Device Advisor] Info: About to get Device Advisor suite run.", file=sys.stderr)
             test_result_responds = deviceAdvisor.get_suite_run(
                 suiteDefinitionId=DATestConfig['test_suite_ids'][test_name],
                 suiteRunId=test_start_response['suiteRunId']
@@ -280,24 +290,26 @@ for test_name in DATestConfig['tests']:
             elif (test_result_responds['status'] == 'RUNNING' and
                   test_result_responds['testResult']['groups'][0]['tests'][0]['status'] == 'RUNNING'):
                 print(
-                    "[Device Advisor] Info: About to get start Device Advisor companion test application.")
+                    "[Device Advisor] Info: About to get start Device Advisor companion test application.", file=sys.stderr)
                 working_dir = os.getcwd()
                 exe_path = os.path.join(
                     "deviceadvisor/tests/", DATestConfig['test_exe_path'][test_name])
                 os.chdir(exe_path)
-                print(os.getcwd())
+                print(os.getcwd(), file=sys.stderr)
                 run_cmd = 'mvn clean compile exec:java -Dexec.mainClass=' + \
                     DATestConfig['test_exe_path'][test_name] + \
                     '.' + DATestConfig['test_exe_path'][test_name]
-                print("run_cmd:" + run_cmd)
+                print("run_cmd:" + run_cmd, file=sys.stderr)
                 result = subprocess.run(run_cmd, shell=True, timeout=60*2)
+                print("result: ", result, file=sys.stderr)
                 os.chdir(working_dir)
             # If the test finalizing or store the test result
             elif (test_result_responds['status'] != 'RUNNING'):
                 test_result[test_name] = test_result_responds['status']
                 # If the test failed, upload the logs to S3 before clean up
                 if (test_result[test_name] != "PASS"):
-                    print("[Device Advisor] Info: About to upload log to S3.")
+                    print(
+                        "[Device Advisor] Info: About to upload log to S3.", file=sys.stderr)
                     log_url = test_result_responds['testResult']['groups'][0]['tests'][0]['logUrl']
                     group_string = re.search('group=(.*);', log_url)
                     log_group = group_string.group(1)
@@ -310,25 +322,27 @@ for test_name in DATestConfig['tests']:
 
     except Exception:
         delete_thing_with_certi(thing_name, certificate_id, certificate_arn)
-        print("[Device Advisor]Error: Failed to test: " + test_name)
+        print("[Device Advisor]Error: Failed to test: " +
+              test_name, file=sys.stderr)
         did_at_least_one_test_fail = True
         sleep_with_backoff(BACKOFF_BASE, BACKOFF_MAX)
 
 ##############################################
 # print result and cleanup things
-print(test_result)
+print(test_result, file=sys.stderr)
 failed = False
 for test in test_result:
-    if (test_result[test] != "PASS" and test_result[test] != "PASS_WITH_WARNINGS"):
+    if (test_result[test] != "PASS" and
+       test_result[test] != "PASS_WITH_WARNINGS"):
         print("[Device Advisor]Error: Test \"" + test +
-              "\" Failed with status:" + test_result[test])
+              "\" Failed with status:" + test_result[test], file=sys.stderr)
         failed = True
 if failed:
     # if the test failed, we dont clean the Thing so that we can track the error
     exit(-1)
 
 if (did_at_least_one_test_fail == True):
-    print("[Device Advisor] At least one test failed!")
+    print("[Device Advisor] At least one test failed!", file=sys.stderr)
     exit(-1)
 
 exit(0)
