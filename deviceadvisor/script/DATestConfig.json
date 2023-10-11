@@ -1,5 +1,13 @@
 {
-    "tests" :["MQTT Connect", "MQTT Publish", "MQTT Subscribe", "Shadow Publish", "Shadow Update"],
+    "tests" :
+    [
+        "MQTT Connect",
+        "MQTT Publish",
+        "MQTT Subscribe",
+        "Shadow Publish",
+        "Shadow Update",
+        "Named Shadow Publish"
+    ],
     "test_suite_ids" :
     {
         "MQTT Connect" : "mxn32qkm8npn",
