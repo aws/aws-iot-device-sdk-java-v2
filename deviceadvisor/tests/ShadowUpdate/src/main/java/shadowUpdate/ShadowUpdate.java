@@ -98,8 +98,6 @@ public class ShadowUpdate {
                 if (isNamedShadow)
                 {
                     changeNamedShadowValue().get();
-                    // FIXME
-                    changeShadowValue().get();
                 }
                 else
                 {
