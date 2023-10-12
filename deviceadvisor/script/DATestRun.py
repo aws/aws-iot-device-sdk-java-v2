@@ -106,7 +106,14 @@ pp = pprint.PrettyPrinter(stream=sys.stderr)
 
 # test result
 test_result = {}
-for test_name in DATestConfig['tests']:
+for test_suite in DATestConfig['test_suites']:
+    test_name = test_suite['test_name']
+
+    disabled = test_suite.get('disabled', False)
+    if disabled:
+        print(f"[Device Advisor] Info: {test_name} test suite is disabled, skipping")
+        continue
+
     ##############################################
     # create a test thing
     thing_name = "DATest_" + str(uuid.uuid4())
@@ -249,7 +256,7 @@ for test_name in DATestConfig['tests']:
               test_name, file=sys.stderr)
         sleep_with_backoff(BACKOFF_BASE, BACKOFF_MAX)
         test_start_response = deviceAdvisor.start_suite_run(
-            suiteDefinitionId=DATestConfig['test_suite_ids'][test_name],
+            suiteDefinitionId=test_suite['test_suite_id'],
             suiteRunConfiguration={
                 'primaryDevice': {
                     'thingArn': create_thing_response['thingArn'],
@@ -281,7 +288,7 @@ for test_name in DATestConfig['tests']:
             print(
                 "[Device Advisor] Info: About to get Device Advisor suite run.", file=sys.stderr)
             test_result_responds = deviceAdvisor.get_suite_run(
-                suiteDefinitionId=DATestConfig['test_suite_ids'][test_name],
+                suiteDefinitionId=test_suite['test_suite_id'],
                 suiteRunId=test_start_response['suiteRunId']
             )
             print(
@@ -303,13 +310,15 @@ for test_name in DATestConfig['tests']:
                     "[Device Advisor] Info: About to get start Device Advisor companion test application.", file=sys.stderr)
                 working_dir = os.getcwd()
                 exe_path = os.path.join(
-                    "deviceadvisor/tests/", DATestConfig['test_exe_path'][test_name])
+                    "deviceadvisor/tests/", test_suite['test_exe_path'])
                 os.chdir(exe_path)
                 print("[Device Advisor] Debug: CWD: " +
                       os.getcwd(), file=sys.stderr)
                 run_cmd = 'mvn clean compile exec:java -Dexec.mainClass=' + \
-                    DATestConfig['test_exe_path'][test_name] + \
-                    '.' + DATestConfig['test_exe_path'][test_name]
+                    test_suite['test_exe_path'] + '.' + \
+                    test_suite['test_exe_path']
+                if 'cmd_args' in test_suite:
+                    run_cmd = run_cmd + ' -Dexec.args="' + test_suite['cmd_args'] + '"'
                 print("[Device Advisor] Debug: run_cmd:" +
                       run_cmd, file=sys.stderr)
                 result = subprocess.run(run_cmd, shell=True, timeout=60*2)
