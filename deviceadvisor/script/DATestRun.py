@@ -46,10 +46,12 @@ def process_logs(log_group, log_stream, thing_name):
         s3_bucket_name = secrets_client.get_secret_value(
             SecretId="ci/DeviceAdvisor/s3bucket")["SecretString"]
         s3.Bucket(s3_bucket_name).upload_file(log_file, log_file)
-        print("[Device Advisor] Device Advisor Log file uploaded to " + log_file)
+        print("[Device Advisor] Device Advisor Log file uploaded to " +
+              log_file, file=sys.stderr)
 
     except Exception:
-        print("[Device Advisor] Error: could not store log in S3 bucket!")
+        print(
+            "[Device Advisor] Error: could not store log in S3 bucket!", file=sys.stderr)
 
     os.remove(log_file)
 
@@ -71,7 +73,7 @@ try:
         'iotdeviceadvisor', region_name=os.environ["AWS_DEFAULT_REGION"])
     s3 = boto3.resource('s3', region_name=os.environ["AWS_DEFAULT_REGION"])
 except Exception:
-    print("[Device Advisor] Error: could not create boto3 clients.")
+    print("[Device Advisor] Error: could not create boto3 clients.", file=sys.stderr)
     exit(-1)
 
 # const
@@ -111,7 +113,8 @@ for test_suite in DATestConfig['test_suites']:
 
     disabled = test_suite.get('disabled', False)
     if disabled:
-        print(f"[Device Advisor] Info: {test_name} test suite is disabled, skipping")
+        print(f"[Device Advisor] Info: {
+              test_name} test suite is disabled, skipping", file=sys.stderr)
         continue
 
     ##############################################
@@ -279,7 +282,7 @@ for test_suite in DATestConfig['test_suites']:
             cycle_number += 1
             if (cycle_number >= MAXIMUM_CYCLE_COUNT):
                 print(f"[Device Advisor] Error: {cycle_number} of cycles lasting "
-                      f"{BACKOFF_BASE} to {BACKOFF_MAX} seconds have passed.")
+                      f"{BACKOFF_BASE} to {BACKOFF_MAX} seconds have passed.", file=sys.stderr)
                 raise Exception(f"ERROR - {cycle_number} of cycles lasting "
                                 f"{BACKOFF_BASE} to {BACKOFF_MAX} seconds have passed.")
 
@@ -318,7 +321,8 @@ for test_suite in DATestConfig['test_suites']:
                     test_suite['test_exe_path'] + '.' + \
                     test_suite['test_exe_path']
                 if 'cmd_args' in test_suite:
-                    run_cmd = run_cmd + ' -Dexec.args="' + test_suite['cmd_args'] + '"'
+                    run_cmd = run_cmd + ' -Dexec.args="' + \
+                        test_suite['cmd_args'] + '"'
                 print("[Device Advisor] Debug: run_cmd:" +
                       run_cmd, file=sys.stderr)
                 result = subprocess.run(run_cmd, shell=True, timeout=60*2)
