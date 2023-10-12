@@ -113,8 +113,8 @@ for test_suite in DATestConfig['test_suites']:
 
     disabled = test_suite.get('disabled', False)
     if disabled:
-        print(f"[Device Advisor] Info: {
-              test_name} test suite is disabled, skipping", file=sys.stderr)
+        print(f"[Device Advisor] Info: "
+              "{test_name} test suite is disabled, skipping", file=sys.stderr)
         continue
 
     ##############################################
