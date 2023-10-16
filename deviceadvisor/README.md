@@ -52,17 +52,6 @@ Example:
 }
 ```
 
-It's possible to disable a test case by adding "disabled" parameter to it:
-
-```
-{
-    "test_name" : "MQTT Connect",
-    "test_suite_id" : "abcd1235",
-    "test_exe_path" : "MQTTConnect",
-    "disabled" : true
-},
-```
-
 ## Device Advisor Test Cases
 
 Below are the test cases that this SDK uses.
