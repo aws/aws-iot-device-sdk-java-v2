@@ -4,32 +4,27 @@
         {
             "test_name" : "MQTT Connect",
             "test_suite_id" : "mxn32qkm8npn",
-            "test_exe_path" : "MQTTConnect",
-            "disabled" : true
+            "test_exe_path" : "MQTTConnect"
         },
         {
             "test_name" : "MQTT Publish",
             "test_suite_id" : "gcjhujhhz50p",
-            "test_exe_path" : "MQTTPublish",
-            "disabled" : true
+            "test_exe_path" : "MQTTPublish"
         },
         {
             "test_name" : "MQTT Subscribe",
             "test_suite_id" : "nyiuiwx5yxtj",
-            "test_exe_path" : "MQTTSubscribe",
-            "disabled" : true
+            "test_exe_path" : "MQTTSubscribe"
         },
         {
             "test_name" : "Shadow Publish",
             "test_suite_id" : "fttdr8ufljnf",
-            "test_exe_path" : "ShadowUpdate",
-            "disabled" : true
+            "test_exe_path" : "ShadowUpdate"
         },
         {
             "test_name" : "Shadow Update",
             "test_suite_id" : "ng9t8am2jnry",
-            "test_exe_path" : "ShadowUpdate",
-            "disabled" : true
+            "test_exe_path" : "ShadowUpdate"
         },
         {
             "test_name" : "Named Shadow Publish",
