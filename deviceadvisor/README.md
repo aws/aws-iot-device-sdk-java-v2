@@ -16,19 +16,24 @@ Configuration file is in JSON format and it contains a list of test cases.
 The following parameters are supported:
 
 - `test_name` - required
+
   A unique name for the test.
 
 - `test_suite_id` - required
+
   A unique ID for the test suite you created: it's the last part of Suite definition ARN.
 
 - `test_exe_path` - required
+
   The Java class that executes the test suite.
 
 - `cmd_args` - optional
+
   Additional command-line arguments that the executables might require.
 
 - `disabled` - optional
-  This parameter provides a way to disable a test suite, just set it to true.
+
+  It's possible to temporarily disable a test suite by setting this parameter to true.
 
 Example:
 
