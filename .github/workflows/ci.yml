@@ -15,6 +15,7 @@ env:
   AWS_DEFAULT_REGION: us-east-1
   AWS_DEVICE_FARM_REGION: us-west-2 # Device Farm only available in us-west-2 region
   DA_TOPIC: test/da
+  DA_SHADOW_NAME: DATestShadow
   DA_SHADOW_PROPERTY: datest
   DA_SHADOW_VALUE_SET: ON
   DA_SHADOW_VALUE_DEFAULT: OFF
