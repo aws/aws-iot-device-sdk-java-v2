@@ -31,6 +31,12 @@
             "test_suite_id" : "lut34c4lmib3",
             "test_exe_path" : "ShadowUpdate",
             "cmd_args" : "--named-shadow"
+        },
+        {
+            "test_name" : "Named Shadow Update",
+            "test_suite_id" : "6s2hyjq6dkmb",
+            "test_exe_path" : "ShadowUpdate",
+            "cmd_args" : "--named-shadow"
         }
     ]
 }
