@@ -1,21 +1,6 @@
 # AWS IoT Device SDK for Java v2
 
-This document provides information about the AWS IoT device SDK for Java V2.
-
-If you have any issues or feature requests, please file an issue or pull request.
-
-API documentation: https://aws.github.io/aws-iot-device-sdk-java-v2/
-
-This SDK is built on the AWS Common Runtime, a collection of libraries
-([aws-c-common](https://github.com/awslabs/aws-c-common),
-[aws-c-io](https://github.com/awslabs/aws-c-io),
-[aws-c-mqtt](https://github.com/awslabs/aws-c-mqtt),
-[aws-c-http](https://github.com/awslabs/aws-c-http),
-[aws-c-cal](https://github.com/awslabs/aws-c-cal),
-[aws-c-auth](https://github.com/awslabs/aws-c-auth),
-[s2n](https://github.com/awslabs/s2n)...) written in C to be
-cross-platform, high-performance, secure, and reliable. The libraries are bound
-to Java by the [aws-crt-java](https://github.com/awslabs/aws-crt-java) package.
+This document provides information about the AWS IoT device SDK for Java V2. This SDK is built on the [AWS Common Runtime](https://docs.aws.amazon.com/sdkref/latest/guide/common-runtime.html)
 
 *__Jump To:__*
 
@@ -24,13 +9,8 @@ to Java by the [aws-crt-java](https://github.com/awslabs/aws-crt-java) package.
 * [Samples](samples)
 * [Getting Help](#getting-help)
 * [FAQ](./documents/FAQ.md)
-* [Giving Feedback and Contributions](#giving-feedback-and-contributions)
+* [API Docs](https://aws.github.io/aws-iot-device-sdk-java-v2/)
 * [MQTT5 User Guide](./documents/MQTT5_Userguide.md)
-* [DEVELOPING](./documents/DEVELOPING.md)
-
-## What's New
-
-The SDK now supports MQTT5. See the [MQTT5 User Guide](./documents/MQTT5_Userguide.md) or the [API Documentation](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/package-summary.html) for more information. There is also a [MQTT5 sample here](https://github.com/aws/aws-iot-device-sdk-java-v2/tree/main/samples#mqtt5-pubsub).
 
 ## Installation
 
@@ -86,36 +66,18 @@ If you wish to use the latest CRT release, rather than the latest tested with th
 mvn versions:use-latest-versions -Dincludes="software.amazon.awssdk.crt*"
 ~~~
 
-### Build IoT Device SDK and CRT from source
-
-``` sh
-# Create a workspace directory to hold all the SDK files
-mkdir sdk-workspace
-cd sdk-workspace
-# Clone the CRT repository
-#     (Use the latest version of the CRT here instead of "v0.27.3")
-git clone --branch v0.27.3 --recurse-submodules https://github.com/awslabs/aws-crt-java.git
-cd aws-crt-java
-# Compile and install the CRT
-mvn install -Dmaven.test.skip=true
-# Clone the SDK repository
-git clone https://github.com/awslabs/aws-iot-device-sdk-java-v2.git
-cd aws-iot-device-sdk-java-v2
-# Compile and install
-mvn clean install
-```
 ## Samples
 
 [Samples README](samples)
 
 ## Getting Help
 
-The best way to interact with our team is through GitHub. You can [open an issue](https://github.com/aws/aws-iot-device-sdk-java-v2/issues) and choose from one of our templates for guidance, bug reports, or feature requests. You may also find help on community resources such as [StackOverFlow](https://stackoverflow.com/questions/tagged/aws-iot) with the tag #aws-iot or If you have a support plan with [AWS Support](https://aws.amazon.com/premiumsupport/), you can also create a new support case.
+The best way to interact with our team is through GitHub. You can open a [discussion](https://github.com/aws/aws-iot-device-sdk-java-v2/discussions) for guidance questions or an [issue](https://github.com/aws/aws-iot-device-sdk-java-v2/issues/new/choose) for bug reports, or feature requests. You may also find help on community resources such as [StackOverFlow](https://stackoverflow.com/questions/tagged/aws-iot) with the tag [#aws-iot](https://stackoverflow.com/questions/tagged/aws-iot) or if you have a support plan with [AWS Support](https://aws.amazon.com/premiumsupport/), you can also create a new support case.
 
 Please make sure to check out our resources too before opening an issue:
 
-* Our [FAQ](./documents/FAQ.md)
-* Our [Developer Guide](https://docs.aws.amazon.com/iot/latest/developerguide/what-is-aws-iot.html) ([source](https://github.com/awsdocs/aws-iot-docs))
+* [FAQ](./documents/FAQ.md)
+* [IoT Guide](https://docs.aws.amazon.com/iot/latest/developerguide/what-is-aws-iot.html) ([source](https://github.com/awsdocs/aws-iot-docs))
 * [MQTT5 User Guide](./documents/MQTT5_Userguide.md)
 * Check for similar [Issues](https://github.com/aws/aws-iot-device-sdk-java-v2/issues)
 * [AWS IoT Core Documentation](https://docs.aws.amazon.com/iot/)
@@ -125,18 +87,11 @@ Please make sure to check out our resources too before opening an issue:
 [Jobs](https://docs.aws.amazon.com/iot/latest/developerguide/iot-jobs.html)
 [Fleet Provisioning](https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html)
 is provided by code that been generated from a model of the service.
-
-## Giving Feedback and Contributions
-
-We need your help in making this SDK great. Please participate in the community and contribute to this effort by submitting issues, participating in discussion forums and submitting pull requests through the following channels.
-
 * [Contributions Guidelines](./documents/CONTRIBUTING.md)
-* Articulate your feature request or upvote existing ones on our [Issues](https://github.com/aws/aws-iot-device-sdk-java-v2/issues?q=is%3Aissue+is%3Aopen+label%3Afeature-request) page.
-* Create discussion questions [here](https://github.com/aws/aws-iot-device-sdk-java-v2/discussions)
-* Find a bug open an [issue](https://github.com/aws/aws-iot-device-sdk-java-v2/issues)
+* [DEVELOPING](./documents/DEVELOPING.md)
 
 ## License
 
-This library is licensed under the Apache 2.0 License.
+This library is licensed under the [Apache 2.0 License](./documents/LICENSE).
 
 Latest released version: v1.17.2
