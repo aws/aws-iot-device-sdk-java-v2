@@ -352,8 +352,8 @@ for test_suite in DATestConfig['test_suites']:
 
     except Exception as e:
         delete_thing_with_certi(thing_name, certificate_id, certificate_arn)
-        print("[Device Advisor]Error: Failed to test: " +
-              test_name + ", exception: " + e, file=sys.stderr)
+        print("[Device Advisor] Error: Failed to test: {}; exception: {}".
+              format(test_name, e), file=sys.stderr)
         did_at_least_one_test_fail = True
         sleep_with_backoff(BACKOFF_BASE, BACKOFF_MAX)
 
