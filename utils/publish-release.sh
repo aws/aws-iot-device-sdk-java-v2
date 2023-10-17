@@ -50,10 +50,10 @@ git checkout -b ${new_version_branch}
 
 # Go from utils to the main folder
 cd ..
-# Update the SDK version text and the SDK version in samples
+# Update the CRT version to latest release
 python3 ./update-crt.py
-python3 ./update-crt.py ${new_version} --update_sdk_text
-python3 ./update-crt.py ${new_version} --update_samples
+# Update the SDK version text and the SDK version in samples
+python3 ./update-crt.py ${new_version} --update_sdk_text --update_samples
 # Update the version in the README to show the latest
 sed -i -r "s/.*Latest released version:.*/Latest released version: v${new_version}/" README.md
 # Not sure how to do this better, so just add each file individually
