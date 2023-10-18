@@ -141,7 +141,7 @@ for test_suite in DATestConfig['test_suites']:
     ##############################################
     # create certificate and keys used for testing
     try:
-        print("[Device Advisor]Info: Started to create certificate...",
+        print("[Device Advisor] Info: Started to create certificate...",
               file=sys.stderr)
         # create_cert_response:
         # {
@@ -189,8 +189,13 @@ for test_suite in DATestConfig['test_suites']:
     try:
         secrets_client = boto3.client(
             "secretsmanager", region_name=os.environ["AWS_DEFAULT_REGION"])
-        policy_name = secrets_client.get_secret_value(
-            SecretId="ci/DeviceAdvisor/policy_name")["SecretString"]
+        if test_suite.get('policy'):
+            policy_name = test_suite['policy']
+        else:
+            policy_name = secrets_client.get_secret_value(
+                SecretId="ci/DeviceAdvisor/policy_name")["SecretString"]
+        print("[Device Advisor] Info: Attaching policy '{}'".format(policy_name),
+              file=sys.stderr)
         client.attach_policy(
             policyName=policy_name,
             target=certificate_arn
