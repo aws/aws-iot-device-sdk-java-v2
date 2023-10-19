@@ -102,6 +102,55 @@ public class JobExecution {
         return connection;
     }
 
+    static void getPendingJobs() throws InterruptedException, ExecutionException {
+        gotResponse = new CompletableFuture<>();
+        GetPendingJobExecutionsSubscriptionRequest subscriptionRequest = new GetPendingJobExecutionsSubscriptionRequest();
+        subscriptionRequest.thingName = DATestUtils.thing_name;
+        System.out.println("Subscribing to GetPendingJobExecutionsAccepted for thing '"
+                + DATestUtils.thing_name + "'");
+        CompletableFuture<Integer> subscribed = jobs.SubscribeToGetPendingJobExecutionsAccepted(
+                subscriptionRequest,
+                QualityOfService.AT_LEAST_ONCE,
+                JobExecution::onGetPendingJobExecutionsAccepted);
+        try {
+            subscribed.get();
+            System.out.println("Subscribed to GetPendingJobExecutionsAccepted");
+        } catch (Exception ex) {
+            throw new RuntimeException("Failed to subscribe to GetPendingJobExecutionsAccepted", ex);
+        }
+
+        subscribed = jobs.SubscribeToGetPendingJobExecutionsRejected(
+                subscriptionRequest,
+                QualityOfService.AT_LEAST_ONCE,
+                JobExecution::onRejectedError);
+        try {
+            subscribed.get();
+            System.out.println("Subscribed to GetPendingJobExecutionsRejected");
+        } catch (Exception ex) {
+            throw new RuntimeException("Failed to subscribe to GetPendingJobExecutionsRejected", ex);
+        }
+
+        GetPendingJobExecutionsRequest publishRequest = new GetPendingJobExecutionsRequest();
+        publishRequest.thingName = DATestUtils.thing_name;
+        CompletableFuture<Integer> published = jobs.PublishGetPendingJobExecutions(
+                publishRequest,
+                QualityOfService.AT_LEAST_ONCE);
+        try {
+            published.get();
+            System.out.println("Published to GetPendingJobExecutions");
+        } catch (Exception ex) {
+            throw new RuntimeException("Failed to publish to GetPendingJobExecutions", ex);
+        }
+
+        // Waiting for either onGetPendingJobExecutionsAccepted or onRejectedError to be
+        // called.
+        try {
+            gotResponse.get();
+        } catch (Exception ex) {
+            throw new RuntimeException("Exception occurred during waiting for pending Jobs", ex);
+        }
+    }
+
     public static void main(String[] args) {
         // Set vars
         if (!DATestUtils.init(DATestUtils.TestType.JOBS)) {
@@ -119,43 +168,7 @@ public class JobExecution {
                 throw new RuntimeException("Exception occurred during connect", ex);
             }
 
-            {
-                gotResponse = new CompletableFuture<>();
-                GetPendingJobExecutionsSubscriptionRequest subscriptionRequest = new GetPendingJobExecutionsSubscriptionRequest();
-                subscriptionRequest.thingName = DATestUtils.thing_name;
-                System.out.println("Subscribing to GetPendingJobExecutionsAccepted for thing '"
-                        + DATestUtils.thing_name + "'");
-                CompletableFuture<Integer> subscribed = jobs.SubscribeToGetPendingJobExecutionsAccepted(
-                        subscriptionRequest,
-                        QualityOfService.AT_LEAST_ONCE,
-                        JobExecution::onGetPendingJobExecutionsAccepted);
-                try {
-                    subscribed.get();
-                    System.out.println("Subscribed to GetPendingJobExecutionsAccepted");
-                } catch (Exception ex) {
-                    throw new RuntimeException("Failed to subscribe to GetPendingJobExecutions", ex);
-                }
-
-                subscribed = jobs.SubscribeToGetPendingJobExecutionsRejected(
-                        subscriptionRequest,
-                        QualityOfService.AT_LEAST_ONCE,
-                        JobExecution::onRejectedError);
-                subscribed.get();
-                System.out.println("Subscribed to GetPendingJobExecutionsRejected");
-
-                GetPendingJobExecutionsRequest publishRequest = new GetPendingJobExecutionsRequest();
-                publishRequest.thingName = DATestUtils.thing_name;
-                CompletableFuture<Integer> published = jobs.PublishGetPendingJobExecutions(
-                        publishRequest,
-                        QualityOfService.AT_LEAST_ONCE);
-                try {
-                    published.get();
-                    System.out.println("Published to GetPendingJobExecutions");
-                    gotResponse.get();
-                } catch (Exception ex) {
-                    throw new RuntimeException("Exception occurred during publish", ex);
-                }
-            }
+            getPendingJobs();
 
             for (String jobId : availableJobs) {
                 gotResponse = new CompletableFuture<>();
