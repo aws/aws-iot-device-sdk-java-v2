@@ -2,11 +2,6 @@
     "test_suites" :
     [
         {
-            "test_name" : "Job Execution",
-            "test_suite_id" : "8y8wqtb8htbt",
-            "test_exe_path" : "JobExecution"
-        },
-        {
             "test_name" : "MQTT Connect",
             "test_suite_id" : "mxn32qkm8npn",
             "disabled" : true,
@@ -49,6 +44,11 @@
             "test_suite_id" : "6s2hyjq6dkmb",
             "test_exe_path" : "ShadowUpdate",
             "cmd_args" : "--named-shadow"
+        },
+        {
+            "test_name" : "Job Execution",
+            "test_suite_id" : "8y8wqtb8htbt",
+            "test_exe_path" : "JobExecution"
         }
     ]
 }
