@@ -102,7 +102,7 @@ public class JobExecution {
         return connection;
     }
 
-    static void getPendingJobs() throws InterruptedException, ExecutionException {
+    static void getPendingJobs() throws RuntimeException {
         gotResponse = new CompletableFuture<>();
         GetPendingJobExecutionsSubscriptionRequest subscriptionRequest = new GetPendingJobExecutionsSubscriptionRequest();
         subscriptionRequest.thingName = DATestUtils.thing_name;
@@ -147,7 +147,36 @@ public class JobExecution {
         try {
             gotResponse.get();
         } catch (Exception ex) {
-            throw new RuntimeException("Exception occurred during waiting for pending Jobs", ex);
+            throw new RuntimeException("Exception occurred while waiting for pending Jobs", ex);
+        }
+    }
+
+    static void getJobDescriptions() throws RuntimeException {
+        for (String jobId : availableJobs) {
+            gotResponse = new CompletableFuture<>();
+            DescribeJobExecutionSubscriptionRequest subscriptionRequest = new DescribeJobExecutionSubscriptionRequest();
+            subscriptionRequest.thingName = DATestUtils.thing_name;
+            subscriptionRequest.jobId = jobId;
+            jobs.SubscribeToDescribeJobExecutionAccepted(
+                    subscriptionRequest,
+                    QualityOfService.AT_LEAST_ONCE,
+                    JobExecution::onDescribeJobExecutionAccepted);
+            jobs.SubscribeToDescribeJobExecutionRejected(
+                    subscriptionRequest,
+                    QualityOfService.AT_LEAST_ONCE,
+                    JobExecution::onRejectedError);
+
+            DescribeJobExecutionRequest publishRequest = new DescribeJobExecutionRequest();
+            publishRequest.thingName = DATestUtils.thing_name;
+            publishRequest.jobId = jobId;
+            publishRequest.includeJobDocument = true;
+            publishRequest.executionNumber = 1L;
+            jobs.PublishDescribeJobExecution(publishRequest, QualityOfService.AT_LEAST_ONCE);
+            try {
+                gotResponse.get();
+            } catch (Exception ex) {
+                throw new RuntimeException("Exception occurred while waiting for Job descriptions", ex);
+            }
         }
     }
 
@@ -170,28 +199,9 @@ public class JobExecution {
 
             getPendingJobs();
 
-            for (String jobId : availableJobs) {
-                gotResponse = new CompletableFuture<>();
-                DescribeJobExecutionSubscriptionRequest subscriptionRequest = new DescribeJobExecutionSubscriptionRequest();
-                subscriptionRequest.thingName = DATestUtils.thing_name;
-                subscriptionRequest.jobId = jobId;
-                jobs.SubscribeToDescribeJobExecutionAccepted(
-                        subscriptionRequest,
-                        QualityOfService.AT_LEAST_ONCE,
-                        JobExecution::onDescribeJobExecutionAccepted);
-                jobs.SubscribeToDescribeJobExecutionRejected(
-                        subscriptionRequest,
-                        QualityOfService.AT_LEAST_ONCE,
-                        JobExecution::onRejectedError);
-
-                DescribeJobExecutionRequest publishRequest = new DescribeJobExecutionRequest();
-                publishRequest.thingName = DATestUtils.thing_name;
-                publishRequest.jobId = jobId;
-                publishRequest.includeJobDocument = true;
-                publishRequest.executionNumber = 1L;
-                jobs.PublishDescribeJobExecution(publishRequest, QualityOfService.AT_LEAST_ONCE);
-                gotResponse.get();
-            }
+            // This step is optional for the DA Job test, but perform it anyway to check a
+            // supposed flow.
+            getJobDescriptions();
 
             // If sample is not running in CI, then process the available jobs.
             for (int jobIdx = 0; jobIdx < availableJobs.size(); ++jobIdx) {
