@@ -266,7 +266,7 @@ public class JobExecution {
 
             getPendingJobs();
 
-            // This step is optional for the DA Job test, but perform it anyway to check a
+            // This step is optional for the DA Job test, but perform it anyway to follow a
             // supposed flow.
             getJobDescriptions();
 
