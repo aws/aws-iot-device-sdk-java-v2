@@ -88,16 +88,20 @@ public class JobExecution {
     }
 
     static MqttClientConnection createConnection() {
-        AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder
-                .newMtlsBuilderFromPath(DATestUtils.certificatePath, DATestUtils.keyPath);
-        builder.withClientId(clientId)
-                .withEndpoint(DATestUtils.endpoint)
-                .withPort(port)
-                .withCleanSession(true)
-                .withProtocolOperationTimeoutMs(60000);
+        try {
+            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder
+                    .newMtlsBuilderFromPath(DATestUtils.certificatePath, DATestUtils.keyPath);
+            builder.withClientId(clientId)
+                    .withEndpoint(DATestUtils.endpoint)
+                    .withPort(port)
+                    .withCleanSession(true)
+                    .withProtocolOperationTimeoutMs(60000);
 
-        MqttClientConnection connection = builder.build();
-        return connection;
+            MqttClientConnection connection = builder.build();
+            return connection;
+        } catch (Exception ex) {
+            throw new RuntimeException("Failed to create connection", ex);
+        }
     }
 
     static void getPendingJobs() throws RuntimeException {
@@ -280,7 +284,7 @@ public class JobExecution {
             } catch (Exception ex) {
                 throw new RuntimeException("Exception occurred during disconnect", ex);
             }
-        } catch (RuntimeException | InterruptedException ex) {
+        } catch (Exception ex) {
             throw new RuntimeException("Job execution failed", ex);
         }
         System.exit(0);
