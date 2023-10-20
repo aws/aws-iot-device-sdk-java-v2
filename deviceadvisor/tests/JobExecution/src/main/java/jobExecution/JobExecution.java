@@ -88,9 +88,8 @@ public class JobExecution {
     }
 
     static MqttClientConnection createConnection() {
-        try {
-            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder
-                    .newMtlsBuilderFromPath(DATestUtils.certificatePath, DATestUtils.keyPath);
+        try (AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder
+                .newMtlsBuilderFromPath(DATestUtils.certificatePath, DATestUtils.keyPath)) {
             builder.withClientId(clientId)
                     .withEndpoint(DATestUtils.endpoint)
                     .withPort(port)
@@ -254,8 +253,7 @@ public class JobExecution {
             throw new RuntimeException("Failed to initialize environment variables.");
         }
 
-        try {
-            MqttClientConnection connection = createConnection();
+        try (MqttClientConnection connection = createConnection()) {
             jobs = new IotJobsClient(connection);
             CompletableFuture<Boolean> connected = connection.connect();
             try {
