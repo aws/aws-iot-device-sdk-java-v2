@@ -172,11 +172,79 @@ public class JobExecution {
             publishRequest.includeJobDocument = true;
             publishRequest.executionNumber = 1L;
             jobs.PublishDescribeJobExecution(publishRequest, QualityOfService.AT_LEAST_ONCE);
+
+            // Waiting for either onDescribeJobExecutionAccepted or onRejectedError to be
+            // called.
             try {
                 gotResponse.get();
             } catch (Exception ex) {
                 throw new RuntimeException("Exception occurred while waiting for Job descriptions", ex);
             }
+        }
+    }
+
+    static void startNextPendingJob() throws RuntimeException {
+        gotResponse = new CompletableFuture<>();
+
+        // Start the next pending job
+        StartNextPendingJobExecutionSubscriptionRequest subscriptionRequest = new StartNextPendingJobExecutionSubscriptionRequest();
+        subscriptionRequest.thingName = DATestUtils.thing_name;
+
+        jobs.SubscribeToStartNextPendingJobExecutionAccepted(
+                subscriptionRequest,
+                QualityOfService.AT_LEAST_ONCE,
+                JobExecution::onStartNextPendingJobExecutionAccepted);
+        jobs.SubscribeToStartNextPendingJobExecutionRejected(
+                subscriptionRequest,
+                QualityOfService.AT_LEAST_ONCE,
+                JobExecution::onRejectedError);
+
+        StartNextPendingJobExecutionRequest publishRequest = new StartNextPendingJobExecutionRequest();
+        publishRequest.thingName = DATestUtils.thing_name;
+        publishRequest.stepTimeoutInMinutes = 15L;
+        jobs.PublishStartNextPendingJobExecution(publishRequest, QualityOfService.AT_LEAST_ONCE);
+
+        // Waiting for either onDescribeJobExecutionAccepted or onRejectedError to be
+        // called.
+        try {
+            gotResponse.get();
+        } catch (Exception ex) {
+            throw new RuntimeException("Exception occurred while waiting for starting next pending Job", ex);
+        }
+    }
+
+    static void updateCurrentJobStatus(JobStatus jobStatus) throws RuntimeException {
+        // Update the service to let it know we're executing
+        gotResponse = new CompletableFuture<>();
+
+        UpdateJobExecutionSubscriptionRequest subscriptionRequest = new UpdateJobExecutionSubscriptionRequest();
+        subscriptionRequest.thingName = DATestUtils.thing_name;
+        subscriptionRequest.jobId = currentJobId;
+        jobs.SubscribeToUpdateJobExecutionAccepted(
+                subscriptionRequest,
+                QualityOfService.AT_LEAST_ONCE,
+                (response) -> {
+                    System.out.println("Marked job " + currentJobId + " " + jobStatus.toString());
+                    gotResponse.complete(null);
+                });
+        jobs.SubscribeToUpdateJobExecutionRejected(
+                subscriptionRequest,
+                QualityOfService.AT_LEAST_ONCE,
+                JobExecution::onRejectedError);
+
+        UpdateJobExecutionRequest publishRequest = new UpdateJobExecutionRequest();
+        publishRequest.thingName = DATestUtils.thing_name;
+        publishRequest.jobId = currentJobId;
+        publishRequest.executionNumber = currentExecutionNumber;
+        publishRequest.status = jobStatus;
+        publishRequest.expectedVersion = currentVersionNumber++;
+        jobs.PublishUpdateJobExecution(publishRequest, QualityOfService.AT_LEAST_ONCE);
+
+        // Waiting for a response to our update.
+        try {
+            gotResponse.get();
+        } catch (Exception ex) {
+            throw new RuntimeException("Exception occurred while waiting for updating Job", ex);
         }
     }
 
@@ -205,92 +273,11 @@ public class JobExecution {
 
             // If sample is not running in CI, then process the available jobs.
             for (int jobIdx = 0; jobIdx < availableJobs.size(); ++jobIdx) {
-                {
-                    gotResponse = new CompletableFuture<>();
-
-                    // Start the next pending job
-                    StartNextPendingJobExecutionSubscriptionRequest subscriptionRequest = new StartNextPendingJobExecutionSubscriptionRequest();
-                    subscriptionRequest.thingName = DATestUtils.thing_name;
-
-                    jobs.SubscribeToStartNextPendingJobExecutionAccepted(
-                            subscriptionRequest,
-                            QualityOfService.AT_LEAST_ONCE,
-                            JobExecution::onStartNextPendingJobExecutionAccepted);
-                    jobs.SubscribeToStartNextPendingJobExecutionRejected(
-                            subscriptionRequest,
-                            QualityOfService.AT_LEAST_ONCE,
-                            JobExecution::onRejectedError);
-
-                    StartNextPendingJobExecutionRequest publishRequest = new StartNextPendingJobExecutionRequest();
-                    publishRequest.thingName = DATestUtils.thing_name;
-                    publishRequest.stepTimeoutInMinutes = 15L;
-                    jobs.PublishStartNextPendingJobExecution(publishRequest, QualityOfService.AT_LEAST_ONCE);
-
-                    gotResponse.get();
-                }
-
-                {
-                    // Update the service to let it know we're executing
-                    gotResponse = new CompletableFuture<>();
-
-                    UpdateJobExecutionSubscriptionRequest subscriptionRequest = new UpdateJobExecutionSubscriptionRequest();
-                    subscriptionRequest.thingName = DATestUtils.thing_name;
-                    subscriptionRequest.jobId = currentJobId;
-                    jobs.SubscribeToUpdateJobExecutionAccepted(
-                            subscriptionRequest,
-                            QualityOfService.AT_LEAST_ONCE,
-                            (response) -> {
-                                System.out.println("Marked job " + currentJobId + " IN_PROGRESS");
-                                gotResponse.complete(null);
-                            });
-                    jobs.SubscribeToUpdateJobExecutionRejected(
-                            subscriptionRequest,
-                            QualityOfService.AT_LEAST_ONCE,
-                            JobExecution::onRejectedError);
-
-                    UpdateJobExecutionRequest publishRequest = new UpdateJobExecutionRequest();
-                    publishRequest.thingName = DATestUtils.thing_name;
-                    publishRequest.jobId = currentJobId;
-                    publishRequest.executionNumber = currentExecutionNumber;
-                    publishRequest.status = JobStatus.IN_PROGRESS;
-                    publishRequest.expectedVersion = currentVersionNumber++;
-                    jobs.PublishUpdateJobExecution(publishRequest, QualityOfService.AT_LEAST_ONCE);
-
-                    gotResponse.get();
-                }
-
+                startNextPendingJob();
+                updateCurrentJobStatus(JobStatus.IN_PROGRESS);
                 // Fake doing something
                 Thread.sleep(1000);
-
-                {
-                    // Update the service to let it know we're done
-                    gotResponse = new CompletableFuture<>();
-
-                    UpdateJobExecutionSubscriptionRequest subscriptionRequest = new UpdateJobExecutionSubscriptionRequest();
-                    subscriptionRequest.thingName = DATestUtils.thing_name;
-                    subscriptionRequest.jobId = currentJobId;
-                    jobs.SubscribeToUpdateJobExecutionAccepted(
-                            subscriptionRequest,
-                            QualityOfService.AT_LEAST_ONCE,
-                            (response) -> {
-                                System.out.println("Marked job " + currentJobId + " SUCCEEDED");
-                                gotResponse.complete(null);
-                            });
-                    jobs.SubscribeToUpdateJobExecutionRejected(
-                            subscriptionRequest,
-                            QualityOfService.AT_LEAST_ONCE,
-                            JobExecution::onRejectedError);
-
-                    UpdateJobExecutionRequest publishRequest = new UpdateJobExecutionRequest();
-                    publishRequest.thingName = DATestUtils.thing_name;
-                    publishRequest.jobId = currentJobId;
-                    publishRequest.executionNumber = currentExecutionNumber;
-                    publishRequest.status = JobStatus.SUCCEEDED;
-                    publishRequest.expectedVersion = currentVersionNumber++;
-                    jobs.PublishUpdateJobExecution(publishRequest, QualityOfService.AT_LEAST_ONCE);
-
-                    gotResponse.get();
-                }
+                updateCurrentJobStatus(JobStatus.SUCCEEDED);
             }
 
             CompletableFuture<Void> disconnected = connection.disconnect();
