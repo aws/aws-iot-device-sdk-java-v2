@@ -51,6 +51,9 @@ public class DATestUtils {
         {
             return false;
         }
+        if (type == TestType.JOBS && thing_name.isEmpty()) {
+            return false;
+        }
         return true;
     }
 }

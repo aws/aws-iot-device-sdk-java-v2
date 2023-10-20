@@ -204,8 +204,8 @@ public class JobExecution {
         publishRequest.stepTimeoutInMinutes = 15L;
         jobs.PublishStartNextPendingJobExecution(publishRequest, QualityOfService.AT_LEAST_ONCE);
 
-        // Waiting for either onDescribeJobExecutionAccepted or onRejectedError to be
-        // called.
+        // Waiting for either onStartNextPendingJobExecutionAccepted or onRejectedError
+        // to be called.
         try {
             gotResponse.get();
         } catch (Exception ex) {
@@ -271,7 +271,6 @@ public class JobExecution {
             // supposed flow.
             getJobDescriptions();
 
-            // If sample is not running in CI, then process the available jobs.
             for (int jobIdx = 0; jobIdx < availableJobs.size(); ++jobIdx) {
                 startNextPendingJob();
                 updateCurrentJobStatus(JobStatus.IN_PROGRESS);
