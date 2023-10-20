@@ -184,7 +184,6 @@ public class JobExecution {
     static void startNextPendingJob() throws RuntimeException {
         gotResponse = new CompletableFuture<>();
 
-        // Start the next pending job
         StartNextPendingJobExecutionSubscriptionRequest subscriptionRequest = new StartNextPendingJobExecutionSubscriptionRequest();
         subscriptionRequest.thingName = DATestUtils.thing_name;
 
@@ -212,7 +211,6 @@ public class JobExecution {
     }
 
     static void updateCurrentJobStatus(JobStatus jobStatus) throws RuntimeException {
-        // Update the service to let it know we're executing
         gotResponse = new CompletableFuture<>();
 
         UpdateJobExecutionSubscriptionRequest subscriptionRequest = new UpdateJobExecutionSubscriptionRequest();
