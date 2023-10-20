@@ -30,11 +30,9 @@ import software.amazon.awssdk.iot.iotjobs.model.NextJobExecutionChangedSubscript
 import software.amazon.awssdk.iot.iotjobs.model.NextJobExecutionChangedEvent;
 import software.amazon.awssdk.iot.iotjobs.model.JobExecutionsChangedSubscriptionRequest;
 import software.amazon.awssdk.iot.iotjobs.model.JobExecutionsChangedEvent;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.UUID;
 
 import DATestUtils.DATestUtils;
@@ -260,7 +258,6 @@ public class JobExecution {
             CompletableFuture<Boolean> connected = connection.connect();
             try {
                 boolean sessionPresent = connected.get();
-                System.out.println("Connected to " + (!sessionPresent ? "new" : "existing") + " session!");
             } catch (Exception ex) {
                 throw new RuntimeException("Exception occurred during connect", ex);
             }
@@ -280,9 +277,13 @@ public class JobExecution {
             }
 
             CompletableFuture<Void> disconnected = connection.disconnect();
-            disconnected.get();
-        } catch (CrtRuntimeException | InterruptedException | ExecutionException ex) {
-            throw new RuntimeException("Builder Connection Failed", ex);
+            try {
+                disconnected.get();
+            } catch (Exception ex) {
+                throw new RuntimeException("Exception occurred during disconnect", ex);
+            }
+        } catch (RuntimeException | InterruptedException ex) {
+            throw new RuntimeException("Job execution failed", ex);
         }
         System.exit(0);
     }

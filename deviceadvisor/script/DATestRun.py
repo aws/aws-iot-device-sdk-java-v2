@@ -113,7 +113,7 @@ for test_suite in DATestConfig['test_suites']:
 
     disabled = test_suite.get('disabled', False)
     if disabled:
-        print(f"[Device Advisor] Info: "
+        print("[Device Advisor] Info: "
               f"{test_name} test suite is disabled, skipping", file=sys.stderr)
         continue
 
@@ -191,8 +191,6 @@ for test_suite in DATestConfig['test_suites']:
             "secretsmanager", region_name=os.environ["AWS_DEFAULT_REGION"])
         policy_name = secrets_client.get_secret_value(
             SecretId="ci/DeviceAdvisor/policy_name")["SecretString"]
-        print("[Device Advisor] Info: Attaching policy '{}'".format(policy_name),
-              file=sys.stderr)
         client.attach_policy(
             policyName=policy_name,
             target=certificate_arn
@@ -354,8 +352,8 @@ for test_suite in DATestConfig['test_suites']:
 
     except Exception as e:
         delete_thing_with_certi(thing_name, certificate_id, certificate_arn)
-        print("[Device Advisor] Error: Failed to test: {}; exception: {}".
-              format(test_name, e), file=sys.stderr)
+        print(f"[Device Advisor] Error: Failed to test: {test_name}; exception: {e}",
+              file=sys.stderr)
         did_at_least_one_test_fail = True
         sleep_with_backoff(BACKOFF_BASE, BACKOFF_MAX)
 
