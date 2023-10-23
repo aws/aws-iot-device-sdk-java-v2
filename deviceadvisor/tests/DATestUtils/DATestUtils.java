@@ -5,7 +5,7 @@ import java.util.UUID;
 public class DATestUtils {
 
     public enum TestType {
-        CONNECT, SUB_PUB, SHADOW
+        CONNECT, SUB_PUB, SHADOW, JOBS
     }
 
     private final static String ENV_ENDPONT = "DA_ENDPOINT";
@@ -47,8 +47,11 @@ public class DATestUtils {
         {
             return false;
         }
-        else if (type == TestType.SHADOW && (thing_name.isEmpty() || shadowProperty.isEmpty() || shadowValue.isEmpty()))
+        if (type == TestType.SHADOW && (thing_name.isEmpty() || shadowProperty.isEmpty() || shadowValue.isEmpty()))
         {
+            return false;
+        }
+        if (type == TestType.JOBS && thing_name.isEmpty()) {
             return false;
         }
         return true;

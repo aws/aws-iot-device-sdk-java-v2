@@ -104,9 +104,16 @@ for named shadows.
 
 ### Named Shadow Update
 
-Validates if your device reads all update messages received and synchronizes the device's state to match the desired
+Validates if a device reads all update messages received and synchronizes the device's state to match the desired
 state properties.
 
 This test executes
 [Device updates reported state to desired state (Happy case)](https://docs.aws.amazon.com/iot/latest/developerguide/device-advisor-tests-shadow.html#update)
 for named shadows.
+
+### Job Execution
+
+Validates if a device is able to receive updates using AWS IoT Jobs, and publish the status of successful updates.
+
+This test executes
+[Device can complete a job execution](https://docs.aws.amazon.com/iot/latest/developerguide/device-advisor-tests-job-execution.html).
