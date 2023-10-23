@@ -41,8 +41,6 @@ def process_logs(log_group, log_stream, thing_name):
     f.close()
 
     try:
-        secrets_client = boto3.client(
-            "secretsmanager", region_name=os.environ["AWS_DEFAULT_REGION"])
         s3_bucket_name = secrets_client.get_secret_value(
             SecretId="ci/DeviceAdvisor/s3bucket")["SecretString"]
         s3.Bucket(s3_bucket_name).upload_file(log_file, log_file)
@@ -72,6 +70,8 @@ try:
     deviceAdvisor = boto3.client(
         'iotdeviceadvisor', region_name=os.environ["AWS_DEFAULT_REGION"])
     s3 = boto3.resource('s3', region_name=os.environ["AWS_DEFAULT_REGION"])
+    secrets_client = boto3.client(
+        "secretsmanager", region_name=os.environ["AWS_DEFAULT_REGION"])
 except Exception:
     print("[Device Advisor] Error: could not create boto3 clients.", file=sys.stderr)
     exit(-1)
@@ -121,6 +121,8 @@ for test_suite in DATestConfig['test_suites']:
     # create a test thing
     thing_name = "DATest_" + str(uuid.uuid4())
     try:
+        thing_group = secrets_client.get_secret_value(
+            SecretId="ci/DeviceAdvisor/thing_group")["SecretString"]
         # create_thing_response:
         # {
         # 'thingName': 'string',
@@ -133,9 +135,15 @@ for test_suite in DATestConfig['test_suites']:
         )
         os.environ["DA_THING_NAME"] = thing_name
 
-    except Exception:
-        print("[Device Advisor] Error: Failed to create thing: " +
-              thing_name, file=sys.stderr)
+        # Some tests (e.g. Jobs) require the tested things to be a part of the DA group thing.
+        client.add_thing_to_thing_group(
+            thingGroupName=thing_group,
+            thingName=thing_name,
+        )
+
+    except Exception as ex:
+        print("[Device Advisor] Error: Failed to create thing '{}', error: {}"
+              .format(thing_name, ex), file=sys.stderr)
         exit(-1)
 
     ##############################################
@@ -187,8 +195,6 @@ for test_suite in DATestConfig['test_suites']:
     ##############################################
     # attach policy to certificate
     try:
-        secrets_client = boto3.client(
-            "secretsmanager", region_name=os.environ["AWS_DEFAULT_REGION"])
         policy_name = secrets_client.get_secret_value(
             SecretId="ci/DeviceAdvisor/policy_name")["SecretString"]
         client.attach_policy(
