@@ -129,7 +129,8 @@ for test_suite in DATestConfig['test_suites']:
         # 'thingArn': 'string',
         # 'thingId': 'string'
         # }
-        print("[Device Advisor] Info: Started to create thing...", file=sys.stderr)
+        print("[Device Advisor] Info: Started to create thing "
+              f"'{thing_name}'", file=sys.stderr)
         create_thing_response = client.create_thing(
             thingName=thing_name
         )
@@ -141,9 +142,9 @@ for test_suite in DATestConfig['test_suites']:
             thingName=thing_name,
         )
 
-    except Exception as ex:
-        print("[Device Advisor] Error: Failed to create thing '{}', error: {}"
-              .format(thing_name, ex), file=sys.stderr)
+    except Exception as e:
+        print(f"[Device Advisor] Error: Failed to create thing '{thing_name}'; "
+              f"exception: {e}", file=sys.stderr)
         exit(-1)
 
     ##############################################
