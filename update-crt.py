@@ -70,6 +70,26 @@ def main():
             preceded_by=r"Replace .* in `<version>",
             followed_by=r"</version>` with the latest release version for the SDK.",
             force_version=sdk_version)
+        update(filepath='documents/ANDROID.md',
+            preceded_by=r"software.amazon.awssdk.iotdevicesdk:aws-iot-device-sdk-android:",
+            followed_by=r"'",
+            force_version=sdk_version)
+        update(filepath='documents/ANDROID.md',
+            preceded_by=r"Replace `",
+            followed_by=r"` in",
+            force_version=sdk_version)
+        update(filepath='documents/ANDROID.md',
+            preceded_by=r"` in `software.amazon.awssdk.iotdevicesdk:aws-iot-device-sdk-android:",
+            followed_by=r"`",
+            force_version=sdk_version)
+        update(filepath='documents/ANDROID.md',
+            preceded_by=r"Use the latest version of the SDK here instead of `v",
+            followed_by=r"`",
+            force_version=sdk_version)
+        update(filepath='documents/ANDROID.md',
+            preceded_by=r"git clone --branch v",
+            followed_by=r" --recurse-submodules",
+            force_version=sdk_version)
         update_sdk = True
 
     # Update CRT versions if not specified
@@ -134,6 +154,11 @@ def update_samples(sdk_version):
                 update(filepath=sample_folder + "/" + file,
                     preceded_by=r'<artifactId>aws-iot-device-sdk</artifactId>\s*<version>',
                     followed_by=r'</version>',
+                    force_version=sdk_version)
+            elif file.endswith("build.gradle"):
+                update(filepath=sample_folder + "/" + file,
+                    preceded_by=r'software.amazon.awssdk.iotdevicesdk:aws-iot-device-sdk-android:',
+                    followed_by=r"'",
                     force_version=sdk_version)
 
 
