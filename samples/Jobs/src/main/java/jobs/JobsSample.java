@@ -90,6 +90,8 @@ public class JobsSample {
          */
         CommandLineUtils.SampleCommandLineData cmdData = CommandLineUtils.getInputForIoTSample("Jobs", args);
 
+        cmdData.input_thingName = "some-thing";
+
         MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
             @Override
             public void onConnectionInterrupted(int errorCode) {

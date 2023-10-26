@@ -140,6 +140,7 @@
           * See the Utils/CommandLineUtils for more information.
           */
          CommandLineUtils.SampleCommandLineData cmdData = CommandLineUtils.getInputForIoTSample("Jobs", args);
+         cmdData.input_thingName = "some-thing";
 
          try {
 

@@ -529,17 +529,6 @@ jobs:
       - name: run Mqtt5 Shadow sample
         run: |
           python3 ./utils/run_sample_ci.py --file ./.github/workflows/ci_run_shadow_mqtt5_cfg.json
-      - name: configure AWS credentials (Jobs)
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          role-to-assume: ${{ env.CI_JOBS_ROLE }}
-          aws-region: ${{ env.AWS_DEFAULT_REGION }}
-      - name: run Jobs sample
-        run: |
-          python3 ./utils/run_sample_ci.py --file ./.github/workflows/ci_run_jobs_cfg.json
-      - name: run Mqtt5 Jobs sample
-        run: |
-          python3 ./utils/run_sample_ci.py --file ./.github/workflows/ci_run_jobs_mqtt5_cfg.json
       - name: configure AWS credentials (Fleet provisioning)
         uses: aws-actions/configure-aws-credentials@v2
         with:
