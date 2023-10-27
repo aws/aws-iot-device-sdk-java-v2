@@ -60,6 +60,7 @@ sed -i -r "s/.*Latest released version:.*/Latest released version: v${new_versio
 git add sdk/pom.xml
 git add README.md
 git add android/iotdevicesdk/build.gradle
+git add samples/Android/app/build.gradle
 # Add all the sample pom files
 find . -name "pom.xml" -maxdepth 3 -mindepth 3 -exec git add {} +
 # go back to the utils folder
