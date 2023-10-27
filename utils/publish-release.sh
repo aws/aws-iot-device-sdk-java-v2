@@ -59,10 +59,11 @@ sed -i -r "s/.*Latest released version:.*/Latest released version: v${new_versio
 # Not sure how to do this better, so just add each file individually
 git add sdk/pom.xml
 git add README.md
+git add documents/ANDROID.md
 git add android/iotdevicesdk/build.gradle
 git add samples/Android/app/build.gradle
 # Add all the sample pom files
-find . -name "pom.xml" -maxdepth 3 -mindepth 3 -exec git add {} +
+find . -name "pom.xml" -maxdepth 4 -mindepth 3 -exec git add {} +
 # go back to the utils folder
 cd utils
 
