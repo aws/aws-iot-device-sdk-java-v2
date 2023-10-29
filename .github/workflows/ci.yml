@@ -471,6 +471,14 @@ jobs:
           sudo apt-get update -y
           sudo apt-get install softhsm -y
           softhsm2-util --version
+      - name: configure AWS credentials (Fleet provisioning)
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ env.CI_FLEET_PROVISIONING_ROLE }}
+          aws-region: ${{ env.AWS_DEFAULT_REGION }}
+      - name: run Fleet Provisioning test
+        run: |
+          python3 ./servicetests/script/test_fleet_provisioning.py --thing-name-prefix Fleet_Thing_
       - name: configure AWS credentials (Connect and PubSub)
         uses: aws-actions/configure-aws-credentials@v2
         with:

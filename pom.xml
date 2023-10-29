@@ -26,6 +26,7 @@
         <module>samples/FleetProvisioning</module>
         <module>samples/Mqtt5/PubSub</module>
         <module>samples/Mqtt5/SharedSubscription</module>
+        <module>servicetests/tests/FleetProvisioning</module>
     </modules>
 
     <build>
