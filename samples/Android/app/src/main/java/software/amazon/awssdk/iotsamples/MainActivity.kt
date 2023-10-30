@@ -20,7 +20,8 @@ import java.lang.Exception
 import kotlin.concurrent.thread
 
 val SAMPLES = mapOf(
-    "Publish/Subscribe Sample" to "pubsub.PubSub",
+    "Publish/Subscribe MQTT5 Sample" to "mqtt5.pubsub.PubSub",
+    "Publish/Subscribe MQTT3 Sample" to "pubsub.PubSub",
     "Jobs Client Sample" to "jobs.JobsSample",
     "Shadow Client Sample" to "shadow.ShadowSample",
     "Cognito Client Sample" to "cognitoconnect.CognitoConnect"
@@ -134,7 +135,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
             // Add required files for Samples here
             when(name) {
-                "pubsub.PubSub", "jobs.JobsSample", "shadow.ShadowSample" -> {
+                "mqtt5.pubsub.PubSub", "pubsub.PubSub", "jobs.JobsSample", "shadow.ShadowSample" -> {
                     resourceNames.add("certificate.pem")
                     resourceNames.add("privatekey.pem")
                 }
@@ -167,7 +168,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                 args.addAll(arrayOf("--endpoint", assetContents("endpoint.txt")))
 
                 when(name) {
-                    "pubsub.PubSub" -> {
+                    "mqtt5.pubsub.PubSub", "pubsub.PubSub" -> {
                         args.addAll(arrayOf(
                             "--cert", resourceMap["certificate.pem"],
                             "--key", resourceMap["privatekey.pem"],

@@ -47,8 +47,8 @@ NOTE: The shadow sample does not currently complete on android due to its depend
 mkdir sdk-workspace
 cd sdk-workspace
 # Clone the SDK repository
-# (Use the latest version of the SDK here instead of "v1.17.0)
-git clone --branch v1.17.0 --recurse-submodules https://github.com/aws/aws-iot-device-sdk-java-v2.git
+# (Use the latest version of the SDK here instead of `v1.17.3`)
+git clone --branch v1.17.3 --recurse-submodules https://github.com/aws/aws-iot-device-sdk-java-v2.git
 # Compile and install the SDK for Android
 cd aws-iot-device-sdk-java-v2/android
 ./gradlew build
@@ -69,10 +69,10 @@ repositories {
 }
 
 dependencies {
-    api 'software.amazon.awssdk.iotdevicesdk:aws-iot-device-sdk-android:1.17.0'
+    api 'software.amazon.awssdk.iotdevicesdk:aws-iot-device-sdk-android:1.17.3'
 }
 ```
-Replace `1.17.0` in `software.amazon.awssdk.iotdevicesdk:aws-iot-device-sdk-android:1.17.0` with the latest release version for the SDK.
+Replace `1.17.3` in `software.amazon.awssdk.iotdevicesdk:aws-iot-device-sdk-android:1.17.3` with the latest release version for the SDK.
 Look up the latest SDK version here: https://github.com/aws/aws-iot-device-sdk-java-v2/releases
 
 ### Consuming from locally installed
@@ -84,10 +84,10 @@ repositories {
 }
 
 dependencies {
-    api 'software.amazon.awssdk.iotdevicesdk:aws-iot-device-sdk-android:1.17.0'
+    api 'software.amazon.awssdk.iotdevicesdk:aws-iot-device-sdk-android:1.17.3'
 }
 ```
-Replace `1.17.0` in `software.amazon.awssdk.iotdevicesdk:aws-iot-device-sdk-android:1.17.0` with the latest release version for the SDK
+Replace `1.17.3` in `software.amazon.awssdk.iotdevicesdk:aws-iot-device-sdk-android:1.17.3` with the latest release version for the SDK
 or replace with `1.0.0-SNAPSHOT` to use the SDK built and installed from source.
 Look up the latest SDK version here: https://github.com/aws/aws-iot-device-sdk-java-v2/releases
 
