@@ -1,48 +1,9 @@
 import argparse
-import boto3
 import uuid
 import os
 import sys
 import run_service_test
-
-
-def delete_thing(thing_name, region):
-    try:
-        iot_client = boto3.client('iot', region_name=region)
-    except Exception:
-        print("Error - could not make Boto3 client. Credentials likely could not be sourced")
-        return -1
-
-    thing_principals = None
-    try:
-        thing_principals = iot_client.list_thing_principals(thingName=thing_name)
-    except Exception:
-        print ("Could not get thing principals!")
-        return -1
-
-    try:
-        if thing_principals != None:
-            if thing_principals["principals"] != None:
-                if len(thing_principals["principals"]) > 0:
-                    for principal in thing_principals["principals"]:
-                        certificate_id = principal.split("/")[1]
-                        iot_client.detach_thing_principal(thingName=thing_name, principal=principal)
-                        iot_client.update_certificate(certificateId=certificate_id, newStatus ='INACTIVE')
-                        iot_client.delete_certificate(certificateId=certificate_id, forceDelete=True)
-    except Exception as exception:
-        print (exception)
-        print ("Could not delete certificate!")
-        return -1
-
-    try:
-        iot_client.delete_thing(thingName=thing_name)
-    except Exception as exception:
-        print (exception)
-        print ("Could not delete IoT thing!")
-        return -1
-
-    print ("IoT thing deleted successfully")
-    return 0
+import delete_iot_thing
 
 
 def main():
@@ -68,7 +29,7 @@ def main():
 
     thing_name = parsed_commands.thing_name_prefix + input_uuid
     # Delete a thing created by fleet provisioning.
-    result = delete_thing(thing_name, parsed_commands.region)
+    result = delete_iot_thing.delete_iot_thing(thing_name, parsed_commands.region)
     sys.exit(result)
 
 
