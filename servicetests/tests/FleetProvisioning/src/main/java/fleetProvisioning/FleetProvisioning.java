@@ -117,19 +117,35 @@ public class FleetProvisioning {
         System.out.println("Exception occurred " + e);
     }
 
-    static MqttClientConnection createConnection() {
-        try (AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder
-                .newMtlsBuilderFromPath(DATestUtils.certificatePath, DATestUtils.keyPath)) {
-            builder.withClientId(clientId)
+    static MqttClientConnection createConnection(Boolean useMqtt5) {
+        if (useMqtt5) {
+            DALifecycleEvents lifecycleEvents = new DALifecycleEvents();
+            try (AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newDirectMqttBuilderWithMtlsFromPath(
+                        DATestUtils.endpoint, DATestUtils.certificatePath, DATestUtils.keyPath)) {
+                ConnectPacket.ConnectPacketBuilder connectProperties = new ConnectPacket.ConnectPacketBuilder();
+                connectProperties.withClientId(clientId);
+                builder.withConnectProperties(connectProperties);
+                builder.withLifeCycleEvents(lifecycleEvents);
+                builder.withPort((long)port);
+                Mqtt5Client client = builder.build();
+                builder.close();
+                return new MqttClientConnection(client, null);
+            } catch (Exception ex) {
+                throw new RuntimeException("Failed to create MQTT311 connection from MQTT5 client", ex);
+            }
+        } else {
+            try (AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder
+                    .newMtlsBuilderFromPath(DATestUtils.certificatePath, DATestUtils.keyPath)) {
+                builder.withClientId(clientId)
                     .withEndpoint(DATestUtils.endpoint)
                     .withPort(port)
                     .withCleanSession(true)
                     .withProtocolOperationTimeoutMs(60000);
 
-            MqttClientConnection connection = builder.build();
-            return connection;
-        } catch (Exception ex) {
-            throw new RuntimeException("Failed to create connection", ex);
+                return builder.build();
+            } catch (Exception ex) {
+                throw new RuntimeException("Failed to create MQTT311 connection", ex);
+            }
         }
     }
 
@@ -150,10 +166,9 @@ public class FleetProvisioning {
             }
         };
 
-        MqttClientConnection connection = null;
         boolean exitWithError = false;
 
-        try {
+        try (MqttClientConnection connection = createConnection(true)) {
             /**
              * Create the MQTT connection from the builder
              */
@@ -200,11 +215,6 @@ public class FleetProvisioning {
             System.out.println("Exception encountered! " + "\n");
             ex.printStackTrace();
             exitWithError = true;
-        } finally {
-            if (connection != null) {
-                // Close the connection now that we are completely done with it.
-                connection.close();
-            }
         }
 
         CrtResource.waitForNoResources();
