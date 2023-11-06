@@ -117,8 +117,23 @@ public class FleetProvisioning {
         System.out.println("Exception occurred " + e);
     }
 
-    public static void main(String[] args) {
+    static MqttClientConnection createConnection() {
+        try (AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder
+                .newMtlsBuilderFromPath(DATestUtils.certificatePath, DATestUtils.keyPath)) {
+            builder.withClientId(clientId)
+                    .withEndpoint(DATestUtils.endpoint)
+                    .withPort(port)
+                    .withCleanSession(true)
+                    .withProtocolOperationTimeoutMs(60000);
 
+            MqttClientConnection connection = builder.build();
+            return connection;
+        } catch (Exception ex) {
+            throw new RuntimeException("Failed to create connection", ex);
+        }
+    }
+
+    public static void main(String[] args) {
         CommandLineUtils.ServiceTestCommandLineData cmdData = CommandLineUtils.getInputForServiceTest("FleetProvisioning", args);
 
         MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
@@ -158,8 +173,7 @@ public class FleetProvisioning {
             /**
              * Verify the connection was created
              */
-            if (connection == null)
-            {
+            if (connection == null) {
                 throw new RuntimeException("MQTT connection creation failed!");
             }
 
