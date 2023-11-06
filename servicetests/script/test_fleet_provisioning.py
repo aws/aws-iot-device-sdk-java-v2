@@ -11,7 +11,7 @@ import delete_iot_thing
 
 def main():
     argument_parser = argparse.ArgumentParser(
-        description="Run service test in CI")
+        description="Run Fleet Provisioning test in CI")
     argument_parser.add_argument(
         "--input-uuid", required=False, help="UUID for thing name")
     argument_parser.add_argument(
