@@ -3,6 +3,7 @@
 
 import boto3
 
+
 def delete_iot_thing(thing_name, region):
     try:
         iot_client = boto3.client('iot', region_name=region)
@@ -19,7 +20,8 @@ def delete_iot_thing(thing_name, region):
             iot_client.update_certificate(certificateId=certificate_id, newStatus='INACTIVE')
             iot_client.delete_certificate(certificateId=certificate_id, forceDelete=True)
     except Exception as e:
-        print(f"ERROR: Could not delete certificate for IoT thing {thing_name}. Exception: {e}")
+        print("ERROR: Could not delete certificate for IoT thing "
+              f"{thing_name}, probably thing does not exist. Exception: {e}")
         return -1
 
     try:
