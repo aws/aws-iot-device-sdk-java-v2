@@ -200,6 +200,10 @@ public class CommandLineUtils {
         }
     }
 
+    private void parseUseMqtt5(ServiceTestCommandLineData returnData) {
+        returnData.input_use_mqtt5 = Boolean.parseBoolean(getCommandOrDefault(m_cmd_use_mqtt5, "false"));
+    }
+
     private void parseCommonMQTTCommands(ServiceTestCommandLineData returnData) {
         returnData.input_endpoint = getCommandRequired(m_cmd_endpoint);
         returnData.input_ca = getCommandOrDefault(m_cmd_ca_file, "");
@@ -219,6 +223,7 @@ public class CommandLineUtils {
     public class ServiceTestCommandLineData
     {
         // General use
+        public Boolean input_use_mqtt5;
         public String input_endpoint;
         public String input_cert;
         public String input_key;
@@ -243,6 +248,7 @@ public class CommandLineUtils {
         sendArguments(args);
 
         ServiceTestCommandLineData returnData = new ServiceTestCommandLineData();
+        parseUseMqtt5(returnData);
         parseCommonLoggingCommands(returnData);
         parseCommonMQTTCommands(returnData);
         parseKeyAndCertCommands(returnData);
@@ -269,6 +275,7 @@ public class CommandLineUtils {
     /**
      * Constants for commonly used/needed commands
      */
+    private static final String m_cmd_use_mqtt5 = "use_mqtt5";
     private static final String m_cmd_log_destination = "log_destination";
     private static final String m_cmd_log_file_name = "log_file_name";
     private static final String m_cmd_verbosity = "verbosity";

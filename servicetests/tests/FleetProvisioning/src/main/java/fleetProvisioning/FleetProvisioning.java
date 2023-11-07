@@ -11,7 +11,11 @@ import software.amazon.awssdk.crt.CrtRuntimeException;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnectionEvents;
 import software.amazon.awssdk.crt.mqtt.QualityOfService;
+import software.amazon.awssdk.crt.mqtt5.Mqtt5ClientOptions;
+import software.amazon.awssdk.crt.mqtt5.Mqtt5Client;
+import software.amazon.awssdk.crt.mqtt5.packets.ConnectPacket;
 import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
+import software.amazon.awssdk.iot.AwsIotMqtt5ClientBuilder;
 import software.amazon.awssdk.iot.iotidentity.IotIdentityClient;
 import software.amazon.awssdk.iot.iotidentity.model.CreateCertificateFromCsrRequest;
 import software.amazon.awssdk.iot.iotidentity.model.CreateCertificateFromCsrResponse;
@@ -33,6 +37,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 import utils.commandlineutils.CommandLineUtils;
+import ServiceTestLifecycleEvents.ServiceTestLifecycleEvents;
 
 public class FleetProvisioning {
 
@@ -44,6 +49,63 @@ public class FleetProvisioning {
     static RegisterThingResponse registerThingResponse = null;
 
     static long responseWaitTimeMs = 5000L; // 5 seconds
+
+    abstract static class ConnectionWrapper implements AutoCloseable {
+        public abstract CompletableFuture<Boolean> start();
+        public abstract CompletableFuture<Void> stop();
+
+        public abstract MqttClientConnection getConnection();
+    }
+
+    static final class Mqtt3ConnectionWrapper extends ConnectionWrapper {
+        static MqttClientConnection connection;
+
+        @Override
+        public CompletableFuture<Boolean> start() {
+            return connection.connect();
+        }
+
+        @Override
+        public CompletableFuture<Void> stop() {
+            return connection.disconnect();
+        }
+
+        @Override
+        public void close() {
+            connection.close();
+        }
+
+        @Override
+        public MqttClientConnection getConnection() {
+            return connection;
+        }
+    };
+
+    static final class Mqtt5ConnectionWrapper extends ConnectionWrapper {
+        static Mqtt5Client client;
+        static MqttClientConnection connection;
+
+        @Override
+        public CompletableFuture<Boolean> start() {
+            return connection.connect();
+        }
+
+        @Override
+        public CompletableFuture<Void> stop() {
+            return connection.disconnect();
+        }
+
+        @Override
+        public void close() {
+            client.close();
+            connection.close();
+        }
+
+        @Override
+        public MqttClientConnection getConnection() {
+            return connection;
+        }
+    };
 
     static void onRejectedKeys(ErrorResponse response) {
         System.out.println("CreateKeysAndCertificate Request rejected, errorCode: " + response.errorCode +
@@ -117,32 +179,40 @@ public class FleetProvisioning {
         System.out.println("Exception occurred " + e);
     }
 
-    static MqttClientConnection createConnection(Boolean useMqtt5) {
+    static ConnectionWrapper createConnection(CommandLineUtils.ServiceTestCommandLineData cmdData, Boolean useMqtt5) {
         if (useMqtt5) {
-            DALifecycleEvents lifecycleEvents = new DALifecycleEvents();
+            ServiceTestLifecycleEvents lifecycleEvents = new ServiceTestLifecycleEvents();
             try (AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newDirectMqttBuilderWithMtlsFromPath(
-                        DATestUtils.endpoint, DATestUtils.certificatePath, DATestUtils.keyPath)) {
+                        cmdData.input_endpoint, cmdData.input_cert, cmdData.input_key)) {
                 ConnectPacket.ConnectPacketBuilder connectProperties = new ConnectPacket.ConnectPacketBuilder();
-                connectProperties.withClientId(clientId);
+                connectProperties.withClientId(cmdData.input_clientId);
                 builder.withConnectProperties(connectProperties);
                 builder.withLifeCycleEvents(lifecycleEvents);
-                builder.withPort((long)port);
-                Mqtt5Client client = builder.build();
-                builder.close();
-                return new MqttClientConnection(client, null);
+                builder.withPort((long)cmdData.input_port);
+                Mqtt5ConnectionWrapper connWrapper = new Mqtt5ConnectionWrapper();
+                connWrapper.client = builder.build();
+                connWrapper.connection = new MqttClientConnection(connWrapper.client, null);
+                if (connWrapper.connection == null) {
+                    throw new RuntimeException("MQTT5 connection creation failed!");
+                }
+                return connWrapper;
             } catch (Exception ex) {
                 throw new RuntimeException("Failed to create MQTT311 connection from MQTT5 client", ex);
             }
         } else {
             try (AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder
-                    .newMtlsBuilderFromPath(DATestUtils.certificatePath, DATestUtils.keyPath)) {
-                builder.withClientId(clientId)
-                    .withEndpoint(DATestUtils.endpoint)
-                    .withPort(port)
+                    .newMtlsBuilderFromPath(cmdData.input_cert, cmdData.input_key)) {
+                builder.withClientId(cmdData.input_clientId)
+                    .withEndpoint(cmdData.input_endpoint)
+                    .withPort((short)cmdData.input_port)
                     .withCleanSession(true)
                     .withProtocolOperationTimeoutMs(60000);
-
-                return builder.build();
+                Mqtt3ConnectionWrapper connWrapper = new Mqtt3ConnectionWrapper();
+                connWrapper.connection = builder.build();
+                if (connWrapper.connection == null) {
+                    throw new RuntimeException("MQTT311 connection creation failed!");
+                }
+                return connWrapper;
             } catch (Exception ex) {
                 throw new RuntimeException("Failed to create MQTT311 connection", ex);
             }
@@ -152,51 +222,16 @@ public class FleetProvisioning {
     public static void main(String[] args) {
         CommandLineUtils.ServiceTestCommandLineData cmdData = CommandLineUtils.getInputForServiceTest("FleetProvisioning", args);
 
-        MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
-            @Override
-            public void onConnectionInterrupted(int errorCode) {
-                if (errorCode != 0) {
-                    System.out.println("Connection interrupted: " + errorCode + ": " + CRT.awsErrorString(errorCode));
-                }
-            }
-
-            @Override
-            public void onConnectionResumed(boolean sessionPresent) {
-                System.out.println("Connection resumed: " + (sessionPresent ? "existing session" : "clean session"));
-            }
-        };
-
         boolean exitWithError = false;
 
-        try (MqttClientConnection connection = createConnection(true)) {
-            /**
-             * Create the MQTT connection from the builder
-             */
-            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(cmdData.input_cert, cmdData.input_key);
-            if (cmdData.input_ca != "") {
-                builder.withCertificateAuthorityFromPath(null, cmdData.input_ca);
-            }
-            builder.withConnectionEventCallbacks(callbacks)
-                .withClientId(cmdData.input_clientId)
-                .withEndpoint(cmdData.input_endpoint)
-                .withPort((short)cmdData.input_port)
-                .withCleanSession(true)
-                .withProtocolOperationTimeoutMs(60000);
-            connection = builder.build();
-            builder.close();
+        System.out.println("==================== " + cmdData.input_use_mqtt5);
 
-            /**
-             * Verify the connection was created
-             */
-            if (connection == null) {
-                throw new RuntimeException("MQTT connection creation failed!");
-            }
-
+        try (ConnectionWrapper connection = createConnection(cmdData, cmdData.input_use_mqtt5)) {
             // Create the identity client (Identity = Fleet Provisioning)
-            iotIdentityClient = new IotIdentityClient(connection);
+            iotIdentityClient = new IotIdentityClient(connection.getConnection());
 
             // Connect
-            CompletableFuture<Boolean> connected = connection.connect();
+            CompletableFuture<Boolean> connected = connection.start();
             boolean sessionPresent = connected.get(responseWaitTimeMs, TimeUnit.MILLISECONDS);
             System.out.println("Connected to " + (!sessionPresent ? "new" : "existing") + " session!");
 
@@ -208,7 +243,7 @@ public class FleetProvisioning {
             }
 
             // Disconnect
-            CompletableFuture<Void> disconnected = connection.disconnect();
+            CompletableFuture<Void> disconnected = connection.stop();
             disconnected.get(responseWaitTimeMs, TimeUnit.MILLISECONDS);
 
         } catch (Exception ex) {
