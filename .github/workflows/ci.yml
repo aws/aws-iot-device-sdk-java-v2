@@ -547,16 +547,10 @@ jobs:
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
       - name: run Fleet Provisioning sample
         run: |
-          echo "Generating UUID for IoT thing"
-          Sample_UUID=$(python3  -c "import uuid; print (uuid.uuid4())")
-          python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_fleet_provisioning_cfg.json --input_uuid ${Sample_UUID}
-          python3 utils/delete_iot_thing_ci.py --thing_name "Fleet_Thing_${Sample_UUID}" --region "us-east-1"
+          python3 ./utils/run_fleet_provisioning_sample.py --file ./.github/workflows/ci_run_fleet_provisioning_cfg.json --thing-name-prefix "Fleet_Thing_"
       - name: run Mqtt5 Fleet Provisioning sample
         run: |
-          echo "Generating UUID for IoT thing"
-          Sample_UUID=$(python3  -c "import uuid; print (uuid.uuid4())")
-          python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_fleet_provisioning_mqtt5_cfg.json --input_uuid ${Sample_UUID}
-          python3 utils/delete_iot_thing_ci.py --thing_name "Fleet_Thing_${Sample_UUID}" --region "us-east-1"
+          python3 ./utils/run_fleet_provisioning_sample.py --file ./.github/workflows/ci_run_fleet_provisioning_mqtt5_cfg.json --thing-name-prefix "Fleet_Thing_"
       - name: configure AWS credentials (X509)
         uses: aws-actions/configure-aws-credentials@v2
         with:
