@@ -1,8 +1,8 @@
 {
     "language": "Java",
-    "sample_file": "samples/Pkcs12Connect",
-    "sample_region": "us-east-1",
-    "sample_main_class": "pkcs12connect.Pkcs12Connect",
+    "runnable_file": "samples/Pkcs12Connect",
+    "runnable_region": "us-east-1",
+    "runnable_main_class": "pkcs12connect.Pkcs12Connect",
     "arguments": [
         {
             "name": "--endpoint",
