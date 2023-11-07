@@ -1,8 +1,8 @@
 {
     "language": "Java",
-    "service_test_file": "servicetests/tests/FleetProvisioning",
-    "service_test_region": "us-east-1",
-    "service_test_main_class": "fleetProvisioning.FleetProvisioning",
+    "runnable_file": "servicetests/tests/FleetProvisioning",
+    "runnable_region": "us-east-1",
+    "runnable_main_class": "fleetProvisioning.FleetProvisioning",
     "arguments": [
         {
             "name": "--mqtt_version",
