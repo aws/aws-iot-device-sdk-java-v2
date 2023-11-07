@@ -1,8 +1,8 @@
 {
     "language": "Java",
-    "sample_file": "samples/Jobs",
-    "sample_region": "us-east-1",
-    "sample_main_class": "jobs.Mqtt5JobsSample",
+    "runnable_file": "samples/Jobs",
+    "runnable_region": "us-east-1",
+    "runnable_main_class": "jobs.Mqtt5JobsSample",
     "arguments": [
         {
             "name": "--endpoint",

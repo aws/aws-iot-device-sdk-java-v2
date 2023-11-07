@@ -1,8 +1,8 @@
 {
     "language": "Java",
-    "sample_file": "samples/BasicConnect",
-    "sample_region": "us-east-1",
-    "sample_main_class": "basicconnect.BasicConnect",
+    "runnable_file": "samples/BasicConnect",
+    "runnable_region": "us-east-1",
+    "runnable_main_class": "basicconnect.BasicConnect",
     "arguments": [
         {
             "name": "--endpoint",

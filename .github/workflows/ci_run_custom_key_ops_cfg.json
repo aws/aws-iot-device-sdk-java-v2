@@ -1,8 +1,8 @@
 {
     "language": "Java",
-    "sample_file": "samples/CustomKeyOpsConnect",
-    "sample_region": "us-east-1",
-    "sample_main_class": "customkeyopsconnect.CustomKeyOpsConnect",
+    "runnable_file": "samples/CustomKeyOpsConnect",
+    "runnable_region": "us-east-1",
+    "runnable_main_class": "customkeyopsconnect.CustomKeyOpsConnect",
     "arguments": [
         {
             "name": "--endpoint",
