@@ -5,8 +5,8 @@
     "service_test_main_class": "fleetProvisioning.FleetProvisioning",
     "arguments": [
         {
-            "name": "--use_mqtt5",
-            "data": "true"
+            "name": "--mqtt_version",
+            "data": 5
         },
         {
             "name": "--endpoint",

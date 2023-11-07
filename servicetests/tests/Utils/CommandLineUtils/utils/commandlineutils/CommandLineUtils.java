@@ -12,14 +12,6 @@ import java.io.UnsupportedEncodingException;
 
 import software.amazon.awssdk.crt.*;
 import software.amazon.awssdk.crt.io.*;
-import software.amazon.awssdk.crt.mqtt.*;
-import software.amazon.awssdk.crt.mqtt5.*;
-import software.amazon.awssdk.crt.mqtt5.packets.*;
-import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
-import software.amazon.awssdk.iot.AwsIotMqtt5ClientBuilder;
-import software.amazon.awssdk.crt.http.HttpProxyOptions;
-import software.amazon.awssdk.crt.auth.credentials.X509CredentialsProvider;
-import software.amazon.awssdk.crt.auth.credentials.CognitoCredentialsProvider;
 import software.amazon.awssdk.crt.Log;
 import software.amazon.awssdk.crt.Log.LogLevel;
 
@@ -164,8 +156,8 @@ public class CommandLineUtils {
         registerCommand(m_cmd_port, "<int>", "Port to connect to on the endpoint (optional, default='8883').");
     }
 
-    public void addCommonMQTTCommands() {
-        registerCommand(m_cmd_endpoint, "<str>", "The endpoint of the mqtt server, not including a port.");
+    public void addCommonMqttCommands() {
+        registerCommand(m_cmd_endpoint, "<str>", "The endpoint of the MQTT server, not including a port.");
         registerCommand(m_cmd_ca_file, "<path>", "Path to AmazonRootCA1.pem (optional, system trust store used by default).");
     }
 
@@ -200,11 +192,11 @@ public class CommandLineUtils {
         }
     }
 
-    private void parseUseMqtt5(ServiceTestCommandLineData returnData) {
-        returnData.input_use_mqtt5 = Boolean.parseBoolean(getCommandOrDefault(m_cmd_use_mqtt5, "false"));
+    private void parseMqttVersion(ServiceTestCommandLineData returnData) {
+        returnData.input_mqtt_version = Integer.parseInt(getCommandOrDefault(m_cmd_mqtt_version, "3"));
     }
 
-    private void parseCommonMQTTCommands(ServiceTestCommandLineData returnData) {
+    private void parseCommonMqttCommands(ServiceTestCommandLineData returnData) {
         returnData.input_endpoint = getCommandRequired(m_cmd_endpoint);
         returnData.input_ca = getCommandOrDefault(m_cmd_ca_file, "");
     }
@@ -223,7 +215,7 @@ public class CommandLineUtils {
     public class ServiceTestCommandLineData
     {
         // General use
-        public Boolean input_use_mqtt5;
+        public int input_mqtt_version;
         public String input_endpoint;
         public String input_cert;
         public String input_key;
@@ -239,7 +231,7 @@ public class CommandLineUtils {
     public ServiceTestCommandLineData parseServiceTestInputFleetProvisioning(String [] args)
     {
         addCommonLoggingCommands();
-        addCommonMQTTCommands();
+        addCommonMqttCommands();
         addKeyAndCertCommands();
         addClientIdAndPort();
         registerCommand(m_cmd_fleet_template_name, "<str>", "Provisioning template name.");
@@ -248,9 +240,9 @@ public class CommandLineUtils {
         sendArguments(args);
 
         ServiceTestCommandLineData returnData = new ServiceTestCommandLineData();
-        parseUseMqtt5(returnData);
+        parseMqttVersion(returnData);
         parseCommonLoggingCommands(returnData);
-        parseCommonMQTTCommands(returnData);
+        parseCommonMqttCommands(returnData);
         parseKeyAndCertCommands(returnData);
         parseClientIdAndPort(returnData);
         returnData.input_templateName = getCommandRequired(m_cmd_fleet_template_name);
@@ -275,7 +267,7 @@ public class CommandLineUtils {
     /**
      * Constants for commonly used/needed commands
      */
-    private static final String m_cmd_use_mqtt5 = "use_mqtt5";
+    private static final String m_cmd_mqtt_version = "mqtt_version";
     private static final String m_cmd_log_destination = "log_destination";
     private static final String m_cmd_log_file_name = "log_file_name";
     private static final String m_cmd_verbosity = "verbosity";

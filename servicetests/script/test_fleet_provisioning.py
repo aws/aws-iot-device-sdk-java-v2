@@ -18,13 +18,15 @@ def main():
         "--thing-name-prefix", required=False, default="", help="Prefix for a thing name")
     argument_parser.add_argument(
         "--region", required=False, default="us-east-1", help="The name of the region to use")
-    argument_parser.add_argument("--input_uuid", required=False,
-                                 help="UUID data to replace '$INPUT_UUID' with. Only works in Data field")
+    argument_parser.add_argument(
+        "--mqtt-version", required=True, choices=[3, 5], type=int, help="MQTT protocol version to use")
     parsed_commands = argument_parser.parse_args()
 
     current_path = os.path.dirname(os.path.realpath(__file__))
-    cfg_file = os.path.join(current_path, "fleet_provisioning_cfg.json")
+    cfg_file_pfx = "mqtt3_" if parsed_commands.mqtt_version == 3 else "mqtt5_"
+    cfg_file = os.path.join(current_path, cfg_file_pfx + "fleet_provisioning_cfg.json")
     input_uuid = parsed_commands.input_uuid if parsed_commands.input_uuid else str(uuid.uuid4())
+
     # Perform fleet provisioning. If it's successful, a newly created thing should appear.
     test_result = run_service_test.setup_service_test_and_launch(cfg_file, input_uuid)
 

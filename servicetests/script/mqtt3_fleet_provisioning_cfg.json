@@ -5,6 +5,10 @@
     "service_test_main_class": "fleetProvisioning.FleetProvisioning",
     "arguments": [
         {
+            "name": "--mqtt_version",
+            "data": 3
+        },
+        {
             "name": "--endpoint",
             "secret": "ci/endpoint"
         },
