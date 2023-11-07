@@ -211,7 +211,7 @@ def setup_runnable(file, input_uuid=None):
     return 0
 
 
-def cleanup_runnable):
+def cleanup_runnable():
     global config_json
     global config_json_arguments_list
 
