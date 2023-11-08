@@ -1,8 +1,8 @@
 {
     "language": "Java",
-    "sample_file": "samples/WebsocketConnect",
-    "sample_region": "us-east-1",
-    "sample_main_class": "websocketconnect.WebsocketConnect",
+    "runnable_file": "samples/WebsocketConnect",
+    "runnable_region": "us-east-1",
+    "runnable_main_class": "websocketconnect.WebsocketConnect",
     "arguments": [
         {
             "name": "--endpoint",

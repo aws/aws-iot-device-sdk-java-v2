@@ -1,8 +1,8 @@
 {
     "language": "Java",
-    "sample_file": "samples/Shadow",
-    "sample_region": "us-east-1",
-    "sample_main_class": "shadow.Mqtt5ShadowSample",
+    "runnable_file": "samples/Shadow",
+    "runnable_region": "us-east-1",
+    "runnable_main_class": "shadow.Mqtt5ShadowSample",
     "arguments": [
         {
             "name": "--endpoint",

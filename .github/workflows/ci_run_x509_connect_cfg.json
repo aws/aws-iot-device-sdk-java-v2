@@ -1,8 +1,8 @@
 {
     "language": "Java",
-    "sample_file": "samples/X509CredentialsProviderConnect",
-    "sample_region": "us-east-1",
-    "sample_main_class": "x509credentialsproviderconnect.X509CredentialsProviderConnect",
+    "runnable_file": "samples/X509CredentialsProviderConnect",
+    "runnable_region": "us-east-1",
+    "runnable_main_class": "x509credentialsproviderconnect.X509CredentialsProviderConnect",
     "arguments": [
         {
             "name": "--endpoint",

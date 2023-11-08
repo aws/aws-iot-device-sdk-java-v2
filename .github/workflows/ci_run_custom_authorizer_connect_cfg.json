@@ -1,8 +1,8 @@
 {
     "language": "Java",
-    "sample_file": "samples/CustomAuthorizerConnect",
-    "sample_region": "us-east-1",
-    "sample_main_class": "customauthorizerconnect.CustomAuthorizerConnect",
+    "runnable_file": "samples/CustomAuthorizerConnect",
+    "runnable_region": "us-east-1",
+    "runnable_main_class": "customauthorizerconnect.CustomAuthorizerConnect",
     "arguments": [
         {
             "name": "--endpoint",
