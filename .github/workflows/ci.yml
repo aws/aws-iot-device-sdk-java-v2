@@ -480,12 +480,12 @@ jobs:
         working-directory: ./servicetests
         run: |
           export PYTHONPATH=${PWD}/utils:$PYTHONPATH
-          python3 ./servicetests/test_cases/test_fleet_provisioning.py --thing-name-prefix Fleet_Thing_ --mqtt-version 3
+          python3 ./test_cases/test_fleet_provisioning.py --thing-name-prefix Fleet_Thing_ --mqtt-version 3
       - name: run Fleet Provisioning test for MQTT5
         run: |
           working-directory: ./servicetests
           export PYTHONPATH=${PWD}/utils:$PYTHONPATH
-          python3 ./servicetests/test_cases/test_fleet_provisioning.py --thing-name-prefix Fleet_Thing_ --mqtt-version 5
+          python3 ./test_cases/test_fleet_provisioning.py --thing-name-prefix Fleet_Thing_ --mqtt-version 5
       - name: configure AWS credentials (Connect and PubSub)
         uses: aws-actions/configure-aws-credentials@v2
         with:
