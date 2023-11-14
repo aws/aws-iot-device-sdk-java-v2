@@ -479,12 +479,12 @@ jobs:
       - name: run Fleet Provisioning test for MQTT311
         working-directory: ./servicetests
         run: |
-          export PYTHONPATH=${{ github.workspace }}/utils:$PYTHONPATH
+          export PYTHONPATH=${{ github.workspace }}/utils
           python3 ./test_cases/test_fleet_provisioning.py --thing-name-prefix Fleet_Thing_ --mqtt-version 3
       - name: run Fleet Provisioning test for MQTT5
+        working-directory: ./servicetests
         run: |
-          working-directory: ./servicetests
-          export PYTHONPATH=${{ github.workspace }}/utils:$PYTHONPATH
+          export PYTHONPATH=${{ github.workspace }}/utils
           python3 ./test_cases/test_fleet_provisioning.py --thing-name-prefix Fleet_Thing_ --mqtt-version 5
       - name: configure AWS credentials (Connect and PubSub)
         uses: aws-actions/configure-aws-credentials@v2
