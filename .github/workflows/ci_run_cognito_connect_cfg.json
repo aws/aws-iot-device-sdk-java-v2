@@ -1,8 +1,8 @@
 {
     "language": "Java",
-    "sample_file": "samples/CognitoConnect",
-    "sample_region": "us-east-1",
-    "sample_main_class": "cognitoconnect.CognitoConnect",
+    "runnable_file": "samples/CognitoConnect",
+    "runnable_region": "us-east-1",
+    "runnable_main_class": "cognitoconnect.CognitoConnect",
     "arguments": [
         {
             "name": "--endpoint",

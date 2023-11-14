@@ -1,8 +1,8 @@
 {
     "language": "Java",
-    "sample_file": "samples/Mqtt5/SharedSubscription",
-    "sample_region": "us-east-1",
-    "sample_main_class": "mqtt5.sharedsubscription.SharedSubscription",
+    "runnable_file": "samples/Mqtt5/SharedSubscription",
+    "runnable_region": "us-east-1",
+    "runnable_main_class": "mqtt5.sharedsubscription.SharedSubscription",
     "arguments": [
         {
             "name": "--endpoint",

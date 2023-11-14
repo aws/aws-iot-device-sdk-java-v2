@@ -1,8 +1,8 @@
 {
     "language": "Java",
-    "sample_file": "samples/WindowsCertConnect",
-    "sample_region": "us-east-1",
-    "sample_main_class": "windowscertconnect.WindowsCertConnect",
+    "runnable_file": "samples/WindowsCertConnect",
+    "runnable_region": "us-east-1",
+    "runnable_main_class": "windowscertconnect.WindowsCertConnect",
     "arguments": [
         {
             "name": "--endpoint",
