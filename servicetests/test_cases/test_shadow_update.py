@@ -40,14 +40,11 @@ def main():
         certificate_path=certificate_path,
         key_path=key_path)
 
-    sys.exit(0);
-
     # Perform fleet provisioning. If it's successful, a newly created thing should appear.
     test_result = run_in_ci.setup_and_launch(cfg_file, input_uuid)
 
     # Delete a thing created by fleet provisioning.
     # NOTE We want to try to delete thing even if test was unsuccessful.
-    thing_name = parsed_commands.thing_name_prefix + input_uuid
     delete_result = ci_iot_thing.delete_iot_thing(
         thing_name, parsed_commands.region)
 
