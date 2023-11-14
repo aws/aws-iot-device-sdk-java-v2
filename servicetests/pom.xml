@@ -15,6 +15,7 @@
     </dependencies>
     <modules>
         <module>tests/FleetProvisioning</module>
+        <module>tests/ShadowUpdate</module>
     </modules>
 
     <build>
