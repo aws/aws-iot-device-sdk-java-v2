@@ -465,7 +465,7 @@ jobs:
         run: |
           java -version
           mvn install -Dmaven.test.skip
-      - name: Running samples in CI setup
+      - name: Running samples and service client tests in CI setup
         run: |
           python3 -m pip install boto3
           sudo apt-get update -y
