@@ -1,0 +1,30 @@
+{
+    "language": "Java",
+    "runnable_file": "tests/ShadowUpdate",
+    "runnable_region": "us-east-1",
+    "runnable_main_class": "shadow.ShadowSample",
+    "arguments": [
+        {
+            "name": "--mqtt_version",
+            "secret": 5
+        },
+        {
+            "name": "--endpoint",
+            "secret": "ci/endpoint"
+        },
+        {
+            "name": "--cert",
+            "secret": "ci/Shadow/cert",
+            "filename": "tmp_certificate.pem"
+        },
+        {
+            "name": "--key",
+            "secret": "ci/Shadow/key",
+            "filename": "tmp_key.pem"
+        },
+        {
+            "name": "--thing_name",
+            "data": "ServiceTest_Shadow_$INPUT_UUID"
+        }
+    ]
+}

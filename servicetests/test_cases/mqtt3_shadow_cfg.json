@@ -1,9 +1,13 @@
 {
     "language": "Java",
-    "runnable_file": "samples/Shadow",
+    "runnable_file": "tests/ShadowUpdate",
     "runnable_region": "us-east-1",
     "runnable_main_class": "shadow.ShadowSample",
     "arguments": [
+        {
+            "name": "--mqtt_version",
+            "secret": 3
+        },
         {
             "name": "--endpoint",
             "secret": "ci/endpoint"
@@ -20,7 +24,7 @@
         },
         {
             "name": "--thing_name",
-            "data": "CI_Shadow_Thing"
+            "data": "ServiceTest_Shadow_$INPUT_UUID"
         }
     ]
 }
