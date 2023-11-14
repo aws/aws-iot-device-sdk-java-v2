@@ -35,7 +35,7 @@
                         </goals>
                         <configuration>
                             <sources>
-                                <source>../Utils/CommandLineUtils</source>
+                                <source>../../../samples/Utils/CommandLineUtils</source>
                                 <source>../Utils/MqttClientConnectionWrapper</source>
                                 <source>../ServiceTestLifecycleEvents</source>
                             </sources>

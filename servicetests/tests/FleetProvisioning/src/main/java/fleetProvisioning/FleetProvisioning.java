@@ -47,7 +47,7 @@ public class FleetProvisioning {
 
     static long responseWaitTimeMs = 5000L; // 5 seconds
 
-    static MqttClientConnectionWrapper createConnection(CommandLineUtils.ServiceTestCommandLineData cmdData, Integer mqttVersion) {
+    static MqttClientConnectionWrapper createConnection(CommandLineUtils.SampleCommandLineData cmdData, Integer mqttVersion) {
         if (mqttVersion == 3) {
             try (AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder
                     .newMtlsBuilderFromPath(cmdData.input_cert, cmdData.input_key)) {
@@ -137,7 +137,7 @@ public class FleetProvisioning {
     }
 
     public static void main(String[] args) {
-        CommandLineUtils.ServiceTestCommandLineData cmdData = CommandLineUtils.getInputForServiceTest("FleetProvisioning", args);
+        CommandLineUtils.SampleCommandLineData cmdData = CommandLineUtils.getInputForIoTSample("FleetProvisioningSample", args);
 
         boolean exitWithError = false;
 

@@ -234,6 +234,10 @@ public class CommandLineUtils {
         }
     }
 
+    private void parseMqttVersion(SampleCommandLineData returnData) {
+        returnData.input_mqtt_version = Integer.parseInt(getCommandOrDefault(m_cmd_mqtt_version, "3"));
+    }
+
     private void parseCommonMQTTCommands(SampleCommandLineData returnData) {
         returnData.input_endpoint = getCommandRequired(m_cmd_endpoint);
         returnData.input_ca = getCommandOrDefault(m_cmd_ca_file, "");
@@ -290,6 +294,7 @@ public class CommandLineUtils {
         public String input_ca;
         public String input_clientId;
         public int input_port;
+        public int input_mqtt_version;
         // Proxy
         public String input_proxyHost;
         public int input_proxyPort;
@@ -458,6 +463,7 @@ public class CommandLineUtils {
         sendArguments(args);
 
         SampleCommandLineData returnData = new SampleCommandLineData();
+        parseMqttVersion(returnData);
         parseCommonLoggingCommands(returnData);
         parseCommonMQTTCommands(returnData);
         parseKeyAndCertCommands(returnData);
@@ -749,6 +755,7 @@ public class CommandLineUtils {
     /**
      * Constants for commonly used/needed commands
      */
+    private static final String m_cmd_mqtt_version = "mqtt_version";
     private static final String m_cmd_log_destination = "log_destination";
     private static final String m_cmd_log_file_name = "log_file_name";
     private static final String m_cmd_verbosity = "verbosity";
