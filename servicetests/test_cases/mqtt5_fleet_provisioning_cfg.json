@@ -1,6 +1,6 @@
 {
     "language": "Java",
-    "runnable_file": "servicetests/tests/FleetProvisioning",
+    "runnable_file": "tests/FleetProvisioning",
     "runnable_region": "us-east-1",
     "runnable_main_class": "fleetProvisioning.FleetProvisioning",
     "arguments": [
