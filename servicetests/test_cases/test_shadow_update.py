@@ -36,9 +36,7 @@ def main():
     cfg_file = os.path.join(current_path, cfg_file_pfx + "shadow_cfg.json")
     input_uuid = parsed_commands.input_uuid if parsed_commands.input_uuid else str(uuid.uuid4())
 
-    # TODO Pass thing_name to Java test.
     thing_name = "ServiceTest_Shadow_" + input_uuid
-
     policy_name = "CI_ShadowServiceTest_Policy"
 
     # Temporary certificate/key file path.
@@ -68,8 +66,10 @@ def main():
                 test_result = -1
         except KeyError as e:
             print(f"ERROR: Could not verify thing shadow: key {e} does not exist in shadow response: {thing_shadow}")
+            test_result = -1
         except Exception as e:
             print(f"ERROR: Could not verify thing shadow: {e}")
+            test_result = -1
 
     # Delete a thing created for this test run.
     # NOTE We want to try to delete thing even if test was unsuccessful.
