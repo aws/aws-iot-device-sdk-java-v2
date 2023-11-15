@@ -14,7 +14,7 @@ import ServiceTestLifecycleEvents.ServiceTestLifecycleEvents;
 
 final public class MqttClientConnectionWrapperCreator {
     public static MqttClientConnectionWrapper createConnection(
-            String cert, String key, String clientId, String endpoint, int port, Integer mqttVersion) {
+            String cert, String key, String clientId, String endpoint, int port, int mqttVersion) {
         if (mqttVersion == 3) {
             return createMqtt3Connection(cert, key, clientId, endpoint, port);
         } else if (mqttVersion == 5) {
@@ -32,12 +32,7 @@ final public class MqttClientConnectionWrapperCreator {
                 .withEndpoint(endpoint)
                 .withPort((short)port)
                 .withCleanSession(true);
-            Mqtt3ClientConnectionWrapper connWrapper = new Mqtt3ClientConnectionWrapper();
-            connWrapper.connection = builder.build();
-            if (connWrapper.connection == null) {
-                throw new RuntimeException("MQTT311 connection creation failed!");
-            }
-            return connWrapper;
+            return new Mqtt3ClientConnectionWrapper(builder);
         } catch (Exception ex) {
             throw new RuntimeException("Failed to create MQTT311 connection", ex);
         }
@@ -53,13 +48,7 @@ final public class MqttClientConnectionWrapperCreator {
             builder.withConnectProperties(connectProperties);
             builder.withLifeCycleEvents(lifecycleEvents);
             builder.withPort((long)port);
-            Mqtt5ClientConnectionWrapper connWrapper = new Mqtt5ClientConnectionWrapper();
-            connWrapper.client = builder.build();
-            connWrapper.connection = new MqttClientConnection(connWrapper.client, null);
-            if (connWrapper.connection == null) {
-                throw new RuntimeException("MQTT5 connection creation failed!");
-            }
-            return connWrapper;
+            return new Mqtt5ClientConnectionWrapper(builder);
         } catch (Exception ex) {
             throw new RuntimeException("Failed to create MQTT311 connection from MQTT5 client", ex);
         }

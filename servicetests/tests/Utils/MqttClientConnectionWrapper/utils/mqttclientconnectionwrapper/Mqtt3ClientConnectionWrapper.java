@@ -6,11 +6,19 @@
 package utils.mqttclientconnectionwrapper;
 
 import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
+import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
 
 import java.util.concurrent.CompletableFuture;
 
 final public class Mqtt3ClientConnectionWrapper extends MqttClientConnectionWrapper {
     public static MqttClientConnection connection;
+
+    public Mqtt3ClientConnectionWrapper(AwsIotMqttConnectionBuilder builder) {
+        connection = builder.build();
+        if (connection == null) {
+            throw new RuntimeException("MQTT311 connection creation failed!");
+        }
+    }
 
     @Override
     public CompletableFuture<Boolean> start() {
