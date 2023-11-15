@@ -2,11 +2,11 @@
     "language": "Java",
     "runnable_file": "tests/ShadowUpdate",
     "runnable_region": "us-east-1",
-    "runnable_main_class": "shadow.ShadowSample",
+    "runnable_main_class": "shadowUpdate.ShadowUpdate",
     "arguments": [
         {
             "name": "--mqtt_version",
-            "secret": 3
+            "data": 3
         },
         {
             "name": "--endpoint",

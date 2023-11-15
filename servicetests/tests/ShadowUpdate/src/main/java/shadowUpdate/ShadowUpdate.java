@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0.
  */
 
-package shadow;
+package shadowUpdate;
 
 import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.crt.CrtResource;
@@ -11,10 +11,15 @@ import software.amazon.awssdk.crt.CrtRuntimeException;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnectionEvents;
 import software.amazon.awssdk.crt.mqtt.QualityOfService;
+import software.amazon.awssdk.crt.mqtt5.Mqtt5ClientOptions;
+import software.amazon.awssdk.crt.mqtt5.Mqtt5Client;
+import software.amazon.awssdk.crt.mqtt5.packets.ConnectPacket;
 import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
+import software.amazon.awssdk.iot.AwsIotMqtt5ClientBuilder;
 import software.amazon.awssdk.iot.iotshadow.IotShadowClient;
 import software.amazon.awssdk.iot.iotshadow.model.ShadowState;
 import software.amazon.awssdk.iot.iotshadow.model.UpdateShadowRequest;
+import software.amazon.awssdk.iot.iotshadow.model.UpdateNamedShadowRequest;
 
 import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
@@ -111,24 +116,24 @@ public class ShadowUpdate {
         boolean exitWithError = false;
 
         try (MqttClientConnectionWrapper connection = createConnection(cmdData, cmdData.input_mqtt_version)) {
-            shadow = new IotShadowClient(connection);
+            shadow = new IotShadowClient(connection.getConnection());
 
-            CompletableFuture<Boolean> connected = connection.connect();
+            CompletableFuture<Boolean> connected = connection.start();
             try {
                 boolean sessionPresent = connected.get();
             } catch (Exception ex) {
                 throw new RuntimeException("Exception occurred during connect", ex);
             }
 
+            boolean isNamedShadow = false;
             if (isNamedShadow) {
-                changeNamedShadowValue().get();
+                changeNamedShadowValue("on", "myShadow").get();
             } else {
-                changeShadowValue().get();
+                changeShadowValue("on").get();
             }
 
-            CompletableFuture<Void> disconnected = connection.disconnect();
+            CompletableFuture<Void> disconnected = connection.stop();
             disconnected.get();
-            connection.close();
         } catch (Exception ex) {
             System.out.println("Exception encountered!\n");
             ex.printStackTrace();
