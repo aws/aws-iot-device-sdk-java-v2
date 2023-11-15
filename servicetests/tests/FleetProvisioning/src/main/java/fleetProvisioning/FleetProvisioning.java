@@ -87,47 +87,6 @@ public class FleetProvisioning {
         System.out.println("Exception occurred " + e);
     }
 
-    public static void main(String[] args) {
-        CommandLineUtils.SampleCommandLineData cmdData = CommandLineUtils.getInputForIoTSample("FleetProvisioningSample", args);
-
-        boolean exitWithError = false;
-
-        try (MqttClientConnectionWrapper connection = MqttClientConnectionWrapperCreator.createConnection(
-                    cmdData.input_cert,
-                    cmdData.input_key,
-                    cmdData.input_clientId,
-                    cmdData.input_endpoint,
-                    cmdData.input_port,
-                    cmdData.input_mqtt_version)) {
-            // Create the identity client (Identity = Fleet Provisioning)
-            iotIdentityClient = new IotIdentityClient(connection.getConnection());
-
-            // Connect
-            CompletableFuture<Boolean> connected = connection.start();
-            boolean sessionPresent = connected.get(responseWaitTimeMs, TimeUnit.MILLISECONDS);
-            System.out.println("Connected to " + (!sessionPresent ? "new" : "existing") + " session!");
-
-            createKeysAndCertificateWorkflow(cmdData.input_templateName, cmdData.input_templateParameters);
-
-            // Disconnect
-            CompletableFuture<Void> disconnected = connection.stop();
-            disconnected.get(responseWaitTimeMs, TimeUnit.MILLISECONDS);
-        } catch (Exception ex) {
-            System.out.println("Exception encountered! " + "\n");
-            ex.printStackTrace();
-            exitWithError = true;
-        }
-
-        CrtResource.waitForNoResources();
-        System.out.println("Service test complete!");
-
-        if (exitWithError) {
-            System.exit(1);
-        } else {
-            System.exit(0);
-        }
-    }
-
     private static void SubscribeToRegisterThing(String input_templateName) throws Exception {
         RegisterThingSubscriptionRequest registerThingSubscriptionRequest = new RegisterThingSubscriptionRequest();
         registerThingSubscriptionRequest.templateName = input_templateName;
@@ -205,5 +164,46 @@ public class FleetProvisioning {
         System.out.println("Published to RegisterThing");
         gotResponse.get(responseWaitTimeMs, TimeUnit.MILLISECONDS);
         System.out.println("Got response at RegisterThing");
+    }
+
+    public static void main(String[] args) {
+        CommandLineUtils.SampleCommandLineData cmdData = CommandLineUtils.getInputForIoTSample("FleetProvisioningSample", args);
+
+        boolean exitWithError = false;
+
+        try (MqttClientConnectionWrapper connection = MqttClientConnectionWrapperCreator.createConnection(
+                    cmdData.input_cert,
+                    cmdData.input_key,
+                    cmdData.input_clientId,
+                    cmdData.input_endpoint,
+                    cmdData.input_port,
+                    cmdData.input_mqtt_version)) {
+            // Create the identity client (Identity = Fleet Provisioning)
+            iotIdentityClient = new IotIdentityClient(connection.getConnection());
+
+            // Connect
+            CompletableFuture<Boolean> connected = connection.start();
+            boolean sessionPresent = connected.get(responseWaitTimeMs, TimeUnit.MILLISECONDS);
+            System.out.println("Connected to " + (!sessionPresent ? "new" : "existing") + " session!");
+
+            createKeysAndCertificateWorkflow(cmdData.input_templateName, cmdData.input_templateParameters);
+
+            // Disconnect
+            CompletableFuture<Void> disconnected = connection.stop();
+            disconnected.get(responseWaitTimeMs, TimeUnit.MILLISECONDS);
+        } catch (Exception ex) {
+            System.out.println("Exception encountered! " + "\n");
+            ex.printStackTrace();
+            exitWithError = true;
+        }
+
+        CrtResource.waitForNoResources();
+        System.out.println("Service test complete!");
+
+        if (exitWithError) {
+            System.exit(1);
+        } else {
+            System.exit(0);
+        }
     }
 }
