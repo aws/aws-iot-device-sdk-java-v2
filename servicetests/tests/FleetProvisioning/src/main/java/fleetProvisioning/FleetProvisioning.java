@@ -141,10 +141,6 @@ public class FleetProvisioning {
 
         boolean exitWithError = false;
 
-        if (cmdData.input_mqtt_version < 10) {
-            throw new RuntimeException("Invalid MQTT version specified: " + cmdData.input_mqtt_version);
-        }
-
         try (MqttClientConnectionWrapper connection = createConnection(cmdData, cmdData.input_mqtt_version)) {
             // Create the identity client (Identity = Fleet Provisioning)
             iotIdentityClient = new IotIdentityClient(connection.getConnection());
