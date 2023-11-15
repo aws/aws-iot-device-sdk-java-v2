@@ -55,6 +55,7 @@ def main():
             key_path=key_path)
     except Exception as e:
         print(f"ERROR: Failed to create IoT thing: {e}")
+        sys.exit(-1)
 
     # Perform Shadow test. If it's successful, a shadow should appear for a specified thing.
     test_result = run_in_ci.setup_and_launch(cfg_file, input_uuid)
