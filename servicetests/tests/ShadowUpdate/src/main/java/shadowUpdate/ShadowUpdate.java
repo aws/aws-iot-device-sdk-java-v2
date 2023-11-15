@@ -20,16 +20,6 @@ import software.amazon.awssdk.iot.iotshadow.IotShadowClient;
 import software.amazon.awssdk.iot.iotshadow.model.ShadowState;
 import software.amazon.awssdk.iot.iotshadow.model.UpdateShadowRequest;
 import software.amazon.awssdk.iot.iotshadow.model.UpdateNamedShadowRequest;
-import software.amazon.awssdk.iot.iotshadow.model.ErrorResponse;
-import software.amazon.awssdk.iot.iotshadow.model.GetShadowRequest;
-import software.amazon.awssdk.iot.iotshadow.model.GetShadowResponse;
-import software.amazon.awssdk.iot.iotshadow.model.GetShadowSubscriptionRequest;
-import software.amazon.awssdk.iot.iotshadow.model.ShadowDeltaUpdatedEvent;
-import software.amazon.awssdk.iot.iotshadow.model.ShadowDeltaUpdatedSubscriptionRequest;
-import software.amazon.awssdk.iot.iotshadow.model.ShadowState;
-import software.amazon.awssdk.iot.iotshadow.model.UpdateShadowRequest;
-import software.amazon.awssdk.iot.iotshadow.model.UpdateShadowResponse;
-import software.amazon.awssdk.iot.iotshadow.model.UpdateShadowSubscriptionRequest;
 
 import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
@@ -47,8 +37,6 @@ public class ShadowUpdate {
     final static String SHADOW_VALUE_DEFAULT = "off";
 
     static IotShadowClient shadow;
-    static String localValue = null;
-    static CompletableFuture<Void> gotResponse;
 
     static MqttClientConnectionWrapper createConnection(CommandLineUtils.SampleCommandLineData cmdData, Integer mqttVersion) {
         if (mqttVersion == 3) {
@@ -92,62 +80,6 @@ public class ShadowUpdate {
         }
     }
 
-    static void onGetShadowAccepted(GetShadowResponse response) {
-        System.out.println("Received initial shadow state");
-        System.out.println("  Shadow document has no value for " + SHADOW_PROPERTY + ". Setting default...");
-        changeShadowValue(SHADOW_VALUE_DEFAULT);
-    }
-
-    static void onGetShadowRejected(ErrorResponse response) {
-        if (response.code == 404) {
-            System.out.println("Thing has no shadow document. Creating with defaults...");
-            changeShadowValue(SHADOW_VALUE_DEFAULT);
-            return;
-        }
-        gotResponse.complete(null);
-        System.out.println("GetShadow request was rejected: code: " + response.code + " message: " + response.message);
-        System.exit(1);
-    }
-
-    static void onShadowDeltaUpdated(ShadowDeltaUpdatedEvent response) {
-        System.out.println("Shadow delta updated");
-        if (response.state != null && response.state.containsKey(SHADOW_PROPERTY)) {
-            String value = response.state.get(SHADOW_PROPERTY).toString();
-            System.out.println("  Delta wants to change value to '" + value + "'. Changing local value...");
-            if (!response.clientToken.isEmpty()) {
-                System.out.print("  ClientToken: " + response.clientToken + "\n");
-            }
-            changeShadowValue(value);
-        } else {
-            System.out.println("  Delta did not report a change in " + SHADOW_PROPERTY);
-        }
-    }
-
-    static void onUpdateShadowAccepted(UpdateShadowResponse response) {
-        if (response.state.reported != null) {
-            if (response.state.reported.containsKey(SHADOW_PROPERTY)) {
-                String value = response.state.reported.get(SHADOW_PROPERTY).toString();
-                System.out.println("Shadow updated, value is " + value);
-            }
-            else {
-                System.out.println("Shadow updated, value is Null");
-            }
-        }
-        else {
-            if (response.state.reportedIsNullable == true) {
-                System.out.println("Shadow updated, reported and desired is null");
-            }
-            else {
-                System.out.println("Shadow update, data cleared");
-            }
-        }
-        gotResponse.complete(null);
-    }
-
-    static void onUpdateShadowRejected(ErrorResponse response) {
-        System.out.println("Shadow update was rejected: code: " + response.code + " message: " + response.message);
-        System.exit(2);
-    }
     static CompletableFuture<Integer> changeShadowValue(String value) {
         UpdateShadowRequest request = new UpdateShadowRequest();
         request.thingName = input_thingName;
@@ -193,63 +125,7 @@ public class ShadowUpdate {
                 throw new RuntimeException("Exception occurred during connect", ex);
             }
 
-            /**
-             * Subscribe to shadow topics
-             */
-            System.out.println("Subscribing to shadow delta events...");
-            ShadowDeltaUpdatedSubscriptionRequest requestShadowDeltaUpdated = new ShadowDeltaUpdatedSubscriptionRequest();
-            requestShadowDeltaUpdated.thingName = input_thingName;
-            CompletableFuture<Integer> subscribedToDeltas =
-                    shadow.SubscribeToShadowDeltaUpdatedEvents(
-                            requestShadowDeltaUpdated,
-                            QualityOfService.AT_LEAST_ONCE,
-                            ShadowUpdate::onShadowDeltaUpdated);
-            subscribedToDeltas.get();
-
-            System.out.println("Subscribing to update responses...");
-            UpdateShadowSubscriptionRequest requestUpdateShadow = new UpdateShadowSubscriptionRequest();
-            requestUpdateShadow.thingName = input_thingName;
-            CompletableFuture<Integer> subscribedToUpdateAccepted =
-                    shadow.SubscribeToUpdateShadowAccepted(
-                            requestUpdateShadow,
-                            QualityOfService.AT_LEAST_ONCE,
-                            ShadowUpdate::onUpdateShadowAccepted);
-            CompletableFuture<Integer> subscribedToUpdateRejected =
-                    shadow.SubscribeToUpdateShadowRejected(
-                            requestUpdateShadow,
-                            QualityOfService.AT_LEAST_ONCE,
-                            ShadowUpdate::onUpdateShadowRejected);
-            subscribedToUpdateAccepted.get();
-            subscribedToUpdateRejected.get();
-
-            System.out.println("Subscribing to get responses...");
-            GetShadowSubscriptionRequest requestGetShadow = new GetShadowSubscriptionRequest();
-            requestGetShadow.thingName = input_thingName;
-            CompletableFuture<Integer> subscribedToGetShadowAccepted =
-                    shadow.SubscribeToGetShadowAccepted(
-                            requestGetShadow,
-                            QualityOfService.AT_LEAST_ONCE,
-                            ShadowUpdate::onGetShadowAccepted);
-            CompletableFuture<Integer> subscribedToGetShadowRejected =
-                    shadow.SubscribeToGetShadowRejected(
-                            requestGetShadow,
-                            QualityOfService.AT_LEAST_ONCE,
-                            ShadowUpdate::onGetShadowRejected);
-            subscribedToGetShadowAccepted.get();
-            subscribedToGetShadowRejected.get();
-
-            gotResponse = new CompletableFuture<>();
-
-            System.out.println("Requesting current shadow state...");
-            GetShadowRequest getShadowRequest = new GetShadowRequest();
-            getShadowRequest.thingName = input_thingName;
-            CompletableFuture<Integer> publishedGetShadow = shadow.PublishGetShadow(
-                    getShadowRequest,
-                    QualityOfService.AT_LEAST_ONCE);
-            publishedGetShadow.get();
-            gotResponse.get();
-
-            boolean isNamedShadow = true;
+            boolean isNamedShadow = false;
             if (isNamedShadow) {
                 changeNamedShadowValue("on", "myShadow").get();
             } else {

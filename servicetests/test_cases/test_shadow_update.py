@@ -25,9 +25,10 @@ def main():
     cfg_file = os.path.join(current_path, cfg_file_pfx + "shadow_cfg.json")
     input_uuid = parsed_commands.input_uuid if parsed_commands.input_uuid else str(uuid.uuid4())
 
+    # TODO Pass thing_name to Java test.
     thing_name = "ServiceTest_Shadow_" + input_uuid
 
-    policy_name = "CI_Shadow_Thing_Policy"
+    policy_name = "CI_ShadowServiceTest_Policy"
 
     # Temporary certificate/key file path.
     certificate_path = os.path.join(os.getcwd(), 'certificate.pem.crt')
@@ -42,6 +43,8 @@ def main():
 
     # Perform fleet provisioning. If it's successful, a newly created thing should appear.
     test_result = run_in_ci.setup_and_launch(cfg_file, input_uuid)
+
+    # TODO Check shadow using iot_data_plane.get_thing_shadow
 
     # Delete a thing created by fleet provisioning.
     # NOTE We want to try to delete thing even if test was unsuccessful.

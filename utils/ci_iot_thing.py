@@ -18,7 +18,7 @@ def create_iot_thing(thing_name, region, policy_name, certificate_path, key_path
 
     # Create a thing.
     try:
-        print("Creating thing '{thing_name}'", file=sys.stderr)
+        print(f"Creating thing '{thing_name}'", file=sys.stderr)
         # create_thing_response:
         # {
         # 'thingName': 'string',

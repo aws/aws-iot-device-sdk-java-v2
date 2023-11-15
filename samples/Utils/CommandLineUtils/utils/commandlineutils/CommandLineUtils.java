@@ -538,6 +538,7 @@ public class CommandLineUtils {
         sendArguments(args);
 
         SampleCommandLineData returnData = new SampleCommandLineData();
+        parseMqttVersion(returnData);
         parseCommonLoggingCommands(returnData);
         parseCommonMQTTCommands(returnData);
         parseKeyAndCertCommands(returnData);
