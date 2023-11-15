@@ -8,14 +8,7 @@ package fleetProvisioning;
 import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.crt.CrtResource;
 import software.amazon.awssdk.crt.CrtRuntimeException;
-import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
-import software.amazon.awssdk.crt.mqtt.MqttClientConnectionEvents;
 import software.amazon.awssdk.crt.mqtt.QualityOfService;
-import software.amazon.awssdk.crt.mqtt5.Mqtt5ClientOptions;
-import software.amazon.awssdk.crt.mqtt5.Mqtt5Client;
-import software.amazon.awssdk.crt.mqtt5.packets.ConnectPacket;
-import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
-import software.amazon.awssdk.iot.AwsIotMqtt5ClientBuilder;
 import software.amazon.awssdk.iot.iotidentity.IotIdentityClient;
 import software.amazon.awssdk.iot.iotidentity.model.CreateKeysAndCertificateRequest;
 import software.amazon.awssdk.iot.iotidentity.model.CreateKeysAndCertificateResponse;
@@ -46,48 +39,6 @@ public class FleetProvisioning {
     static RegisterThingResponse registerThingResponse = null;
 
     static long responseWaitTimeMs = 5000L; // 5 seconds
-
-    static MqttClientConnectionWrapper createConnection(CommandLineUtils.SampleCommandLineData cmdData, Integer mqttVersion) {
-        if (mqttVersion == 3) {
-            try (AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder
-                    .newMtlsBuilderFromPath(cmdData.input_cert, cmdData.input_key)) {
-                builder.withClientId(cmdData.input_clientId)
-                    .withEndpoint(cmdData.input_endpoint)
-                    .withPort((short)cmdData.input_port)
-                    .withCleanSession(true)
-                    .withProtocolOperationTimeoutMs(60000);
-                Mqtt3ClientConnectionWrapper connWrapper = new Mqtt3ClientConnectionWrapper();
-                connWrapper.connection = builder.build();
-                if (connWrapper.connection == null) {
-                    throw new RuntimeException("MQTT311 connection creation failed!");
-                }
-                return connWrapper;
-            } catch (Exception ex) {
-                throw new RuntimeException("Failed to create MQTT311 connection", ex);
-            }
-        } else if (mqttVersion == 5) {
-            ServiceTestLifecycleEvents lifecycleEvents = new ServiceTestLifecycleEvents();
-            try (AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newDirectMqttBuilderWithMtlsFromPath(
-                        cmdData.input_endpoint, cmdData.input_cert, cmdData.input_key)) {
-                ConnectPacket.ConnectPacketBuilder connectProperties = new ConnectPacket.ConnectPacketBuilder();
-                connectProperties.withClientId(cmdData.input_clientId);
-                builder.withConnectProperties(connectProperties);
-                builder.withLifeCycleEvents(lifecycleEvents);
-                builder.withPort((long)cmdData.input_port);
-                Mqtt5ClientConnectionWrapper connWrapper = new Mqtt5ClientConnectionWrapper();
-                connWrapper.client = builder.build();
-                connWrapper.connection = new MqttClientConnection(connWrapper.client, null);
-                if (connWrapper.connection == null) {
-                    throw new RuntimeException("MQTT5 connection creation failed!");
-                }
-                return connWrapper;
-            } catch (Exception ex) {
-                throw new RuntimeException("Failed to create MQTT311 connection from MQTT5 client", ex);
-            }
-        } else {
-            throw new RuntimeException("Invalid MQTT version specified: " + mqttVersion);
-        }
-    }
 
     static void onRejectedKeys(ErrorResponse response) {
         System.out.println("CreateKeysAndCertificate Request rejected, errorCode: " + response.errorCode +
@@ -141,7 +92,13 @@ public class FleetProvisioning {
 
         boolean exitWithError = false;
 
-        try (MqttClientConnectionWrapper connection = createConnection(cmdData, cmdData.input_mqtt_version)) {
+        try (MqttClientConnectionWrapper connection = MqttClientConnectionWrapperCreator.createConnection(
+                    cmdData.input_cert,
+                    cmdData.input_key,
+                    cmdData.input_clientId,
+                    cmdData.input_endpoint,
+                    cmdData.input_port,
+                    cmdData.input_mqtt_version)) {
             // Create the identity client (Identity = Fleet Provisioning)
             iotIdentityClient = new IotIdentityClient(connection.getConnection());
 
