@@ -46,12 +46,15 @@ def main():
     certificate_path = os.path.join(os.getcwd(), "certificate.pem.crt")
     key_path = os.path.join(os.getcwd(), "private.pem.key")
 
-    ci_iot_thing.create_iot_thing(
-        thing_name=thing_name,
-        region=parsed_commands.region,
-        policy_name=policy_name,
-        certificate_path=certificate_path,
-        key_path=key_path)
+    try:
+        ci_iot_thing.create_iot_thing(
+            thing_name=thing_name,
+            region=parsed_commands.region,
+            policy_name=policy_name,
+            certificate_path=certificate_path,
+            key_path=key_path)
+    except Exception as e:
+        print(f"ERROR: Failed to create IoT thing: {e}")
 
     # Perform Shadow test. If it's successful, a shadow should appear for a specified thing.
     test_result = run_in_ci.setup_and_launch(cfg_file, input_uuid)
