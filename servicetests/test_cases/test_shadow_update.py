@@ -2,16 +2,20 @@
 # SPDX-License-Identifier: Apache-2.0.
 
 import argparse
-import uuid
+import json
 import os
 import sys
+import uuid
+
+import boto3
+
 import run_in_ci
 import ci_iot_thing
 
 
 def main():
     argument_parser = argparse.ArgumentParser(
-        description="Run Fleet Provisioning test in CI")
+        description="Run Shadow test in CI")
     argument_parser.add_argument(
         "--input-uuid", required=False, help="UUID for thing name. UUID will be generated if this option is omit")
     argument_parser.add_argument(
@@ -19,6 +23,13 @@ def main():
     argument_parser.add_argument(
         "--mqtt-version", required=True, choices=[3, 5], type=int, help="MQTT protocol version to use")
     parsed_commands = argument_parser.parse_args()
+
+    try:
+        iot_data_client = boto3.client('iot-data', region_name=parsed_commands.region)
+    except Exception as e:
+        print(f"ERROR: Could not make Boto3 iot-data client. Credentials likely could not be sourced. Exception: {e}",
+              file=sys.stderr)
+        return -1
 
     current_path = os.path.dirname(os.path.realpath(__file__))
     cfg_file_pfx = "mqtt3_" if parsed_commands.mqtt_version == 3 else "mqtt5_"
@@ -31,8 +42,8 @@ def main():
     policy_name = "CI_ShadowServiceTest_Policy"
 
     # Temporary certificate/key file path.
-    certificate_path = os.path.join(os.getcwd(), 'certificate.pem.crt')
-    key_path = os.path.join(os.getcwd(), 'private.pem.key')
+    certificate_path = os.path.join(os.getcwd(), "certificate.pem.crt")
+    key_path = os.path.join(os.getcwd(), "private.pem.key")
 
     ci_iot_thing.create_iot_thing(
         thing_name=thing_name,
@@ -41,12 +52,26 @@ def main():
         certificate_path=certificate_path,
         key_path=key_path)
 
-    # Perform fleet provisioning. If it's successful, a newly created thing should appear.
+    # Perform Shadow test. If it's successful, a shadow should appear for a specified thing.
     test_result = run_in_ci.setup_and_launch(cfg_file, input_uuid)
 
-    # TODO Check shadow using iot_data_plane.get_thing_shadow
+    # Test reported success, verify that shadow was indeed updated.
+    if test_result == 0:
+        color_value = None
+        try:
+            thing_shadow = iot_data_client.get_thing_shadow(thingName=thing_name)
+            payload = thing_shadow['payload'].read()
+            data = json.loads(payload)
+            color_value = data.get('state', {}).get('reported', {}).get('color', None)
+            if color_value != 'on':
+                print(f"ERROR: Could not verify thing shadow: color is not set; shadow info: {data}")
+                test_result = -1
+        except KeyError as e:
+            print(f"ERROR: Could not verify thing shadow: key {e} does not exist in shadow response: {thing_shadow}")
+        except Exception as e:
+            print(f"ERROR: Could not verify thing shadow: {e}")
 
-    # Delete a thing created by fleet provisioning.
+    # Delete a thing created for this test run.
     # NOTE We want to try to delete thing even if test was unsuccessful.
     delete_result = ci_iot_thing.delete_iot_thing(
         thing_name, parsed_commands.region)

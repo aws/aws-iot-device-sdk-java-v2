@@ -127,7 +127,7 @@ public class ShadowUpdate {
 
             boolean isNamedShadow = false;
             if (isNamedShadow) {
-                changeNamedShadowValue("on", "myShadow").get();
+                changeNamedShadowValue("on", "testShadow").get();
             } else {
                 changeShadowValue("on").get();
             }
