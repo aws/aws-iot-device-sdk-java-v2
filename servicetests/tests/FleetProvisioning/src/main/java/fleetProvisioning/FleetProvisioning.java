@@ -31,7 +31,6 @@ import utils.mqttclientconnectionwrapper.*;
 import ServiceTestLifecycleEvents.ServiceTestLifecycleEvents;
 
 public class FleetProvisioning {
-
     static CompletableFuture<Void> gotResponse;
     static IotIdentityClient iotIdentityClient;
 
@@ -183,8 +182,7 @@ public class FleetProvisioning {
 
             // Connect
             CompletableFuture<Boolean> connected = connection.start();
-            boolean sessionPresent = connected.get(responseWaitTimeMs, TimeUnit.MILLISECONDS);
-            System.out.println("Connected to " + (!sessionPresent ? "new" : "existing") + " session!");
+            connected.get(responseWaitTimeMs, TimeUnit.MILLISECONDS);
 
             createKeysAndCertificateWorkflow(cmdData.input_templateName, cmdData.input_templateParameters);
 

@@ -26,8 +26,7 @@ final public class MqttClientConnectionWrapperCreator {
 
     static MqttClientConnectionWrapper createMqtt3Connection(
             String cert, String key, String clientId, String endpoint, int port) {
-        try (AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder
-                .newMtlsBuilderFromPath(cert, key)) {
+        try (AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(cert, key)) {
             builder.withClientId(clientId)
                 .withEndpoint(endpoint)
                 .withPort((short)port)
