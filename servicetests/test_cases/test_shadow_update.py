@@ -22,6 +22,8 @@ def main():
         "--region", required=False, default="us-east-1", help="The name of the region to use")
     argument_parser.add_argument(
         "--mqtt-version", required=True, choices=[3, 5], type=int, help="MQTT protocol version to use")
+    argument_parser.add_argument(
+        "--use-named-shadow", required=False, default=False, action='store_true', help="Use named shadow")
     parsed_commands = argument_parser.parse_args()
 
     try:
@@ -32,8 +34,9 @@ def main():
         return -1
 
     current_path = os.path.dirname(os.path.realpath(__file__))
-    cfg_file_pfx = "mqtt3_" if parsed_commands.mqtt_version == 3 else "mqtt5_"
-    cfg_file = os.path.join(current_path, cfg_file_pfx + "shadow_cfg.json")
+    cfg_file_mqtt_version = "mqtt3_" if parsed_commands.mqtt_version == 3 else "mqtt5_"
+    cfg_file_shadow_type = "named_" if parsed_commands.use_named_shadow else "";
+    cfg_file = os.path.join(current_path, cfg_file_mqtt_version + cfg_file_shadow_type + "shadow_cfg.json")
     input_uuid = parsed_commands.input_uuid if parsed_commands.input_uuid else str(uuid.uuid4())
 
     thing_name = "ServiceTest_Shadow_" + input_uuid
@@ -57,7 +60,11 @@ def main():
     if test_result == 0:
         color_value = None
         try:
-            thing_shadow = iot_data_client.get_thing_shadow(thingName=thing_name)
+            if parsed_commands.use_named_shadow:
+                thing_shadow = iot_data_client.get_thing_shadow(thingName=thing_name, shadowName='shadowTest')
+            else:
+                thing_shadow = iot_data_client.get_thing_shadow(thingName=thing_name)
+
             payload = thing_shadow['payload'].read()
             data = json.loads(payload)
             color_value = data.get('state', {}).get('reported', {}).get('color', None)

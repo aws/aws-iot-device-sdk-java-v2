@@ -23,6 +23,14 @@
         {
             "name": "--thing_name",
             "data": "ServiceTest_Shadow_$INPUT_UUID"
+        },
+        {
+            "name": "--shadow_property",
+            "data": "color"
+        },
+        {
+            "name": "--shadow_value",
+            "data": "on"
         }
     ]
 }

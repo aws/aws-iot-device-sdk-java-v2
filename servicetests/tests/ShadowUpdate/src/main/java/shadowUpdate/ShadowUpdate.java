@@ -32,10 +32,6 @@ import ServiceTestLifecycleEvents.ServiceTestLifecycleEvents;
 
 public class ShadowUpdate {
 
-    static String input_thingName;
-    final static String SHADOW_PROPERTY = "color";
-    final static String SHADOW_VALUE_DEFAULT = "off";
-
     static IotShadowClient shadow;
 
     static MqttClientConnectionWrapper createConnection(CommandLineUtils.SampleCommandLineData cmdData, Integer mqttVersion) {
@@ -80,29 +76,29 @@ public class ShadowUpdate {
         }
     }
 
-    static CompletableFuture<Integer> changeShadowValue(String value) {
+    static CompletableFuture<Integer> changeShadowValue(String thingName, String property, String value) {
         UpdateShadowRequest request = new UpdateShadowRequest();
-        request.thingName = input_thingName;
+        request.thingName = thingName;
         request.state = new ShadowState();
         request.state.reported = new HashMap<String, Object>() {{
-           put(SHADOW_PROPERTY, value);
+           put(property, value);
         }};
         request.state.desired = new HashMap<String, Object>() {{
-            put(SHADOW_PROPERTY, value);
+            put(property, value);
         }};
 
         return shadow.PublishUpdateShadow(request, QualityOfService.AT_LEAST_ONCE);
     }
 
-    static CompletableFuture<Integer> changeNamedShadowValue(String value, String shadowName) {
+    static CompletableFuture<Integer> changeNamedShadowValue(String thingName, String property, String value, String shadowName) {
         UpdateNamedShadowRequest request = new UpdateNamedShadowRequest();
-        request.thingName = input_thingName;
+        request.thingName = thingName;
         request.state = new ShadowState();
         request.state.reported = new HashMap<String, Object>() {{
-           put(SHADOW_PROPERTY, value);
+           put(property, value);
         }};
         request.state.desired = new HashMap<String, Object>() {{
-           put(SHADOW_PROPERTY, value);
+           put(property, value);
         }};
         request.shadowName = shadowName;
 
@@ -111,7 +107,6 @@ public class ShadowUpdate {
 
     public static void main(String[] args) {
         CommandLineUtils.SampleCommandLineData cmdData = CommandLineUtils.getInputForIoTSample("Shadow", args);
-        input_thingName = cmdData.input_thingName;
 
         boolean exitWithError = false;
 
@@ -120,16 +115,24 @@ public class ShadowUpdate {
 
             CompletableFuture<Boolean> connected = connection.start();
             try {
-                boolean sessionPresent = connected.get();
+                connected.get();
             } catch (Exception ex) {
                 throw new RuntimeException("Exception occurred during connect", ex);
             }
 
-            boolean isNamedShadow = false;
-            if (isNamedShadow) {
-                changeNamedShadowValue("on", "testShadow").get();
+            if (cmdData.input_shadowName.isEmpty()) {
+                changeShadowValue(
+                        cmdData.input_thingName,
+                        cmdData.input_shadowProperty,
+                        cmdData.input_shadowValue
+                ).get();
             } else {
-                changeShadowValue("on").get();
+                changeNamedShadowValue(
+                        cmdData.input_thingName,
+                        cmdData.input_shadowProperty,
+                        cmdData.input_shadowValue,
+                        cmdData.input_shadowName
+                ).get();
             }
 
             CompletableFuture<Void> disconnected = connection.stop();
