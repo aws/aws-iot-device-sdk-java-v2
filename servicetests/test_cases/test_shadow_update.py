@@ -66,7 +66,7 @@ def main():
         color_value = None
         try:
             if parsed_commands.use_named_shadow:
-                thing_shadow = iot_data_client.get_thing_shadow(thingName=thing_name, shadowName='shadowTest')
+                thing_shadow = iot_data_client.get_thing_shadow(thingName=thing_name, shadowName='testShadow')
             else:
                 thing_shadow = iot_data_client.get_thing_shadow(thingName=thing_name)
 
