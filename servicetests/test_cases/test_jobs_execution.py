@@ -57,7 +57,7 @@ def main():
         print(f"ERROR: Failed to create IoT thing: {e}")
         sys.exit(-1)
 
-    # Perform Shadow test. If it's successful, a shadow should appear for a specified thing.
+    # Perform Jobs test. If it's successful, the Job execution should be marked as SUCCEEDED for the thing.
     test_result = run_in_ci.setup_and_launch(cfg_file, input_uuid)
 
     # Test reported success, verify that Job was indeed executed by the thing.
