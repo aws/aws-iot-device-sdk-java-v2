@@ -31,6 +31,7 @@ env:
   CI_X509_ROLE: arn:aws:iam::180635532705:role/CI_X509_Role
   CI_MQTT5_ROLE: arn:aws:iam::180635532705:role/CI_MQTT5_Role
   CI_ANDROID_DEVICE_TESTING_ROLE: arn:aws:iam::180635532705:role/CI_Android_Device_Testing_Role
+  CI_SHADOW_SERVICE_CLIENT_ROLE: arn:aws:iam::180635532705:role/CI_ShadowServiceClient_Role
 
 jobs:
   linux-compat:
@@ -499,7 +500,7 @@ jobs:
       - name: configure AWS credentials (Shadow)
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: ${{ env.CI_FLEET_PROVISIONING_ROLE }}
+          role-to-assume: ${{ env.CI_SHADOW_SERVICE_CLIENT_ROLE }}
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
       - name: run Shadow service client test for MQTT311
         working-directory: ./servicetests
