@@ -41,7 +41,6 @@ def main():
     input_uuid = parsed_commands.input_uuid if parsed_commands.input_uuid else str(uuid.uuid4())
 
     thing_name = "ServiceTest_Shadow_" + input_uuid
-    policy_name = "CI_ShadowServiceTest_Policy"
     policy_name = secrets_client.get_secret_value(
         SecretId="ci/ShadowServiceClientTest/policy_name")["SecretString"]
 
