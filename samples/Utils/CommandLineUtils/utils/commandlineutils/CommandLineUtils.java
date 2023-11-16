@@ -643,8 +643,8 @@ public class CommandLineUtils {
         parseKeyAndCertCommands(returnData);
         parseClientIdAndPort(returnData);
         returnData.input_thingName = getCommandRequired(m_cmd_thing_name);
-        returnData.input_shadowProperty = getCommandRequired(m_cmd_shadow_property);
-        returnData.input_shadowValue = getCommandRequired(m_cmd_shadow_value);
+        returnData.input_shadowProperty = getCommand(m_cmd_shadow_property);
+        returnData.input_shadowValue = getCommand(m_cmd_shadow_value);
         returnData.input_shadowName = getCommand(m_cmd_shadow_name);
         return returnData;
     }
