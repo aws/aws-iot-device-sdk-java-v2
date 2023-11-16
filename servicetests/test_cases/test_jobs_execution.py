@@ -25,7 +25,7 @@ def main():
     parsed_commands = argument_parser.parse_args()
 
     try:
-        iot_jobs_data_client = boto3.client('iot-jobs-data', region_name=parsed_commands.region)
+        iot_client = boto3.client('iot', region_name=parsed_commands.region)
         secrets_client = boto3.client("secretsmanager", region_name=parsed_commands.region)
     except Exception as e:
         print(f"ERROR: Could not make Boto3 iot-data client. Credentials likely could not be sourced. Exception: {e}",
@@ -48,6 +48,7 @@ def main():
     try:
         ci_iot_thing.create_iot_thing(
             thing_name=thing_name,
+            thing_group="CI_ServiceClient_Thing_Group",
             region=parsed_commands.region,
             policy_name=policy_name,
             certificate_path=certificate_path,
@@ -63,7 +64,8 @@ def main():
     if test_result == 0:
         print("Verifying that Job was executed")
         try:
-            thing_job = iot_jobs_data_client.describe_job_execution(jobId='', thingName=thing_name)
+            job_id = secrets_client.get_secret_value(SecretId="ci/JobsServiceClientTest/job_id")["SecretString"]
+            thing_job = iot_client.describe_job_execution(jobId=job_id, thingName=thing_name)
             job_status = thing_job.get('execution', {}).get('status', {})
             if job_status != 'SUCCEEDED':
                 print(f"ERROR: Could not verify Job execution; Job info: {thing_job}")
