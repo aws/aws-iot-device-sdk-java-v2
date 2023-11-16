@@ -185,3 +185,6 @@ bin/
 
 # docs are updated automatically by .github/workflows/docs.yml
 docs/
+
+# Python cache
+__pycache__
