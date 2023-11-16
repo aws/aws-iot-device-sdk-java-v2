@@ -522,6 +522,21 @@ jobs:
         run: |
           export PYTHONPATH=${{ github.workspace }}/utils
           python3 ./test_cases/test_shadow_update.py --mqtt-version 5 --use-named-shadow
+      - name: configure AWS credentials (Jobs)
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ env.CI_SHADOW_SERVICE_CLIENT_ROLE }}
+          aws-region: ${{ env.AWS_DEFAULT_REGION }}
+      - name: run Shadow service client test for MQTT311
+        working-directory: ./servicetests
+        run: |
+          export PYTHONPATH=${{ github.workspace }}/utils
+          python3 ./test_cases/test_jobs_execution.py --mqtt-version 3
+      - name: run Shadow service client test for MQTT5
+        working-directory: ./servicetests
+        run: |
+          export PYTHONPATH=${{ github.workspace }}/utils
+          python3 ./test_cases/test_jobs_execution.py --mqtt-version 5
       - name: configure AWS credentials (Connect and PubSub)
         uses: aws-actions/configure-aws-credentials@v2
         with:
