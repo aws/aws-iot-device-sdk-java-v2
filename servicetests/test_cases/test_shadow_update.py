@@ -28,6 +28,7 @@ def main():
 
     try:
         iot_data_client = boto3.client('iot-data', region_name=parsed_commands.region)
+        secrets_client = boto3.client("secretsmanager", region_name=parsed_commands.region)
     except Exception as e:
         print(f"ERROR: Could not make Boto3 iot-data client. Credentials likely could not be sourced. Exception: {e}",
               file=sys.stderr)
@@ -41,6 +42,8 @@ def main():
 
     thing_name = "ServiceTest_Shadow_" + input_uuid
     policy_name = "CI_ShadowServiceTest_Policy"
+    policy_name = secrets_client.get_secret_value(
+        SecretId="ci/ShadowServiceClientTest/policy_name")["SecretString"]
 
     # Temporary certificate/key file path.
     certificate_path = os.path.join(os.getcwd(), "certificate.pem.crt")
