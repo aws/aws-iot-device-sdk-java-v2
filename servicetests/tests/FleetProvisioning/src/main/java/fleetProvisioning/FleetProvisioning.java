@@ -190,13 +190,13 @@ public class FleetProvisioning {
             CompletableFuture<Void> disconnected = connection.stop();
             disconnected.get(responseWaitTimeMs, TimeUnit.MILLISECONDS);
         } catch (Exception ex) {
-            System.out.println("Exception encountered! " + "\n");
+            System.out.println("Exception encountered\n");
             ex.printStackTrace();
             exitWithError = true;
         }
 
         CrtResource.waitForNoResources();
-        System.out.println("Service test complete!");
+        System.out.println("Service test complete");
 
         if (exitWithError) {
             System.exit(1);
