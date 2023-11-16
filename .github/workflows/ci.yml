@@ -499,7 +499,7 @@ jobs:
       - name: configure AWS credentials (Shadow)
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: ${{ env.CI_SHADOW_ROLE }}
+          role-to-assume: ${{ env.CI_FLEET_PROVISIONING_ROLE }}
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
       - name: run Shadow service client test for MQTT311
         working-directory: ./servicetests
