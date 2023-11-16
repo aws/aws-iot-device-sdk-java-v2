@@ -527,12 +527,12 @@ jobs:
         with:
           role-to-assume: ${{ env.CI_SHADOW_SERVICE_CLIENT_ROLE }}
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
-      - name: run Shadow service client test for MQTT311
+      - name: run Jobs service client test for MQTT311
         working-directory: ./servicetests
         run: |
           export PYTHONPATH=${{ github.workspace }}/utils
           python3 ./test_cases/test_jobs_execution.py --mqtt-version 3
-      - name: run Shadow service client test for MQTT5
+      - name: run Jobs service client test for MQTT5
         working-directory: ./servicetests
         run: |
           export PYTHONPATH=${{ github.workspace }}/utils
