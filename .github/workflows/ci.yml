@@ -486,6 +486,16 @@ jobs:
         run: |
           export PYTHONPATH=${{ github.workspace }}/utils
           python3 ./test_cases/test_fleet_provisioning.py --thing-name-prefix Fleet_Thing_ --mqtt-version 5
+      - name: run Fleet Provisioning with CSR service client test for MQTT311
+        working-directory: ./servicetests
+        run: |
+          export PYTHONPATH=${{ github.workspace }}/utils
+          python3 ./test_cases/test_fleet_provisioning.py --thing-name-prefix Fleet_Thing_ --mqtt-version 3 --use-csr
+      - name: run Fleet Provisioning with CSR service client test for MQTT5
+        working-directory: ./servicetests
+        run: |
+          export PYTHONPATH=${{ github.workspace }}/utils
+          python3 ./test_cases/test_fleet_provisioning.py --thing-name-prefix Fleet_Thing_ --mqtt-version 5 --use-csr
       - name: configure AWS credentials (Shadow)
         uses: aws-actions/configure-aws-credentials@v2
         with:

@@ -8,15 +8,11 @@ package fleetProvisioning;
 import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.crt.CrtResource;
 import software.amazon.awssdk.crt.CrtRuntimeException;
-import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
-import software.amazon.awssdk.crt.mqtt.MqttClientConnectionEvents;
 import software.amazon.awssdk.crt.mqtt.QualityOfService;
-import software.amazon.awssdk.crt.mqtt5.Mqtt5ClientOptions;
-import software.amazon.awssdk.crt.mqtt5.Mqtt5Client;
-import software.amazon.awssdk.crt.mqtt5.packets.ConnectPacket;
-import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
-import software.amazon.awssdk.iot.AwsIotMqtt5ClientBuilder;
 import software.amazon.awssdk.iot.iotidentity.IotIdentityClient;
+import software.amazon.awssdk.iot.iotidentity.model.CreateCertificateFromCsrRequest;
+import software.amazon.awssdk.iot.iotidentity.model.CreateCertificateFromCsrResponse;
+import software.amazon.awssdk.iot.iotidentity.model.CreateCertificateFromCsrSubscriptionRequest;
 import software.amazon.awssdk.iot.iotidentity.model.CreateKeysAndCertificateRequest;
 import software.amazon.awssdk.iot.iotidentity.model.CreateKeysAndCertificateResponse;
 import software.amazon.awssdk.iot.iotidentity.model.CreateKeysAndCertificateSubscriptionRequest;
@@ -38,59 +34,24 @@ import utils.mqttclientconnectionwrapper.*;
 import ServiceTestLifecycleEvents.ServiceTestLifecycleEvents;
 
 public class FleetProvisioning {
-
     static CompletableFuture<Void> gotResponse;
     static IotIdentityClient iotIdentityClient;
 
     static CreateKeysAndCertificateResponse createKeysAndCertificateResponse = null;
+    static CreateCertificateFromCsrResponse createCertificateFromCsrResponse = null;
     static RegisterThingResponse registerThingResponse = null;
 
     static long responseWaitTimeMs = 5000L; // 5 seconds
 
-    static MqttClientConnectionWrapper createConnection(CommandLineUtils.SampleCommandLineData cmdData, Integer mqttVersion) {
-        if (mqttVersion == 3) {
-            try (AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder
-                    .newMtlsBuilderFromPath(cmdData.input_cert, cmdData.input_key)) {
-                builder.withClientId(cmdData.input_clientId)
-                    .withEndpoint(cmdData.input_endpoint)
-                    .withPort((short)cmdData.input_port)
-                    .withCleanSession(true)
-                    .withProtocolOperationTimeoutMs(60000);
-                Mqtt3ClientConnectionWrapper connWrapper = new Mqtt3ClientConnectionWrapper();
-                connWrapper.connection = builder.build();
-                if (connWrapper.connection == null) {
-                    throw new RuntimeException("MQTT311 connection creation failed!");
-                }
-                return connWrapper;
-            } catch (Exception ex) {
-                throw new RuntimeException("Failed to create MQTT311 connection", ex);
-            }
-        } else if (mqttVersion == 5) {
-            ServiceTestLifecycleEvents lifecycleEvents = new ServiceTestLifecycleEvents();
-            try (AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newDirectMqttBuilderWithMtlsFromPath(
-                        cmdData.input_endpoint, cmdData.input_cert, cmdData.input_key)) {
-                ConnectPacket.ConnectPacketBuilder connectProperties = new ConnectPacket.ConnectPacketBuilder();
-                connectProperties.withClientId(cmdData.input_clientId);
-                builder.withConnectProperties(connectProperties);
-                builder.withLifeCycleEvents(lifecycleEvents);
-                builder.withPort((long)cmdData.input_port);
-                Mqtt5ClientConnectionWrapper connWrapper = new Mqtt5ClientConnectionWrapper();
-                connWrapper.client = builder.build();
-                connWrapper.connection = new MqttClientConnection(connWrapper.client, null);
-                if (connWrapper.connection == null) {
-                    throw new RuntimeException("MQTT5 connection creation failed!");
-                }
-                return connWrapper;
-            } catch (Exception ex) {
-                throw new RuntimeException("Failed to create MQTT311 connection from MQTT5 client", ex);
-            }
-        } else {
-            throw new RuntimeException("Invalid MQTT version specified: " + mqttVersion);
-        }
-    }
-
     static void onRejectedKeys(ErrorResponse response) {
         System.out.println("CreateKeysAndCertificate Request rejected, errorCode: " + response.errorCode +
+                ", errorMessage: " + response.errorMessage +
+                ", statusCode: " + response.statusCode);
+        gotResponse.complete(null);
+    }
+
+    static void onRejectedCsr(ErrorResponse response) {
+        System.out.println("CreateCertificateFromCsr Request rejected, errorCode: " + response.errorCode +
                 ", errorMessage: " + response.errorMessage +
                 ", statusCode: " + response.statusCode);
         gotResponse.complete(null);
@@ -117,6 +78,20 @@ public class FleetProvisioning {
         gotResponse.complete(null);
     }
 
+    static void onCreateCertificateFromCsrResponseAccepted(CreateCertificateFromCsrResponse response) {
+        if (response != null) {
+            System.out.println("CreateCertificateFromCsr response certificateId: " + response.certificateId);
+            if (createCertificateFromCsrResponse == null) {
+                createCertificateFromCsrResponse = response;
+            } else {
+                System.out.println("CreateCertificateFromCsr response received after having already gotten a response!");
+            }
+        } else {
+            System.out.println("CreateCertificateFromCsr response is null");
+        }
+        gotResponse.complete(null);
+    }
+
     static void onRegisterThingAccepted(RegisterThingResponse response) {
         if (response != null) {
             System.out.println("RegisterThing response thingName: " + response.thingName);
@@ -134,41 +109,6 @@ public class FleetProvisioning {
     static void onException(Exception e) {
         e.printStackTrace();
         System.out.println("Exception occurred " + e);
-    }
-
-    public static void main(String[] args) {
-        CommandLineUtils.SampleCommandLineData cmdData = CommandLineUtils.getInputForIoTSample("FleetProvisioningSample", args);
-
-        boolean exitWithError = false;
-
-        try (MqttClientConnectionWrapper connection = createConnection(cmdData, cmdData.input_mqtt_version)) {
-            // Create the identity client (Identity = Fleet Provisioning)
-            iotIdentityClient = new IotIdentityClient(connection.getConnection());
-
-            // Connect
-            CompletableFuture<Boolean> connected = connection.start();
-            boolean sessionPresent = connected.get(responseWaitTimeMs, TimeUnit.MILLISECONDS);
-            System.out.println("Connected to " + (!sessionPresent ? "new" : "existing") + " session!");
-
-            createKeysAndCertificateWorkflow(cmdData.input_templateName, cmdData.input_templateParameters);
-
-            // Disconnect
-            CompletableFuture<Void> disconnected = connection.stop();
-            disconnected.get(responseWaitTimeMs, TimeUnit.MILLISECONDS);
-        } catch (Exception ex) {
-            System.out.println("Exception encountered! " + "\n");
-            ex.printStackTrace();
-            exitWithError = true;
-        }
-
-        CrtResource.waitForNoResources();
-        System.out.println("Service test complete!");
-
-        if (exitWithError) {
-            System.exit(1);
-        } else {
-            System.exit(0);
-        }
     }
 
     private static void SubscribeToRegisterThing(String input_templateName) throws Exception {
@@ -248,5 +188,106 @@ public class FleetProvisioning {
         System.out.println("Published to RegisterThing");
         gotResponse.get(responseWaitTimeMs, TimeUnit.MILLISECONDS);
         System.out.println("Got response at RegisterThing");
+    }
+
+    private static void createCertificateFromCsrWorkflow(String input_templateName, String input_templateParameters, String input_csrPath) throws Exception {
+        CreateCertificateFromCsrSubscriptionRequest createCertificateFromCsrSubscriptionRequest = new CreateCertificateFromCsrSubscriptionRequest();
+        CompletableFuture<Integer> csrSubscribedAccepted = iotIdentityClient.SubscribeToCreateCertificateFromCsrAccepted(
+                createCertificateFromCsrSubscriptionRequest,
+                QualityOfService.AT_LEAST_ONCE,
+                FleetProvisioning::onCreateCertificateFromCsrResponseAccepted);
+
+        csrSubscribedAccepted.get(responseWaitTimeMs, TimeUnit.MILLISECONDS);
+        System.out.println("Subscribed to CreateCertificateFromCsrAccepted");
+
+        CompletableFuture<Integer> csrSubscribedRejected = iotIdentityClient.SubscribeToCreateCertificateFromCsrRejected(
+                createCertificateFromCsrSubscriptionRequest,
+                QualityOfService.AT_LEAST_ONCE,
+                FleetProvisioning::onRejectedCsr);
+
+        csrSubscribedRejected.get(responseWaitTimeMs, TimeUnit.MILLISECONDS);
+        System.out.println("Subscribed to CreateCertificateFromCsrRejected");
+
+        // Subscribes to the register thing accepted and rejected topics
+        SubscribeToRegisterThing(input_templateName);
+
+        String csrContents = new String(Files.readAllBytes(Paths.get(input_csrPath)));
+        CreateCertificateFromCsrRequest createCertificateFromCsrRequest = new CreateCertificateFromCsrRequest();
+        createCertificateFromCsrRequest.certificateSigningRequest = csrContents;
+        CompletableFuture<Integer> publishCsr = iotIdentityClient.PublishCreateCertificateFromCsr(
+                createCertificateFromCsrRequest,
+                QualityOfService.AT_LEAST_ONCE);
+
+        gotResponse = new CompletableFuture<>();
+        publishCsr.get(responseWaitTimeMs, TimeUnit.MILLISECONDS);
+        System.out.println("Published to CreateCertificateFromCsr");
+        gotResponse.get(responseWaitTimeMs, TimeUnit.MILLISECONDS);
+        System.out.println("Got response at CreateCertificateFromCsr");
+
+        // Verify the response is good
+        if (createCertificateFromCsrResponse == null) {
+            throw new Exception("Got invalid/error createCertificateFromCsrResponse");
+        }
+
+        gotResponse = new CompletableFuture<>();
+        System.out.println("RegisterThing now....");
+        RegisterThingRequest registerThingRequest = new RegisterThingRequest();
+        registerThingRequest.certificateOwnershipToken = createCertificateFromCsrResponse.certificateOwnershipToken;
+        registerThingRequest.templateName = input_templateName;
+        registerThingRequest.parameters = new Gson().fromJson(input_templateParameters, HashMap.class);
+        CompletableFuture<Integer> publishRegister = iotIdentityClient.PublishRegisterThing(
+                registerThingRequest,
+                QualityOfService.AT_LEAST_ONCE);
+
+        publishRegister.get(responseWaitTimeMs, TimeUnit.MILLISECONDS);
+        System.out.println("Published to RegisterThing");
+        gotResponse.get(responseWaitTimeMs, TimeUnit.MILLISECONDS);
+        System.out.println("Got response at RegisterThing");
+    }
+
+    public static void main(String[] args) {
+        CommandLineUtils.SampleCommandLineData cmdData = CommandLineUtils.getInputForIoTSample("FleetProvisioningSample", args);
+
+        boolean exitWithError = false;
+
+        try (MqttClientConnectionWrapper connection = MqttClientConnectionWrapperCreator.createConnection(
+                    cmdData.input_cert,
+                    cmdData.input_key,
+                    cmdData.input_clientId,
+                    cmdData.input_endpoint,
+                    cmdData.input_port,
+                    cmdData.input_mqtt_version)) {
+
+            // Create the identity client (Identity = Fleet Provisioning)
+            iotIdentityClient = new IotIdentityClient(connection.getConnection());
+
+            // Connect
+            CompletableFuture<Boolean> connected = connection.start();
+            connected.get(responseWaitTimeMs, TimeUnit.MILLISECONDS);
+
+            // Fleet Provision based on whether there is a CSR file path or not
+            if (cmdData.input_csrPath == null) {
+                createKeysAndCertificateWorkflow(cmdData.input_templateName, cmdData.input_templateParameters);
+            } else {
+                createCertificateFromCsrWorkflow(cmdData.input_templateName, cmdData.input_templateParameters, cmdData.input_csrPath);
+            }
+
+            // Disconnect
+            CompletableFuture<Void> disconnected = connection.stop();
+            disconnected.get(responseWaitTimeMs, TimeUnit.MILLISECONDS);
+        } catch (Exception ex) {
+            System.out.println("Exception encountered\n");
+            ex.printStackTrace();
+            exitWithError = true;
+        }
+
+        CrtResource.waitForNoResources();
+        System.out.println("Service test complete");
+
+        if (exitWithError) {
+            System.exit(1);
+        } else {
+            System.exit(0);
+        }
     }
 }
