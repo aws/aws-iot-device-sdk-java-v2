@@ -62,6 +62,7 @@ def main():
 
     # Test reported success, verify that shadow was indeed updated.
     if test_result == 0:
+        print("Verifying that shadow was updated")
         color_value = None
         try:
             if parsed_commands.use_named_shadow:
@@ -82,11 +83,15 @@ def main():
             print(f"ERROR: Could not verify thing shadow: {e}")
             test_result = -1
 
+    if test_result == 0:
+        print("Test succeeded")
+
     # Delete a thing created for this test run.
     # NOTE We want to try to delete thing even if test was unsuccessful.
     delete_result = ci_iot_thing.delete_iot_thing(
         thing_name, parsed_commands.region)
 
+    # Fail the test if unable to delete thing, so this won't remain unnoticed.
     if test_result != 0 or delete_result != 0:
         sys.exit(-1)
 

@@ -31,50 +31,7 @@ import utils.mqttclientconnectionwrapper.*;
 import ServiceTestLifecycleEvents.ServiceTestLifecycleEvents;
 
 public class ShadowUpdate {
-
     static IotShadowClient shadow;
-
-    static MqttClientConnectionWrapper createConnection(CommandLineUtils.SampleCommandLineData cmdData, Integer mqttVersion) {
-        if (mqttVersion == 3) {
-            try (AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder
-                    .newMtlsBuilderFromPath(cmdData.input_cert, cmdData.input_key)) {
-                builder.withClientId(cmdData.input_clientId)
-                    .withEndpoint(cmdData.input_endpoint)
-                    .withPort((short)cmdData.input_port)
-                    .withCleanSession(true)
-                    .withProtocolOperationTimeoutMs(60000);
-                Mqtt3ClientConnectionWrapper connWrapper = new Mqtt3ClientConnectionWrapper();
-                connWrapper.connection = builder.build();
-                if (connWrapper.connection == null) {
-                    throw new RuntimeException("MQTT311 connection creation failed!");
-                }
-                return connWrapper;
-            } catch (Exception ex) {
-                throw new RuntimeException("Failed to create MQTT311 connection", ex);
-            }
-        } else if (mqttVersion == 5) {
-            ServiceTestLifecycleEvents lifecycleEvents = new ServiceTestLifecycleEvents();
-            try (AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newDirectMqttBuilderWithMtlsFromPath(
-                        cmdData.input_endpoint, cmdData.input_cert, cmdData.input_key)) {
-                ConnectPacket.ConnectPacketBuilder connectProperties = new ConnectPacket.ConnectPacketBuilder();
-                connectProperties.withClientId(cmdData.input_clientId);
-                builder.withConnectProperties(connectProperties);
-                builder.withLifeCycleEvents(lifecycleEvents);
-                builder.withPort((long)cmdData.input_port);
-                Mqtt5ClientConnectionWrapper connWrapper = new Mqtt5ClientConnectionWrapper();
-                connWrapper.client = builder.build();
-                connWrapper.connection = new MqttClientConnection(connWrapper.client, null);
-                if (connWrapper.connection == null) {
-                    throw new RuntimeException("MQTT5 connection creation failed!");
-                }
-                return connWrapper;
-            } catch (Exception ex) {
-                throw new RuntimeException("Failed to create MQTT311 connection from MQTT5 client", ex);
-            }
-        } else {
-            throw new RuntimeException("Invalid MQTT version specified: " + mqttVersion);
-        }
-    }
 
     static CompletableFuture<Integer> changeShadowValue(String thingName, String property, String value) {
         UpdateShadowRequest request = new UpdateShadowRequest();
@@ -110,7 +67,13 @@ public class ShadowUpdate {
 
         boolean exitWithError = false;
 
-        try (MqttClientConnectionWrapper connection = createConnection(cmdData, cmdData.input_mqtt_version)) {
+        try (MqttClientConnectionWrapper connection = MqttClientConnectionWrapperCreator.createConnection(
+                    cmdData.input_cert,
+                    cmdData.input_key,
+                    cmdData.input_clientId,
+                    cmdData.input_endpoint,
+                    cmdData.input_port,
+                    cmdData.input_mqtt_version)) {
             shadow = new IotShadowClient(connection.getConnection());
 
             CompletableFuture<Boolean> connected = connection.start();
