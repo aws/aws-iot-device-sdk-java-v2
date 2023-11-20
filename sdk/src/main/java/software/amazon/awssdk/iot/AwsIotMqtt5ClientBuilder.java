@@ -611,6 +611,17 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
     }
 
     /**
+     * Overrides how the MQTT5 client should behave with respect to MQTT5 topic aliasing.
+     *
+     * @param options - How the MQTT5 client should use topic aliasing
+     * @return - The AwsIotMqtt5ClientBuilder
+     */
+    public AwsIotMqtt5ClientBuilder withTopicAliasingOptions(TopicAliasingOptions options) {
+        this.config.withTopicAliasingOptions(options);
+        return this;
+    }
+
+    /**
      * Constructs an MQTT5 client object configured with the options set.
      * @return A MQTT5ClientOptions
      */
