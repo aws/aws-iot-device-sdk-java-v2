@@ -31,6 +31,7 @@ env:
   CI_X509_ROLE: arn:aws:iam::180635532705:role/CI_X509_Role
   CI_MQTT5_ROLE: arn:aws:iam::180635532705:role/CI_MQTT5_Role
   CI_ANDROID_DEVICE_TESTING_ROLE: arn:aws:iam::180635532705:role/CI_Android_Device_Testing_Role
+  CI_SHADOW_SERVICE_CLIENT_ROLE: arn:aws:iam::180635532705:role/CI_ShadowServiceClient_Role
 
 jobs:
   linux-compat:
@@ -496,6 +497,31 @@ jobs:
         run: |
           export PYTHONPATH=${{ github.workspace }}/utils
           python3 ./test_cases/test_fleet_provisioning.py --thing-name-prefix Fleet_Thing_ --mqtt-version 5 --use-csr
+      - name: configure AWS credentials (Shadow)
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ env.CI_SHADOW_SERVICE_CLIENT_ROLE }}
+          aws-region: ${{ env.AWS_DEFAULT_REGION }}
+      - name: run Shadow service client test for MQTT311
+        working-directory: ./servicetests
+        run: |
+          export PYTHONPATH=${{ github.workspace }}/utils
+          python3 ./test_cases/test_shadow_update.py --mqtt-version 3
+      - name: run Shadow service client test for MQTT5
+        working-directory: ./servicetests
+        run: |
+          export PYTHONPATH=${{ github.workspace }}/utils
+          python3 ./test_cases/test_shadow_update.py --mqtt-version 5
+      - name: run Named Shadow service client test for MQTT311
+        working-directory: ./servicetests
+        run: |
+          export PYTHONPATH=${{ github.workspace }}/utils
+          python3 ./test_cases/test_shadow_update.py --mqtt-version 3 --use-named-shadow
+      - name: run Named Shadow service client test for MQTT5
+        working-directory: ./servicetests
+        run: |
+          export PYTHONPATH=${{ github.workspace }}/utils
+          python3 ./test_cases/test_shadow_update.py --mqtt-version 5 --use-named-shadow
       - name: configure AWS credentials (Connect and PubSub)
         uses: aws-actions/configure-aws-credentials@v2
         with:
