@@ -16,6 +16,7 @@
     <modules>
         <module>tests/FleetProvisioning</module>
         <module>tests/ShadowUpdate</module>
+        <module>tests/JobsExecution</module>
     </modules>
 
     <build>
