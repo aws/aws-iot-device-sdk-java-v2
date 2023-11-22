@@ -6,7 +6,7 @@
     "arguments": [
         {
             "name": "--mqtt_version",
-            "data": 3
+            "data": 5
         },
         {
             "name": "--endpoint",
