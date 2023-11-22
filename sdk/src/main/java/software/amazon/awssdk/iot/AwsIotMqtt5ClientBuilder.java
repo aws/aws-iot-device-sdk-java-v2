@@ -29,6 +29,7 @@ import software.amazon.awssdk.crt.mqtt5.Mqtt5ClientOptions;
 import software.amazon.awssdk.crt.mqtt5.Mqtt5WebsocketHandshakeTransformArgs;
 import software.amazon.awssdk.crt.mqtt5.Mqtt5ClientOptions.Mqtt5ClientOptionsBuilder;
 import software.amazon.awssdk.crt.mqtt5.packets.ConnectPacket.ConnectPacketBuilder;
+import software.amazon.awssdk.crt.mqtt5.TopicAliasingOptions;
 import software.amazon.awssdk.crt.utils.PackageInfo;
 
 /**
@@ -607,6 +608,17 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
      */
     public AwsIotMqtt5ClientBuilder withPublishEvents(Mqtt5ClientOptions.PublishEvents publishEvents) {
         this.config.withPublishEvents(publishEvents);
+        return this;
+    }
+
+    /**
+     * Overrides how the MQTT5 client should behave with respect to MQTT5 topic aliasing.
+     *
+     * @param options - How the MQTT5 client should use topic aliasing
+     * @return - The AwsIotMqtt5ClientBuilder
+     */
+    public AwsIotMqtt5ClientBuilder withTopicAliasingOptions(TopicAliasingOptions options) {
+        this.config.withTopicAliasingOptions(options);
         return this;
     }
 
