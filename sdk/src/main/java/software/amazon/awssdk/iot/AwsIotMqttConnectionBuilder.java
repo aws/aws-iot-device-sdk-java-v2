@@ -8,6 +8,8 @@ package software.amazon.awssdk.iot;
 import software.amazon.awssdk.crt.utils.PackageInfo;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.function.Consumer;
 
 import software.amazon.awssdk.crt.CrtResource;
@@ -644,6 +646,14 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
         }
         if (authorizerSignature != null)
         {
+            if (!authorizerSignature.contains("%")) {
+                try {
+                    authorizerSignature = URLEncoder.encode(authorizerSignature, StandardCharsets.UTF_8.toString());
+                } catch (UnsupportedEncodingException uee) {
+                    throw new CrtRuntimeException(uee.toString());
+                }
+            }
+            
             usernameString = addUsernameParameter(usernameString, authorizerSignature, "x-amz-customauthorizer-signature=", addedStringToUsername);
             if (tokenKeyName == null || tokenValue == null) {
                 Log.log(

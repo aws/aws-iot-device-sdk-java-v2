@@ -4,6 +4,8 @@
  */
 package software.amazon.awssdk.iot;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -891,7 +893,13 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
             addToUsernameParam(paramList, "x-amz-customauthorizer-name", config.authorizerName);
             if (usingSigning == true) {
                 addToUsernameParam(paramList, config.tokenKeyName, config.tokenValue);
-                addToUsernameParam(paramList, "x-amz-customauthorizer-signature", config.tokenSignature);
+
+                String encodedSignature = config.tokenSignature;
+                if (!encodedSignature.contains("%")) {
+                    encodedSignature = URLEncoder.encode(encodedSignature, StandardCharsets.UTF_8.toString());
+                }
+
+                addToUsernameParam(paramList, "x-amz-customauthorizer-signature", encodedSignature);
             }
         }
 
