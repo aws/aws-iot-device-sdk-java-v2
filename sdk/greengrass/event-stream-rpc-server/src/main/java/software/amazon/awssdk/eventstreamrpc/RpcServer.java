@@ -66,7 +66,7 @@ public class RpcServer implements AutoCloseable {
         }
         serverBootstrap = new ServerBootstrap(eventLoopGroup);
         tlsContext = tlsContextOptions != null ? new ServerTlsContext(tlsContextOptions) : null;
-        listener = new ServerListener(hostname, (short) port, socketOptions, tlsContext, serverBootstrap, new ServerListenerHandler() {
+        listener = new ServerListener(hostname, port, socketOptions, tlsContext, serverBootstrap, new ServerListenerHandler() {
                 @Override
                 public ServerConnectionHandler onNewConnection(ServerConnection serverConnection, int errorCode) {
                     try {

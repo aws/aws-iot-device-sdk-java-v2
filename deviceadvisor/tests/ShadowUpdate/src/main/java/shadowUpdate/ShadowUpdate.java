@@ -81,7 +81,7 @@ public class ShadowUpdate {
         try(AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(DATestUtils.certificatePath, DATestUtils.keyPath)) {
             builder.withClientId(clientId)
                     .withEndpoint(DATestUtils.endpoint)
-                    .withPort((short)port)
+                    .withPort(port)
                     .withCleanSession(true)
                     .withProtocolOperationTimeoutMs(60000);
 

@@ -272,7 +272,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      *             MQTT, or 443 for websockets
      * @return {@link AwsIotMqttConnectionBuilder}
      */
-    public AwsIotMqttConnectionBuilder withPort(short port) {
+    public AwsIotMqttConnectionBuilder withPort(int port) {
         this.config.setPort(port);
         return this;
     }

@@ -69,7 +69,7 @@ public class WindowsCertConnect {
             builder.withConnectionEventCallbacks(callbacks)
                 .withClientId(cmdData.input_clientId)
                 .withEndpoint(cmdData.input_endpoint)
-                .withPort((short)cmdData.input_port)
+                .withPort(cmdData.input_port)
                 .withCleanSession(true)
                 .withProtocolOperationTimeoutMs(60000);
             MqttClientConnection connection = builder.build();

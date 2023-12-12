@@ -50,7 +50,7 @@ public class MQTTSubscribe {
 
             builder.withClientId(clientId)
                 .withEndpoint(DATestUtils.endpoint)
-                .withPort((short)port)
+                .withPort(port)
                 .withCleanSession(true)
                 .withPingTimeoutMs(60000)
                 .withProtocolOperationTimeoutMs(60000);
