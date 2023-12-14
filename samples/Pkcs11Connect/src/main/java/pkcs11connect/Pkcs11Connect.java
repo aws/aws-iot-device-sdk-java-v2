@@ -30,15 +30,11 @@ public class Pkcs11Connect {
      * just continue (return from main)
      */
     static void onApplicationFailure(Throwable cause) {
-        if (isCI) {
-            throw new RuntimeException("Pkcs11Connect execution failure", cause);
-        } else if (cause != null) {
-            System.out.println("Exception encountered: " + cause.toString());
-        }
+        throw new RuntimeException("Pkcs11Connect execution failure", cause);
     }
 
     public static void main(String[] args) {
-
+        System.out.println("SAMPLE STARTED");
         /**
          * cmdData is the arguments/input from the command line placed into a single struct for
          * use in this sample. This handles all of the command line parsing, validating, etc.

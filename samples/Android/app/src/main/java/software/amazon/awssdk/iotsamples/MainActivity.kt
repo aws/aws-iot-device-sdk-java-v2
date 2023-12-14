@@ -7,15 +7,21 @@ package software.amazon.awssdk.iotsamples
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.content.Context
+import android.os.Build
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.TextView
+import android.util.Log
+import android.content.pm.ApplicationInfo
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.io.OutputStream
 import java.io.PrintStream
+import java.io.IOException
+import java.io.File
 import java.lang.Exception
 import kotlin.concurrent.thread
 
@@ -24,7 +30,8 @@ val SAMPLES = mapOf(
     "Publish/Subscribe MQTT3 Sample" to "pubsub.PubSub",
     "Jobs Client Sample" to "jobs.JobsSample",
     "Shadow Client Sample" to "shadow.ShadowSample",
-    "Cognito Client Sample" to "cognitoconnect.CognitoConnect"
+    "Cognito Client Sample" to "cognitoconnect.CognitoConnect",
+    "PKCS11 Connect Sample" to "pkcs11connect.Pkcs11Connect"
 )
 
 class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
@@ -113,6 +120,54 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         }
     }
 
+    private fun debugLog(message: String){
+        val logMessage = "DEBUG LOG " + message
+        Log.e("STEVE", logMessage)
+    }
+
+    private fun checkForFiles(directoryPath: String){
+        debugLog("Checking Path: ${directoryPath}")
+        val libraryDir = File(directoryPath)
+
+        if (libraryDir.exists()){
+            if (libraryDir.isDirectory) {
+                val filesInLibraryDir: Array<File>? = libraryDir.listFiles()
+                if(filesInLibraryDir != null){
+                    debugLog("Files in ${directoryPath}: ${filesInLibraryDir.contentToString()}")
+                } else {
+                    debugLog("listFiles(${directoryPath}) resulted in null")
+                }
+            } else {
+                debugLog("${directoryPath} exists and is not a directory.")
+            }
+        } else {
+            debugLog("${directoryPath} does not exist.")
+        }
+    }
+
+    private fun SaveAssetToInternalStorage(context: Context, fileName: String): String{
+        val internalDir: File = context.filesDir
+        val libraryPath: String = "${internalDir}/${fileName}"
+        // debugLog("${internalDir.absolutePath}")
+        try {
+            context.assets.open(fileName).use { inputStream ->
+                FileOutputStream(libraryPath).use { outputStream ->
+                    val buffer = ByteArray(1024)
+                    var length: Int
+                    while (inputStream.read(buffer).also { length = it } > 0) {
+                        outputStream.write(buffer, 0, length)
+                    }
+                }
+            }
+            debugLog("SaveAssetToInternalStorage: ${fileName}")
+            checkForFiles(libraryPath)
+            return libraryPath
+        } catch (e: IOException) {
+            debugLog("exception occured during opensc-pkcs11.so file write")
+            return "UHOH"
+        }
+    }
+
     private fun runSample(name: String) {
         val classLoader = Thread.currentThread().contextClassLoader
         val sampleClass = try { classLoader?.loadClass(name) } catch(e:Exception) { null }
@@ -122,13 +177,21 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
             return
         }
         writeToConsole("Running sample '${name}'\n")
-
+        debugLog("Running Sample ${name}")
         thread(name="sample_runner", contextClassLoader = classLoader) {
 
             var isResourcesFound: Boolean = true
             val args = mutableListOf<String?>()
             var resourceNames = mutableListOf<String>()
             val resourceMap = HashMap<String, String>()
+
+            // PKCS11 sample reqs
+            // --endpoint <endpoint>
+            // --cert <path to certificate>
+            // --pkcs11_lib <path to PKCS11 lib>
+            // --pin <user-pin>
+            // --token_label <token-label>
+            // --key_label <key-label>
 
             // All samples require endpoint.txt
             resourceNames.add("endpoint.txt")
@@ -143,6 +206,16 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                 "cognitoconnect.CognitoConnect" -> {
                     resourceNames.add("cognitoIdentity.txt")
                     resourceNames.add("signingRegion.txt")
+                }
+
+                "pkcs11connect.Pkcs11Connect" -> {
+                    resourceNames.add("pkcs11-endpoint.txt")
+                    resourceNames.add("opensc-pkcs11.so")
+                    resourceNames.add("pkcs11-cert.pem")
+                    // resourceNames.add("pkcs11_lib.txt")
+                    resourceNames.add("pkcs11_pin.txt")
+                    resourceNames.add("pkcs11_token_label.txt")
+                    resourceNames.add("pkcs11_key_label.txt")
                 }
             }
 
@@ -165,11 +238,12 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
             }
 
             if(isResourcesFound) {
-                args.addAll(arrayOf("--endpoint", assetContents("endpoint.txt")))
+                // args.addAll(arrayOf("--endpoint", assetContents("endpoint.txt")))
 
                 when(name) {
                     "mqtt5.pubsub.PubSub", "pubsub.PubSub" -> {
                         args.addAll(arrayOf(
+                            "--endpoint", assetContents("endpoint.txt"),
                             "--cert", resourceMap["certificate.pem"],
                             "--key", resourceMap["privatekey.pem"],
                             "--port", assetContentsOr("port.txt", "8883"),
@@ -180,6 +254,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
                     "jobs.JobsSample", "shadow.ShadowSample" -> {
                         args.addAll(arrayOf(
+                            "--endpoint", assetContents("endpoint.txt"),
                             "--cert", resourceMap["certificate.pem"],
                             "--key", resourceMap["privatekey.pem"],
                             "--port", assetContentsOr("port.txt", "8883"),
@@ -189,8 +264,99 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
                     "cognitoconnect.CognitoConnect" -> {
                         args.addAll(arrayOf(
+                            "--endpoint", assetContents("endpoint.txt"),
                             "--signing_region", assetContents("signingRegion.txt"),
                             "--cognito_identity", assetContents("cognitoIdentity.txt")))
+                    }
+
+                    "pkcs11connect.Pkcs11Connect" -> {
+                        // Uncompressing and moving the PKCS11 library from assets folder to the internalDir
+                        // for access by aws-c-io
+                        val libraryPath = SaveAssetToInternalStorage(this, "opensc-pkcs11.so")
+                        // val internalDir: File = this.filesDir
+                        // val libraryPath: String = "${internalDir}/opensc-pkcs11.so"
+                        // debugLog("${internalDir.absolutePath}")
+                        // try {
+                        //     this.assets.open("opensc-pkcs11.so").use { inputStream ->
+                        //         FileOutputStream(libraryPath).use { outputStream ->
+                        //             val buffer = ByteArray(1024)
+                        //             var length: Int
+                        //             while (inputStream.read(buffer).also { length = it } > 0) {
+                        //                 outputStream.write(buffer, 0, length)
+                        //             }
+                        //         }
+                        //     }
+                        //     debugLog("libraryPath")
+                        //     checkForFiles(libraryPath)
+                        // } catch (e: IOException) {
+                        //     debugLog("exception occured during opensc-pkcs11.so file write")
+                        // }
+
+                        val nativeLibraryDir: String = applicationInfo.nativeLibraryDir
+                        val modifiedLibPath = nativeLibraryDir.replace("arm64", "arm64-v8a")
+                        val modifiedPath = nativeLibraryDir.replace("/lib/", "/base.apk!/lib/")
+                        val finalPath = modifiedPath.replace("arm64", "arm64-v8a")
+                        val crtPkcs11Path = finalPath.replace("arm64-v8a", "arm64-v8a/libopensc-pkcs11.so")
+                        val crtGetResourceNamePath = "/lib/arm64-v8a/libopensc-pkcs11.so"
+                        val testPath = nativeLibraryDir + "/libopensc-pkcs11.so"
+                        val cachedPath = resourceMap["opensc-pkcs11.so"]
+
+                        debugLog("nativeLibraryDir")
+                        checkForFiles(nativeLibraryDir)
+                        debugLog("modifiedLibPath")
+                        checkForFiles(modifiedLibPath)
+                        debugLog("finalPath")
+                        checkForFiles(finalPath)
+                        debugLog("crtGetResourceNamePath")
+                        checkForFiles(crtGetResourceNamePath)
+                        debugLog("testPath")
+                        checkForFiles(testPath)
+                        if(cachedPath != null){
+                            debugLog("cached file")
+                            checkForFiles(cachedPath)
+                        }
+
+                        debugLog("Build.SUPPORTED_ABIS: ${Build.SUPPORTED_ABIS.contentToString()}")
+
+                        // debugLog("Try loading from cached ${resourceMap["opensc-pkcs11.so"]}")
+
+                        // Loading using the full path+file of the copied and saved to local cache version of the opensc-pkcs11.so
+                        // file results in a library not accessible from namespace error. This seems to be related to permissions.
+                        // System.load(resourceMap["opensc-pkcs11.so"])
+
+                        // System.Load() will open a specific file at a full path location
+                        // System.Load() with the full path+file name used by System.loadLibrary(opensc-pkcs11.so)
+                        //results in the bad ELF magic error. Indicating the file was found but the library is the wrong arch.
+                        // System.load(crtPkcs11Path)
+
+                        // debugLog("trying System.loadLibrary(aws-crt-jni)")
+                        // System.loadLibrary("aws-crt-jni")
+
+                        // debugLog("trying System.loadLibrary(opensc-pkcs11)")
+                        // System.loadLibrary() loads a library using just the base file name. For some reason it
+                        // appears to add "lib" to the front resulting in "opensc-pkcs11" looking for and opening a file
+                        // named "libopensc-pkcs11.so"
+                        // System.loadLibrary("opensc-pkcs11")
+                        // System.loadLibrary("empty-pkcs11")
+
+                        // debugLog("loaded System.loadLibrary(opensc-pkcs11)")
+
+                        args.addAll(arrayOf(
+                            "--endpoint", assetContents("pkcs11-endpoint.txt"),
+                            "--cert", resourceMap["pkcs11-cert.pem"],
+                            "--pkcs11_lib",
+                            // resourceMap["opensc-pkcs11.so"],
+                            // "opensc-pkcs11.so",
+                            // crtPkcs11Path,
+                            // "empty-pkcs11",
+                            // "opensc-pkcs11",
+                            // crtGetResourceNamePath,
+                            // testPath,
+                            libraryPath,
+                            "--pin", assetContents("pkcs11_pin.txt"),
+                            // "--token_label", assetContents("pkcs11_token_label.txt"),
+                            "--key_label", assetContents("pkcs11_key_label.txt"))
+                            )
                     }
                 }
 
@@ -205,10 +371,24 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                     }
                 } catch (e: Exception) {}
 
-                val main = sampleClass?.getMethod("main", Array<String>::class.java)
+
+                // Check for optional logging level
+                try {
+                    resources.assets.open("verbosity.txt").use { res ->
+                        val cachedName = "${externalCacheDir}/verbosity.txt"
+                        FileOutputStream(cachedName).use { cachedRes ->
+                            res.copyTo(cachedRes)
+                        }
+                        args.addAll(arrayOf("--verbosity", assetContents("verbosity.txt")))
+                        val logLevel = assetContents("verbosity.txt")
+                        writeToConsole("Logging at level: '${logLevel}'\n")
+                    }
+                } catch (e: Exception) {}
+
+                val main = sampleClass.getMethod("main", Array<String>::class.java)
 
                 try {
-                    main?.invoke(null, args.toTypedArray())
+                    main.invoke(null, args.toTypedArray())
                 } catch (e: Exception) {
                     writeToConsole(e.toString())
                 }
