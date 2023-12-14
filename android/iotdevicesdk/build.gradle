@@ -92,7 +92,7 @@ repositories {
 }
 
 dependencies {
-    api 'software.amazon.awssdk.crt:aws-crt-android:0.28.11'
+    api 'software.amazon.awssdk.crt:aws-crt-android:0.29.0'
     implementation 'org.slf4j:slf4j-api:1.7.30'
     implementation 'com.google.code.gson:gson:2.9.0'
     implementation 'androidx.appcompat:appcompat:1.1.0'

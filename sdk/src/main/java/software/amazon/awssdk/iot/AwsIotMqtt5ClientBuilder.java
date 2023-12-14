@@ -36,10 +36,6 @@ import software.amazon.awssdk.crt.utils.PackageInfo;
 
 /**
  * Builders for making MQTT5 clients with different connection methods for AWS IoT Core.
- *
- * MQTT5 support is currently in <b>developer preview</b>.  We encourage feedback at all times, but feedback during the
- * preview window is especially valuable in shaping the final product.  During the preview period we may make
- * backwards-incompatible changes to the public API, but in general, this is something we will try our best to avoid.
  */
 public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtResource {
     private static Long DEFAULT_WEBSOCKET_MQTT_PORT = 443L;
