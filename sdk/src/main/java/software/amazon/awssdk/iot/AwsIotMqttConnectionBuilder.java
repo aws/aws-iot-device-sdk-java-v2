@@ -8,6 +8,8 @@ package software.amazon.awssdk.iot;
 import software.amazon.awssdk.crt.utils.PackageInfo;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.function.Consumer;
 
 import software.amazon.awssdk.crt.CrtResource;
@@ -626,6 +628,12 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      * @return {@link AwsIotMqttConnectionBuilder}
      */
     public AwsIotMqttConnectionBuilder withCustomAuthorizer(String username, String authorizerName, String authorizerSignature, String password, String tokenKeyName, String tokenValue) {
+        if (authorizerSignature != null || tokenKeyName != null || tokenValue != null) {
+            if (tokenKeyName == null || tokenValue == null || authorizerSignature == null) {
+                throw new RuntimeException("Token-based custom authentication requires all token-related properties to be set");
+            }
+        }
+
         isUsingCustomAuthorizer = true;
         String usernameString = "";
         Boolean addedStringToUsername = false;
@@ -642,23 +650,21 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
             usernameString = addUsernameParameter(usernameString, authorizerName, "x-amz-customauthorizer-name=", addedStringToUsername);
             addedStringToUsername = true;
         }
+
         if (authorizerSignature != null)
         {
+            if (!authorizerSignature.contains("%")) {
+                try {
+                    authorizerSignature = URLEncoder.encode(authorizerSignature, StandardCharsets.UTF_8.toString());
+                } catch (UnsupportedEncodingException uee) {
+                    throw new CrtRuntimeException(uee.toString());
+                }
+            }
+            
             usernameString = addUsernameParameter(usernameString, authorizerSignature, "x-amz-customauthorizer-signature=", addedStringToUsername);
-            if (tokenKeyName == null || tokenValue == null) {
-                Log.log(
-                    LogLevel.Warn,
-                    LogSubject.MqttClient,
-                    "Signed custom authorizers with signature will not work without a token key name and " +
-                    "token value. Your connection may be rejected/stalled on the IoT Core side due to this. Please " +
-                    "use the non-deprecate API and pass both the token key name and token value to connect to a " +
-                    "signed custom authorizer");
-            }
         }
-        if (authorizerSignature != null || tokenKeyName != null || tokenValue != null) {
-            if (tokenKeyName == null || tokenValue == null) {
-                throw new RuntimeException("Token-based custom authentication requires all token-related properties to be set");
-            }
+
+        if (tokenKeyName != null && tokenValue != null) {
             usernameString = addUsernameParameter(usernameString, tokenValue, tokenKeyName + "=", addedStringToUsername);
         }
 

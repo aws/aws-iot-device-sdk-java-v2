@@ -35,6 +35,7 @@ public class MqttBuilderTest {
     private String mqtt5IoTCoreSigningAuthorizerToken;
     private String mqtt5IoTCoreSigningAuthorizerTokenKeyName;
     private String mqtt5IoTCoreSigningAuthorizerTokenSignature;
+    private String mqtt5IoTCoreSigningAuthorizerTokenSignatureUnencoded;
 
     private void populateTestingEnvironmentVariables() {
         mqtt5IoTCoreHost = System.getenv("AWS_TEST_MQTT5_IOT_CORE_HOST");
@@ -50,6 +51,7 @@ public class MqttBuilderTest {
         mqtt5IoTCoreSigningAuthorizerToken = System.getenv("AWS_TEST_MQTT5_IOT_CORE_SIGNING_AUTHORIZER_TOKEN");
         mqtt5IoTCoreSigningAuthorizerTokenKeyName = System.getenv("AWS_TEST_MQTT5_IOT_CORE_SIGNING_AUTHORIZER_TOKEN_KEY_NAME");
         mqtt5IoTCoreSigningAuthorizerTokenSignature = System.getenv("AWS_TEST_MQTT5_IOT_CORE_SIGNING_AUTHORIZER_TOKEN_SIGNATURE");
+        mqtt5IoTCoreSigningAuthorizerTokenSignatureUnencoded = System.getenv("AWS_TEST_MQTT5_IOT_CORE_SIGNING_AUTHORIZER_TOKEN_SIGNATURE_UNENCODED");
     }
 
     private Consumer<WebsocketHandshakeTransformArgs> websocketTransform = new Consumer<WebsocketHandshakeTransformArgs>() {
@@ -138,6 +140,42 @@ public class MqttBuilderTest {
         }
     }
 
+    /* MQTT311 Custom Auth (with signing and unencoded signature) connect */
+    @Test
+    public void ConnIoT_CustomAuth_UC2_unencoded()
+    {
+        assumeTrue(mqtt5IoTCoreHost != null);
+        assumeTrue(mqtt5IoTCoreSigningAuthorizerName != null);
+        assumeTrue(mqtt5IoTCoreSigningAuthorizerUsername != null);
+        assumeTrue(mqtt5IoTCoreSigningAuthorizerPassword != null);
+        assumeTrue(mqtt5IoTCoreSigningAuthorizerToken != null);
+        assumeTrue(mqtt5IoTCoreSigningAuthorizerTokenKeyName != null);
+        assumeTrue(mqtt5IoTCoreSigningAuthorizerTokenSignatureUnencoded != null);
+
+        try {
+            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newDefaultBuilder();
+            builder.withEndpoint(mqtt5IoTCoreHost);
+            String clientId = "test-" + UUID.randomUUID().toString();
+            builder.withClientId(clientId);
+            builder.withCustomAuthorizer(
+                    mqtt5IoTCoreSigningAuthorizerUsername,
+                    mqtt5IoTCoreSigningAuthorizerName,
+                    mqtt5IoTCoreSigningAuthorizerTokenSignatureUnencoded,
+                    mqtt5IoTCoreSigningAuthorizerPassword,
+                    mqtt5IoTCoreSigningAuthorizerTokenKeyName,
+                    mqtt5IoTCoreSigningAuthorizerToken);
+            MqttClientConnection connection = builder.build();
+            builder.close();
+
+            connection.connect().get();
+            connection.disconnect().get();
+            connection.close();
+
+        } catch (Exception ex) {
+            fail(ex);
+        }
+    }
+
     /* Custom Auth (no signing) connect - Websockets */
     @Test
     public void ConnIoT_CustomAuth_UC3()
@@ -208,6 +246,49 @@ public class MqttBuilderTest {
                 mqtt5IoTCoreSigningAuthorizerPassword,
                 mqtt5IoTCoreSigningAuthorizerTokenKeyName,
                 mqtt5IoTCoreSigningAuthorizerToken);
+
+            MqttClientConnection connection = builder.build();
+            builder.close();
+
+            connection.connect().get();
+            connection.disconnect().get();
+            connection.close();
+
+        } catch (Exception ex) {
+            fail(ex);
+        }
+    }
+
+    /* Custom Auth (with signing and an unencoded signature) connect - Websockets */
+    @Test
+    public void ConnIoT_CustomAuth_UC4_unencoded()
+    {
+        assumeTrue(mqtt5IoTCoreHost != null);
+        assumeTrue(mqtt5IoTCoreRegion != null);
+        assumeTrue(mqtt5IoTCoreSigningAuthorizerName != null);
+        assumeTrue(mqtt5IoTCoreSigningAuthorizerUsername != null);
+        assumeTrue(mqtt5IoTCoreSigningAuthorizerPassword != null);
+        assumeTrue(mqtt5IoTCoreSigningAuthorizerToken != null);
+        assumeTrue(mqtt5IoTCoreSigningAuthorizerTokenKeyName != null);
+        assumeTrue(mqtt5IoTCoreSigningAuthorizerTokenSignatureUnencoded != null);
+
+        try {
+            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newDefaultBuilder();
+            builder.withEndpoint(mqtt5IoTCoreHost);
+            String clientId = "test-" + UUID.randomUUID().toString();
+            builder.withClientId(clientId);
+
+            builder.withWebsockets(true);
+            builder.withWebsocketSigningRegion(mqtt5IoTCoreRegion);
+            builder.withWebsocketHandshakeTransform(websocketTransform);
+
+            builder.withCustomAuthorizer(
+                    mqtt5IoTCoreSigningAuthorizerUsername,
+                    mqtt5IoTCoreSigningAuthorizerName,
+                    mqtt5IoTCoreSigningAuthorizerTokenSignatureUnencoded,
+                    mqtt5IoTCoreSigningAuthorizerPassword,
+                    mqtt5IoTCoreSigningAuthorizerTokenKeyName,
+                    mqtt5IoTCoreSigningAuthorizerToken);
 
             MqttClientConnection connection = builder.build();
             builder.close();
