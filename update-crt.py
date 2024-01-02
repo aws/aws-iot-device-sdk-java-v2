@@ -19,7 +19,7 @@ import subprocess
 ## 5. `Python update-crt.py --check_consistency`
 ##     Make sure crt and sdk version specified in the files are consistent. The script will not update any file with this option.
 
-VERSION_PATTERN = '\d+\.\d+\.\d+'
+VERSION_PATTERN = r'\d+\.\d+\.\d+'
 
 parser = argparse.ArgumentParser(
     description="Update files containing hard-coded aws-crt-java version numbers.")
