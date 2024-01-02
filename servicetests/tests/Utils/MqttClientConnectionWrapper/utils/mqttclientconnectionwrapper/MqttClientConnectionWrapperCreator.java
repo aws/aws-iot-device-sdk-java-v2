@@ -29,7 +29,7 @@ final public class MqttClientConnectionWrapperCreator {
         try (AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(cert, key)) {
             builder.withClientId(clientId)
                 .withEndpoint(endpoint)
-                .withPort((short)port)
+                .withPort(port)
                 .withCleanSession(true);
             return new Mqtt3ClientConnectionWrapper(builder);
         } catch (Exception ex) {
