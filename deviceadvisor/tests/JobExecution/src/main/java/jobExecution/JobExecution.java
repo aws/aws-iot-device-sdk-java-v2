@@ -39,7 +39,7 @@ import DATestUtils.DATestUtils;
 
 public class JobExecution {
     static String clientId = "test-" + UUID.randomUUID().toString();
-    static short port = 8883;
+    static int port = 8883;
 
     static MqttClientConnection connection;
     static IotJobsClient jobs;
