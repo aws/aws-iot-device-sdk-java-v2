@@ -91,7 +91,7 @@ public class JavaKeystoreConnect {
             builder.withConnectionEventCallbacks(callbacks)
                 .withClientId(cmdData.input_clientId)
                 .withEndpoint(cmdData.input_endpoint)
-                .withPort((short)cmdData.input_port)
+                .withPort(cmdData.input_port)
                 .withCleanSession(true)
                 .withProtocolOperationTimeoutMs(60000);
             if (cmdData.input_proxyHost != "" && cmdData.input_proxyPort > 0) {

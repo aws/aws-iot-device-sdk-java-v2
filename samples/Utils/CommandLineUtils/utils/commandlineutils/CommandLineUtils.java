@@ -234,6 +234,10 @@ public class CommandLineUtils {
         }
     }
 
+    private void parseMqttVersion(SampleCommandLineData returnData) {
+        returnData.input_mqtt_version = Integer.parseInt(getCommandOrDefault(m_cmd_mqtt_version, "3"));
+    }
+
     private void parseCommonMQTTCommands(SampleCommandLineData returnData) {
         returnData.input_endpoint = getCommandRequired(m_cmd_endpoint);
         returnData.input_ca = getCommandOrDefault(m_cmd_ca_file, "");
@@ -290,6 +294,7 @@ public class CommandLineUtils {
         public String input_ca;
         public String input_clientId;
         public int input_port;
+        public int input_mqtt_version;
         // Proxy
         public String input_proxyHost;
         public int input_proxyPort;
@@ -315,6 +320,10 @@ public class CommandLineUtils {
         // Services (Shadow, Jobs, Greengrass, etc)
         public String input_thingName;
         public String input_mode;
+        // Shadow specifics
+        public String input_shadowProperty;
+        public String input_shadowValue;
+        public String input_shadowName;
         // Java Keystore
         public String input_keystore;
         public String input_keystorePassword;
@@ -458,6 +467,7 @@ public class CommandLineUtils {
         sendArguments(args);
 
         SampleCommandLineData returnData = new SampleCommandLineData();
+        parseMqttVersion(returnData);
         parseCommonLoggingCommands(returnData);
         parseCommonMQTTCommands(returnData);
         parseKeyAndCertCommands(returnData);
@@ -532,6 +542,7 @@ public class CommandLineUtils {
         sendArguments(args);
 
         SampleCommandLineData returnData = new SampleCommandLineData();
+        parseMqttVersion(returnData);
         parseCommonLoggingCommands(returnData);
         parseCommonMQTTCommands(returnData);
         parseKeyAndCertCommands(returnData);
@@ -615,8 +626,27 @@ public class CommandLineUtils {
 
     public SampleCommandLineData parseSampleInputShadow(String [] args)
     {
-        // Shadow and Jobs use the same inputs currently
-        return parseSampleInputJobs(args);
+        addCommonLoggingCommands();
+        addCommonMQTTCommands();
+        addKeyAndCertCommands();
+        addClientIdAndPort();
+        registerCommand(m_cmd_thing_name, "<str>", "The name of the IoT thing.");
+        registerCommand(m_cmd_shadow_property, "<str>", "The property in Shadow to update.");
+        registerCommand(m_cmd_shadow_value, "<str>", "The value for Shadow property.");
+        registerCommand(m_cmd_shadow_name, "<str>", "The name of Named Shadow.");
+        sendArguments(args);
+
+        SampleCommandLineData returnData = new SampleCommandLineData();
+        parseMqttVersion(returnData);
+        parseCommonLoggingCommands(returnData);
+        parseCommonMQTTCommands(returnData);
+        parseKeyAndCertCommands(returnData);
+        parseClientIdAndPort(returnData);
+        returnData.input_thingName = getCommandRequired(m_cmd_thing_name);
+        returnData.input_shadowProperty = getCommand(m_cmd_shadow_property);
+        returnData.input_shadowValue = getCommand(m_cmd_shadow_value);
+        returnData.input_shadowName = getCommand(m_cmd_shadow_name);
+        return returnData;
     }
 
     public SampleCommandLineData parseSampleInputWebsocketConnect(String [] args)
@@ -749,6 +779,7 @@ public class CommandLineUtils {
     /**
      * Constants for commonly used/needed commands
      */
+    private static final String m_cmd_mqtt_version = "mqtt_version";
     private static final String m_cmd_log_destination = "log_destination";
     private static final String m_cmd_log_file_name = "log_file_name";
     private static final String m_cmd_verbosity = "verbosity";
@@ -794,6 +825,9 @@ public class CommandLineUtils {
     private static final String m_cmd_fleet_template_csr = "csr";
     private static final String m_cmd_thing_name = "thing_name";
     private static final String m_cmd_mode = "mode";
+    private static final String m_cmd_shadow_property = "shadow_property";
+    private static final String m_cmd_shadow_value = "shadow_value";
+    private static final String m_cmd_shadow_name = "shadow_name";
     private static final String m_cmd_group_identifier = "group_identifier";
     private static final String m_cmd_username = "username";
     private static final String m_cmd_password = "password";

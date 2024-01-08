@@ -171,7 +171,7 @@ public class BasicDiscovery {
 
                     final AwsIotMqttConnectionBuilder connectionBuilder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(input_certPath, input_keyPath)
                             .withClientId(input_thingName)
-                            .withPort(port.shortValue())
+                            .withPort(port)
                             .withEndpoint(dnsOrIp)
                             .withConnectionEventCallbacks(new MqttClientConnectionEvents() {
                                 @Override

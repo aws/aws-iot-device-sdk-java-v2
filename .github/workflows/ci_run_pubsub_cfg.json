@@ -1,8 +1,8 @@
 {
     "language": "Java",
-    "sample_file": "samples/BasicPubSub",
-    "sample_region": "us-east-1",
-    "sample_main_class": "pubsub.PubSub",
+    "runnable_file": "samples/BasicPubSub",
+    "runnable_region": "us-east-1",
+    "runnable_main_class": "pubsub.PubSub",
     "arguments": [
         {
             "name": "--endpoint",

@@ -4,6 +4,8 @@
  */
 package software.amazon.awssdk.iot;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -29,14 +31,11 @@ import software.amazon.awssdk.crt.mqtt5.Mqtt5ClientOptions;
 import software.amazon.awssdk.crt.mqtt5.Mqtt5WebsocketHandshakeTransformArgs;
 import software.amazon.awssdk.crt.mqtt5.Mqtt5ClientOptions.Mqtt5ClientOptionsBuilder;
 import software.amazon.awssdk.crt.mqtt5.packets.ConnectPacket.ConnectPacketBuilder;
+import software.amazon.awssdk.crt.mqtt5.TopicAliasingOptions;
 import software.amazon.awssdk.crt.utils.PackageInfo;
 
 /**
  * Builders for making MQTT5 clients with different connection methods for AWS IoT Core.
- *
- * MQTT5 support is currently in <b>developer preview</b>.  We encourage feedback at all times, but feedback during the
- * preview window is especially valuable in shaping the final product.  During the preview period we may make
- * backwards-incompatible changes to the public API, but in general, this is something we will try our best to avoid.
  */
 public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtResource {
     private static Long DEFAULT_WEBSOCKET_MQTT_PORT = 443L;
@@ -611,6 +610,17 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
     }
 
     /**
+     * Overrides how the MQTT5 client should behave with respect to MQTT5 topic aliasing.
+     *
+     * @param options - How the MQTT5 client should use topic aliasing
+     * @return - The AwsIotMqtt5ClientBuilder
+     */
+    public AwsIotMqtt5ClientBuilder withTopicAliasingOptions(TopicAliasingOptions options) {
+        this.config.withTopicAliasingOptions(options);
+        return this;
+    }
+
+    /**
      * Constructs an MQTT5 client object configured with the options set.
      * @return A MQTT5ClientOptions
      */
@@ -834,10 +844,11 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
         if (config != null) {
             boolean usingSigning = false;
             if (config.tokenValue != null || config.tokenKeyName != null || config.tokenSignature != null) {
-                usingSigning = true;
                 if (config.tokenValue == null || config.tokenKeyName == null || config.tokenSignature == null) {
                     throw new Exception("Token-based custom authentication requires all token-related properties to be set");
                 }
+
+                usingSigning = true;
             }
 
             String username = config.username;
@@ -877,9 +888,16 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
             }
 
             addToUsernameParam(paramList, "x-amz-customauthorizer-name", config.authorizerName);
+            
             if (usingSigning == true) {
                 addToUsernameParam(paramList, config.tokenKeyName, config.tokenValue);
-                addToUsernameParam(paramList, "x-amz-customauthorizer-signature", config.tokenSignature);
+
+                String encodedSignature = config.tokenSignature;
+                if (!encodedSignature.contains("%")) {
+                    encodedSignature = URLEncoder.encode(encodedSignature, StandardCharsets.UTF_8.toString());
+                }
+
+                addToUsernameParam(paramList, "x-amz-customauthorizer-signature", encodedSignature);
             }
         }
 

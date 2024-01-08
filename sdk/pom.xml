@@ -42,7 +42,7 @@
     <dependency>
       <groupId>software.amazon.awssdk.crt</groupId>
       <artifactId>aws-crt</artifactId>
-      <version>0.24.1</version>
+      <version>0.29.5</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -65,7 +65,7 @@
     <dependency>
       <groupId>org.json</groupId>
       <artifactId>json</artifactId>
-      <version>20230227</version>
+      <version>20231013</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -73,11 +73,6 @@
       <artifactId>gson</artifactId>
       <version>2.9.0</version>
       <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-core</artifactId>
-      <version>2.12.0</version>
     </dependency>
   </dependencies>
 

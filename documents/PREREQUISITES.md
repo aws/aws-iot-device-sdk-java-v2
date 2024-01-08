@@ -289,3 +289,20 @@ Or using the command line:
 3. After CMake has installed, close the terminal and reopen it
 4. Type `cmake --version` to confirm CMake is installed.
 
+## Set ANDROID_HOME
+Below are instructions on how you can set `ANDROID_HOME`, which varies from depending on whether you are on Windows or are on MacOS/Linux:
+
+### Windows
+1. Open "Edit the system environment variable"
+2. Click "New" to create new environment variable
+   - variable name: `ANDROID_HOME`
+   - variable value: `<android_sdk_path>` (example: `C:\Users\YourUsername\AppData\Local\Android\Sdk`)
+3. Press "Ok" to save the changes
+4. re-open the command prompt for the environment variables to apply
+
+### MacOS and Linux
+Run the following command to set the JAVA_PATH
+``` sh
+# (example: "/Users/YourUsername/Library/Android/sdk")
+export ANDROID_HOME=<android_sdk_path>
+```

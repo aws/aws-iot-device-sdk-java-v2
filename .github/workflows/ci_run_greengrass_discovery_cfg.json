@@ -1,8 +1,8 @@
 {
     "language": "Java",
-    "sample_file": "samples/Greengrass",
-    "sample_region": "us-east-1",
-    "sample_main_class": "greengrass.BasicDiscovery",
+    "runnable_file": "samples/Greengrass",
+    "runnable_region": "us-east-1",
+    "runnable_main_class": "greengrass.BasicDiscovery",
     "arguments": [
         {
             "name": "--cert",
