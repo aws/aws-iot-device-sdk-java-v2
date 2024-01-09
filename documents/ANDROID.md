@@ -28,6 +28,7 @@ a dependency of the aws-iot-device-sdk-android library.
   * [Consuming from Maven](#consuming-from-maven)
   * [Consuming from locally installed](#consuming-from-locally-installed)
 * [Samples App](#samples-app)
+* [PKCS#11](#pkcs11)
 
 ## Installation
 
@@ -94,3 +95,11 @@ Look up the latest SDK version here: https://github.com/aws/aws-iot-device-sdk-j
 ## Samples App
 [Android IoT Samples App README](../samples/Android/README.md)
 
+## PKCS#11
+Connecting using PKCS#11 requires a PKCS#11 library which the user must supply. There are requirements the library must meet:
+* The PKCS#11 library **must** be compiled for Android and for use on the architecture of the target device.
+* The PKCS#11 library **must** have access to the PKCS#11 compatible smart card or Hardware Security Module (HSM) for storage and access to the private key file.
+* The path to the library needs to be provided to the builder for it to load and use the PKCS#11 library.
+* The PKCS#11 library must not be compressed (When packaging assets into an Android APK, the assets are routinely compressed) and if it is compressed, must be uncompressed before providing the file location.
+
+A java sample using PKCS#11 can be found here: [Java PKCS#11 Sample](../samples/Pkcs11Connect/README.md)
