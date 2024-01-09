@@ -99,7 +99,7 @@ Look up the latest SDK version here: https://github.com/aws/aws-iot-device-sdk-j
 Connecting using PKCS#11 requires a PKCS#11 library which the user must supply. There are requirements the library must meet:
 * The PKCS#11 library **must** be compiled for Android and for use on the architecture of the target device.
 * The PKCS#11 library **must** have access to the PKCS#11 compatible smart card or Hardware Security Module (HSM) for storage and access to the private key file.
-* The path to the library needs to be provided to the builder for it to load and use the PKCS#11 library.
+* The path to the library needs to be provided to the [AwsIotMqtt5ClientBuilder](https://github.com/aws/aws-iot-device-sdk-java-v2/blob/92e9ff7dff1cdb191b16c8e52710cc731df04c08/sdk/src/main/java/software/amazon/awssdk/iot/AwsIotMqtt5ClientBuilder.java#L109C24-L109C24) for it to load and use the PKCS#11 library. ([The PKCS#11 Sample](../samples/Pkcs11Connect/README.md) can be used as a reference)
 * The PKCS#11 library must not be compressed (When packaging assets into an Android APK, the assets are routinely compressed) and if it is compressed, must be uncompressed before providing the file location.
 
 A java sample using PKCS#11 can be found here: [Java PKCS#11 Sample](../samples/Pkcs11Connect/README.md)
