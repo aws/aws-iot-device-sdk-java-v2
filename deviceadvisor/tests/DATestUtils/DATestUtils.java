@@ -5,7 +5,7 @@ import java.util.UUID;
 public class DATestUtils {
 
     public enum TestType {
-        CONNECT, SUB_PUB, SHADOW
+        CONNECT, SUB_PUB, SHADOW, JOBS
     }
 
     private final static String ENV_ENDPONT = "DA_ENDPOINT";
@@ -16,6 +16,7 @@ public class DATestUtils {
     private final static String ENV_SHADOW_PROPERTY = "DA_SHADOW_PROPERTY";
     private final static String ENV_SHADOW_VALUE_SET = "DA_SHADOW_VALUE_SET";
     private final static String ENV_SHADOW_VALUE_DEFAULT = "DA_SHADOW_VALUE_DEFAULT";
+    private final static String ENV_SHADOW_NAME = "DA_SHADOW_NAME";
 
     public static String endpoint;
     public static String certificatePath;
@@ -24,6 +25,7 @@ public class DATestUtils {
     public static String thing_name;
     public static String shadowProperty;
     public static String shadowValue;
+    public static String shadowName;
 
     public static Boolean init(TestType type)
     {
@@ -34,20 +36,24 @@ public class DATestUtils {
         thing_name = System.getenv(ENV_THING_NAME);
         shadowProperty = System.getenv(ENV_SHADOW_PROPERTY);
         shadowValue = System.getenv(ENV_SHADOW_VALUE_SET);
+        shadowName = System.getenv(ENV_SHADOW_NAME);
+
         if (endpoint.isEmpty() || certificatePath.isEmpty() || keyPath.isEmpty())
         {
             return false;
         }
-        if (topic.isEmpty() && type == TestType.SUB_PUB)
+
+        if (type == TestType.SUB_PUB && topic.isEmpty())
         {
             return false;
         }
-        if ((thing_name.isEmpty() || shadowProperty.isEmpty() || shadowValue.isEmpty()) && type == TestType.SHADOW)
+        if (type == TestType.SHADOW && (thing_name.isEmpty() || shadowProperty.isEmpty() || shadowValue.isEmpty()))
         {
+            return false;
+        }
+        if (type == TestType.JOBS && thing_name.isEmpty()) {
             return false;
         }
         return true;
-
     }
-
 }

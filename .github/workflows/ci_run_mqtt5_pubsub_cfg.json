@@ -1,8 +1,8 @@
 {
     "language": "Java",
-    "sample_file": "samples/Mqtt5/PubSub",
-    "sample_region": "us-east-1",
-    "sample_main_class": "mqtt5.pubsub.PubSub",
+    "runnable_file": "samples/Mqtt5/PubSub",
+    "runnable_region": "us-east-1",
+    "runnable_main_class": "mqtt5.pubsub.PubSub",
     "arguments": [
         {
             "name": "--endpoint",

@@ -14,6 +14,7 @@ import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
 import software.amazon.awssdk.iot.iotshadow.IotShadowClient;
 import software.amazon.awssdk.iot.iotshadow.model.ShadowState;
 import software.amazon.awssdk.iot.iotshadow.model.UpdateShadowRequest;
+import software.amazon.awssdk.iot.iotshadow.model.UpdateNamedShadowRequest;
 
 import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
@@ -42,24 +43,45 @@ public class ShadowUpdate {
             put(DATestUtils.shadowProperty, DATestUtils.shadowValue);
         }};
 
-
         // Publish the request
         return shadow.PublishUpdateShadow(request, QualityOfService.AT_MOST_ONCE);
     }
 
+    static CompletableFuture<Integer> changeNamedShadowValue() {
+        // build a request to let the service know our current value and desired value, and that we only want
+        // to update if the version matches the version we know about
+        UpdateNamedShadowRequest request = new UpdateNamedShadowRequest();
+        request.thingName = DATestUtils.thing_name;
+        request.state = new ShadowState();
+        request.state.reported = new HashMap<String, Object>() {{
+           put(DATestUtils.shadowProperty, DATestUtils.shadowValue);
+        }};
+        request.state.desired = new HashMap<String, Object>() {{
+            put(DATestUtils.shadowProperty, DATestUtils.shadowValue);
+        }};
+        request.shadowName = DATestUtils.shadowName;
+
+        // Publish the request
+        return shadow.PublishUpdateNamedShadow(request, QualityOfService.AT_MOST_ONCE);
+    }
+
     public static void main(String[] args) {
+        Boolean isNamedShadow = false;
+        if (args.length > 0 && args[0].equals("--named-shadow"))
+        {
+            isNamedShadow = true;
+        }
+
         // Set vars
-        if(!DATestUtils.init(DATestUtils.TestType.SUB_PUB))
+        if(!DATestUtils.init(DATestUtils.TestType.SHADOW))
         {
             throw new RuntimeException("Failed to initialize environment variables.");
         }
 
         try(AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(DATestUtils.certificatePath, DATestUtils.keyPath)) {
-
-
             builder.withClientId(clientId)
                     .withEndpoint(DATestUtils.endpoint)
-                    .withPort((short)port)
+                    .withPort(port)
                     .withCleanSession(true)
                     .withProtocolOperationTimeoutMs(60000);
 
@@ -73,7 +95,14 @@ public class ShadowUpdate {
                     throw new RuntimeException("Exception occurred during connect", ex);
                 }
 
-                changeShadowValue().get();
+                if (isNamedShadow)
+                {
+                    changeNamedShadowValue().get();
+                }
+                else
+                {
+                    changeShadowValue().get();
+                }
 
                 CompletableFuture<Void> disconnected = connection.disconnect();
                 disconnected.get();

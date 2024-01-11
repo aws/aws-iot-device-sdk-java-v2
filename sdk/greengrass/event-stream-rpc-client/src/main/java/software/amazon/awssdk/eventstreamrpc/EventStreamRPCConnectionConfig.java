@@ -52,12 +52,9 @@ public class EventStreamRPCConnectionConfig {
         this.port = port;
         this.connectMessageAmender = connectMessageAmender;
 
-        //perform cast to throw exception here if port value is out of short value range
-        final short shortPort = (short)port;
-
         //bit of C++ RAII here, validate what we can
         if (clientBootstrap == null || eventLoopGroup == null || socketOptions == null ||
-            host == null || host.isEmpty() || port < 0) {
+            host == null || host.isEmpty()) {
             throw new IllegalArgumentException("EventStreamRPCConnectionConfig values are invalid!");
         }
     }

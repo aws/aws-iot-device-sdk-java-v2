@@ -1,6 +1,7 @@
 import java.util.regex.Pattern
 
 apply plugin: 'com.android.library'
+apply plugin: 'signing' // Needed for OpenPGP signatures required to publish to MAven Central Repository
 
 Properties getGitTag() {
     def gitTag = "git describe --tags".execute().text.trim()
@@ -50,7 +51,6 @@ android {
         targetSdkVersion 30
         versionCode = gitVersionCode()
         versionName = gitVersionName()
-        ndkVersion "23.1.7779620"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'consumer-rules.pro'
     }
@@ -71,10 +71,12 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField("String", "VERSION_NAME", "\"" + gitVersionName() + "\"")
         }
         debug {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField("String", "VERSION_NAME", "\"" + gitVersionName() + "\"")
         }
     }
 
@@ -82,7 +84,6 @@ android {
         sourceCompatibility = 1.8
         targetCompatibility = 1.8
     }
-    ndkVersion '23.1.7779620'
 }
 
 repositories {
@@ -91,7 +92,7 @@ repositories {
 }
 
 dependencies {
-    api 'software.amazon.awssdk.crt:aws-crt-android:0.25.0'
+    api 'software.amazon.awssdk.crt:aws-crt-android:0.29.5'
     implementation 'org.slf4j:slf4j-api:1.7.30'
     implementation 'com.google.code.gson:gson:2.9.0'
     implementation 'androidx.appcompat:appcompat:1.1.0'
@@ -128,25 +129,6 @@ task androidDocsJar(type: Jar) {
 
 afterEvaluate {
     publishing {
-        publications {
-            release(MavenPublication) {
-                from components.release
-
-                groupId = 'software.amazon.awssdk.iotdevicesdk'
-                artifactId = 'aws-iot-device-sdk-android'
-                version = android.defaultConfig.versionName
-            }
-
-
-            debug(MavenPublication) {
-                from components.debug
-
-                groupId = 'software.amazon.awssdk.iotdevicesdk'
-                artifactId = 'aws-iot-device-sdk-android'
-                version = '1.0.0-SNAPSHOT'
-            }
-
-        }
         repositories {
             maven {
                 def snapshotRepo = "https://aws.oss.sonatype.org/content/repositories/snapshots"
@@ -154,7 +136,51 @@ afterEvaluate {
                 url = version.endsWith('SNAPSHOT') ? snapshotRepo : releaseRepo
             }
             mavenLocal()
+        }
 
+        publications {
+            release(MavenPublication) {
+                from components.release
+
+                groupId = 'software.amazon.awssdk.iotdevicesdk'
+                artifactId = 'aws-iot-device-sdk-android'
+                version = project.hasProperty('newVersion') ? project.property('newVersion') : android.defaultConfig.versionName
+
+                pom {
+                    name.set("software.amazon.awssdk.iotdevicesdk:aws-iot-device-sdk-android")
+                    description.set("AWS IoT Device SDK Java Android")
+                    url.set("https://github.com/aws/aws-iot-device-sdk-java-v2")
+                    licenses {
+                        license {
+                            name.set("The Apache License, Version 2.0")
+                            url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                        }
+                    }
+                    developers {
+                        developer {
+                            id.set("iot-device-sdk-team")
+                            name.set("AWS IoT Device SDK Team")
+                            email.set("iot-device-sdk-team@amazon.com")
+                        }
+                    }
+                    scm {
+                        connection.set("scm:git:git://github.com/aws/aws-iot-device-sdk-java-v2.git")
+                        developerConnection.set("scm:git:ssh://github.com/aws/aws-iot-device-sdk-java-v2.git")
+                        url.set("https://github.com/aws/aws-iot-device-sdk-java-v2")
+                    }
+                }
+            }
+        }
+
+        if (project.hasProperty("signingKey") && project.hasProperty("signingPassword")) {
+            signing {
+                useInMemoryPgpKeys(
+                    (String) project.property("signingKey"),
+                    (String) project.property("signingPassword")
+                )
+                println("key=" + project.property("signingKey"))
+                sign(publications)
+            }
         }
     }
 }

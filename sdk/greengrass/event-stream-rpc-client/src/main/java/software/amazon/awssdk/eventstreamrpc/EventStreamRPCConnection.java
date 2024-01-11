@@ -89,7 +89,7 @@ public class EventStreamRPCConnection implements AutoCloseable {
         }
         final CompletableFuture<Void> initialConnectFuture = new CompletableFuture<>();
 
-        ClientConnection.connect(config.getHost(), (short) config.getPort(), config.getSocketOptions(),
+        ClientConnection.connect(config.getHost(), config.getPort(), config.getSocketOptions(),
                 config.getTlsContext(), config.getClientBootstrap(), new ClientConnectionHandler() {
                     @Override
                     protected void onConnectionSetup(final ClientConnection clientConnection, int errorCode) {
