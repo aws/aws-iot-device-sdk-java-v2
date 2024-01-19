@@ -29,9 +29,17 @@ files linked below.
 ### Files required by all samples:
 * `endpoint.txt` - IoT ATS Endpoint
 
-### Required to run BasicPubSub, Mqtt5PubSub, Jobs, and Shadow samples
+### Required to run BasicPubSub and Mqtt5PubSub samples
 * `certificate.pem` - IoT Thing Certificate
 * `privatekey.pem` - IoT Thing Private Key
+###### Optional Files for BasicPubSub and Mqtt5PubSub samples
+* `topic.txt` - specifies --topic CLI argument
+* `message.txt` - specifies --message CLI argument
+
+### Required to run Jobs and Shadow sample
+* `certificate.pem` - IoT Thing Certificate
+* `privatekey.pem` - IoT Thing Private Key
+* `thingName.txt` - IoT Thing Name used by sample
 
 ### Required to run Cognito Client sample:
 * `cognitoIdentity.txt` - Cognito identity ID
@@ -40,10 +48,7 @@ files linked below.
 ### Optional files:
 * `rootca.pem` - override the default system trust store
 * `clientId.txt` - specifies --clientId CLI argument
-* `topic.txt` - specifies --topic CLI argument
-* `message.txt` - specifies --message CLI argument
 * `port.txt` - specifies --port CLI argument
-* `thingName.txt` - specifies --thingName CLI argument
 
 # Build and install sample app
 
