@@ -134,7 +134,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     Map<String, String> resourceMap = new HashMap<>();
 
-    // Copy all sample asset files to cache and store filename/location to resourceMap
+    // Load files from assets folder for use into resourceMap
     private void loadAssets(){
 
         writeToConsole("Loading Asset Files:\n");
