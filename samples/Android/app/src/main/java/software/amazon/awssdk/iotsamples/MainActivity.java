@@ -291,7 +291,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                         onSampleComplete();
                         return;
                     }
-                    new Thread(new SampleRunnable(sampleArgs(sampleClassName), main), "sample_runner").start();
+                    new Thread(new SampleRunnable(args, main), "sample_runner").start();
                 }
             } catch (Exception e) {
                 writeToConsole("Exception encountered: " + e.toString());
