@@ -151,6 +151,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         resourceNames.add("message.txt");
         resourceNames.add("thingName.txt");
         resourceNames.add("rootca.pem");
+        resourceNames.add("verbosity.txt");
 
         // Copy to cache and store file locations for file assets and contents for .txt assets
         for (String resourceName : resourceNames) {
