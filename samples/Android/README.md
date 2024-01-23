@@ -49,6 +49,7 @@ files linked below.
 * `rootca.pem` - override the default system trust store
 * `clientId.txt` - specifies --clientId CLI argument
 * `port.txt` - specifies --port CLI argument
+* `verbosity.txt` - specifies --verbosity CLI argument
 
 # Build and install sample app
 

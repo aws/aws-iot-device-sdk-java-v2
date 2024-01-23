@@ -40,13 +40,13 @@ Note that in a real application, you may want to avoid the use of wildcards in y
 To run the PKCS12 connect use the following command:
 
 ```sh
-mvn compile exec:java -pl samples/Pkcs12Connect -Dexec.mainClass=pkcs12connect.Pkcs12Connect -Dexec.args="--endpoint <endpoint> --pkcs12_file <path to PKCS12 file> --pkcs12_file <password for PKCS12 file>"
+mvn compile exec:java -pl samples/Pkcs12Connect -Dexec.mainClass=pkcs12connect.Pkcs12Connect -Dexec.args="--endpoint <endpoint> --pkcs12_file <path to PKCS12 file> --pkcs12_password <password for PKCS12 file>"
 ```
 
 You can also pass a Certificate Authority file (CA) if your certificate and key combination requires it:
 
 ```sh
-mvn compile exec:java -pl samples/Pkcs12Connect -Dexec.mainClass=pkcs12connect.Pkcs12Connect -Dexec.args="--endpoint <endpoint> --pkcs12_file <path to PKCS12 file> --pkcs12_file <password for PKCS12 file> --ca_file <path to CA file>"
+mvn compile exec:java -pl samples/Pkcs12Connect -Dexec.mainClass=pkcs12connect.Pkcs12Connect -Dexec.args="--endpoint <endpoint> --pkcs12_file <path to PKCS12 file> --pkcs12_password <password for PKCS12 file> --ca_file <path to CA file>"
 ```
 
 ### How to setup and run
