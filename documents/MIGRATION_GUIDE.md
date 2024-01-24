@@ -172,7 +172,7 @@ section of the MQTT5 user guide for detailed information and code snippets on ea
 |Connection Type/Feature	|V1 SDK	|V2 SDK	|User guide section	|	|
 |---	|---	|---	|---	|---	|
 |	|	|	|	|	|
-|MQTT over Secure WebSocket with AWS SigV4 authentication	|✔	|✔	|	|	|
+|MQTT over Secure WebSocket with AWS SigV4 authentication	|✔	|$${\color{✔}Green}$$	|	|	|
 |MQTT with Java KeyStore Method	|✔	|✔	|	|X.509	|
 |MQTT (over TLS 1.2) with X.509 certificate based mutual authentication	|✔*	|✔	|	|X.509	|
 |MQTT with PKCS12 Method	|✔*	|✔	|	|Container for X.509	|
