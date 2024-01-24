@@ -1,6 +1,33 @@
 # Migrate from V1 to V2 of the AWS IoT SDK for Java
 
-The V2 AWS IoT SDK for Java is a major rewrite of the V1 SDK code base built on top of Java 8+. It includes many updates,
+- [Migrate from V1 to V2 of the AWS IoT SDK for Java](#migrate-from-v1-to-v2-of-the-aws-iot-sdk-for-java)
+    - [What’s new in V2 SDK](#whats-new-in-v2-sdk)
+    - [How To Get Started with V2 SDK](#how-to-get-started-with-v2-sdk)
+        - [Differences between V1 SDK and V2 SDK](#differences-between-v1-sdk-and-v2-sdk)
+            - [Package name change](#package-name-change)
+            - [Adding to your project](#adding-to-your-project)
+            - [MQTT Protocol](#mqtt-protocol)
+            - [Client Builder](#client-builder)
+            - [Connection Types and Features](#connection-types-and-features)
+            - [Lifecycle Events](#lifecycle-events)
+            - [Publish](#publish)
+            - [Subscribe](#subscribe)
+            - [Unsubscribe](#unsubscribe)
+            - [Client Stop](#client-stop)
+            - [Client Shutdown](#client-shutdown)
+            - [Reconnects](#reconnects)
+            - [Offline Operations Queue](#offline-operations-queue)
+            - [Operation Timeouts](#operation-timeouts)
+            - [Logging](#logging)
+            - [Client for Device Shadow Service](#client-for-device-shadow-service)
+            - [Client for Jobs Service](#client-for-jobs-service)
+            - [Client for Fleet Provisioning Service](#client-for-fleet-provisioning-service)
+            - [Example](#example)
+    - [Provide Feedback](#provide-feedback)
+    - [Appendix](#appendix)
+        - [MQTT5 Features](#mqtt5-features)
+
+The V2 AWS IoT SDK for Java is a major rewrite of V1 SDK code base built on top of Java 8+. It includes many updates,
 such as improved consistency, ease of use, more detailed information about client status, an offline operation queue
 control, etc. This guide describes the major features that are new in V2 SDK, and provides guidance on how to migrate
 your code to V2 SDK from V1 SDK.
@@ -15,7 +42,8 @@ like in V1. This removes the semantic confusion with the connect/disconnect as t
 recurrent networking events.
 * Support Jobs and Fleet Provisiong AWS IoT Core services.
 
-Public API for almost all actions and operations has changed significantly. For more details about the new features and to see specific code examples, refer to the other sections of this guide.
+Public API for almost all actions and operations has changed significantly. For more details about the new features and
+to see specific code examples, refer to the other sections of this guide.
 
 
 ## How To Get Started with V2 SDK
