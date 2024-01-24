@@ -169,8 +169,8 @@ Refer to the
 “[How to setup MQTT5 builder based on desired connection method](https://github.com/aws/aws-iot-device-sdk-java-v2/blob/main/documents/MQTT5_Userguide.md#how-to-setup-mqtt5-builder-based-on-desired-connection-method)”
 section of the MQTT5 user guide for detailed information and code snippets on each connection type and connection feature.
 
-| Connection Type/Feature                                  | V1 SDK                                  | V2 SDK                           | User guide section |
-|----------------------------------------------------------|-----------------------------------------|----------------------------------|--------------------|
+| Connection Type/Feature                                  | V1 SDK                                  | V2 SDK                           | User guide |
+|----------------------------------------------------------|-----------------------------------------|----------------------------------|:----------:|
 | MQTT over Secure WebSocket with AWS SigV4 authentication | $${\Large\color{green}&#10004}$$        | $${\Large\color{green}&#10004}$$ | [link](https://github.com/aws/aws-iot-device-sdk-java-v2/blob/main/documents/MQTT5_Userguide.md#websocket-connection-with-sigv4-authentication-method) |
 | MQTT with Java KeyStore Method                           | $${\Large\color{green}&#10004}$$        | $${\Large\color{green}&#10004}$$ | [link](https://github.com/aws/aws-iot-device-sdk-java-v2/blob/main/documents/MQTT5_Userguide.md#direct-mqtt-with-java-keystore-method) |
 | MQTT with X.509 certificate based mutual authentication  | $${\Large\color{orange}&#10004\*}$$     | $${\Large\color{green}&#10004}$$ | [link](https://github.com/aws/aws-iot-device-sdk-java-v2/blob/main/documents/MQTT5_Userguide.md#direct-mqtt-with-x509-based-mutual-tls-method) |
