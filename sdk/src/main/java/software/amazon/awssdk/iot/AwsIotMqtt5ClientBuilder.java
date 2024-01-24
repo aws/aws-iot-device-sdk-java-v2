@@ -40,7 +40,8 @@ import software.amazon.awssdk.crt.utils.PackageInfo;
 public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtResource {
     private static Long DEFAULT_WEBSOCKET_MQTT_PORT = 443L;
     private static Long DEFAULT_DIRECT_MQTT_PORT = 8883L;
-    private static Long DEFAULT_KEEP_ALIVE = 1200L;
+    private static Long DEFAULT_KEEP_ALIVE_SEC = 1200L;
+    private static Long DEFAULT_PING_TIMEOUT_MS = 29000L;
 
     private Mqtt5ClientOptionsBuilder config;
     private ConnectPacketBuilder configConnect;
@@ -51,8 +52,9 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
         config = new Mqtt5ClientOptionsBuilder(hostName, port);
         configTls = tlsContext;
         configConnect = new ConnectPacketBuilder();
-        configConnect.withKeepAliveIntervalSeconds(DEFAULT_KEEP_ALIVE);
+        configConnect.withKeepAliveIntervalSeconds(DEFAULT_KEEP_ALIVE_SEC);
         config.withExtendedValidationAndFlowControlOptions(Mqtt5ClientOptions.ExtendedValidationAndFlowControlOptions.AWS_IOT_CORE_DEFAULTS);
+        config.withPingTimeoutMs(DEFAULT_PING_TIMEOUT_MS);
         addReferenceTo(configTls);
     }
 
@@ -888,7 +890,7 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
             }
 
             addToUsernameParam(paramList, "x-amz-customauthorizer-name", config.authorizerName);
-            
+
             if (usingSigning == true) {
                 addToUsernameParam(paramList, config.tokenKeyName, config.tokenValue);
 
