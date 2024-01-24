@@ -1,13 +1,18 @@
 # Migrate from V1 to V2 of the AWS IoT SDK for Java
 
-The V2 AWS IoT SDK for Java is a major rewrite of the V1 code base built on top of Java 8+. It includes many updates, such as improved consistency, ease of use, more detailed information about client status, an offline operation queue control, etc. This guide describes the major features that are new in V2, and provides guidance on how to migrate your code to V2 from V1.
+The V2 AWS IoT SDK for Java is a major rewrite of the V1 SDK code base built on top of Java 8+. It includes many updates,
+such as improved consistency, ease of use, more detailed information about client status, an offline operation queue
+control, etc. This guide describes the major features that are new in V2 SDK, and provides guidance on how to migrate
+your code to V2 SDK from V1 SDK.
 
 ## What’s new in V2 SDK
 
 * V2 SDK client is truly async. Operations return `CompletableFuture` objects.
     Blocking calls can be emulated by waiting for the returned `CompletableFuture` object to be resolved.
 * V2 SDK provides implementation for MQTT5 protocol, the next step in evolution of the MQTT protocol.
-* Public API terminology has changed. You `start()` or `stop()` the MQTT5 client rather than `Connect` or `Disconnect` like in V1. This removes the semantic confusion with the connect/disconnect as the client-level controls vs. internal recurrent networking events.
+* Public API terminology has changed. You `start()` or `stop()` the MQTT5 client rather than `Connect` or `Disconnect`
+like in V1. This removes the semantic confusion with the connect/disconnect as the client-level controls vs. internal
+recurrent networking events.
 * Support Jobs and Fleet Provisiong AWS IoT Core services.
 
 Public API for almost all actions and operations has changed significantly. For more details about the new features and to see specific code examples, refer to the other sections of this guide.
@@ -15,10 +20,11 @@ Public API for almost all actions and operations has changed significantly. For 
 
 ## How To Get Started with V2 SDK
 
-This guide’s purpose is to help with the migration process from V1 SDK for Java to V2 SDK for Java. If you’re interested in a guide focusing solely on V2 SDK features, the [MQTT5 User Guide](https://github.com/aws/aws-iot-device-sdk-java-v2/blob/main/documents/MQTT5_Userguide.md#getting-started-with-mqtt5) provides comprehensive information.
+This guide’s purpose is to help with the migration process from V1 SDK to V2 SDK. If you’re interested in a guide
+focusing solely on V2 SDK features, the [MQTT5 User Guide](https://github.com/aws/aws-iot-device-sdk-java-v2/blob/main/documents/MQTT5_Userguide.md#getting-started-with-mqtt5) provides comprehensive information.
 
 
-### Differences between V1 and V2
+### Differences between V1 SDK and V2 SDK
 
 #### Package name change
 
