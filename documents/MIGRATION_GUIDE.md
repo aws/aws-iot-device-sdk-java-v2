@@ -169,18 +169,18 @@ Refer to the
 “[How to setup MQTT5 builder based on desired connection method](https://github.com/aws/aws-iot-device-sdk-java-v2/blob/main/documents/MQTT5_Userguide.md#how-to-setup-mqtt5-builder-based-on-desired-connection-method)”
 section of the MQTT5 user guide for detailed information and code snippets on each connection type and connection feature.
 
-| Connection Type/Feature | V1 SDK | V2 SDK | User guide section |
-|-------------------------|--------|--------|--------------------|
-| MQTT over Secure WebSocket with AWS SigV4 authentication               | $${\color{green}✔}$$        | $${\color{green}&#10004}$$ | |
-| MQTT with Java KeyStore Method                                         | $${\color{green}✔}$$        | $${\color{green}✔}$$ | |
-| MQTT (over TLS 1.2) with X.509 certificate based mutual authentication | $${\color{orange}✔\*}$$     | $${\color{green}✔}$$ | |
-| MQTT with PKCS12 Method                                                | $${\color{orange}✔\*}$$     | $${\color{green}✔}$$ | |
-| MQTT with Custom Key Operation Method                                  | $${\color{orange}✔\*}$$     | $${\color{green}✔}$$ | |
-| MQTT with Custom Authorizer Method                                     | $${\color{orange}✔\*\*}$$   | $${\color{green}✔}$$ | |
-| MQTT with Windows Certificate Store Method                             | $${\color{red}✘}$$          | $${\color{green}✔}$$ | |
-| MQTT with PKCS11 Method                                                | $${\color{red}✘}$$          | $${\color{green}✔}$$ | |
-| Websocket Connection with Cognito Authentication Method                | $${\color{red}✘}$$          | $${\color{green}✔}$$ | |
-| HTTP Proxy                                                             | $${\color{orange}✔\*\*\*}$$ | $${\color{green}✔}$$ | |
+| Connection Type/Feature                                                | V1 SDK                            | V2 SDK                           | User guide section |
+|------------------------------------------------------------------------|-----------------------------------|----------------------------------|--------------------|
+| MQTT over Secure WebSocket with AWS SigV4 authentication               | $${\color{green}&#10004}$$        | $${\large\color{green}&#10004}$$ | |
+| MQTT with Java KeyStore Method                                         | $${\color{green}&#10004}$$        | $${\color{green}&#10004}$$ | |
+| MQTT (over TLS 1.2) with X.509 certificate based mutual authentication | $${\color{orange}&#10004\*}$$     | $${\color{green}&#10004}$$ | |
+| MQTT with PKCS12 Method                                                | $${\color{orange}&#10004\*}$$     | $${\color{green}&#10004}$$ | |
+| MQTT with Custom Key Operation Method                                  | $${\color{orange}&#10004\*}$$     | $${\color{green}&#10004}$$ | |
+| MQTT with Custom Authorizer Method                                     | $${\color{orange}&#10004\*\*}$$   | $${\color{green}&#10004}$$ | |
+| MQTT with Windows Certificate Store Method                             | $${\color{red}✘}$$                | $${\color{green}&#10004}$$ | |
+| MQTT with PKCS11 Method                                                | $${\color{red}✘}$$                | $${\color{green}&#10004}$$ | |
+| Websocket Connection with Cognito Authentication Method                | $${\color{red}✘}$$                | $${\color{green}&#10004}$$ | |
+| HTTP Proxy                                                             | $${\color{orange}&#10004\*\*\*}$$ | $${\color{green}&#10004}$$ | |
 
 ✔* - In order to get this connection type work in V1 SDK, you need to create KeyStore.\
 ✔** - In order to get this connection type work in V1 SDK, you need to implement the
