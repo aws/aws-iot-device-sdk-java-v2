@@ -31,6 +31,7 @@ such as improved consistency, ease of use, more detailed information about clien
 control, etc. This guide describes the major features that are new in V2 SDK, and provides guidance on how to migrate
 your code to V2 SDK from V1 SDK.
 
+
 ## What’s new in V2 SDK
 
 * V2 SDK client is truly async. Operations return `CompletableFuture` objects.
@@ -48,66 +49,70 @@ to see specific code examples, refer to the other sections of this guide.
 ## How To Get Started with V2 SDK
 
 This guide’s purpose is to help with the migration process from V1 SDK to V2 SDK. If you’re interested in a guide
-focusing solely on V2 SDK features, the [MQTT5 User Guide](https://github.com/aws/aws-iot-device-sdk-java-v2/blob/main/documents/MQTT5_Userguide.md#getting-started-with-mqtt5) provides comprehensive information.
+focusing solely on V2 SDK features, the
+[MQTT5 User Guide](https://github.com/aws/aws-iot-device-sdk-java-v2/blob/main/documents/MQTT5_Userguide.md#getting-started-with-mqtt5)
+provides comprehensive information.
 
 
 ### Differences between V1 SDK and V2 SDK
 
 #### Package name change
 
-A noticeable change from the V1 IoT SDK for Java to the V2 IoT SDK for Java is the package name change. Package names begin with `software.amazon.awssdk` in V2, whereas V1 uses `com.amazonaws`.
-These same names differentiate Maven artifacts from V1 to V2. Maven artifacts for the V2 use the `software.amazon.awssdk` groupId, whereas the V1 uses the `com.amazonaws` groupId.
+A noticeable change from V1 SDK to V2 SDK is the package name change. Package names begin with `software.amazon.awssdk`
+in V2, whereas V1 uses `com.amazonaws`.
+
+These same names differentiate Maven artifacts from V1 to V2. Maven artifacts for V2 SDK use the `software.amazon.awssdk`
+groupId, whereas V1 SDK uses the `com.amazonaws` groupId.
 
 
 #### Adding to your project
 
-V2 SDK uses maven as its package manager, similar to in V1. To consume the Java V2 IoT SDK in your application, add the dependency to your `pom.xml` .
+V2 SDK uses maven as its package manager, similar to in V1. To consume the Java V2 IoT SDK in your application, add the
+dependency to your `pom.xml` .
 
 **Example of adding V1**
 
 ```
-<dependencyManagement>
-  <dependencies>
-    <dependency>
-      <groupId>com.amazonaws</groupId>
-      <artifactId>aws-iot-device-sdk-java</artifactId>
-      <version>1.3.9</version>
-    </dependency>
-  </dependencies>
-</dependencyManagement>
+<dependency>
+  <groupId>com.amazonaws</groupId>
+  <artifactId>aws-iot-device-sdk-java</artifactId>
+  <version>1.3.9</version>
+</dependency>
 ```
 
 **Example of adding V2**
 
 ```
-<`dependencyManagement`>
-  <dependencies>
-    <dependency>
-      <groupId>software.amazon.awssdk.iotdevicesdk</groupId>
-      <artifactId>aws-iot-device-sdk</artifactId>
-      <version>1.19.0</version>
-    </dependency>
-  </dependencies>
-</`dependencyManagement`>
+<dependency>
+  <groupId>software.amazon.awssdk.iotdevicesdk</groupId>
+  <artifactId>aws-iot-device-sdk</artifactId>
+  <version>1.19.0</version>
+</dependency>
 ```
-
 
 
 #### MQTT Protocol
 
 V1 SDK uses an MQTT version 3.1.1 client under the hood.
 
-V2 SDK provides MQTT version 3.1.1 and MQTT version 5.0 client implementations. This guide focuses on the MQTT5 since this version is significant improvement over MQTT3. See MQTT5 features section.
+V2 SDK provides MQTT version 3.1.1 and MQTT version 5.0 client implementations. This guide focuses on the MQTT5 since
+this version is significant improvement over MQTT3. See MQTT5 features section.
 
 
 #### Client Builder
 
 To access the AWS IoT service, you must initialize an MQTT client.
 
-In V1 SDK, the [AWSIotMqttClient](http://aws-iot-device-sdk-java-docs.s3-website-us-east-1.amazonaws.com/com/amazonaws/services/iot/client/AWSIotMqttClient.html) class represents an MQTT client. You instantiate the client directly passing all the required parameters to the class constructor. It’s possible to change client settings after its creation using `set*` methods, e.g. `setKeepAliveInterval` or `setMaxConnectionRetries`.
+In V1 SDK, the [AWSIotMqttClient](http://aws-iot-device-sdk-java-docs.s3-website-us-east-1.amazonaws.com/com/amazonaws/services/iot/client/AWSIotMqttClient.html)
+class represents an MQTT client. You instantiate the client directly passing all the required parameters to the class
+constructor. It’s possible to change client settings after its creation using `set*` methods, e.g. `setKeepAliveInterval`
+or `setMaxConnectionRetries`.
 
-In V2 SDK, the [Mqtt5Client](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5Client.html) class represents an MQTT client, specifically MQTT5 protocol. V2 SDK provides an [MQTT5 client builder](https://aws.github.io/aws-iot-device-sdk-java-v2/software/amazon/awssdk/iot/AwsIotMqtt5ClientBuilder.html) designed to easily create common configuration types such as direct MQTT or WebSocket connections.
-Once an MQTT5 client is built and finalized, the resulting MQTT5 client cannot have its settings modified.
+In V2 SDK, the [Mqtt5Client](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5Client.html)
+class represents an MQTT client, specifically MQTT5 protocol. V2 SDK provides
+an [MQTT5 client builder](https://aws.github.io/aws-iot-device-sdk-java-v2/software/amazon/awssdk/iot/AwsIotMqtt5ClientBuilder.html)
+designed to easily create common configuration types such as direct MQTT or WebSocket connections. Once an MQTT5 client
+is built and finalized, the resulting MQTT5 client cannot have its settings modified.
 
 **Example of creating a client in V1**
 
@@ -125,7 +130,9 @@ AWSIotMqttClient client =
 
 **Example of creating a client in V2**
 
-V2 SDK supports different connection types. Given the same input parameters as in the V1 example above, the most suitable method to create an MQTT5 client will be [newDirectMqttBuilderWithMtlsFromPath](https://aws.github.io/aws-iot-device-sdk-java-v2/software/amazon/awssdk/iot/AwsIotMqtt5ClientBuilder.html#newDirectMqttBuilderWithMtlsFromPath(java.lang.String,java.lang.String,java.lang.String)). 
+V2 SDK supports different connection types. Given the same input parameters as in the V1 example above, the most
+suitable method to create an MQTT5 client will be
+[newDirectMqttBuilderWithMtlsFromPath](https://aws.github.io/aws-iot-device-sdk-java-v2/software/amazon/awssdk/iot/AwsIotMqtt5ClientBuilder.html#newDirectMqttBuilderWithMtlsFromPath(java.lang.String,java.lang.String,java.lang.String)).
 
 ```
 String clientEndpoint = "<prefix>-ats.iot.<region>.amazonaws.com";
@@ -143,15 +150,24 @@ builder.withConnectProperties(connectProperties);
 Mqtt5Client client = builder.build();
 ```
 
-Refer to the [Connection Types and Features](https://quip-amazon.com/7xh6AUyIo2Dv#temp:C:QIA7ecb3f6cee90456c8b15358bd) section for other connection types supported by V2 SDK.
+Refer to the [Connection Types and Features](https://quip-amazon.com/7xh6AUyIo2Dv#temp:C:QIA7ecb3f6cee90456c8b15358bd)
+section for other connection types supported by V2 SDK.
 
 
 #### Connection Types and Features
 
-V1 SDK supports two types of connections to connect to the AWS IoT service: MQTT with X.509 certificate and MQTT over Secure WebSocket with SigV4 authentication.
+V1 SDK supports two types of connections to connect to the AWS IoT service: MQTT with X.509 certificate and MQTT over
+Secure WebSocket with SigV4 authentication.
 
-V2 SDK adds a collection of connection types and cryptography formats (e.g. [PKCS #11](https://en.wikipedia.org/wiki/PKCS_11) and [Custom Authorizer](https://docs.aws.amazon.com/iot/latest/developerguide/custom-authentication.html)), credential providers (e.g. [Amazon Cognito](https://aws.amazon.com/cognito/) and [Windows Certificate Store](https://learn.microsoft.com/en-us/windows-hardware/drivers/install/certificate-stores)), and other connection-related features.
-Refer to the “[How to setup MQTT5 builder based on desired connection method](https://github.com/aws/aws-iot-device-sdk-java-v2/blob/main/documents/MQTT5_Userguide.md#how-to-setup-mqtt5-builder-based-on-desired-connection-method)” section of the MQTT5 user guide for detailed information and code snippets on each connection type and connection feature.
+V2 SDK adds a collection of connection types and cryptography formats (e.g. [PKCS #11](https://en.wikipedia.org/wiki/PKCS_11)
+and [Custom Authorizer](https://docs.aws.amazon.com/iot/latest/developerguide/custom-authentication.html)), credential
+providers (e.g. [Amazon Cognito](https://aws.amazon.com/cognito/) and
+[Windows Certificate Store](https://learn.microsoft.com/en-us/windows-hardware/drivers/install/certificate-stores)),
+and other connection-related features.
+
+Refer to the
+“[How to setup MQTT5 builder based on desired connection method](https://github.com/aws/aws-iot-device-sdk-java-v2/blob/main/documents/MQTT5_Userguide.md#how-to-setup-mqtt5-builder-based-on-desired-connection-method)”
+section of the MQTT5 user guide for detailed information and code snippets on each connection type and connection feature.
 
 |Connection Type/Feature	|V1 SDK	|V2 SDK	|User guide section	|	|
 |---	|---	|---	|---	|---	|
