@@ -1,8 +1,7 @@
 # Migrate from V1 to V2 of the AWS IoT SDK for Java
 
-* [What’s new in V2 SDK](#whats-new-in-v2-sdk)
-    * [How To Get Started with V2 SDK](#how-to-get-started-with-v2-sdk)
-* [Differences between V1 SDK and V2 SDK](#differences-between-v1-sdk-and-v2-sdk)
+* [What’s New in V2 SDK](#whats-new-in-v2-sdk)
+* [How To Get Started with V2 SDK](#how-to-get-started-with-v2-sdk)
     * [Package name change](#package-name-change)
     * [Adding to your project](#adding-to-your-project)
     * [MQTT Protocol](#mqtt-protocol)
@@ -22,7 +21,7 @@
     * [Client for Jobs Service](#client-for-jobs-service)
     * [Client for Fleet Provisioning Service](#client-for-fleet-provisioning-service)
     * [Example](#example)
-* [Provide Feedback](#provide-feedback)
+* [How to Get Help](#how-to-get-help)
 * [Appendix](#appendix)
     * [MQTT5 Features](#mqtt5-features)
 
@@ -34,8 +33,8 @@ your code to V2 SDK from V1 SDK.
 
 ## What’s new in V2 SDK
 
-* V2 SDK client is truly async. Operations return `CompletableFuture` objects.
-    Blocking calls can be emulated by waiting for the returned `CompletableFuture` object to be resolved.
+* V2 SDK client is truly async. Operations return `CompletableFuture` objects. Blocking calls can be emulated by waiting
+for the returned `CompletableFuture` object to be resolved.
 * V2 SDK provides implementation for MQTT5 protocol, the next step in evolution of the MQTT protocol.
 * Public API terminology has changed. You `start()` or `stop()` the MQTT5 client rather than `Connect` or `Disconnect`
 like in V1. This removes the semantic confusion with the connect/disconnect as the client-level controls vs. internal
@@ -46,14 +45,12 @@ Public API for almost all actions and operations has changed significantly. For 
 to see specific code examples, refer to the other sections of this guide.
 
 
-### How To Get Started with V2 SDK
+## How To Get Started with V2 SDK
 
-This guide’s purpose is to help with the migration process from V1 SDK to V2 SDK. If you’re interested in a guide
-focusing solely on V2 SDK features, the [MQTT5 User Guide](https://github.com/aws/aws-iot-device-sdk-java-v2/blob/main/documents/MQTT5_Userguide.md#getting-started-with-mqtt5)
-provides comprehensive information.
+There're differences between V1 SDK and V2 SDK. This section describes the changes you need to apply to your project with
+V1 SDK to start using V2 SDK. Follow the [MQTT5 User Guide](https://github.com/aws/aws-iot-device-sdk-java-v2/blob/main/documents/MQTT5_Userguide.md#getting-started-with-mqtt5)
+for a comprehensive MQTT5 client information.
 
-
-## Differences between V1 SDK and V2 SDK
 
 ### Package name change
 
@@ -917,9 +914,11 @@ in V2 SDK similar to a sample provided by V1 SDK (see a corresponding [readme se
 and [source code](https://github.com/aws/aws-iot-device-sdk-java/blob/master/aws-iot-device-sdk-java-samples/src/main/java/com/amazonaws/services/iot/client/sample/pubSub/PublishSubscribeSample.java)).
 
 
-## Provide Feedback
+## How to Get Help
 
-If you face any issues with respect to migrating from V1 SDK to V2 SDK, please can open a [discussion](https://github.com/aws/aws-iot-device-sdk-java-v2/discussions).
+Questions? You can look for an answer in the [discussions](https://github.com/aws/aws-iot-device-sdk-java-v2/discussions)
+page. Or, you can always open a [new discussion](https://github.com/aws/aws-iot-device-sdk-java-v2/discussions/new?category=q-a),
+and we will be happy to help you.
 
 
 ## Appendix
