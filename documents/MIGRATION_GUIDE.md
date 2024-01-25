@@ -177,10 +177,10 @@ section of the MQTT5 user guide for detailed information and code snippets on ea
 | Websocket Connection with Cognito Authentication Method  | $${\Large\color{red}&#10006}$$          | $${\Large\color{green}&#10004}$$ | [link](https://github.com/aws/aws-iot-device-sdk-java-v2/blob/main/documents/MQTT5_Userguide.md#websocket-connection-with-cognito-authentication-method) |
 | HTTP Proxy                                               | $${\Large\color{orange}&#10004\*\*\*}$$ | $${\Large\color{green}&#10004}$$ | [link](https://github.com/aws/aws-iot-device-sdk-java-v2/blob/main/documents/MQTT5_Userguide.md#http-proxy) |
 
-$${\Large\color{orange}&#10004\*}$$ - In order to get this connection type work in V1 SDK, you need to create KeyStore.\
-$${\Large\color{orange}&#10004\*\*}$$ - In order to get this connection type work in V1 SDK, you need to implement the
+${\Large\color{orange}&#10004\*}$ - In order to get this connection type work in V1 SDK, you need to create KeyStore.\
+${\Large\color{orange}&#10004\*\*}$ - In order to get this connection type work in V1 SDK, you need to implement the
 [Custom Authentication workflow](https://docs.aws.amazon.com/iot/latest/developerguide/custom-authorizer.html).\
-$${\Large\color{orange}&#10004\*\*\*}$$ - Though V1 does not allow to specify HTTP proxy, it is possible to configure
+${\Large\color{orange}&#10004\*\*\*}$ - Though V1 does not allow to specify HTTP proxy, it is possible to configure
 systemwide proxy.
 
 **Example of creating connection using KeyStore in V1**
