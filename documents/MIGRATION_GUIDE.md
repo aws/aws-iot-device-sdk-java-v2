@@ -926,13 +926,13 @@ If you face any issues with respect to migrating from V1 SDK to V2 SDK, please c
 
 ### MQTT5 Features
 
-**Clean Start and Session Expiry**
+**Clean Start and Session Expiry**\
 You can use Clean Start and Session Expiry to handle your persistent sessions with more flexibility.
 Refer to [Mqtt5ClientOptions.ClientSessionBehavior](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5ClientOptions.ClientSessionBehavior.html)
 enum and [NegotiatedSettings.getSessionExpiryInterval](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/NegotiatedSettings.html#getSessionExpiryInterval())
 method for details.
 
-**Reason Code on all ACKs**
+**Reason Code on all ACKs**\
 You can debug or process error messages more easily using the reason codes. Reason codes are returned by the message broker
 based on the type of interaction with the broker (Subscribe, Publish, Acknowledge).
 See [PubAckReasonCode](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/packets/PubAckPacket.PubAckReasonCode.html),
@@ -941,35 +941,35 @@ See [PubAckReasonCode](https://awslabs.github.io/aws-crt-java/software/amazon/aw
 [ConnectReasonCode](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/packets/ConnAckPacket.ConnectReasonCode.html),
 [DisconnectReasonCode](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/packets/DisconnectPacket.DisconnectReasonCode.html).
 
-**Topic Aliases**
+**Topic Aliases**\
 You can substitute a topic name with a topic alias, which is a two-byte integer.
 Use [withTopicAlias](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/packets/PublishPacket.PublishPacketBuilder.html#withTopicAlias(long))
 method when creating a PUBLISH packet.
 
-**Message Expiry**
+**Message Expiry**\
 You can add message expiry values to published messages. Use [withMessageExpiryIntervalSeconds](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/packets/PublishPacket.PublishPacketBuilder.html#withMessageExpiryIntervalSeconds(java.lang.Long))
 method in PublishPacketBuilder class.
 
-**Server disconnect**
+**Server disconnect**\
 When a disconnection happens, the server can proactively send the client a DISCONNECT to notify connection closure with
 a reason code for disconnection.\
 Refer to [DisconnectPacket](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/packets/DisconnectPacket.html)
 class for details.
 
-**Request/Response**
+**Request/Response**\
 Publishers can request a response be sent by the receiver to a publisher-specified topic upon reception. Use [withResponseTopic](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/packets/PublishPacket.PublishPacketBuilder.html#withResponseTopic(java.lang.String)) method in PublishPacketBuilder class.
 
-**Maximum Packet Size**
+**Maximum Packet Size**\
 Client and Server can independently specify the maximum packet size that they support. See [connectPacketBuilder.withMaximumPacketSizeBytes](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/packets/ConnectPacket.ConnectPacketBuilder.html#withMaximumPacketSizeBytes(java.lang.Long)),
 [NegotiatedSettings.getMaximumPacketSizeToServer](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/NegotiatedSettings.html#getMaximumPacketSizeToServer()),
 and [ConnAckPacket.getMaximumPacketSize](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/packets/ConnAckPacket.html#getMaximumPacketSize()) methods.
 
-**Payload format and content type**
+**Payload format and content type**\
 You can specify the payload format (binary, text) and content type when a message is published. These are forwarded to the
 receiver of the message. Use [withContentType](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/packets/PublishPacket.PublishPacketBuilder.html#withContentType(java.lang.String))
 method in PublishPacketBuilder class.
 
-**Shared Subscriptions**
+**Shared Subscriptions**\
 Shared Subscriptions allow multiple clients to share a subscription to a topic and only one client will receive messages
 published to that topic using a random distribution.
 Refer to a [shared subscription sample](https://github.com/aws/aws-iot-device-sdk-java-v2/tree/main/samples/Mqtt5/SharedSubscription)
