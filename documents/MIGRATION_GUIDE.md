@@ -46,16 +46,16 @@ Public API for almost all actions and operations has changed significantly. For 
 to see specific code examples, refer to the other sections of this guide.
 
 
-## How To Get Started with V2 SDK
+### How To Get Started with V2 SDK
 
 This guide’s purpose is to help with the migration process from V1 SDK to V2 SDK. If you’re interested in a guide
 focusing solely on V2 SDK features, the [MQTT5 User Guide](https://github.com/aws/aws-iot-device-sdk-java-v2/blob/main/documents/MQTT5_Userguide.md#getting-started-with-mqtt5)
 provides comprehensive information.
 
 
-### Differences between V1 SDK and V2 SDK
+## Differences between V1 SDK and V2 SDK
 
-#### Package name change
+### Package name change
 
 A noticeable change from V1 SDK to V2 SDK is the package name change. Package names begin with `software.amazon.awssdk`
 in V2, whereas V1 uses `com.amazonaws`.
@@ -64,7 +64,7 @@ These same names differentiate Maven artifacts from V1 to V2. Maven artifacts fo
 groupId, whereas V1 SDK uses the `com.amazonaws` groupId.
 
 
-#### Adding to your project
+### Adding to your project
 
 V2 SDK uses maven as its package manager, similar to in V1. To consume the Java V2 IoT SDK in your application, add the
 dependency to your `pom.xml` .
@@ -90,7 +90,7 @@ dependency to your `pom.xml` .
 ```
 
 
-#### MQTT Protocol
+### MQTT Protocol
 
 V1 SDK uses an MQTT version 3.1.1 client under the hood.
 
@@ -98,7 +98,7 @@ V2 SDK provides MQTT version 3.1.1 and MQTT version 5.0 client implementations. 
 this version is significant improvement over MQTT3. See MQTT5 features section.
 
 
-#### Client Builder
+### Client Builder
 
 To access the AWS IoT service, you must initialize an MQTT client.
 
@@ -151,7 +151,7 @@ Refer to the [Connection Types and Features](https://quip-amazon.com/7xh6AUyIo2D
 section for other connection types supported by V2 SDK.
 
 
-#### Connection Types and Features
+### Connection Types and Features
 
 V1 SDK supports two types of connections to connect to the AWS IoT service: MQTT with X.509 certificate and MQTT over
 Secure WebSocket with SigV4 authentication.
@@ -239,7 +239,7 @@ client.start();
 ```
 
 
-#### Lifecycle Events
+### Lifecycle Events
 
 Both V1 and V2 SDKs provide lifecycle events for the MQTT clients.
 
@@ -310,7 +310,7 @@ Mqtt5Client client = builder.build();
 ```
 
 
-#### Publish
+### Publish
 
 V1 SDK provides two API calls for publishing: blocking and non-blocking. For the non-blocking version, the result of the
 publish operation is reported via a set of callbacks. If you try to publish to a topic that is not allowed by a policy,
@@ -364,7 +364,7 @@ PublishResult result = published.get(60, TimeUnit.SECONDS);
 ```
 
 
-#### Subscribe
+### Subscribe
 
 V1 provides blocking and non-blocking API for subscribing. To subscribe to topic in V1, you should provide an instance of
 [AWSIotTopic](http://aws-iot-device-sdk-java-docs.s3-website-us-east-1.amazonaws.com/com/amazonaws/services/iot/client/AWSIotTopic.html)
@@ -430,7 +430,7 @@ CompletableFuture<Integer> subscribed = client.subscribe(subscribeBuilder.build(
 ```
 
 
-#### Unsubscribe
+### Unsubscribe
 
 V1 SDK provides blocking and non-blocking API for unsubscribing. To unsubscribe from topic in V1, you should provide an
 instance of [AWSIotTopic](http://aws-iot-device-sdk-java-docs.s3-website-us-east-1.amazonaws.com/com/amazonaws/services/iot/client/AWSIotTopic.html)
@@ -489,7 +489,7 @@ client.unsubscribe(unsubBuilder.build()).get(60, TimeUnit.SECONDS);
 ```
 
 
-#### Client Stop
+### Client Stop
 
 In V1 SDK, the `disconnect` method in the `AWSIotMqttClient` class disconnects the client. Once disconnected, the client
 can connect again by calling `connect`.
@@ -513,7 +513,7 @@ client.stop(disconnectBuilder.build());
 ```
 
 
-#### Client Shutdown
+### Client Shutdown
 
 V1 SDK automatically cleans resources allocated by an `AWSIotMqttClient` object on shutdown.
 
@@ -542,7 +542,7 @@ try (Mqtt5CLient client = builder.build()) {
 ```
 
 
-#### Reconnects
+### Reconnects
 
 V1 has a maximum number of retry attempts for auto-reconnect. If you exhausted the maximum number of retries, V1 will throw
 a permanent error and you will not be able to use the same client instance again.
@@ -570,7 +570,7 @@ Mqtt5Client client = clientBuidler.build();
 ```
 
 
-#### Offline Operations Queue
+### Offline Operations Queue
 
 In V1, if you’re having too many in-flight QoS 1 messages, you can encounter the `too many publishes in Progress` error
 on publishing messages. This is caused by the so-called [in-flight publish limit](https://github.com/aws/aws-iot-device-sdk-java/blob/master/README.md#increase-in-flight-publish-limit-too-many-publishes-in-progress-error).
@@ -608,7 +608,7 @@ See [ClientOfflineQueueBehavior documentation](https://awslabs.github.io/aws-crt
 to find the list of the supported offline queue behaviors and their description.
 
 
-#### Operation Timeouts
+### Operation Timeouts
 
 In V1 SDK, all operations (*publish*, *subscribe*, *unsubscribe*) will not timeout unless you define a timeout for them.
 If no timeout is defined, there is a possibility that an operation will wait forever for the server to respond and block
@@ -639,7 +639,7 @@ Mqtt5Client client = builder.build();
 ```
 
 
-#### Logging
+### Logging
 
 V1 SDK uses `java.util.logging` for logging. To change the logging behavior (for example, to change the logging level or
 logging destination), you can specify a property file using the JVM property `java.util.logging.config.file`.
@@ -668,7 +668,7 @@ You can enable logging by passing the folowing properties:
 
 
 
-#### Client for Device Shadow Service
+### Client for Device Shadow Service
 
 V1 SDK is built with [AWS IoT device shadow support](http://docs.aws.amazon.com/iot/latest/developerguide/iot-thing-shadows.html),
 providing access to thing shadows (sometimes referred to as device shadows). It also supports a simplified shadow access model,
@@ -869,7 +869,7 @@ Refer to the V2 SDK [Device Shadow](https://github.com/aws/aws-iot-device-sdk-ja
 sample for code example.
 
 
-#### Client for Jobs Service
+### Client for Jobs Service
 
 V2 SDK expands support of AWS IoT Core services implementing a service client for the [Jobs](https://docs.aws.amazon.com/iot/latest/developerguide/iot-jobs.html)
 service which helps with defining a set of remote operations that can be sent to and run on one or more devices connected
@@ -888,7 +888,7 @@ service clients for more details.\
 Refer to the V2 SDK [Jobs](https://github.com/aws/aws-iot-device-sdk-java-v2/tree/main/samples/Jobs) samples for code examples.
 
 
-#### Client for Fleet Provisioning Service
+### Client for Fleet Provisioning Service
 
 Another IoT service that V2 SDK provides access to is [Fleet Provisioning](https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html)
 (also known as Identity Service). By using AWS IoT fleet provisioning, AWS IoT can generate and securely deliver device
@@ -908,7 +908,7 @@ Refer to the V2 SDK [Fleet Provisioning](https://github.com/aws/aws-iot-device-s
 samples for code examples.
 
 
-#### Example
+### Example
 
 It’s always helpful to look at a working example to see how new functionality works, to be able to tweak different options,
 to compare with existing code. For that reasons, we implemented a [Publish/Subscribe example](https://github.com/aws/aws-iot-device-sdk-java-v2/tree/main/samples/Mqtt5/PubSub)
