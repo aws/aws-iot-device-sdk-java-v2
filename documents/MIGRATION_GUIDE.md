@@ -562,11 +562,11 @@ client.setMaxRetryDelay(10000L);
 **Example of tweaking reconnection settings in V2**
 
 ```java
-`clientBuilder``.``withMinReconnectDelayMs``(``1000L``);`
-`clientBuilder``.``withMaxReconnectDelayMs``(``10000L``);`
-`clientBuilder``.``withRetryJitterMode``(``JitterMode``.``Full``);`
-`clientBuilder``.withMinConnectedTimeToResetReconnectDelayMs(5000L);`
-`Mqtt5Client`` client ``=`` clientBuidler``.``build``();`
+clientBuilder.withMinReconnectDelayMs(1000L);
+clientBuilder.withMaxReconnectDelayMs(10000L);
+clientBuilder.withRetryJitterMode(JitterMode.Full);
+clientBuilder.withMinConnectedTimeToResetReconnectDelayMs(5000L);
+Mqtt5Client client = clientBuidler.build();
 ```
 
 
@@ -677,7 +677,7 @@ or deserialize any JSON documents.
 
 V2 SDK supports device shadow service as well, but with completely different API.\
 First, you subscribe to special topics to get data and feedback from a service. The service client provides API for that.
-For example, `SubscribeToGetShadow``Accepted`  subscribes to a topic to which AWS IoT Core will publish a shadow document;
+For example, `SubscribeToGetShadowAccepted`  subscribes to a topic to which AWS IoT Core will publish a shadow document;
 and via the `SubscribeToGetShadowRejected` the server will notify you if it cannot send you a requested document.\
 After subscribing to all the required topics, the service client can start interacting with the server, for example update
 the status or request for data. These actions are also performed via client API calls. For example, `PublishGetShadow`
