@@ -114,7 +114,7 @@ is built and finalized, the resulting MQTT5 client cannot have its settings modi
 
 **Example of creating a client in V1**
 
-```
+```java
 String clientEndpoint = "<prefix>-ats.iot.<region>.amazonaws.com";
 String clientId = "<unique client id>";
 String certificateFile = "<certificate file>";  // X.509 based certificate file
@@ -131,7 +131,7 @@ AWSIotMqttClient client =
 V2 SDK supports different connection types. Given the same input parameters as in the V1 example above, the most
 suitable method to create an MQTT5 client will be [newDirectMqttBuilderWithMtlsFromPath](https://aws.github.io/aws-iot-device-sdk-java-v2/software/amazon/awssdk/iot/AwsIotMqtt5ClientBuilder.html#newDirectMqttBuilderWithMtlsFromPath(java.lang.String,java.lang.String,java.lang.String)).
 
-```
+```java
 String clientEndpoint = "<prefix>-ats.iot.<region>.amazonaws.com";
 String clientId = "<unique client id>";
 String certificateFile = "<certificate file>";  // X.509 based certificate file
@@ -185,7 +185,7 @@ systemwide proxy.
 
 **Example of creating connection using KeyStore in V1**
 
-```
+```java
 String keyStoreFile = "<my.keystore>";
 String keyStorePassword = "<keystore-password>";
 String keyPassword = "<key-password>";
@@ -209,7 +209,7 @@ requires a  `certificateAlias` parameter to ensure that the correct certificate 
 certificate in the KeyStore file will be used (see [SSLContext documentation](https://docs.oracle.com/javase/6/docs/api/javax/net/ssl/SSLContext.html#init(javax.net.ssl.KeyManager[],%20javax.net.ssl.TrustManager[],%20java.security.SecureRandom))),
 which might be confusing.
 
-```
+```java
 String keyStoreFile = "<my.keystore>";
 String keyStorePassword = "<keystore-password>";
 String certificateAlias = "<certificate-alias>";
@@ -256,7 +256,7 @@ for the details.
 
 **Example of setting lifecycle events in V1**
 
-```
+```java
 class MyClient extends AWSIotMqttClient {
     @Override
     public void onConnectionSuccess() {
@@ -276,7 +276,7 @@ MyClient client = new MyClient(/*...*/);
 
 **Example of setting lifecycle events in V2**
 
-```
+```java
 class MyLifecycleEvents implements Mqtt5ClientOptions.LifecycleEvents {
     @Override
     public void onAttemptingConnect(Mqtt5Client client, OnAttemptingConnectReturn onAttemptingConnectReturn) {
@@ -333,12 +333,12 @@ completion to determine if a QoS 1 publish operation actually succeeded.
 
 **Example of publishing in V1**
 
-```
+```java
 // Blocking API.
 client.publish("my/topic", AWSIotQos.QOS0, "hello");
 ```
 
-```
+```java
 // Non-blocking API.
 public class MyMessage extends AWSIotMessage {
     @Override
@@ -356,7 +356,7 @@ client.publish(message, timeout);
 
 **Example of publishing in V2**
 
-```
+```java
 PublishPacketBuilder publishBuilder =
         new PublishPacketBuilder("my/topic", QOS.AT_MOST_ONCE, "hello".getBytes());
 CompletableFuture<PublishResult> published = client.publish(publishBuilder.build());
@@ -389,7 +389,7 @@ to. With this callback, you can process messages made to subscribed topics.
 
 **Example of subscribing in V1**
 
-```
+```java
 public class MyTopic extends AWSIotTopic {    
     public MyTopic(String topic, AWSIotQos qos) {
         super(topic, qos);
@@ -408,7 +408,7 @@ client.subscribe(myOwnTopic);
 
 **Example of subscribing in V2**
 
-```
+```java
 static class SamplePublishEvents implements PublishEvents {
     @Override
     public void onMessageReceived(Mqtt5Client client, PublishReturn publishReturn) {
@@ -452,13 +452,13 @@ for each topic you wish to unsubscribe from.
 
 **Example of unsubscribing in V1**
 
-```
+```java
 // Blocking API.
 client.unsubscribe("my/topic");
 client.unsubscribe("another/topic");
 ```
 
-```
+```java
 // Non-blocking API.
 public class MyTopic extends AWSIotTopic {    
     public MyTopic(String topic, AWSIotQos qos) {
@@ -483,7 +483,7 @@ client.unsubscribe(myOwnTopic);
 
 **Example of unsubscribing in V2**
 
-```
+```java
 UnsubscribePacketBuilder unsubBuilder = new UnsubscribePacketBuilder("my/topic");
 client.unsubscribe(unsubBuilder.build()).get(60, TimeUnit.SECONDS);
 ```
@@ -500,13 +500,13 @@ parameter. A closed client can be started again by calling [start](https://awsla
 
 **Example of disconnecting a client in V1**
 
-```
+```java
 client.disconnect();
 ```
 
 **Example of disconnecting a client in V2**
 
-```
+```java
 DisconnectPacketBuilder disconnectBuilder = new DisconnectPacketBuilder();
 disconnectBuilder.withReasonCode(DisconnectPacket.DisconnectReasonCode.NORMAL_DISCONNECTION);
 client.stop(disconnectBuilder.build());
@@ -525,14 +525,14 @@ blocks.
 
 **Example of closing a client in V2**
 
-```
+```java
 Mqtt5CLient client = builder.build()
 
 // Once fully finished with the Mqtt5Client:
 client.close();
 ```
 
-```
+```java
 // client.close() will be called at the end of the try/catch block.
 try (Mqtt5CLient client = builder.build()) {
     // ...
@@ -554,14 +554,14 @@ are configurable through [`AwsIotMqtt5ClientBuilder`](https://aws.github.io/aws-
 
 **Example of tweaking reconnection settings in V1**
 
-```
+```java
 client.setBaseRetryDelay(1000L);
 client.setMaxRetryDelay(10000L);
 ```
 
 **Example of tweaking reconnection settings in V2**
 
-```
+```java
 `clientBuilder``.``withMinReconnectDelayMs``(``1000L``);`
 `clientBuilder``.``withMaxReconnectDelayMs``(``10000L``);`
 `clientBuilder``.``withRetryJitterMode``(``JitterMode``.``Full``);`
@@ -582,7 +582,7 @@ how to enable storing all packets except QOS0 publish packets in the offline que
 
 **Example of configuring the offline queue in V2**
 
-```
+```java
 AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newDirectMqttBuilderWithMtlsFromPath(/*...*/);
 builder.withOfflineQueueBehavior(ClientOfflineQueueBehavior.FAIL_QOS0_PUBLISH_ON_DISCONNECT);
 Mqtt5Client client = builder.build();
@@ -593,7 +593,7 @@ The [`getOperationStatistics`](https://awslabs.github.io/aws-crt-java/software/a
 method returns  the current state of an `Mqtt5Client` object’s queue of operations, which may help with tracking the number
 of in-flight messages.
 
-```
+```java
 Mqtt5ClientOperationStatistics stats = client.getOperationStatistics();
 System.out.println("Client operations queue statistics:\n"
     + "\tgetUnackedOperationCount: " + stats.getUnackedOperationCount() + "\n"
@@ -623,7 +623,7 @@ method returns  the current state of an `Mqtt5Client` object’s queue of operat
 
 **Example of timeouts in V1**
 
-```
+```java
 long connectTimeoutMs = 10000L;
 client.connect(connectTimeoutMs);
 
@@ -633,7 +633,7 @@ client.publish("my/topic", "hello", publishTimeoutMs);
 
 **Example of timeouts in V2**
 
-```
+```java
 builder.withAckTimeoutSeconds(10);
 Mqtt5Client client = builder.build();
 ```
@@ -689,14 +689,14 @@ service provides detailed descriptions for the topics used to interact with the 
 
 **Example of creating a Device Shadow service client in V1**
 
-```
+```java
 // Blocking and non-blocking API.
 String thingName = "<thing name>";
 AWSIotDevice device = new AWSIotDevice(thingName);
 client.attach(device);
 ```
 
-```
+```java
 // Simplified Shadow Access Model.
 public class MyDevice extends AWSIotDevice {
     public MyDevice(String thingName) {
@@ -721,7 +721,7 @@ MyDevice device = new MyDevice(thingName);
 **Example of creating a Device Shadow service client in V2**
 A thing name in V2 SDK shadow client is specified for the operations with shadow documents.
 
-```
+```java
 MqttClientConnection connection = new MqttClientConnection(mqtt5Client, null);
 shadowClient = new IotShadowClient(connection);
 mqtt5Client.start();
@@ -730,12 +730,12 @@ mqtt5Client.start();
 
 **Example of getting a shadow document in V1**
 
-```
+```java
 // Blocking API.
 String state = device.get();
 ```
 
-```
+```java
 // Non-blocking API.
 public class MyShadowMessage extends AWSIotMessage {
     public MyShadowMessage() {
@@ -764,14 +764,14 @@ long timeout = 3000;                    // milliseconds
 device.get(message, timeout);
 ```
 
-```
+```java
 // Simplified Shadow Access Model.
 String state = device.getSomeValue();
 ```
 
 **Example of getting a shadow document in V2**
 
-```
+```java
 static void onGetShadowAccepted(GetShadowResponse response) {
     // Called when a get request succeeded.
     // The `response` object contains the shadow document.
@@ -812,20 +812,20 @@ published.get();
 
 **Example of updating a shadow document in V1**
 
-```
+```java
 // Blocking and non-blocking API.
 State state = "{\"state\":{\"reported\":{\"sensor\":3.0}}}";
 device.update(state);
 ```
 
-```
+```java
 // Simplified Shadow Access Model.
 device.setSomeValue("{\"state\":{\"reported\":{\"sensor\":3.0}}}");
 ```
 
 **Example of updating a shadow document in V2**
 
-```
+```java
 static void onUpdateShadowAccepted(UpdateShadowResponse response) {
     // Called when an update request succeeded.
 }
