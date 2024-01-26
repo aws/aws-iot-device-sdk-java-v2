@@ -61,12 +61,7 @@ These same names differentiate Maven artifacts from V1 to V2. Maven artifacts fo
 groupId, whereas V1 SDK uses the `com.amazonaws` groupId.
 
 
-### Adding to your project
-
-V2 SDK uses maven as its package manager, similar to in V1. To consume the Java V2 IoT SDK in your application, add the
-dependency to your `pom.xml` .
-
-***Example of adding V1***
+<ins>Example of adding V1 SDK to maven project</ins>
 
 ```
 <dependency>
@@ -76,7 +71,7 @@ dependency to your `pom.xml` .
 </dependency>
 ```
 
-***Example of adding V2***
+<ins>Example of adding V2 SDK to maven project</ins>
 
 ```
 <dependency>
@@ -109,7 +104,7 @@ class represents an MQTT client, specifically MQTT5 protocol. V2 SDK provides an
 designed to easily create common configuration types such as direct MQTT or WebSocket connections. Once an MQTT5 client
 is built and finalized, the resulting MQTT5 client cannot have its settings modified.
 
-***Example of creating a client in V1***
+<ins>Example of creating a client in V1</ins>
 
 ```java
 String clientEndpoint = "<prefix>-ats.iot.<region>.amazonaws.com";
@@ -123,7 +118,7 @@ AWSIotMqttClient client =
     new AWSIotMqttClient(clientEndpoint, clientId, pair.keyStore, pair.keyPassword);
 ```
 
-***Example of creating a client in V2***
+<ins>Example of creating a client in V2</ins>
 
 V2 SDK supports different connection types. Given the same input parameters as in the V1 example above, the most
 suitable method to create an MQTT5 client will be [newDirectMqttBuilderWithMtlsFromPath](https://aws.github.io/aws-iot-device-sdk-java-v2/software/amazon/awssdk/iot/AwsIotMqtt5ClientBuilder.html#newDirectMqttBuilderWithMtlsFromPath(java.lang.String,java.lang.String,java.lang.String)).
@@ -329,7 +324,7 @@ If the operation fails for any reason before these respective completion events,
 error. You should always check the reason code of a [PubAckPacket](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/packets/PubAckPacket.html)
 completion to determine if a QoS 1 publish operation actually succeeded.
 
-*Example of publishing in V1*
+<ins>Example of publishing in V1</ins>
 
 ```java
 // Blocking API.
@@ -352,7 +347,7 @@ long timeout = 3000;  // milliseconds
 client.publish(message, timeout);
 ```
 
-*Example of publishing in V2*
+<ins>Example of publishing in V2</ins>
 
 ```java
 PublishPacketBuilder publishBuilder =
