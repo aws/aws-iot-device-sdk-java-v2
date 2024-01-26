@@ -329,7 +329,7 @@ If the operation fails for any reason before these respective completion events,
 error. You should always check the reason code of a [PubAckPacket](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/packets/PubAckPacket.html)
 completion to determine if a QoS 1 publish operation actually succeeded.
 
-<ins>Example of publishing in V1</ins>
+${\Large\color{brown}Example of publishing in V1}$
 
 ```java
 // Blocking API.
@@ -352,7 +352,7 @@ long timeout = 3000;  // milliseconds
 client.publish(message, timeout);
 ```
 
-<ins>Example of publishing in V2</ins>
+${\Large\color{brown}Example of publishing in V2}$
 
 ```java
 PublishPacketBuilder publishBuilder =
