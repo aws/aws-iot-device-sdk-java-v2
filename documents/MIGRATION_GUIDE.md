@@ -1,10 +1,11 @@
 # Migrate from V1 to V2 of the AWS IoT SDK for Java
 
 > [!TIP]  
-> If you couldn't find imformation in this guide, please refer to the [How to Get Help](#how-to-get-help) section.
+> If you can't find necessary information in this guide, the [How to Get Help](#how-to-get-help) section provides
+> a way to getting help.
 
 * [What’s New in V2 SDK](#whats-new-in-v2-sdk)
-* [How To Get Started with V2 SDK](#how-to-get-started-with-v2-sdk)
+* [How to Get Started with V2 SDK](#how-to-get-started-with-v2-sdk)
     * [Package name change](#package-name-change)
     * [Adding to your project](#adding-to-your-project)
     * [MQTT Protocol](#mqtt-protocol)
@@ -48,7 +49,7 @@ Public API for almost all actions and operations has changed significantly. For 
 to see specific code examples, refer to the other sections of this guide.
 
 
-## How To Get Started with V2 SDK
+## How to Get Started with V2 SDK
 
 There're differences between V1 SDK and V2 SDK. This section describes the changes you need to apply to your project with
 V1 SDK to start using V2 SDK. Follow the [MQTT5 User Guide](https://github.com/aws/aws-iot-device-sdk-java-v2/blob/main/documents/MQTT5_Userguide.md#getting-started-with-mqtt5)
