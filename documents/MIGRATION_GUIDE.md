@@ -1,8 +1,7 @@
 # Migrate from V1 to V2 of the AWS IoT SDK for Java
 
 > [!TIP]  
-> If you can't find necessary information in this guide, the [How to Get Help](#how-to-get-help) section contains
-> useful information.
+> If you can't find necessary information in this guide, the [How to Get Help](#how-to-get-help) section will guide you.
 
 * [What’s New in V2 SDK](#whats-new-in-v2-sdk)
 * [How to Get Started with V2 SDK](#how-to-get-started-with-v2-sdk)
