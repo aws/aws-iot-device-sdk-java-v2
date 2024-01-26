@@ -66,7 +66,7 @@ groupId, whereas V1 SDK uses the `com.amazonaws` groupId.
 V2 SDK uses maven as its package manager, similar to in V1. To consume the Java V2 IoT SDK in your application, add the
 dependency to your `pom.xml` .
 
-**Example of adding V1**
+<ins>Example of adding V1</ins>
 
 ```
 <dependency>
@@ -76,7 +76,7 @@ dependency to your `pom.xml` .
 </dependency>
 ```
 
-**Example of adding V2**
+<ins>Example of adding V2</ins>
 
 ```
 <dependency>
