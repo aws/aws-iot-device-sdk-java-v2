@@ -201,6 +201,7 @@ client.connect();
 ```
 
 <ins>Example of creating connection using KeyStore in V2</ins>
+
 [newDirectMqttBuilderWithJavaKeystore](https://aws.github.io/aws-iot-device-sdk-java-v2/software/amazon/awssdk/iot/AwsIotMqtt5ClientBuilder.html#newDirectMqttBuilderWithJavaKeystore(java.lang.String,java.security.KeyStore,java.lang.String,java.lang.String))
 requires a  `certificateAlias` parameter to ensure that the correct certificate is used. In *V1 SDK*, only the first
 certificate in the KeyStore file will be used (see [SSLContext documentation](https://docs.oracle.com/javase/6/docs/api/javax/net/ssl/SSLContext.html#init(javax.net.ssl.KeyManager[],%20javax.net.ssl.TrustManager[],%20java.security.SecureRandom))),
