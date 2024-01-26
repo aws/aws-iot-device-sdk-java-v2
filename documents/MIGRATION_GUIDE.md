@@ -113,7 +113,8 @@ class represents an MQTT client, specifically MQTT5 protocol. V2 SDK provides an
 designed to easily create common configuration types such as direct MQTT or WebSocket connections. Once an MQTT5 client
 is built and finalized, the resulting MQTT5 client cannot have its settings modified.
 
-<ins>Example of creating a client in V1</ins>
+<details>
+<summary>Example of creating a client in V1</summary>
 
 ```java
 String clientEndpoint = "<prefix>-ats.iot.<region>.amazonaws.com";
@@ -127,7 +128,10 @@ AWSIotMqttClient client =
     new AWSIotMqttClient(clientEndpoint, clientId, pair.keyStore, pair.keyPassword);
 ```
 
-<ins>Example of creating a client in V2</ins>
+</details>
+
+<details>
+<summary>Example of creating a client in V2</summary>
 
 V2 SDK supports different connection types. Given the same input parameters as in the V1 example above, the most
 suitable method to create an MQTT5 client will be [newDirectMqttBuilderWithMtlsFromPath](https://aws.github.io/aws-iot-device-sdk-java-v2/software/amazon/awssdk/iot/AwsIotMqtt5ClientBuilder.html#newDirectMqttBuilderWithMtlsFromPath(java.lang.String,java.lang.String,java.lang.String)).
@@ -147,6 +151,8 @@ builder.withConnectProperties(connectProperties);
 
 Mqtt5Client client = builder.build();
 ```
+
+</details>
 
 Refer to the [Connection Types and Features](https://quip-amazon.com/7xh6AUyIo2Dv#temp:C:QIA7ecb3f6cee90456c8b15358bd)
 section for other connection types supported by V2 SDK.
@@ -184,7 +190,8 @@ ${\Large\color{orange}&#10004\*\*}$ - In order to get this connection type work 
 ${\Large\color{orange}&#10004\*\*\*}$ - Though V1 does not allow to specify HTTP proxy, it is possible to configure
 systemwide proxy.
 
-<ins>Example of creating connection using KeyStore in V1</ins>
+<details>
+<summary>Example of creating connection using KeyStore in V1</summary>
 
 ```java
 String keyStoreFile = "<my.keystore>";
@@ -204,7 +211,10 @@ AWSIotMqttClient client =
 client.connect();
 ```
 
-<ins>Example of creating connection using KeyStore in V2</ins>
+</details>
+
+<details>
+<summary>Example of creating connection using KeyStore in V2</summary>
 
 [newDirectMqttBuilderWithJavaKeystore](https://aws.github.io/aws-iot-device-sdk-java-v2/software/amazon/awssdk/iot/AwsIotMqtt5ClientBuilder.html#newDirectMqttBuilderWithJavaKeystore(java.lang.String,java.security.KeyStore,java.lang.String,java.lang.String))
 requires a  `certificateAlias` parameter to ensure that the correct certificate is used. In *V1 SDK*, only the first
@@ -240,6 +250,8 @@ Mqtt5Client client = builder.build();
 client.start();
 ```
 
+</details>
+
 
 ### Lifecycle Events
 
@@ -256,7 +268,8 @@ events is mandatory in V2 SDK.
 Refer to the [MQTT5 user guide](https://github.com/aws/aws-iot-device-sdk-java-v2/blob/main/documents/MQTT5_Userguide.md#how-to-create-a-mqtt5-client)
 for the details.
 
-<ins>Example of setting lifecycle events in V1</ins>
+<details>
+<summary>Example of setting lifecycle events in V1</summary>
 
 ```java
 class MyClient extends AWSIotMqttClient {
@@ -276,7 +289,10 @@ class MyClient extends AWSIotMqttClient {
 MyClient client = new MyClient(/*...*/);
 ```
 
-<ins>Example of setting lifecycle events in V2</ins>
+</details>
+
+<details>
+<summary>Example of setting lifecycle events in V2</summary>
 
 ```java
 class MyLifecycleEvents implements Mqtt5ClientOptions.LifecycleEvents {
@@ -311,6 +327,8 @@ builder.withLifeCycleEvents(lifecycleEvents);
 Mqtt5Client client = builder.build();
 ```
 
+</details>
+
 
 ### Publish
 
@@ -333,7 +351,8 @@ If the operation fails for any reason before these respective completion events,
 error. You should always check the reason code of a [PubAckPacket](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/packets/PubAckPacket.html)
 completion to determine if a QoS 1 publish operation actually succeeded.
 
-<ins>Example of publishing in V1</ins>
+<details>
+<summary>Example of publishing in V1</summary>
 
 ```java
 // Blocking API.
@@ -356,7 +375,10 @@ long timeout = 3000;  // milliseconds
 client.publish(message, timeout);
 ```
 
-<ins>Example of publishing in V2</ins>
+</details>
+
+<details>
+<summary>Example of publishing in V2</summary>
 
 ```java
 PublishPacketBuilder publishBuilder =
@@ -364,6 +386,8 @@ PublishPacketBuilder publishBuilder =
 CompletableFuture<PublishResult> published = client.publish(publishBuilder.build());
 PublishResult result = published.get(60, TimeUnit.SECONDS);
 ```
+
+</details>
 
 
 ### Subscribe
@@ -389,7 +413,8 @@ the [PublishEvents](https://awslabs.github.io/aws-crt-java/software/amazon/awssd
 callback. This callback is invoked whenever the client receives a message from the server on a topic the client is subscribed
 to. With this callback, you can process messages made to subscribed topics.
 
-<ins>Example of subscribing in V1</ins>
+<details>
+<summary>Example of subscribing in V1</summary>
 
 ```java
 public class MyTopic extends AWSIotTopic {    
@@ -408,7 +433,10 @@ MyTopic myOwnTopic = new MyTopic("my/own/topic", AWSIotQos.QOS1);
 client.subscribe(myOwnTopic);
 ```
 
-<ins>Example of subscribing in V2</ins>
+</details>
+
+<details>
+<summary>Example of subscribing in V2</summary>
 
 ```java
 static class SamplePublishEvents implements PublishEvents {
@@ -431,6 +459,8 @@ SubscribePacketBuilder subscribeBuilder =
 CompletableFuture<Integer> subscribed = client.subscribe(subscribeBuilder.build());
 ```
 
+</details>
+
 
 ### Unsubscribe
 
@@ -452,7 +482,8 @@ completion to determine if the unsubscribe operation actually succeeded.
 Similar to subscribing, you can unsubscribe from multiple topics in one request: just call [withSubscription](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/packets/UnsubscribePacket.UnsubscribePacketBuilder.html#withSubscription(java.lang.String))
 for each topic you wish to unsubscribe from.
 
-<ins>Example of unsubscribing in V1</ins>
+<details>
+<summary>Example of unsubscribing in V1</summary>
 
 ```java
 // Blocking API.
@@ -483,12 +514,17 @@ MyTopic myOwnTopic = new MyTopic("my/topic", AWSIotQos.QOS1);
 client.unsubscribe(myOwnTopic);
 ```
 
-<ins>Example of unsubscribing in V2</ins>
+</details>
+
+<details>
+<summary>Example of unsubscribing in V2</summary>
 
 ```java
 UnsubscribePacketBuilder unsubBuilder = new UnsubscribePacketBuilder("my/topic");
 client.unsubscribe(unsubBuilder.build()).get(60, TimeUnit.SECONDS);
 ```
+
+</details>
 
 
 ### Client Stop
@@ -500,19 +536,25 @@ In V2 SDK, an MQTT5 client can stop a session by calling the [stop](https://awsl
 method. You can provide an optional [DisconnectPacket](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/packets/DisconnectPacket.html)
 parameter. A closed client can be started again by calling [start](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5Client.html#start()).
 
-<ins>Example of disconnecting a client in V1</ins>
+<details>
+<summary>Example of disconnecting a client in V1</summary>
 
 ```java
 client.disconnect();
 ```
 
-<ins>Example of disconnecting a client in V2</ins>
+</details>
+
+<details>
+<summary>Example of disconnecting a client in V2</summary>
 
 ```java
 DisconnectPacketBuilder disconnectBuilder = new DisconnectPacketBuilder();
 disconnectBuilder.withReasonCode(DisconnectPacket.DisconnectReasonCode.NORMAL_DISCONNECTION);
 client.stop(disconnectBuilder.build());
 ```
+
+</details>
 
 
 ### Client Shutdown
@@ -525,7 +567,8 @@ V2 SDK `Mqtt5Client` class implements [AutoCloseable](https://docs.oracle.com/ja
 interface, so it is recommended to create `Mqtt5Client` objects in [try-with-resources](https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html)
 blocks.
 
-<ins>Example of closing a client in V2</ins>
+<details>
+<summary>Example of closing a client in V2</summary>
 
 ```java
 Mqtt5CLient client = builder.build()
@@ -543,6 +586,8 @@ try (Mqtt5CLient client = builder.build()) {
 
 ```
 
+</details>
+
 
 ### Reconnects
 
@@ -554,14 +599,18 @@ such as min/max delays and [jitter modes](https://awslabs.github.io/aws-crt-java
 are configurable through [`AwsIotMqtt5ClientBuilder`](https://aws.github.io/aws-iot-device-sdk-java-v2/software/amazon/awssdk/iot/AwsIotMqtt5ClientBuilder.html).
 
 
-<ins>Example of tweaking reconnection settings in V1</ins>
+<details>
+<summary>Example of tweaking reconnection settings in V1</summary>
 
 ```java
 client.setBaseRetryDelay(1000L);
 client.setMaxRetryDelay(10000L);
 ```
 
-<ins>Example of tweaking reconnection settings in V2</ins>
+</details>
+
+<details>
+<summary>Example of tweaking reconnection settings in V2</summary>
 
 ```java
 clientBuilder.withMinReconnectDelayMs(1000L);
@@ -570,6 +619,8 @@ clientBuilder.withRetryJitterMode(JitterMode.Full);
 clientBuilder.withMinConnectedTimeToResetReconnectDelayMs(5000L);
 Mqtt5Client client = clientBuidler.build();
 ```
+
+</details>
 
 
 ### Offline Operations Queue
@@ -582,13 +633,16 @@ V2 does not limit the number of in-flight messages. Additionally, V2 provides a 
 will be placed into the offline queue when the client is in the disconnected state. The following code snippet demonstrates
 how to enable storing all packets except QOS0 publish packets in the offline queue on disconnect:
 
-<ins>Example of configuring the offline queue in V2</ins>
+<details>
+<summary>Example of configuring the offline queue in V2</summary>
 
 ```java
 AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newDirectMqttBuilderWithMtlsFromPath(/*...*/);
 builder.withOfflineQueueBehavior(ClientOfflineQueueBehavior.FAIL_QOS0_PUBLISH_ON_DISCONNECT);
 Mqtt5Client client = builder.build();
 ```
+
+</details>
 
 Note that AWS IoT Core [limits the number of allowed operations per second](https://docs.aws.amazon.com/general/latest/gr/iot-core.html#message-broker-limits).
 The [`getOperationStatistics`](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5Client.html#getOperationStatistics())
@@ -623,7 +677,8 @@ won’t block the client.
 The [`getOperationStatistics`](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5Client.html#getOperationStatistics())
 method returns  the current state of an `Mqtt5Client` object’s queue of operations, which may help with tracking operations.
 
-<ins>Example of timeouts in V1</ins>
+<details>
+<summary>Example of timeouts in V1</summary>
 
 ```java
 long connectTimeoutMs = 10000L;
@@ -633,12 +688,17 @@ long publishTimeoutMs = 2000L;
 client.publish("my/topic", "hello", publishTimeoutMs);
 ```
 
-<ins>Example of timeouts in V2</ins>
+</details>
+
+<details>
+<summary>Example of timeouts in V2</summary>
 
 ```java
 builder.withAckTimeoutSeconds(10);
 Mqtt5Client client = builder.build();
 ```
+
+</details>
 
 
 ### Logging
@@ -648,14 +708,18 @@ logging destination), you can specify a property file using the JVM property `ja
 
 V2 SDK uses a custom logger allowing to control the logging process simultaneously for all layers of the SDK.
 
-<ins>Example of enabling logging in V1</ins>
+<details>
+<summary>Example of enabling logging in V1</summary>
 To change the console logging level, the property file *logging.properties* should contain the following lines:
 
 ```
 java.util.logging.ConsoleHandler.level=INFO
 ```
 
-<ins>Example of enabling logging in V2</ins>
+</details>
+
+<details>
+<summary>Example of enabling logging in V2</summary>
 You can enable logging by passing the folowing properties:
 
 ```
@@ -663,6 +727,8 @@ You can enable logging by passing the folowing properties:
 -Daws.crt.log.level=Debug
 -Daws.crt.log.filename=<path and filename>
 ```
+
+</details>
 
 * `aws.crt.log.destination`: Where the logs are outputted to. Can be `File`, `Stdout` or `Stderr`. Defaults to `Stderr`.
 * `aws.crt.log.level`: The level of logging shown. Can be `Trace`, `Debug`, `Info`, `Warn`, `Error`, `Fatal`, or `None`. Defaults to `Warn`.
@@ -689,7 +755,8 @@ specified in the `SubscribeToGetShadowAccepted` call.
 AWS IoT Core [documentation for Device Shadow](https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html)
 service provides detailed descriptions for the topics used to interact with the service.
 
-<ins>Example of creating a Device Shadow service client in V1</ins>
+<details>
+<summary>Example of creating a Device Shadow service client in V1</summary>
 
 ```java
 // Blocking and non-blocking API.
@@ -720,7 +787,11 @@ public class MyDevice extends AWSIotDevice {
 MyDevice device = new MyDevice(thingName);
 ```
 
-<ins>Example of creating a Device Shadow service client in V2</ins>
+</details>
+
+<details>
+<summary>Example of creating a Device Shadow service client in V2</summary>
+
 A thing name in V2 SDK shadow client is specified for the operations with shadow documents.
 
 ```java
@@ -729,8 +800,11 @@ shadowClient = new IotShadowClient(connection);
 mqtt5Client.start();
 ```
 
+</details>
 
-<ins>Example of getting a shadow document in V1</ins>
+
+<details>
+<summary>Example of getting a shadow document in V1</summary>
 
 ```java
 // Blocking API.
@@ -771,7 +845,10 @@ device.get(message, timeout);
 String state = device.getSomeValue();
 ```
 
-<ins>Example of getting a shadow document in V2</ins>
+</details>
+
+<details>
+<summary>Example of getting a shadow document in V2</summary>
 
 ```java
 static void onGetShadowAccepted(GetShadowResponse response) {
@@ -811,8 +888,10 @@ CompletableFuture<Integer> published = shadowClient.PublishGetShadow(
 published.get();
 ```
 
+</details>
 
-<ins>Example of updating a shadow document in V1</ins>
+<details>
+<summary>Example of updating a shadow document in V1</summary>
 
 ```java
 // Blocking and non-blocking API.
@@ -825,7 +904,10 @@ device.update(state);
 device.setSomeValue("{\"state\":{\"reported\":{\"sensor\":3.0}}}");
 ```
 
-<ins>Example of updating a shadow document in V2</ins>
+</details>
+
+<details>
+<summary>Example of updating a shadow document in V2</summary>
 
 ```java
 static void onUpdateShadowAccepted(UpdateShadowResponse response) {
@@ -864,6 +946,8 @@ request.state.reported = new HashMap<String, Object>() {
 }
 shadowClient.PublishUpdateShadow(request, QualityOfService.AT_LEAST_ONCE);
 ```
+
+</details>
 
 See API documentation for V2 SDK [Device Shadow](https://aws.github.io/aws-iot-device-sdk-java-v2/software/amazon/awssdk/iot/iotshadow/IotShadowClient.html)
 service client for more details.\
