@@ -64,7 +64,8 @@ These same names differentiate Maven artifacts from V1 to V2. Maven artifacts fo
 groupId, whereas V1 SDK uses the `com.amazonaws` groupId.
 
 
-<ins>Example of adding V1 SDK to maven project</ins>
+<details>
+<summary>Example of adding V1 SDK to maven project</summary>
 
 ```
 <dependency>
@@ -74,7 +75,10 @@ groupId, whereas V1 SDK uses the `com.amazonaws` groupId.
 </dependency>
 ```
 
-<ins>Example of adding V2 SDK to maven project</ins>
+</details>
+
+<details>
+<summary>Example of adding V2 SDK to maven project</summary>
 
 ```
 <dependency>
@@ -83,6 +87,8 @@ groupId, whereas V1 SDK uses the `com.amazonaws` groupId.
   <version>1.19.0</version>
 </dependency>
 ```
+
+</details>
 
 
 ### MQTT Protocol
