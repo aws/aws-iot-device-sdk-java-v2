@@ -650,7 +650,7 @@ method returns  the current state of an `Mqtt5Client` object’s queue of operat
 of in-flight messages.
 
 <details>
-<summary>Example of getting the client operational statistics in V2</summary>
+<summary>Example of getting client operational statistics in V2</summary>
 
 ```java
 Mqtt5ClientOperationStatistics stats = client.getOperationStatistics();
@@ -715,6 +715,7 @@ V2 SDK uses a custom logger allowing to control the logging process simultaneous
 
 <details>
 <summary>Example of enabling logging in V1</summary>
+
 To change the console logging level, the property file *logging.properties* should contain the following lines:
 
 ```
