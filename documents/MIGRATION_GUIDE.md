@@ -66,7 +66,7 @@ groupId, whereas V1 SDK uses the `com.amazonaws` groupId.
 V2 SDK uses maven as its package manager, similar to in V1. To consume the Java V2 IoT SDK in your application, add the
 dependency to your `pom.xml` .
 
-<ins>Example of adding V1</ins>
+###### Example of adding V1
 
 ```
 <dependency>
@@ -76,7 +76,7 @@ dependency to your `pom.xml` .
 </dependency>
 ```
 
-<ins>Example of adding V2</ins>
+###### Example of adding V2
 
 ```
 <dependency>
@@ -109,7 +109,7 @@ class represents an MQTT client, specifically MQTT5 protocol. V2 SDK provides an
 designed to easily create common configuration types such as direct MQTT or WebSocket connections. Once an MQTT5 client
 is built and finalized, the resulting MQTT5 client cannot have its settings modified.
 
-<ins>Example of creating a client in V1</ins>
+###### Example of creating a client in V1
 
 ```java
 String clientEndpoint = "<prefix>-ats.iot.<region>.amazonaws.com";
@@ -123,7 +123,7 @@ AWSIotMqttClient client =
     new AWSIotMqttClient(clientEndpoint, clientId, pair.keyStore, pair.keyPassword);
 ```
 
-<ins>Example of creating a client in V2</ins>
+###### Example of creating a client in V2
 
 V2 SDK supports different connection types. Given the same input parameters as in the V1 example above, the most
 suitable method to create an MQTT5 client will be [newDirectMqttBuilderWithMtlsFromPath](https://aws.github.io/aws-iot-device-sdk-java-v2/software/amazon/awssdk/iot/AwsIotMqtt5ClientBuilder.html#newDirectMqttBuilderWithMtlsFromPath(java.lang.String,java.lang.String,java.lang.String)).
