@@ -649,6 +649,9 @@ The [`getOperationStatistics`](https://awslabs.github.io/aws-crt-java/software/a
 method returns  the current state of an `Mqtt5Client` object’s queue of operations, which may help with tracking the number
 of in-flight messages.
 
+<details>
+<summary>Example of getting the client operational statistics in V2</summary>
+
 ```java
 Mqtt5ClientOperationStatistics stats = client.getOperationStatistics();
 System.out.println("Client operations queue statistics:\n"
@@ -657,6 +660,8 @@ System.out.println("Client operations queue statistics:\n"
      + "\tgetIncompleteOperationCount: " + stats.getIncompleteOperationCount() + "\n"
      + "\tgetIncompleteOperationSize: " + stats.getIncompleteOperationSize()
 ```
+
+</details>
 
 See [withOfflineQueueBehavior documentation](https://aws.github.io/aws-iot-device-sdk-java-v2/software/amazon/awssdk/iot/AwsIotMqtt5ClientBuilder.html#withOfflineQueueBehavior(software.amazon.awssdk.crt.mqtt5.Mqtt5ClientOptions.ClientOfflineQueueBehavior))
 for more details.\
