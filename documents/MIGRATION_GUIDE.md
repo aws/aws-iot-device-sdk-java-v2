@@ -51,8 +51,7 @@ to see specific code examples, refer to the other sections of this guide.
 ## How to Get Started with V2 SDK
 
 There're differences between V1 SDK and V2 SDK. This section describes the changes you need to apply to your project with
-V1 SDK to start using V2 SDK. Follow the [MQTT5 User Guide](https://github.com/aws/aws-iot-device-sdk-java-v2/blob/main/documents/MQTT5_Userguide.md#getting-started-with-mqtt5)
-for a comprehensive MQTT5 client information.
+V1 SDK to start using V2 SDK. For more information about MQTT5, visit [MQTT5 User Guide](https://github.com/aws/aws-iot-device-sdk-java-v2/blob/main/documents/MQTT5_Userguide.md#getting-started-with-mqtt5).
 
 
 ### Package name change
