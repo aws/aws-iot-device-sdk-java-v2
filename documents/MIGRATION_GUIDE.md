@@ -174,13 +174,13 @@ section of the MQTT5 user guide for detailed information and code snippets on ea
 |----------------------------------------------------------|-----------------------------------------|----------------------------------|:----------:|
 | MQTT over Secure WebSocket with AWS SigV4 authentication | $${\Large\color{green}&#10004}$$        | $${\Large\color{green}&#10004}$$ | [link](https://github.com/aws/aws-iot-device-sdk-java-v2/blob/main/documents/MQTT5_Userguide.md#websocket-connection-with-sigv4-authentication-method) |
 | MQTT with Java KeyStore Method                           | $${\Large\color{green}&#10004}$$        | $${\Large\color{green}&#10004}$$ | [link](https://github.com/aws/aws-iot-device-sdk-java-v2/blob/main/documents/MQTT5_Userguide.md#direct-mqtt-with-java-keystore-method) |
+| Websocket Connection with Cognito Authentication Method  | $${\Large\color{green}&#10004}$$          | $${\Large\color{green}&#10004}$$ | [link](https://github.com/aws/aws-iot-device-sdk-java-v2/blob/main/documents/MQTT5_Userguide.md#websocket-connection-with-cognito-authentication-method) |
 | MQTT with X.509 certificate based mutual authentication  | $${\Large\color{orange}&#10004\*}$$     | $${\Large\color{green}&#10004}$$ | [link](https://github.com/aws/aws-iot-device-sdk-java-v2/blob/main/documents/MQTT5_Userguide.md#direct-mqtt-with-x509-based-mutual-tls-method) |
 | MQTT with PKCS12 Method                                  | $${\Large\color{orange}&#10004\*}$$     | $${\Large\color{green}&#10004}$$ | [link](https://github.com/aws/aws-iot-device-sdk-java-v2/blob/main/documents/MQTT5_Userguide.md#direct-mqtt-with-pkcs12-method) |
 | MQTT with Custom Key Operation Method                    | $${\Large\color{orange}&#10004\*}$$     | $${\Large\color{green}&#10004}$$ | [link](https://github.com/aws/aws-iot-device-sdk-java-v2/blob/main/documents/MQTT5_Userguide.md#direct-mqtt-with-custom-key-operation-method) |
 | MQTT with Custom Authorizer Method                       | $${\Large\color{orange}&#10004\*\*}$$   | $${\Large\color{green}&#10004}$$ | [link](https://github.com/aws/aws-iot-device-sdk-java-v2/blob/main/documents/MQTT5_Userguide.md#direct-mqtt-with-custom-authorizer-method) |
 | MQTT with Windows Certificate Store Method               | $${\Large\color{red}&#10008}$$          | $${\Large\color{green}&#10004}$$ | [link](https://github.com/aws/aws-iot-device-sdk-java-v2/blob/main/documents/MQTT5_Userguide.md#direct-mqtt-with-windows-certificate-store-method) |
 | MQTT with PKCS11 Method                                  | $${\Large\color{red}&#10008}$$          | $${\Large\color{green}&#10004}$$ | [link](https://github.com/aws/aws-iot-device-sdk-java-v2/blob/main/documents/MQTT5_Userguide.md#direct-mqtt-with-pkcs11-method) |
-| Websocket Connection with Cognito Authentication Method  | $${\Large\color{red}&#10008}$$          | $${\Large\color{green}&#10004}$$ | [link](https://github.com/aws/aws-iot-device-sdk-java-v2/blob/main/documents/MQTT5_Userguide.md#websocket-connection-with-cognito-authentication-method) |
 | HTTP Proxy                                               | $${\Large\color{orange}&#10004\*\*\*}$$ | $${\Large\color{green}&#10004}$$ | [link](https://github.com/aws/aws-iot-device-sdk-java-v2/blob/main/documents/MQTT5_Userguide.md#http-proxy) |
 
 ${\Large\color{orange}&#10004\*}$ - In order to get this connection type work in V1 SDK, you need to create KeyStore.\
@@ -260,7 +260,7 @@ V1 SDK provides 3 lifecycle events: “on connection success”, “on connectio
 supply a custom callback function via subclassing `AWSIotMqttClient`. It is recommended to use lifecycle events callbacks
 to help determine the state of the MQTT client during operation.
 
-V2 SDK add 2 new lifecycle events, providing 5 lifecycle events in total: “on connection success”, “on connection failure”,
+V2 SDK adds 2 new lifecycle events, providing 5 lifecycle events in total: “on connection success”, “on connection failure”,
 “on disconnect” (the same as “on connection closed” in V1 SDK), “on stopped”, and “on attempting connect”. Enabling lifecycle
 events is mandatory in V2 SDK.
 
