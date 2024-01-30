@@ -31,8 +31,8 @@
 * [Shadow](./Shadow/README.md)
 * [Jobs](./Jobs/README.md)
 * [Fleet Provisioning](./FleetProvisioning/README.md)
-* [Android Sample](./Android/README.md)
 ## Other Samples
+* [Android Sample](./Android/README.md)
 * [Greengrass Discovery](./Greengrass/README.md)
 * [Greengrass IPC](./GreengrassIPC/README.md)
 
