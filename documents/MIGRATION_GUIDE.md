@@ -1010,8 +1010,8 @@ and [source code](https://github.com/aws/aws-iot-device-sdk-java/blob/master/aws
 
 ## How to Get Help
 
-Questions? You can look for an answer in the [discussions](https://github.com/aws/aws-iot-device-sdk-java-v2/discussions)
-page. Or, you can always open a [new discussion](https://github.com/aws/aws-iot-device-sdk-java-v2/discussions/new?category=q-a),
+Questions? You can look for an answer in the [discussions](https://github.com/aws/aws-iot-device-sdk-java-v2/discussions?discussions_q=label%3Amigration)
+page. Or, you can always open a [new discussion](https://github.com/aws/aws-iot-device-sdk-java-v2/discussions/new?category=q-a&labels=migration),
 and we will be happy to help you.
 
 
