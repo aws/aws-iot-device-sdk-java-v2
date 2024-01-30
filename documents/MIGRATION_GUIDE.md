@@ -95,7 +95,7 @@ groupId, whereas V1 SDK uses the `com.amazonaws` groupId.
 V1 SDK uses an MQTT version 3.1.1 client under the hood.
 
 V2 SDK provides MQTT version 3.1.1 and MQTT version 5.0 client implementations. This guide focuses on the MQTT5 since
-this version is significant improvement over MQTT3. See MQTT5 features section.
+this version is significant improvement over MQTT3. See [MQTT5 features](#mqtt5-features) section.
 
 
 ### Client Builder
