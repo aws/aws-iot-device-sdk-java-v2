@@ -3,6 +3,15 @@
 ## MQTT5 Samples
 #### MQTT5 is the recommended MQTT Client. It has many benefits over MQTT311 outlined in the [MQTT5 User Guide](../documents/MQTT5_Userguide.md)
 * [MQTT5 PubSub](./Mqtt5/PubSub/README.md)
+    * [Direct MQTT with X509-based Mutual TLS Method](./Mqtt5/PubSub/README.md#direct-mqtt-with-x509-based-mutual-tls-method)
+    * [Direct MQTT with Custom Authorizer Method](./Mqtt5/PubSub/README.md#direct-mqtt-with-custom-authorizer-method)
+    * [Direct MQTT with PKCS11 Method](./Mqtt5/PubSub/README.md#direct-mqtt-with-pkcs11-method)
+    * [Direct MQTT with PKCS12 Method](./Mqtt5/PubSub/README.md#direct-mqtt-with-pkcs12-method)
+    * [Direct MQTT with Custom Key Operations Method](./Mqtt5/PubSub/README.md#direct-mqtt-with-custom-key-operation-method)
+    * [Direct MQTT with Windows Certificate Store Method](./Mqtt5/PubSub/README.md#direct-mqtt-with-windows-certificate-store-method)
+    * [Direct MQTT with Java Keystore Method](./Mqtt5/PubSub/README.md#direct-mqtt-with-java-keystore-method)
+    * [Websocket Connection with Sigv4 Authentication Method](./Mqtt5/PubSub/README.md#websocket-connection-with-sigv4-authentication-method)
+    * [Websocket Connection with Cognito Authentication Method](./Mqtt5/PubSub/README.md#websocket-connection-with-cognito-authentication-method)
 * [MQTT5 Shared Subscription](./Mqtt5/SharedSubscription/README.md)
 ## MQTT311 Samples
 * [BasicPubSub](./BasicPubSub/README.md)
