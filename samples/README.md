@@ -13,6 +13,9 @@
     * [Websocket Connection with Sigv4 Authentication Method](./Mqtt5/PubSub/README.md#websocket-connection-with-sigv4-authentication-method)
     * [Websocket Connection with Cognito Authentication Method](./Mqtt5/PubSub/README.md#websocket-connection-with-cognito-authentication-method)
 * [MQTT5 Shared Subscription](./Mqtt5/SharedSubscription/README.md)
+* [MQTT5 Shadow](./Shadow/README.md)
+* [MQTT5 Jobs](./Jobs/README.md)
+* [MQTT5 Fleet Provisioning](./FleetProvisioning/README.md)
 ## MQTT311 Samples
 * [BasicPubSub](./BasicPubSub/README.md)
 * [Basic Connect](./BasicConnect/README.md)
@@ -27,7 +30,7 @@
 * [CustomKeyOperation Connect](./CustomKeyOpsConnect/README.md)
 * [Shadow](./Shadow/README.md)
 * [Jobs](./Jobs/README.md)
-* [fleet provisioning](./FleetProvisioning/README.md)
+* [Fleet Provisioning](./FleetProvisioning/README.md)
 * [Android Sample](./Android/README.md)
 ## Other Samples
 * [Greengrass Discovery](./Greengrass/README.md)
