@@ -142,7 +142,7 @@ String clientEndpoint = "<prefix>-ats.iot.<region>.amazonaws.com";
 AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newDirectMqttBuilderWithCustomAuth(clientEndpoint, customAuthConfig);
 ~~~
 
-If your custom authorizer uses signing, you must specify the three signed token properties as well. It is your responsibility to URI-encode the Username, AuthorizerName, and TokenKeyName parameters.
+If your custom authorizer uses signing, you must specify the three signed token properties as well. It is your responsibility to URI-encode the username, authorizerName, and tokenKeyName parameters.
 
 ~~~ java
 AwsIotMqtt5ClientBuilder.MqttConnectCustomAuthConfig customAuthConfig = new AwsIotMqtt5ClientBuilder.MqttConnectCustomAuthConfig();
