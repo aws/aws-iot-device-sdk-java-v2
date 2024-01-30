@@ -2,26 +2,26 @@
 
 * [Introduction](#introduction)
 * [MQTT5 differences relative to MQTT311 implementation](#mqtt5-differences-relative-to-mqtt311-implementation)
-    * [Major Changes](#major-changes)
-    * [Minor Changes](#minor-changes)
-    * [Not Supported](#not-supported)
+    + [Major Changes](#major-changes)
+    + [Minor Changes](#minor-changes)
+    + [Not Supported](#not-supported)
 * [Getting Started with MQTT5](#getting-started-with-mqtt5)
-    * [How to setup a MQTT5 builder based on desired connection method](#how-to-setup-mqtt5-builder-based-on-desired-connection-method)
+    + [How to setup a MQTT5 builder based on desired connection method](#how-to-setup-mqtt5-builder-based-on-desired-connection-method)
         * [Direct MQTT with X509-based Mutual TLS Method](#direct-mqtt-with-x509-based-mutual-tls-method)
-        * [Websocket Connection with Sigv4 Authentication Method](#websocket-connection-with-sigv4-authentication-method)
         * [Direct MQTT with Custom Authorizer Method](#direct-mqtt-with-custom-authorizer-method)
         * [Direct MQTT with PKCS11 Method](#direct-mqtt-with-pkcs11-method)
         * [Direct MQTT with PKCS12 Method](#direct-mqtt-with-pkcs12-method)
         * [Direct MQTT with Custom Key Operations Method](#direct-mqtt-with-custom-key-operation-method)
         * [Direct MQTT with Windows Certificate Store Method](#direct-mqtt-with-windows-certificate-store-method)
         * [Direct MQTT with Java Keystore Method](#direct-mqtt-with-java-keystore-method)
+        * [Websocket Connection with Sigv4 Authentication Method](#websocket-connection-with-sigv4-authentication-method)
         * [Websocket Connection with Cognito Authentication Method](#websocket-connection-with-cognito-authentication-method)
-        * [HTTP Proxy](#http-proxy)
-    * [How to create a MQTT5 client](#how-to-create-a-mqtt5-client)
-    * [How to Start and Stop](#how-to-start-and-stop)
-    * [How to Publish](#how-to-publish)
-    * [How to Subscribe and Unsubscribe](#how-to-subscribe-and-unsubscribe)
-    * [MQTT5 Best Practices](#mqtt5-best-practices)
+    + [Adding an HTTP Proxy](#adding-an-http-proxy)
+    + [How to create a MQTT5 client](#how-to-create-a-mqtt5-client)
+    + [How to Start and Stop](#how-to-start-and-stop)
+    + [How to Publish](#how-to-publish)
+    + [How to Subscribe and Unsubscribe](#how-to-subscribe-and-unsubscribe)
+    + [MQTT5 Best Practices](#mqtt5-best-practices)
 
 # Introduction
 
@@ -108,36 +108,6 @@ String keyData = readFile("<private key file path>", StandardCharsets.UTF_8);
 AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newMtlsBuilder(clientEndpoint, certificateData, keyData);
 ~~~
 
-### **Websocket Connection with Sigv4 Authentication Method**
-
-Sigv4-based authentication requires a credentials provider capable of sourcing valid AWS credentials. Sourced credentials will sign the websocket upgrade request made by the client while connecting. The default credentials provider chain supported by the SDK is capable of resolving credentials in a variety of environments according to a chain of priorities:
-
-~~~
-Environment -> Profile (local file system) -> STS Web Identity -> IMDS (ec2) or ECS
-~~~
-
-If the default credentials provider chain and built-in AWS region extraction logic are sufficient, you do not need to specify any additional configuration and can use the following code:
-
-~~~ java
-String clientEndpoint = "<prefix>-ats.iot.<region>.amazonaws.com";
-AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newWebsocketMqttBuilderWithSigv4Auth(clientEndpoint, null);
-~~~
-
-See the [authorizing direct AWS](https://docs.aws.amazon.com/iot/latest/developerguide/authorizing-direct-aws.html) page for documentation on how to get the AWS credentials, which then can be set to the `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS`, and `AWS_SESSION_TOKEN` environment variables prior to running the application.
-
-Alternatively, if you're connecting to a special region for which standard pattern matching does not work, or if you need a specific credentials provider, you can specify advanced websocket configuration options using the following code:
-
-~~~ java
-WebsocketSigv4Config websocketConfig = new WebsocketSigv4Config();
-websocketConfig.region = "us-east-1";
-DefaultChainCredentialsProvider.DefaultChainCredentialsProviderBuilder providerBuilder = new DefaultChainCredentialsProvider.DefaultChainCredentialsProviderBuilder();
-providerBuilder.withClientBootstrap(ClientBootstrap.getOrCreateStaticDefault());
-websocketConfig.credentialsProvider = providerBuilder.build();
-
-String clientEndpoint = "<prefix>-ats.iot.<region>.amazonaws.com";
-AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newWebsocketMqttBuilderWithSigv4Auth(clientEndpoint, websocketConfig);
-~~~
-
 ### **Direct MQTT with Custom Authorizer Method**
 
 A MQTT5 direct connection can be made using a [Custom Authorizer](https://docs.aws.amazon.com/iot/latest/developerguide/custom-authentication.html) rather than a certificate and key file like in the Direct Connection section above. Instead of using Mutual TLS to connect, a Custom Authorizer can be invoked instead and used to authorize the connection. When making a connection to a Custom Authorizer, the MQTT5 client can optionally passing username, password, and/or token signature arguments based on the configuration of the Custom Authorizer on AWS IoT Core.
@@ -156,7 +126,7 @@ String clientEndpoint = "<prefix>-ats.iot.<region>.amazonaws.com";
 AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newDirectMqttBuilderWithCustomAuth(clientEndpoint, customAuthConfig);
 ~~~
 
-If your Custom Authorizer uses signing, you must specify the three signed token properties as well. The token signature must be the URI-encoding of the base64 encoding of the digital signature of the token value via the private key associated with the public key that was registered with the Custom Authorizer. It is your responsibility to URI-encode the token signature. For a Custom Authorizer that uses signing, you can use the following code:
+If your custom authorizer uses signing, you must specify the three signed token properties as well. It is your responsibility to URI-encode the Username, AuthorizerName, and TokenKeyName parameters.
 
 ~~~ java
 AwsIotMqtt5ClientBuilder.MqttConnectCustomAuthConfig customAuthConfig = new AwsIotMqtt5ClientBuilder.MqttConnectCustomAuthConfig();
@@ -304,6 +274,36 @@ String clientEndpoint = "<prefix>-ats.iot.<region>.amazonaws.com";
 AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newDirectMqttBuilderWithJavaKeystore(clientEndpoint, keyStore, keyStoreCertificateAlias, keyStoreCertificatePassword)
 ~~~
 
+### **Websocket Connection with Sigv4 Authentication Method**
+
+Sigv4-based authentication requires a credentials provider capable of sourcing valid AWS credentials. Sourced credentials will sign the websocket upgrade request made by the client while connecting. The default credentials provider chain supported by the SDK is capable of resolving credentials in a variety of environments according to a chain of priorities:
+
+~~~
+Environment -> Profile (local file system) -> STS Web Identity -> IMDS (ec2) or ECS
+~~~
+
+If the default credentials provider chain and built-in AWS region extraction logic are sufficient, you do not need to specify any additional configuration and can use the following code:
+
+~~~ java
+String clientEndpoint = "<prefix>-ats.iot.<region>.amazonaws.com";
+AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newWebsocketMqttBuilderWithSigv4Auth(clientEndpoint, null);
+~~~
+
+See the [authorizing direct AWS](https://docs.aws.amazon.com/iot/latest/developerguide/authorizing-direct-aws.html) page for documentation on how to get the AWS credentials, which then can be set to the `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS`, and `AWS_SESSION_TOKEN` environment variables prior to running the application.
+
+Alternatively, if you're connecting to a special region for which standard pattern matching does not work, or if you need a specific credentials provider, you can specify advanced websocket configuration options using the following code:
+
+~~~ java
+WebsocketSigv4Config websocketConfig = new WebsocketSigv4Config();
+websocketConfig.region = "us-east-1";
+DefaultChainCredentialsProvider.DefaultChainCredentialsProviderBuilder providerBuilder = new DefaultChainCredentialsProvider.DefaultChainCredentialsProviderBuilder();
+providerBuilder.withClientBootstrap(ClientBootstrap.getOrCreateStaticDefault());
+websocketConfig.credentialsProvider = providerBuilder.build();
+
+String clientEndpoint = "<prefix>-ats.iot.<region>.amazonaws.com";
+AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newWebsocketMqttBuilderWithSigv4Auth(clientEndpoint, websocketConfig);
+~~~
+
 ### **Websocket Connection with Cognito Authentication Method**
 
 A MQTT5 websocket connection can be made using Cognito to authenticate rather than the AWS credentials located on the device or via key and certificate. Instead, Cognito can authenticate the connection using a valid Cognito identity ID. This requires a valid Cognito identity ID, which can be retrieved from a Cognito identity pool. A Cognito identity pool can be created from the AWS console.
@@ -330,7 +330,7 @@ AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newWebsocketMqttBuil
 
 **Note**: A Cognito identity ID is different from a Cognito identity pool ID and trying to connect with a Cognito identity pool ID will not work. If you are unable to connect, make sure you are passing a Cognito identity ID rather than a Cognito identity pool ID.
 
-### **HTTP Proxy**
+## **Adding an HTTP Proxy**
 
 No matter what your connection transport or authentication method is, you may connect through an HTTP proxy by applying proxy configuration to the builder using the following code:
 

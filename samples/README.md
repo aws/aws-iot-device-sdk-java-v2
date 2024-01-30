@@ -1,5 +1,10 @@
 # Sample Applications for the AWS IoT Device SDK for Java v2
 
+## MQTT5 Samples
+#### MQTT5 is the recommended MQTT Client. It has many benefits over MQTT311 outlined in the [MQTT5 User Guide](../documents/MQTT5_Userguide.md)
+* [MQTT5 PubSub](./Mqtt5/PubSub/README.md)
+* [MQTT5 Shared Subscription](./Mqtt5/SharedSubscription/README.md)
+## MQTT311 Samples
 * [BasicPubSub](./BasicPubSub/README.md)
 * [Basic Connect](./BasicConnect/README.md)
 * [Websocket Connect](./WebsocketConnect/README.md)
@@ -14,11 +19,10 @@
 * [Shadow](./Shadow/README.md)
 * [Jobs](./Jobs/README.md)
 * [fleet provisioning](./FleetProvisioning/README.md)
+* [Android Sample](./Android/README.md)
+## Other Samples
 * [Greengrass Discovery](./Greengrass/README.md)
 * [Greengrass IPC](./GreengrassIPC/README.md)
-* [MQTT5 PubSub](./Mqtt5/PubSub/README.md)
-* [MQTT5 Shared Subscription](./Mqtt5/SharedSubscription/README.md)
-* [Android Sample](./Android/README.md)
 
 ### Note
 
