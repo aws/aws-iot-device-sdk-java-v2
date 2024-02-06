@@ -51,19 +51,47 @@ mvn -P latest-release compile exec:java -pl samples/WebsocketConnect -Dexec.main
 
 ## Alternate connection configuration methods supported by AWS IoT Core
 
+### MQTT over WebSockets with static AWS credentials
+
+With a help of a static credentials provider your application can use a fixed set of AWS credentials. For that, you need
+to instantiate the `StaticCredentialsProviderBuilder` class and provide it with the AWS credentials. The following code
+snippet demonstrates how to set up an MQTT3 connection using static AWS credentials for SigV4-based authentication.
+
+```java
+static MqttClientConnection createMqttClientConnection(CommandLineUtils.SampleCommandLineData cmdData) {
+    try (AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(null, null)) {
+        builder.withConnectionEventCallbacks(callbacks)
+            .withClientId(cmdData.input_clientId)
+            .withEndpoint(cmdData.input_endpoint)
+            .withCleanSession(true)
+            .withProtocolOperationTimeoutMs(60000);
+
+        builder.withWebsockets(true);
+        builder.withWebsocketSigningRegion(cmdData.input_signingRegion);
+
+        StaticCredentialsProviderBuilder providerBuilder = new StaticCredentialsProviderBuilder();
+        providerBuilder.withAccessKeyId("<access key id>");
+        providerBuilder.withSecretAccessKey("<secret access key>");
+        providerBuilder.withSessionToken("<session>");
+
+        CredentialsProvider credentialsProvider = providerBuilder.build();
+        builder.withWebsocketCredentialsProvider(credentialsProvider);
+
+        MqttClientConnection connection = builder.build();
+```
+
 ### MQTT over WebSockets with Custom Authorizer
 
-An MQTT3 direct connection can be made using a [Custom Authorizer](https://docs.aws.amazon.com/iot/latest/developerguide/custom-authentication.html)
-rather than a certificate and key file like in the Direct Connection section above. Instead of using Mutual TLS to connect,
-a Custom Authorizer can be invoked instead and used to authorize the connection. When making a connection to a Custom
-Authorizer, the MQTT5 client can optionally passing username, password, and/or token signature arguments based on the
-configuration of the Custom Authorizer on AWS IoT Core.
+An MQTT3 direct connection can be made using a [Custom Authorizer](https://docs.aws.amazon.com/iot/latest/developerguide/custom-authentication.html).
+When making a connection to a Custom Authorizer, the MQTT3 client can optionally passing username, password, and/or token
+signature arguments based on the configuration of the Custom Authorizer on AWS IoT Core.
 
 You will need to setup your Custom Authorizer so that the lambda function returns a policy document to properly connect.
 See [this page](https://docs.aws.amazon.com/iot/latest/developerguide/config-custom-auth.html) on the documentation for
 more details and example return results.
 
-If your Custom Authorizer does not use signing, you don't specify anything related to the token signature and can use the following code:
+If your Custom Authorizer does not use signing, you don't specify anything related to the token signature and can use
+the following code:
 
 ```java
 static MqttClientConnection createMqttClientConnection(CommandLineUtils.SampleCommandLineData cmdData) {
@@ -101,8 +129,7 @@ mvn compile exec:java -pl samples/WebsocketConnect -Dexec.mainClass=websocketcon
 --signing_region <signing region> \
 --custom_auth_username <username> \
 --custom_auth_authorizer_name <authorizer name> \
---custom_auth_password <password>
-"
+--custom_auth_password <password>"
 ```
 
 If your custom authorizer uses signing, you must specify the three signed token properties as well. It is your responsibility
@@ -147,8 +174,7 @@ mvn compile exec:java -pl samples/WebsocketConnect -Dexec.mainClass=websocketcon
 --custom_auth_authorizer_signature <authorizer signature> \
 --custom_auth_password <password>
 --custom_auth_token_key_name <token key name> \
---custom_auth_token_value <token key value> \
-"
+--custom_auth_token_value <token key value>"
 ```
 
 In both cases, the builder will construct a final CONNECT packet username field value for you based on the values configured.
@@ -158,4 +184,3 @@ optionally attached to the client configuration. The builder will do everything 
 
 
 
-### MQTT over WebSockets with static AWS credentials
