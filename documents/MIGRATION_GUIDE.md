@@ -9,7 +9,7 @@ your code to v2 from v1 of the AWS IoT SDK for Java.
 > If you can't find the information you need in this guide, visit the [How to get help](#how-to-get-help) section for more help and guidance.
 
 * [What's new in AWS IoT Device SDK for Java v2](#whats-new-in-aws-iot-device-sdk-for-java-v2)
-* [How to get started with the v2 SDK for Java](#how-to-get-started-with-the-v2-sdk-for-java)
+* [How to get started with AWS IoT Device SDK for Java v2](#how-to-get-started-with-aws-iot-device-sdk-for-java-v2)
     * [Package name change](#package-name-change)
     * [MQTT protocol](#mqtt-protocol)
     * [Client builder](#client-builder)
@@ -41,14 +41,16 @@ for the returned `CompletableFuture` object to be resolved.
 as in the v1 SDK. This removes the semantic confusion between client-level controls and internal recurrent networking events related to connection and disconnection.
 * The v2 SDK supports AWS IoT services such as Jobs and fleet provisioning.
 
-Public API for almost all actions and operations has changed significantly. For more information about the new features and specific code examples, refer to the [How to get started with v2 SDK](#how-to-get-started-with-v2-sdk) section of this guide.
+Public API for almost all actions and operations has changed significantly. For more information about the new features
+and specific code examples, refer to the [How to get started with AWS IoT Device SDK for Java v2](#how-to-get-started-with-aws-iot-device-sdk-for-java-v2)
+section of this guide.
 
 <!--Should this be public APIs? If it's plural, update the sentence like the following: Public APIs for almost all actions and operations have changed significantly. -->
 
-## How to get started with the v2 SDK for Java
+## How to get started with AWS IoT Device SDK for Java v2
 
-There're differences between the v1 SDK and the v2 SDK. This section describes the changes you need to apply to your project with the
-v1 SDK to start using the v2 SDK. For more information about MQTT 5, visit [MQTT5 User Guide](https://github.com/aws/aws-iot-device-sdk-java-v2/blob/main/documents/MQTT5_Userguide.md#getting-started-with-mqtt5).
+There're differences between the v1 SDK and the v2 SDK. This section describes the changes you need to apply to your project
+with the v1 SDK to start using the v2 SDK. For more information about MQTT 5, visit [MQTT5 User Guide](https://github.com/aws/aws-iot-device-sdk-java-v2/blob/main/documents/MQTT5_Userguide.md#getting-started-with-mqtt5).
 
 ### Package name change
 
