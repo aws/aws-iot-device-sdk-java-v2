@@ -36,8 +36,8 @@ your code to v2 from v1 of the AWS IoT SDK for Java.
 
 * The v2 SDK client is truly async. Operations return `CompletableFuture` objects. Blocking calls can be emulated by waiting
 for the returned `CompletableFuture` object to be resolved.
-* The v2 SDK provides implementation for MQTT 5 protocol, the next step in evolution of the MQTT protocol.
-* Public API terminology has changed. You `start()` or `stop()` the MQTT 5 client rather than `Connect` or `Disconnect`
+* The v2 SDK provides implementation for MQTT5 protocol, the next step in evolution of the MQTT protocol.
+* Public API terminology has changed. You `start()` or `stop()` the MQTT5 client rather than `Connect` or `Disconnect`
 as in the v1 SDK. This removes the semantic confusion between client-level controls and internal recurrent networking events related to connection and disconnection.
 * The v2 SDK supports AWS IoT services such as Jobs and fleet provisioning.
 
@@ -50,7 +50,7 @@ section of this guide.
 ## How to get started with AWS IoT Device SDK for Java v2
 
 There're differences between the v1 SDK and the v2 SDK. This section describes the changes you need to apply to your project
-with the v1 SDK to start using the v2 SDK. For more information about MQTT 5, visit [MQTT5 User Guide](https://github.com/aws/aws-iot-device-sdk-java-v2/blob/main/documents/MQTT5_Userguide.md#getting-started-with-mqtt5).
+with the v1 SDK to start using the v2 SDK. For more information about MQTT5, visit [MQTT5 User Guide](https://github.com/aws/aws-iot-device-sdk-java-v2/blob/main/documents/MQTT5_Userguide.md#getting-started-with-mqtt5).
 
 ### Package name change
 
@@ -86,8 +86,8 @@ groupId, whereas the v1 SDK uses the `com.amazonaws` groupId.
 
 The v1 SDK uses an MQTT version 3.1.1 client under the hood.
 
-The v2 SDK provides MQTT version 3.1.1 and MQTT version 5.0 client implementations. This guide focuses on MQTT 5 because
-this version is a significant improvement over MQTT 3. For more information, see the [MQTT 5 features](#mqtt5-features) section.
+The v2 SDK provides MQTT version 3.1.1 and MQTT version 5.0 client implementations. This guide focuses on MQTT5 because
+this version is a significant improvement over MQTT3. For more information, see the [MQTT5 features](#mqtt5-features) section.
 
 ### Client builder
 
@@ -99,9 +99,9 @@ constructor. It's possible to change the client settings after its creation usin
 or `setMaxConnectionRetries`.
 
 In the v2 SDK, the [Mqtt5Client](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5Client.html)
-class represents an MQTT client, specifically for MQTT 5 protocol. The v2 SDK provides an [MQTT 5 client builder](https://aws.github.io/aws-iot-device-sdk-java-v2/software/amazon/awssdk/iot/AwsIotMqtt5ClientBuilder.html)
-designed to easily create common configuration types such as direct MQTT or WebSocket connections. After an MQTT 5 client
-is built and finalized, the settings of the resulting MQTT 5 client cannot be modified.
+class represents an MQTT client, specifically for MQTT5 protocol. The v2 SDK provides an [MQTT5 client builder](https://aws.github.io/aws-iot-device-sdk-java-v2/software/amazon/awssdk/iot/AwsIotMqtt5ClientBuilder.html)
+designed to easily create common configuration types such as direct MQTT or WebSocket connections. After an MQTT5 client
+is built and finalized, the settings of the resulting MQTT5 client cannot be modified.
 
 <!-- Only use to mean "at one time." Don't use to mean after. 
 https://alpha.www.docs.aws.a2z.com/awsstyleguide/latest/styleguide/dictionary.html
@@ -124,7 +124,7 @@ AWSIotMqttClient client =
 #### Example of creating a client in the v2 SDK
 
 The v2 SDK supports different connection types. Given the same input parameters as in the v1 example above, the most
-recommended method to create an MQTT 5 client will be [newDirectMqttBuilderWithMtlsFromPath](https://aws.github.io/aws-iot-device-sdk-java-v2/software/amazon/awssdk/iot/AwsIotMqtt5ClientBuilder.html#newDirectMqttBuilderWithMtlsFromPath(java.lang.String,java.lang.String,java.lang.String)).
+recommended method to create an MQTT5 client will be [newDirectMqttBuilderWithMtlsFromPath](https://aws.github.io/aws-iot-device-sdk-java-v2/software/amazon/awssdk/iot/AwsIotMqtt5ClientBuilder.html#newDirectMqttBuilderWithMtlsFromPath(java.lang.String,java.lang.String,java.lang.String)).
 
 ```java
 String clientEndpoint = "<prefix>-ats.iot.<region>.amazonaws.com";
@@ -154,8 +154,8 @@ and [Custom Authorizer](https://docs.aws.amazon.com/iot/latest/developerguide/cu
 providers (e.g. [Windows Certificate Store](https://learn.microsoft.com/en-us/windows-hardware/drivers/install/certificate-stores)),
 and other connection-related features.
 
-For more information, refer to the [How to set up MQTT 5 builder based on desired connection method](https://github.com/aws/aws-iot-device-sdk-java-v2/blob/main/documents/MQTT5_Userguide.md#how-to-setup-mqtt5-builder-based-on-desired-connection-method)
-section of the MQTT 5 user guide for detailed information and code snippets on each connection type and connection feature.
+For more information, refer to the [How to set up MQTT5 builder based on desired connection method](https://github.com/aws/aws-iot-device-sdk-java-v2/blob/main/documents/MQTT5_Userguide.md#how-to-setup-mqtt5-builder-based-on-desired-connection-method)
+section of the MQTT5 user guide for detailed information and code snippets on each connection type and connection feature.
 
 | Connection type/feature                                  | v1 SDK                                  | v2 SDK                           | User guide |
 |----------------------------------------------------------|-----------------------------------------|----------------------------------|:----------:|
@@ -244,7 +244,7 @@ The v2 SDK adds two new lifecycle events and provides five lifecycle events in t
 *on disconnect* (the same as *on connection closed* in the v1 SDK), *on stopped*, and *on attempting connect*. Enabling lifecycle
 events is mandatory in the v2 SDK.
 
-For more information, refer to the [MQTT 5 user guide](https://github.com/aws/aws-iot-device-sdk-java-v2/blob/main/documents/MQTT5_Userguide.md#how-to-create-a-mqtt5-client).
+For more information, refer to the [MQTT5 user guide](https://github.com/aws/aws-iot-device-sdk-java-v2/blob/main/documents/MQTT5_Userguide.md#how-to-create-a-mqtt5-client).
 
 #### Example of setting lifecycle events in the v1 SDK
 
@@ -372,7 +372,7 @@ with the corresponding [SubAckPacket](https://awslabs.github.io/aws-crt-java/sof
 returned by the broker. The promise is rejected with an error if anything goes wrong before the `SubAckPacket` is received.
 You should always check the reason codes of a `SubAckPacket` completion to determine if the subscribe operation actually succeeded.
 
-In the v2 SDK, if the MQTT 5 client is going to subscribe and receive packets from the MQTT broker, it is important to also set up
+In the v2 SDK, if the MQTT5 client is going to subscribe and receive packets from the MQTT broker, it is important to also set up
 the [PublishEvents](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5ClientOptions.PublishEvents.html)
 callback. This callback is invoked whenever the client receives a message from the server on a topic the client is subscribed
 to. With this callback, you can process messages made to subscribed topics.
@@ -482,7 +482,7 @@ client.unsubscribe(unsubBuilder.build()).get(60, TimeUnit.SECONDS);
 In the v1 SDK, the `disconnect` method in the `AWSIotMqttClient` class disconnects the client. Once disconnected, the client
 can connect again by calling `connect`.
 
-In the v2 SDK, an MQTT 5 client can stop a session by calling the [stop](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5Client.html#stop(software.amazon.awssdk.crt.mqtt5.packets.DisconnectPacket))
+In the v2 SDK, an MQTT5 client can stop a session by calling the [stop](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5Client.html#stop(software.amazon.awssdk.crt.mqtt5.packets.DisconnectPacket))
 method. You can provide an optional [DisconnectPacket](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/packets/DisconnectPacket.html)
 parameter. A closed client can be started again by calling [start](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5Client.html#start()).
 
@@ -504,7 +504,7 @@ client.stop(disconnectBuilder.build());
 
 The v1 SDK automatically cleans resources allocated by an `AWSIotMqttClient` object on shutdown.
 
-In the v2 SDK, when an MQTT 5 client is no longer required, your program **must** close it explicitly via a `close` call.
+In the v2 SDK, when an MQTT5 client is no longer required, your program **must** close it explicitly via a `close` call.
 
 The v2 SDK `Mqtt5Client` class implements the [AutoCloseable](https://docs.oracle.com/javase/8/docs/api/java/lang/AutoCloseable.html)
 interface, so it is recommended to create `Mqtt5Client` objects in the [try-with-resources](https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html)
@@ -599,7 +599,7 @@ In the v1 SDK, all operations (*publish*, *subscribe*, *unsubscribe*) will not t
 If no timeout is defined, there is a possibility that an operation will wait forever for the server to respond and block
 the calling thread indefinitely.
 
-In the v2 SDK, operations timeout is set for the MQTT 5 client with the builder method [withAckTimeoutSeconds](https://aws.github.io/aws-iot-device-sdk-java-v2/software/amazon/awssdk/iot/AwsIotMqtt5ClientBuilder.html#withAckTimeoutSeconds(java.lang.Long)).
+In the v2 SDK, operations timeout is set for the MQTT5 client with the builder method [withAckTimeoutSeconds](https://aws.github.io/aws-iot-device-sdk-java-v2/software/amazon/awssdk/iot/AwsIotMqtt5ClientBuilder.html#withAckTimeoutSeconds(java.lang.Long)).
 The default value is no timeout. As in the v1 SDK, failing to set a timeout can cause an operation to stuck forever, but it
 won't block the client.
 
@@ -951,4 +951,4 @@ For more information, see a [shared subscription sample](https://github.com/aws/
 in the v2 SDK.
 
 > [!NOTE]  
-> AWS IoT Core supports Shared Subscriptions for both MQTT 3 and MQTT 5. For more information, see [Shared Subscriptions](https://docs.aws.amazon.com/iot/latest/developerguide/mqtt.html#mqtt5-shared-subscription) from the AWS IoT Core developer guide.
+> AWS IoT Core supports Shared Subscriptions for both MQTT3 and MQTT5. For more information, see [Shared Subscriptions](https://docs.aws.amazon.com/iot/latest/developerguide/mqtt.html#mqtt5-shared-subscription) from the AWS IoT Core developer guide.
