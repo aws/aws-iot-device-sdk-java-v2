@@ -848,7 +848,7 @@ shadowClient.PublishUpdateShadow(request, QualityOfService.AT_LEAST_ONCE);
 For more information, see API documentation for v2 SDK [Device Shadow](https://aws.github.io/aws-iot-device-sdk-java-v2/software/amazon/awssdk/iot/iotshadow/IotShadowClient.html).\
 For code examples, see the v2 SDK [Device Shadow](https://github.com/aws/aws-iot-device-sdk-java-v2/tree/main/samples/Shadow).
 
-### Client for AWS IoT Jobs service
+### Client for AWS IoT Jobs
 
 The v2 SDK expands support of AWS IoT Core services implementing a service client for the [Jobs](https://docs.aws.amazon.com/iot/latest/developerguide/iot-jobs.html)
 service. The Jobs service helps with defining a set of remote operations that can be sent to and run on one or more devices connected
@@ -865,7 +865,7 @@ For more information about the service clients, see API documentation for the v2
 
 For code example, see the v2 SDK [Jobs](https://github.com/aws/aws-iot-device-sdk-java-v2/tree/main/samples/Jobs) samples.
 
-### Client for the AWS IoT fleet provisioning service
+### Client for the AWS IoT fleet provisioning
 
 [Fleet Provisioning](https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html)
 (also known as Identity Service) is another AWS IoT service that the v2 SDK provides access to. By using AWS IoT fleet provisioning, AWS IoT can generate and securely deliver device
