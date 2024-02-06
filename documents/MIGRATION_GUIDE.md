@@ -8,8 +8,8 @@ your code to v2 from v1 of the AWS IoT SDK for Java.
 > [!NOTE]  
 > If you can't find the information you need in this guide, visit the [How to get help](#how-to-get-help) section for more help and guidance.
 
-* [What's new in v2 SDK](#whats-new-in-v2-sdk)
-* [How to get started with v2 SDK](#how-to-get-started-with-v2-sdk)
+* [What's new in AWS IoT Device SDK for Java v2](#whats-new-in-aws-iot-device-sdk-for-java-v2)
+* [How to get started with the v2 SDK for Java](#how-to-get-started-with-the-v2-sdk-for-java)
     * [Package name change](#package-name-change)
     * [MQTT protocol](#mqtt-protocol)
     * [Client builder](#client-builder)
@@ -80,14 +80,14 @@ groupId, whereas the v1 SDK uses the `com.amazonaws` groupId.
 </dependency>
 ```
 
-### MQTT Protocol
+### MQTT protocol
 
 The v1 SDK uses an MQTT version 3.1.1 client under the hood.
 
 The v2 SDK provides MQTT version 3.1.1 and MQTT version 5.0 client implementations. This guide focuses on MQTT 5 because
 this version is a significant improvement over MQTT 3. For more information, see the [MQTT 5 features](#mqtt5-features) section.
 
-### Client Builder
+### Client builder
 
 To access AWS IoT services, you must initialize an MQTT client.
 
@@ -244,7 +244,7 @@ events is mandatory in the v2 SDK.
 
 For more information, refer to the [MQTT 5 user guide](https://github.com/aws/aws-iot-device-sdk-java-v2/blob/main/documents/MQTT5_Userguide.md#how-to-create-a-mqtt5-client).
 
-### Example of setting lifecycle events in the v1 SDK
+#### Example of setting lifecycle events in the v1 SDK
 
 ```java
 class MyClient extends AWSIotMqttClient {
@@ -475,7 +475,7 @@ UnsubscribePacketBuilder unsubBuilder = new UnsubscribePacketBuilder("my/topic")
 client.unsubscribe(unsubBuilder.build()).get(60, TimeUnit.SECONDS);
 ```
 
-### Client Stop
+### Client stop
 
 In the v1 SDK, the `disconnect` method in the `AWSIotMqttClient` class disconnects the client. Once disconnected, the client
 can connect again by calling `connect`.
@@ -498,7 +498,7 @@ disconnectBuilder.withReasonCode(DisconnectPacket.DisconnectReasonCode.NORMAL_DI
 client.stop(disconnectBuilder.build());
 ```
 
-### Client Shutdown
+### Client shutdown
 
 The v1 SDK automatically cleans resources allocated by an `AWSIotMqttClient` object on shutdown.
 
@@ -591,7 +591,7 @@ For more information, see [withOfflineQueueBehavior documentation](https://aws.g
 
 For the list of the supported offline queue behaviors and their descriptions, see [ClientOfflineQueueBehavior documentation](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5ClientOptions.ClientOfflineQueueBehavior.html).
 
-### Operation Timeouts
+### Operation timeouts
 
 In the v1 SDK, all operations (*publish*, *subscribe*, *unsubscribe*) will not timeout unless you define a timeout for them.
 If no timeout is defined, there is a possibility that an operation will wait forever for the server to respond and block
@@ -650,7 +650,7 @@ You can enable logging by passing the following properties:
 * `aws.crt.log.level`: The level of logging shown. Can be `Trace`, `Debug`, `Info`, `Warn`, `Error`, `Fatal`, or `None`. Defaults to `Warn`.
 * `aws.crt.log.filename`: The path to save the log file. Only required if `aws.crt.log.destination` is set to `File`.
 
-### Client for Device Shadow service
+### Client for AWS IoT Device Shadow
 
 The v1 SDK is built with [AWS IoT device shadow support](http://docs.aws.amazon.com/iot/latest/developerguide/iot-thing-shadows.html), which
 provides access to thing shadows (sometimes referred to as device shadows). It also supports a simplified shadow access model,
@@ -895,7 +895,7 @@ and we will be happy to help you.
 
 ## Appendix
 
-### MQTT 5 features
+### MQTT5 features
 
 **Clean Start and Session Expiry**\
 You can use Clean Start and Session Expiry to handle your persistent sessions with more flexibility.
