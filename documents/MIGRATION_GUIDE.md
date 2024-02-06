@@ -859,8 +859,10 @@ First, you subscribe to special topics to get data and feedback from a service. 
 After subscribing to all the required topics, the service client can start interacting with the server, for example, update
 the status or request for data. These actions are also performed via client API calls.
 
-For detailed descriptions for the topics used to interact with the Jobs service, see AWS IoT Core documentation for the [Jobs](https://docs.aws.amazon.com/iot/latest/developerguide/jobs-mqtt-api.html) service.\
-For more information about the service clients, see API documentation for the v2 SDK [Jobs](https://aws.github.io/aws-iot-device-sdk-java-v2/software/amazon/awssdk/iot/iotjobs/IotJobsClient.html).\
+For detailed descriptions for the topics used to interact with the Jobs service, see AWS IoT Core documentation for the [Jobs](https://docs.aws.amazon.com/iot/latest/developerguide/jobs-mqtt-api.html) service.
+
+For more information about the service clients, see API documentation for the v2 SDK [Jobs](https://aws.github.io/aws-iot-device-sdk-java-v2/software/amazon/awssdk/iot/iotjobs/IotJobsClient.html).
+
 For code example, see the v2 SDK [Jobs](https://github.com/aws/aws-iot-device-sdk-java-v2/tree/main/samples/Jobs) samples.
 
 ### Client for the AWS IoT fleet provisioning service
@@ -874,9 +876,9 @@ First, you subscribe to special topics to get data and feedback from a service. 
 After subscribing to all the required topics, the service client can start interacting with the server, for example, update
 the status or request for data. These actions are also performed via client API calls.
 
-For detailed descriptions for the topics used to interact with the Fleet Provisioning service, see AWS IoT Core documentation for [Fleet Provisioning](https://docs.aws.amazon.com/iot/latest/developerguide/fleet-provision-api.html).\
+For detailed descriptions for the topics used to interact with the Fleet Provisioning service, see AWS IoT Core documentation for [Fleet Provisioning](https://docs.aws.amazon.com/iot/latest/developerguide/fleet-provision-api.html).
 
-For more information about the the Fleet Provisioning service client, see API documentation for the v2 SDK [Fleet Provisioning](https://aws.github.io/aws-iot-device-sdk-java-v2/software/amazon/awssdk/iot/iotidentity/IotIdentityClient.html).\
+For more information about the the Fleet Provisioning service client, see API documentation for the v2 SDK [Fleet Provisioning](https://aws.github.io/aws-iot-device-sdk-java-v2/software/amazon/awssdk/iot/iotidentity/IotIdentityClient.html).
 
 For code examples, see the v2 SDK [Fleet Provisioning](https://github.com/aws/aws-iot-device-sdk-java-v2/tree/main/samples/FleetProvisioning)
 samples.
