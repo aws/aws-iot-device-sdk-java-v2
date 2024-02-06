@@ -852,7 +852,7 @@ The v2 SDK expands support of AWS IoT Core services implementing a service clien
 service. The Jobs service helps with defining a set of remote operations that can be sent to and run on one or more devices connected
 to AWS IoT.
 
-The Jobs service client provides API similar to API provided by [Client for Device Shadow Service](https://quip-amazon.com/7xh6AUyIo2Dv#temp:C:QIA607b5795662745beb0e5f99a0).
+The Jobs service client provides API similar to API provided by [Client for AWS IoT Device Shadow](#client-for-device-shadow-service).
 First, you subscribe to special topics to get data and feedback from a service. The service client provides API for that.
 After subscribing to all the required topics, the service client can start interacting with the server, for example, update
 the status or request for data. These actions are also performed via client API calls.
@@ -867,7 +867,7 @@ For code example, see the v2 SDK [Jobs](https://github.com/aws/aws-iot-device-sd
 (also known as Identity Service) is another AWS IoT service that the v2 SDK provides access to. By using AWS IoT fleet provisioning, AWS IoT can generate and securely deliver device
 certificates and private keys to your devices when they connect to AWS IoT for the first time.
 
-The fleet provisioning service client provides an API similar to the API provided by [Client for Device Shadow Service](https://quip-amazon.com/7xh6AUyIo2Dv#temp:C:QIA607b5795662745beb0e5f99a0).
+The fleet provisioning service client provides an API similar to the API provided by [Client for AWS IoT Device Shadow](#client-for-device-shadow-service).
 First, you subscribe to special topics to get data and feedback from a service. The service client provides API for that.
 After subscribing to all the required topics, the service client can start interacting with the server, for example, update
 the status or request for data. These actions are also performed via client API calls.
