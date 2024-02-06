@@ -80,20 +80,6 @@ public class WebsocketConnect {
          */
         CommandLineUtils.SampleCommandLineData cmdData = CommandLineUtils.getInputForIoTSample("WebsocketConnect", args);
 
-        MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
-            @Override
-            public void onConnectionInterrupted(int errorCode) {
-                if (errorCode != 0) {
-                    System.out.println("Connection interrupted: " + errorCode + ": " + CRT.awsErrorString(errorCode));
-                }
-            }
-
-            @Override
-            public void onConnectionResumed(boolean sessionPresent) {
-                System.out.println("Connection resumed: " + (sessionPresent ? "existing session" : "clean session"));
-            }
-        };
-
         /**
          * Create connection in the try-with-resources block, so it will be closed automatically at the end of the block.
          * Otherwise, we must call 'connection.close()' explicitly when the connection is not required anymore.
