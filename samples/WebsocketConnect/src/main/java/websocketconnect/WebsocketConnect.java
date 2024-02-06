@@ -19,28 +19,60 @@ import java.util.concurrent.CompletableFuture;
 import utils.commandlineutils.CommandLineUtils;
 
 public class WebsocketConnect {
-    // When run normally, we want to exit nicely even if something goes wrong
-    // When run from CI, we want to let an exception escape which in turn causes the
-    // exec:java task to return a non-zero exit code
-    static String ciPropValue = System.getProperty("aws.crt.ci");
-    static boolean isCI = ciPropValue != null && Boolean.valueOf(ciPropValue);
-
     static CommandLineUtils cmdUtils;
 
-    /*
-     * When called during a CI run, throw an exception that will escape and fail the exec:java task
-     * When called otherwise, print what went wrong (if anything) and just continue (return from main)
-     */
-    static void onApplicationFailure(Throwable cause) {
-        if (isCI) {
-            throw new RuntimeException("WebsocketConnect execution failure", cause);
-        } else if (cause != null) {
-            System.out.println("Exception encountered: " + cause.toString());
+    static MqttClientConnection createMqttClientConnection(CommandLineUtils.SampleCommandLineData cmdData) {
+        /**
+         * Callbacks for various connection events.
+         *
+         * For a list of supported connection events, see
+         * https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt/MqttClientConnectionEvents.html
+         */
+        MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
+            @Override
+            public void onConnectionInterrupted(int errorCode) {
+                if (errorCode != 0) {
+                    System.out.println("Connection interrupted: " + errorCode + ": " + CRT.awsErrorString(errorCode));
+                }
+            }
+
+            @Override
+            public void onConnectionResumed(boolean sessionPresent) {
+                System.out.println("Connection resumed: " + (sessionPresent ? "existing session" : "clean session"));
+            }
+        };
+
+        /**
+         * Create a new MQTT connection from the builder.
+         *
+         * Instantiate a builder in the try-with-resources block, so it will be closed automatically at the end of the
+         * block. Otherwise, we must call 'builder.close()' explicitly when the builder is not required anymore.
+         */
+        try (AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(null, null)) {
+            if (cmdData.input_ca != "") {
+                builder.withCertificateAuthorityFromPath(null, cmdData.input_ca);
+            }
+            builder.withConnectionEventCallbacks(callbacks)
+                .withClientId(cmdData.input_clientId)
+                .withEndpoint(cmdData.input_endpoint)
+                .withPort(cmdData.input_port)
+                .withCleanSession(true)
+                .withProtocolOperationTimeoutMs(60000);
+            if (cmdData.input_proxyHost != "" && cmdData.input_proxyPort > 0) {
+                HttpProxyOptions proxyOptions = new HttpProxyOptions();
+                proxyOptions.setHost(cmdData.input_proxyHost);
+                proxyOptions.setPort(cmdData.input_proxyPort);
+                builder.withHttpProxyOptions(proxyOptions);
+            }
+            builder.withWebsockets(true);
+            builder.withWebsocketSigningRegion(cmdData.input_signingRegion);
+            return builder.build();
+        } catch (Exception ex) {
+            throw new RuntimeException("Failed to create MQTT311 connection", ex);
         }
     }
 
     public static void main(String[] args) {
-
         /**
          * cmdData is the arguments/input from the command line placed into a single struct for
          * use in this sample. This handles all of the command line parsing, validating, etc.
@@ -62,38 +94,16 @@ public class WebsocketConnect {
             }
         };
 
-        try {
-
-            /**
-             * Create the MQTT connection from the builder
-             */
-            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(null, null);
-            if (cmdData.input_ca != "") {
-                builder.withCertificateAuthorityFromPath(null, cmdData.input_ca);
-            }
-            builder.withConnectionEventCallbacks(callbacks)
-                .withClientId(cmdData.input_clientId)
-                .withEndpoint(cmdData.input_endpoint)
-                .withPort(cmdData.input_port)
-                .withCleanSession(true)
-                .withProtocolOperationTimeoutMs(60000);
-            if (cmdData.input_proxyHost != "" && cmdData.input_proxyPort > 0) {
-                HttpProxyOptions proxyOptions = new HttpProxyOptions();
-                proxyOptions.setHost(cmdData.input_proxyHost);
-                proxyOptions.setPort(cmdData.input_proxyPort);
-                builder.withHttpProxyOptions(proxyOptions);
-            }
-            builder.withWebsockets(true);
-            builder.withWebsocketSigningRegion(cmdData.input_signingRegion);
-            MqttClientConnection connection = builder.build();
-            builder.close();
-
+        /**
+         * Create connection in the try-with-resources block, so it will be closed automatically at the end of the block.
+         * Otherwise, we must call 'connection.close()' explicitly when the connection is not required anymore.
+         */
+        try (MqttClientConnection connection = createMqttClientConnection(cmdData)) {
             /**
              * Verify the connection was created
              */
-            if (connection == null)
-            {
-                onApplicationFailure(new RuntimeException("MQTT connection creation failed!"));
+            if (connection == null) {
+                throw new RuntimeException("MQTT connection creation failed!");
             }
 
             /**
@@ -111,11 +121,8 @@ public class WebsocketConnect {
             disconnected.get();
             System.out.println("Disconnected.");
 
-            // Close the connection now that we are completely done with it.
-            connection.close();
-
         } catch (CrtRuntimeException | InterruptedException | ExecutionException ex) {
-            onApplicationFailure(ex);
+            throw new RuntimeException("WebSocketConnect execution failure", ex);
         }
 
         CrtResource.waitForNoResources();
