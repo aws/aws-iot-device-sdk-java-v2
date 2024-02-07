@@ -118,16 +118,14 @@ public class SharedSubscription {
                 System.out.println("[" + sampleClient.name + "] Received a publish");
             }
             PublishPacket publishPacket = publishReturn.getPublishPacket();
-            if (publishPacket != null) {
-                System.out.println("\tPublish received on topic: " + publishPacket.getTopic());
-                System.out.println("\tMessage: " + new String(publishPacket.getPayload()));
+            System.out.println("\tPublish received on topic: " + publishPacket.getTopic());
+            System.out.println("\tMessage: " + new String(publishPacket.getPayload()));
 
-                List<UserProperty> packetProperties = publishPacket.getUserProperties();
-                if (packetProperties != null) {
-                    for (int i = 0; i < packetProperties.size(); i++) {
-                        UserProperty property = packetProperties.get(i);
-                        System.out.println("\t\twith UserProperty: (" + property.key + ", " + property.value + ")");
-                    }
+            List<UserProperty> packetProperties = publishPacket.getUserProperties();
+            if (packetProperties != null) {
+                for (int i = 0; i < packetProperties.size(); i++) {
+                    UserProperty property = packetProperties.get(i);
+                    System.out.println("\t\twith UserProperty: (" + property.key + ", " + property.value + ")");
                 }
             }
         }
