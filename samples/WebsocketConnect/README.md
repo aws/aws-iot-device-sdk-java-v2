@@ -60,6 +60,9 @@ snippet demonstrates how to set up an MQTT3 connection using static AWS credenti
 ```java
 static MqttClientConnection createMqttClientConnection(CommandLineUtils.SampleCommandLineData cmdData) {
     try (AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(null, null)) {
+        if (cmdData.input_ca != "") {
+            builder.withCertificateAuthorityFromPath(null, cmdData.input_ca);
+        }
         builder.withConnectionEventCallbacks(callbacks)
             .withClientId(cmdData.input_clientId)
             .withEndpoint(cmdData.input_endpoint)
@@ -78,6 +81,9 @@ static MqttClientConnection createMqttClientConnection(CommandLineUtils.SampleCo
         builder.withWebsocketCredentialsProvider(credentialsProvider);
 
         MqttClientConnection connection = builder.build();
+        return connection;
+    }
+}
 ```
 
 ### MQTT over WebSockets with Custom Authorizer
@@ -114,7 +120,8 @@ static MqttClientConnection createMqttClientConnection(CommandLineUtils.SampleCo
             null);
         builder.withWebsockets(true);
         builder.withWebsocketSigningRegion(cmdData.input_signingRegion);
-        return builder.build();
+        MqttClientConnection connection = builder.build();
+        return connection;
     } catch (Exception ex) {
         throw new RuntimeException("Failed to create MQTT311 connection", ex);
     }
@@ -156,7 +163,8 @@ static MqttClientConnection createMqttClientConnection(CommandLineUtils.SampleCo
             cmdData.input_customAuthorizerTokenValue);
         builder.withWebsockets(true);
         builder.withWebsocketSigningRegion(cmdData.input_signingRegion);
-        return builder.build();
+        MqttClientConnection connection = builder.build();
+        return connection;
     } catch (Exception ex) {
         throw new RuntimeException("Failed to create MQTT311 connection", ex);
     }
@@ -172,15 +180,7 @@ mvn compile exec:java -pl samples/WebsocketConnect -Dexec.mainClass=websocketcon
 --custom_auth_username <username> \
 --custom_auth_authorizer_name <authorizer name> \
 --custom_auth_authorizer_signature <authorizer signature> \
---custom_auth_password <password>
+--custom_auth_password <password> \
 --custom_auth_token_key_name <token key name> \
 --custom_auth_token_value <token key value>"
 ```
-
-In both cases, the builder will construct a final CONNECT packet username field value for you based on the values configured.
-Do not add the token-signing fields to the value of the username that you assign within the custom authentication config
-structure. Similarly, do not add any custom authentication related values to the username in the CONNECT configuration
-optionally attached to the client configuration. The builder will do everything for you.
-
-
-
