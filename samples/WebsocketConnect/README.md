@@ -58,7 +58,7 @@ to instantiate the `StaticCredentialsProviderBuilder` class and provide it with 
 snippet demonstrates how to set up an MQTT3 connection using static AWS credentials for SigV4-based authentication.
 
 ```java
-static MqttClientConnection createMqttClientConnection(CommandLineUtils.SampleCommandLineData cmdData) {
+static MqttClientConnection createMqttClientConnection() {
     try (AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(null, null)) {
         String clientEndpoint = "<prefix>-ats.iot.<region>.amazonaws.com";
         builder.withEndpoint(clientEndpoint);
@@ -94,7 +94,7 @@ If your Custom Authorizer does not use signing, you don't specify anything relat
 the following code:
 
 ```java
-static MqttClientConnection createMqttClientConnection(CommandLineUtils.SampleCommandLineData cmdData) {
+static MqttClientConnection createMqttClientConnection() {
     try (AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newDefaultBuilder()) {
         String clientEndpoint = "<prefix>-ats.iot.<region>.amazonaws.com";
         builder.withEndpoint(clientEndpoint);
@@ -125,7 +125,7 @@ If your custom authorizer uses signing, you must specify the three signed token 
 to URI-encode the username, authorizerName, and tokenKeyName parameters.
 
 ```java
-static MqttClientConnection createMqttClientConnection(CommandLineUtils.SampleCommandLineData cmdData) {
+static MqttClientConnection createMqttClientConnection() {
     try (AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newDefaultBuilder()) {
         String clientEndpoint = "<prefix>-ats.iot.<region>.amazonaws.com";
         builder.withEndpoint(clientEndpoint);
