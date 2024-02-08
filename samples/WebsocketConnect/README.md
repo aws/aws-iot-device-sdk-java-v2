@@ -53,24 +53,18 @@ mvn -P latest-release compile exec:java -pl samples/WebsocketConnect -Dexec.main
 
 ### MQTT over WebSockets with static AWS credentials
 
-With a help of a static credentials provider your application can use a fixed set of AWS credentials. For that, you need
+With the help of a static credentials provider your application can use a fixed set of AWS credentials. For that, you need
 to instantiate the `StaticCredentialsProviderBuilder` class and provide it with the AWS credentials. The following code
 snippet demonstrates how to set up an MQTT3 connection using static AWS credentials for SigV4-based authentication.
 
 ```java
 static MqttClientConnection createMqttClientConnection(CommandLineUtils.SampleCommandLineData cmdData) {
     try (AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(null, null)) {
-        if (cmdData.input_ca != "") {
-            builder.withCertificateAuthorityFromPath(null, cmdData.input_ca);
-        }
-        builder.withConnectionEventCallbacks(callbacks)
-            .withClientId(cmdData.input_clientId)
-            .withEndpoint(cmdData.input_endpoint)
-            .withCleanSession(true)
-            .withProtocolOperationTimeoutMs(60000);
+        String clientEndpoint = "<prefix>-ats.iot.<region>.amazonaws.com";
+        builder.withEndpoint(clientEndpoint);
 
         builder.withWebsockets(true);
-        builder.withWebsocketSigningRegion(cmdData.input_signingRegion);
+        builder.withWebsocketSigningRegion("<signing region>");
 
         StaticCredentialsProviderBuilder providerBuilder = new StaticCredentialsProviderBuilder();
         providerBuilder.withAccessKeyId("<access key id>");
@@ -89,7 +83,7 @@ static MqttClientConnection createMqttClientConnection(CommandLineUtils.SampleCo
 ### MQTT over WebSockets with Custom Authorizer
 
 An MQTT3 direct connection can be made using a [Custom Authorizer](https://docs.aws.amazon.com/iot/latest/developerguide/custom-authentication.html).
-When making a connection to a Custom Authorizer, the MQTT3 client can optionally passing username, password, and/or token
+When making a connection using a Custom Authorizer, the MQTT3 client can optionally passing username, password, and/or token
 signature arguments based on the configuration of the Custom Authorizer on AWS IoT Core.
 
 You will need to setup your Custom Authorizer so that the lambda function returns a policy document to properly connect.
@@ -102,41 +96,29 @@ the following code:
 ```java
 static MqttClientConnection createMqttClientConnection(CommandLineUtils.SampleCommandLineData cmdData) {
     try (AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newDefaultBuilder()) {
-        if (cmdData.input_ca != "") {
-            builder.withCertificateAuthorityFromPath(null, cmdData.input_ca);
-        }
-        builder.withConnectionEventCallbacks(callbacks)
-            .withClientId(cmdData.input_clientId)
-            .withEndpoint(cmdData.input_endpoint)
-            .withPort(cmdData.input_port)
-            .withCleanSession(true)
-            .withProtocolOperationTimeoutMs(60000);
+        String clientEndpoint = "<prefix>-ats.iot.<region>.amazonaws.com";
+        builder.withEndpoint(clientEndpoint);
+
+        String custom_auth_username = "<value of the username field that should be passed to the authorizer's lambda>";
+        String custom_auth_authorizer_name = "<custom authorizer name>";
+        String custom_auth_password = "<the password to use with the custom authorizer>";
+
         builder.withCustomAuthorizer(
-            cmdData.input_customAuthUsername,
-            cmdData.input_customAuthorizerName,
+            custom_auth_username
+            custom_auth_authorizer_name,
             null,
-            cmdData.input_customAuthPassword,
+            custom_auth_password,
             null,
             null);
+
         builder.withWebsockets(true);
-        builder.withWebsocketSigningRegion(cmdData.input_signingRegion);
+        builder.withWebsocketSigningRegion("<signing region>");
         MqttClientConnection connection = builder.build();
         return connection;
     } catch (Exception ex) {
         throw new RuntimeException("Failed to create MQTT311 connection", ex);
     }
 }
-```
-
-To run the websocket connect with custom authorizer use the following command:
-
-```sh
-mvn compile exec:java -pl samples/WebsocketConnect -Dexec.mainClass=websocketconnect.WebsocketConnect -Dexec.args="\
---endpoint <endpoint> \
---signing_region <signing region> \
---custom_auth_username <username> \
---custom_auth_authorizer_name <authorizer name> \
---custom_auth_password <password>"
 ```
 
 If your custom authorizer uses signing, you must specify the three signed token properties as well. It is your responsibility
@@ -145,42 +127,30 @@ to URI-encode the username, authorizerName, and tokenKeyName parameters.
 ```java
 static MqttClientConnection createMqttClientConnection(CommandLineUtils.SampleCommandLineData cmdData) {
     try (AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newDefaultBuilder()) {
-        if (cmdData.input_ca != "") {
-            builder.withCertificateAuthorityFromPath(null, cmdData.input_ca);
-        }
-        builder.withConnectionEventCallbacks(callbacks)
-            .withClientId(cmdData.input_clientId)
-            .withEndpoint(cmdData.input_endpoint)
-            .withPort(cmdData.input_port)
-            .withCleanSession(true)
-            .withProtocolOperationTimeoutMs(60000);
+        String clientEndpoint = "<prefix>-ats.iot.<region>.amazonaws.com";
+        builder.withEndpoint(clientEndpoint);
+
+        String custom_auth_username = "<value of the username field that should be passed to the authorizer's lambda>";
+        String custom_auth_authorizer_name = "<custom authorizer name>";
+        String custom_auth_authorizer_signature = "<URI-encoded base64-encoded digital signature of tokenValue>";
+        String custom_auth_password = "<the password to use with the custom authorizer>";
+        String custom_auth_token_key_name = "<value of the username query param that holds the token value that has been signed>";
+        String custom_auth_token_value = "<name of the username query param that will contain the token value>";
+
         builder.withCustomAuthorizer(
-            cmdData.input_customAuthUsername,
-            cmdData.input_customAuthorizerName,
-            cmdData.input_customAuthorizerSignature,
-            cmdData.input_customAuthPassword,
-            cmdData.input_customAuthorizerTokenKeyName,
-            cmdData.input_customAuthorizerTokenValue);
+            custom_auth_username
+            custom_auth_authorizer_name,
+            custom_auth_authorizer_signature,
+            custom_auth_password,
+            custom_auth_token_key_name,
+            custom_auth_token_value);
+
         builder.withWebsockets(true);
-        builder.withWebsocketSigningRegion(cmdData.input_signingRegion);
+        builder.withWebsocketSigningRegion("<signing region>");
         MqttClientConnection connection = builder.build();
         return connection;
     } catch (Exception ex) {
         throw new RuntimeException("Failed to create MQTT311 connection", ex);
     }
 }
-```
-
-To run the websocket connect with custom authorizer using signing use the following command:
-
-```sh
-mvn compile exec:java -pl samples/WebsocketConnect -Dexec.mainClass=websocketconnect.WebsocketConnect -Dexec.args="\
---endpoint <endpoint> \
---signing_region <signing region> \
---custom_auth_username <username> \
---custom_auth_authorizer_name <authorizer name> \
---custom_auth_authorizer_signature <authorizer signature> \
---custom_auth_password <password> \
---custom_auth_token_key_name <token key name> \
---custom_auth_token_value <token key value>"
 ```
