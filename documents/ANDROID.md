@@ -94,6 +94,7 @@ or replace with `1.0.0-SNAPSHOT` to use the SDK built and installed from source.
 Look up the latest SDK version here: https://github.com/aws/aws-iot-device-sdk-java-v2/releases
 
 ## Samples App
+The Android IoT Samples App builds a number of aws-iot-device-sdk-java-v2 IoT samples into a single APK that can be installed onto an Android device to test different functionality.
 [Android IoT Samples App README](../samples/Android/README.md)
 
 ## Android KeyChain
