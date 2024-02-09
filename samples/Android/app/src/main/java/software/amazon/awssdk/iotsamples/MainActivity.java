@@ -256,6 +256,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 if (!argSetRequired("--keychain_alias", "keychainAlias.txt", args)) {
                     return null;
                 }
+                argSetOptional("--topic", "topic.txt", args);
+                argSetOptional("--message", "message.txt", args);
             break;
         }
         writeToConsole(" with Arguments\n");
