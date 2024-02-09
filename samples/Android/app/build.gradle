@@ -61,7 +61,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    api 'software.amazon.awssdk.iotdevicesdk:aws-iot-device-sdk-android:1.19.1'
+    api 'software.amazon.awssdk.iotdevicesdk:aws-iot-device-sdk-android:1.20.0'
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.core:core:1.2.0'
     implementation 'androidx.core:core-ktx:1.2.0'
