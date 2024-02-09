@@ -93,10 +93,6 @@ public class PubSub {
         @Override
         public void onMessageReceived(Mqtt5Client client, PublishReturn publishReturn) {
             PublishPacket publishPacket = publishReturn.getPublishPacket();
-            if (publishPacket == null) {
-                messagesReceived.countDown();
-                return;
-            }
 
             System.out.println("Publish received on topic: " + publishPacket.getTopic());
             System.out.println("Message: " + new String(publishPacket.getPayload()));
@@ -123,7 +119,6 @@ public class PubSub {
         CommandLineUtils.SampleCommandLineData cmdData = CommandLineUtils.getInputForIoTSample("Mqtt5PubSub", args);
 
         try {
-            /* Create a client based on desired connection type */
             SampleLifecycleEvents lifecycleEvents = new SampleLifecycleEvents();
             SamplePublishEvents publishEvents = new SamplePublishEvents(cmdData.input_count);
             Mqtt5Client client;
