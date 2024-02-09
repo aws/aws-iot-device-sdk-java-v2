@@ -69,7 +69,7 @@ public class AndroidKeyChainHandlerBuilder {
         try {
             myCertChain = KeyChain.getCertificateChain(context, alias);
 
-            if(myCertChain != null){
+            if (myCertChain != null){
                 // Convert Certificate to PEM formated String
                 StringWriter stringWriter = new StringWriter();
                 stringWriter.write("-----BEGIN CERTIFICATE-----\n");
