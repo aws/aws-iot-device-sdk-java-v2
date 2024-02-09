@@ -36,7 +36,7 @@ files linked below.
 
 ### Required to run KeyChainPubSub
 * `keychainAlias.txt` - Alias of PrivateKey to access from KeyChain
-  * Permission to access the PrivateKey for given alias must be approved for the app prior to running the app. This can be done by running the KeyChain Alias Permission option.
+  * Permission to access the PrivateKey for given alias must be approved for the app prior to running the app. This can be done by selecting the `KeyChain Alias Permission` from the `Select a Sample` dropdown menu.
 
 ###### Optional Files for all PubSub samples
 * `topic.txt` - specifies --topic CLI argument
@@ -52,7 +52,7 @@ files linked below.
 * `cognitoIdentity.txt` - Cognito identity ID
 * `signingRegion.txt` - Signing region
 
-### Optional files:
+### Optional files for all Samples:
 * `rootca.pem` - override the default system trust store
 * `clientId.txt` - specifies --clientId CLI argument
 * `port.txt` - specifies --port CLI argument
