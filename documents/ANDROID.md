@@ -97,7 +97,7 @@ Look up the latest SDK version here: https://github.com/aws/aws-iot-device-sdk-j
 [Android IoT Samples App README](../samples/Android/README.md)
 
 ## Android KeyChain
-Connecting using credentials stored in the Android KeyChain requires the app have permission to both access the KeyChain as well as the alias containing the PrivateKey within. The [Android KeyChain PubSub Sample](../samples/Android/AndroidKeyChainPubSub/README.md) demonstrates how you can use the context and alias with the `AndroidKeyChainHandlerBuilder` and the `AwsIotMqtt5ClientBuilder` to connect to AWS IoT Core with an Mqtt5 Client. The sample is included in the [Android Sample](../samples/Android/README.md). The `AndroidKeyChainHandlerBuilder` also accepts a `PrivateKey` directly but then requires the Certificate be set using either `withCertificateFromPath` or `withCertificateContents`.
+Connecting using credentials stored in the Android KeyChain requires the app have permission to both access the KeyChain as well as the alias containing the PrivateKey within. The [Android KeyChain PubSub Sample](../samples/Android/AndroidKeyChainPubSub/README.md) demonstrates how you can use the context and alias with the `AndroidKeyChainHandlerBuilder` and the `AwsIotMqtt5ClientBuilder` to connect to AWS IoT Core with an Mqtt5 Client. The sample is included in the [Android IoT Samples App](../samples/Android/README.md). The `AndroidKeyChainHandlerBuilder` also accepts a `PrivateKey` directly but then requires the Certificate be set using either `withCertificateFromPath` or `withCertificateContents`.
 
 ## PKCS#11
 Connecting using PKCS#11 requires a PKCS#11 library which the user must supply. There are requirements the library must meet:
