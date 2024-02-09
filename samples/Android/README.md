@@ -3,8 +3,9 @@
 
 The Android sample builds an app that can be installed and run on an Android Device. The app builds and allows you
 to run the following [samples](#links-to-individual-sample-readme-files) from aws-iot-device-sdk-java-v2:
-* BasicPubSub
 * Mqtt5PubSub
+* Mqtt3PubSub
+* KeyChainPubSub
 * Jobs
 * Shadow
 * CognitoConnect
@@ -29,12 +30,18 @@ files linked below.
 ### Files required by all samples:
 * `endpoint.txt` - IoT ATS Endpoint
 
-### Required to run BasicPubSub and Mqtt5PubSub samples
+### Required to run Mqtt5PubSub and Mqtt3PubSub samples
 * `certificate.pem` - IoT Thing Certificate
 * `privatekey.pem` - IoT Thing Private Key
-###### Optional Files for BasicPubSub and Mqtt5PubSub samples
+
+### Required to run KeyChainPubSub
+* `keychainAlias.txt` - Alias of PrivateKey to access from KeyChain
+  * Permission to access the PrivateKey for given alias must be approved for the app prior to running the app. This can be done by running the KeyChain Alias Permission option.
+
+###### Optional Files for all PubSub samples
 * `topic.txt` - specifies --topic CLI argument
 * `message.txt` - specifies --message CLI argument
+* `count.txt` - specifies --count CLI argument
 
 ### Required to run Jobs and Shadow sample
 * `certificate.pem` - IoT Thing Certificate
@@ -67,9 +74,11 @@ cd samples/Android/app
 The following links will provide more details on the individual samples available in the
 Android sample app.
 
-[**BasicPubSub**](../BasicPubSub/README.md)
-
 [**Mqtt5PubSub**](../Mqtt5/PubSub/README.md)
+
+[**Mqtt3PubSub**](../BasicPubSub/README.md)
+
+[**KeyChainPubSub**](AndroidKeyChainPubSub/README.md)
 
 [**Jobs**](../Jobs/README.md)
 
