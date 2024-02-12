@@ -160,6 +160,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         resourceNames.add("port.txt");
         resourceNames.add("topic.txt");
         resourceNames.add("message.txt");
+        resourceNames.add("count.txt");
         resourceNames.add("rootca.pem");
 
         // Copy to cache and store file locations for file assets and contents for .txt assets
@@ -235,6 +236,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 }
                 argSetOptional("--topic", "topic.txt", args);
                 argSetOptional("--message", "message.txt", args);
+                argSetOptional("--count", "count.txt", args);
                 break;
 
             case "jobs.JobsSample":
@@ -258,6 +260,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 }
                 argSetOptional("--topic", "topic.txt", args);
                 argSetOptional("--message", "message.txt", args);
+                argSetOptional("--count", "count.txt", args);
             break;
         }
         writeToConsole(" with Arguments\n");
