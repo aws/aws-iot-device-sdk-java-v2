@@ -58,6 +58,14 @@ Note that in a real application, you may want to avoid the use of wildcards in y
 </details>
 
 ## Prerequisites
+The [Android KeyChain](https://developer.android.com/reference/android/security/KeyChain) provides access to private keys and corresponding certificate chains stored on an Android Device. The KeyChain must contain a Private Key and Certificate pair that was either provisioned by AWS IoT Core or a pair in which the certificate was [registered with AWS IoT Core](https://docs.aws.amazon.com/iot/latest/developerguide/register-CA-cert.html).
+
+A manual method of importing a Private Key and Certificate into an Android KeyChain is to package the private key and certificate into a [PKCS#12](https://www.openssl.org/docs/man1.1.1/man1/pkcs12.html) file using [OpenSSL](https://www.openssl.org/)
+```
+$ openssl pkcs12 -export -out <pkcs12 filename>.p12 -inkey <private key filename> -in <certificate filename>
+```
+Copy the p12 file onto your Android Device's local storage. You can then use the "Install from storage" option within the Android Device's encryption and credentials settings. Make note of the name you apply during installation as that will be the `Alias` used in the sample.
+
 The application running this sample must have permission to access both the Android device's KeyChain as well as permission to access the PrivateKey associated with the alias.
 
 ## How to run
