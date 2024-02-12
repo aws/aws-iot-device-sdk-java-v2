@@ -45,8 +45,6 @@ Public API for almost all actions and operations has changed significantly. For 
 and specific code examples, refer to the [How to get started with AWS IoT Device SDK for Java v2](#how-to-get-started-with-aws-iot-device-sdk-for-java-v2)
 section of this guide.
 
-<!--Should this be public APIs? If it's plural, update the sentence like the following: Public APIs for almost all actions and operations have changed significantly. -->
-
 ## How to get started with AWS IoT Device SDK for Java v2
 
 There're differences between the v1 SDK and the v2 SDK. This section describes the changes you need to apply to your project
@@ -59,8 +57,6 @@ in the v2 SDK, whereas the v1 SDK uses `com.amazonaws`.
 
 These same names differentiate Maven artifacts from v1 to v2. Maven artifacts for the v2 SDK use the `software.amazon.awssdk`
 groupId, whereas the v1 SDK uses the `com.amazonaws` groupId.
-
-<!-- This is open for discussion. I might not use the collapsible section using the <details> HTML element with the <summary> element because the content is not discoverable. To increase the discoverability, I would use headings.-->
 
 #### Example of adding the v1 SDK to Maven project
 
@@ -102,10 +98,6 @@ In the v2 SDK, the [Mqtt5Client](https://awslabs.github.io/aws-crt-java/software
 class represents an MQTT client, specifically for MQTT5 protocol. The v2 SDK provides an [MQTT5 client builder](https://aws.github.io/aws-iot-device-sdk-java-v2/software/amazon/awssdk/iot/AwsIotMqtt5ClientBuilder.html)
 designed to easily create common configuration types such as direct MQTT or WebSocket connections. After an MQTT5 client
 is built and finalized, the settings of the resulting MQTT5 client cannot be modified.
-
-<!-- Only use to mean "at one time." Don't use to mean after. 
-https://alpha.www.docs.aws.a2z.com/awsstyleguide/latest/styleguide/dictionary.html
--->
 
 #### Example of creating a client in the v1 SDK
 
@@ -356,8 +348,8 @@ PublishResult result = published.get(60, TimeUnit.SECONDS);
 
 ### Subscribe
 
-The v1 SDK provides blocking and non-blocking APIs for subscribing. To subscribe to topic in v1, you should provide an instance of
-[AWSIotTopic](http://aws-iot-device-sdk-java-docs.s3-website-us-east-1.amazonaws.com/com/amazonaws/services/iot/client/AWSIotTopic.html)
+The v1 SDK provides blocking and non-blocking APIs for subscribing. To subscribe to a topic in the v1 SDK, you should
+provide an instance of [AWSIotTopic](http://aws-iot-device-sdk-java-docs.s3-website-us-east-1.amazonaws.com/com/amazonaws/services/iot/client/AWSIotTopic.html)
 to the [subscribe](http://aws-iot-device-sdk-java-docs.s3-website-us-east-1.amazonaws.com/com/amazonaws/services/iot/client/core/AbstractAwsIotClient.html#subscribe-com.amazonaws.services.iot.client.AWSIotTopic-)
 operation. AWSIotTopic object (or, usually, an object of a children class) implements `onMessageReceived` method which
 will be called on receiving a new message. If you try to subscribe to a topic that is not allowed by a policy, AWS IoT
@@ -421,8 +413,8 @@ CompletableFuture<Integer> subscribed = client.subscribe(subscribeBuilder.build(
 
 ### Unsubscribe
 
-The v1 SDK provides blocking and non-blocking APIs for unsubscribing. To unsubscribe from topic in v1, you should provide an
-instance of [AWSIotTopic](http://aws-iot-device-sdk-java-docs.s3-website-us-east-1.amazonaws.com/com/amazonaws/services/iot/client/AWSIotTopic.html)
+The v1 SDK provides blocking and non-blocking APIs for unsubscribing. To unsubscribe from a topic in the v1 SDK, you should
+provide an instance of [AWSIotTopic](http://aws-iot-device-sdk-java-docs.s3-website-us-east-1.amazonaws.com/com/amazonaws/services/iot/client/AWSIotTopic.html)
 to the [unsubscribe](http://aws-iot-device-sdk-java-docs.s3-website-us-east-1.amazonaws.com/com/amazonaws/services/iot/client/core/AbstractAwsIotClient.html#unsubscribe-com.amazonaws.services.iot.client.AWSIotTopic-)
 operation. `AWSIotTopic` object (or, usually, an object of a children class) implements `onSuccess` and `onFailure` methods.
 One of these methods will be called after the operation succeeds or fails.
@@ -560,9 +552,9 @@ In the v1 SDK, if you have too many in-flight QoS 1 messages, you will encounter
 on publishing messages. This is caused by the so-called [in-flight publish limit](https://github.com/aws/aws-iot-device-sdk-java/blob/master/README.md#increase-in-flight-publish-limit-too-many-publishes-in-progress-error).
 By default, the v1 SDK supports a maximum of 10 in-flight operations.
 
-The v2 SDK does not limit the number of in-flight messages. Additionally, v2 provides a way to configure which kind of packets
-will be placed into the offline queue when the client is in the disconnected state. The following code snippet demonstrates
-how to enable storing all packets except QOS0 publish packets in the offline queue on disconnect:
+The v2 SDK does not limit the number of in-flight messages. Additionally, the v2 SDK provides a way to configure which kind
+of packets will be placed into the offline queue when the client is in the disconnected state. The following code snippet
+demonstrates how to enable storing all packets except QOS0 publish packets in the offline queue on disconnect:
 
 #### Example of configuring the offline queue in the v2 SDK
 
@@ -845,7 +837,8 @@ request.state.reported = new HashMap<String, Object>() {
 shadowClient.PublishUpdateShadow(request, QualityOfService.AT_LEAST_ONCE);
 ```
 
-For more information, see API documentation for v2 SDK [Device Shadow](https://aws.github.io/aws-iot-device-sdk-java-v2/software/amazon/awssdk/iot/iotshadow/IotShadowClient.html).\
+For more information, see API documentation for the v2 SDK [Device Shadow](https://aws.github.io/aws-iot-device-sdk-java-v2/software/amazon/awssdk/iot/iotshadow/IotShadowClient.html).
+
 For code examples, see the v2 SDK [Device Shadow](https://github.com/aws/aws-iot-device-sdk-java-v2/tree/main/samples/Shadow).
 
 ### Client for AWS IoT Jobs
@@ -871,14 +864,14 @@ For code example, see the v2 SDK [Jobs](https://github.com/aws/aws-iot-device-sd
 (also known as Identity Service) is another AWS IoT service that the v2 SDK provides access to. By using AWS IoT fleet provisioning, AWS IoT can generate and securely deliver device
 certificates and private keys to your devices when they connect to AWS IoT for the first time.
 
-The fleet provisioning service client provides an API similar to the API provided by [Client for AWS IoT Device Shadow](#client-for-device-shadow-service).
+The fleet provisioning service client provides an API similar to the APIs provided by [Client for AWS IoT Device Shadow](#client-for-device-shadow-service).
 First, you subscribe to special topics to get data and feedback from a service. The service client provides API for that.
 After subscribing to all the required topics, the service client can start interacting with the server, for example, update
 the status or request for data. These actions are also performed via client API calls.
 
 For detailed descriptions for the topics used to interact with the Fleet Provisioning service, see AWS IoT Core documentation for [Fleet Provisioning](https://docs.aws.amazon.com/iot/latest/developerguide/fleet-provision-api.html).
 
-For more information about the the Fleet Provisioning service client, see API documentation for the v2 SDK [Fleet Provisioning](https://aws.github.io/aws-iot-device-sdk-java-v2/software/amazon/awssdk/iot/iotidentity/IotIdentityClient.html).
+For more information about the Fleet Provisioning service client, see API documentation for the v2 SDK [Fleet Provisioning](https://aws.github.io/aws-iot-device-sdk-java-v2/software/amazon/awssdk/iot/iotidentity/IotIdentityClient.html).
 
 For code examples, see the v2 SDK [Fleet Provisioning](https://github.com/aws/aws-iot-device-sdk-java-v2/tree/main/samples/FleetProvisioning)
 samples.
@@ -886,9 +879,9 @@ samples.
 ### Example
 
 It's always helpful to look at a working example to see how new functionality works, to be able to tweak different options,
-to compare with existing code. For that reasons, we implemented a [Publish/Subscribe example](https://github.com/aws/aws-iot-device-sdk-java-v2/tree/main/samples/Mqtt5/PubSub)
+to compare with existing code. For that reason, we implemented a [Publish/Subscribe example](https://github.com/aws/aws-iot-device-sdk-java-v2/tree/main/samples/Mqtt5/PubSub)
 ([source code](https://github.com/aws/aws-iot-device-sdk-java-v2/blob/main/samples/Mqtt5/PubSub/src/main/java/pubsub/PubSub.java))
-in V2 SDK similar to a sample provided by V1 SDK (see a corresponding [readme section](https://github.com/aws/aws-iot-device-sdk-java/tree/master?tab=readme-ov-file#sample-applications)
+in the V2 SDK similar to a sample provided by V1 SDK (see a corresponding [readme section](https://github.com/aws/aws-iot-device-sdk-java/tree/master?tab=readme-ov-file#sample-applications)
 and [source code](https://github.com/aws/aws-iot-device-sdk-java/blob/master/aws-iot-device-sdk-java-samples/src/main/java/com/amazonaws/services/iot/client/sample/pubSub/PublishSubscribeSample.java)).
 
 ## How to get help
