@@ -1,7 +1,7 @@
 import java.util.regex.Pattern
 
 apply plugin: 'com.android.library'
-apply plugin: 'signing' // Needed for OpenPGP signatures required to publish to MAven Central Repository
+apply plugin: 'signing' // Needed for OpenPGP signatures required to publish to Maven Central Repository
 
 Properties getGitTag() {
     def gitTag = "git describe --tags".execute().text.trim()
