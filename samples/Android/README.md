@@ -36,7 +36,7 @@ files linked below.
 
 ### Required to run KeyChainPubSub
 * `keychainAlias.txt` - Alias of PrivateKey to access from KeyChain
-  * Permission to access the PrivateKey for given alias must be approved for the app prior to running the app. This can be done by selecting the `KeyChain Alias Permission` from the `Select a Sample` dropdown menu.
+  * The sample app must have permission to access KeyChain. The PrivateKey for given alias must also be granted prior to running the KeyChainPubSub sample. This can be done by selecting the `KeyChain Alias Permission` from the `Select a Sample` dropdown menu and selecting the PrivateKey associated with the alias.
 
 ###### Optional Files for all PubSub samples
 * `topic.txt` - specifies --topic CLI argument
