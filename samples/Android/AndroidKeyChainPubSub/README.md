@@ -2,9 +2,9 @@
 
 [**Return to main sample list**](../../README.md)
 
-This sample uses the Android KeyChain and the
+This sample uses the [Android KeyChain](https://developer.android.com/reference/android/security/KeyChain) and the
 [Message Broker](https://docs.aws.amazon.com/iot/latest/developerguide/iot-message-broker.html)
-for AWS IoT to send and receive messages through an MQTT connection using MQTT5.
+for AWS IoT to subscribe to a topic and then send and receive messages through an MQTT connection using MQTT5.
 
 MQTT5 introduces additional features and enhancements that improve the development experience with MQTT. You can read more about MQTT5 in the Java V2 SDK by checking out the [MQTT5 user guide](../../../documents/MQTT5_Userguide.md).
 
@@ -56,3 +56,10 @@ Replace with the following with the data from your AWS account:
 Note that in a real application, you may want to avoid the use of wildcards in your ClientID or use them selectively. Please follow best practices when working with AWS on production applications using the SDK. Also, for the purposes of this sample, please make sure your policy allows a client ID of `test-*` to connect or use `--client_id <client ID here>` to send the client ID your policy supports.
 
 </details>
+
+## Prerequisites
+The application running this sample must have permission to access both the Android device's KeyChain as well as permission to access the PrivateKey associated with the alias.
+
+## How to run
+
+Follow the instructions to build and install the [Android Sample App](../README.md) onto an Android device and then select the KeyChainPubSub sample from the drop-down menu.
