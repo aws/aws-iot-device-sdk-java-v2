@@ -197,7 +197,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     // Set a required argument from loaded assets
     private boolean argSetRequired(String argName, String fileName, List<String> args){
         if(resourceMap.containsKey(fileName)){
-            args.addAll(List.of(argName, resourceMap.get(fileName)));
+            args.addAll(Arrays.asList(argName, resourceMap.get(fileName)));
             return true;
         }
         writeToConsole("Required argument '" + argName + "' needs to be set. '" + fileName + "' File missing from assets folder\n");
@@ -207,7 +207,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     // Check for optional argument and set if it's available
     private void argSetOptional(String argName, String fileName, List<String>args){
         if(resourceMap.containsKey(fileName)){
-            args.addAll(List.of(argName, resourceMap.get(fileName)));
+            args.addAll(Arrays.asList(argName, resourceMap.get(fileName)));
         }
     }
 

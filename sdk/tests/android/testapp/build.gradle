@@ -1,12 +1,10 @@
 buildscript {
-    ext.kotlin_version = '1.5.0'
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
         classpath "com.android.tools.build:gradle:7.1.2"
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
 
@@ -19,7 +17,6 @@ allprojects {
 }
 
 apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion 30
@@ -63,7 +60,6 @@ android {
 dependencies {
     api 'software.amazon.awssdk.iotdevicesdk:aws-iot-device-sdk-android:1.0.0-SNAPSHOT'
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.core:core:1.2.0'
     implementation 'androidx.core:core-ktx:1.2.0'
