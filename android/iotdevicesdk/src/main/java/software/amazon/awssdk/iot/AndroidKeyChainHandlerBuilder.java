@@ -11,12 +11,12 @@ import software.amazon.awssdk.crt.Log.LogSubject;
 import software.amazon.awssdk.crt.io.TlsContextCustomKeyOperationOptions;
 import software.amazon.awssdk.crt.io.TlsAndroidPrivateKeyOperationHandler;
 import software.amazon.awssdk.crt.io.TlsContextOptions;
+import software.amazon.awssdk.crt.utils.StringUtils;
 
 import java.io.StringWriter;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.security.cert.CertificateEncodingException;
-import java.util.Base64;
 
 import android.content.Context;
 import android.security.KeyChain;
@@ -71,11 +71,9 @@ public class AndroidKeyChainHandlerBuilder {
 
             if (myCertChain != null){
                 // Convert Certificate to PEM formated String
-                StringWriter stringWriter = new StringWriter();
-                stringWriter.write("-----BEGIN CERTIFICATE-----\n");
-                stringWriter.write(Base64.getEncoder().encodeToString(myCertChain[0].getEncoded()));
-                stringWriter.write("\n-----END CERTIFICATE-----\n");
-                String certificate = stringWriter.toString();
+                String certificateString = new String(StringUtils.base64Encode(myCertChain[0].getEncoded()));
+                String certificate = "-----BEGIN CERTIFICATE-----\n" + certificateString + "\n-----END CERTIFICATE-----\n";
+
                 Log.log(LogLevel.Debug,
                 LogSubject.JavaAndroidKeychain,
                 "Certificate retreived from Android KeyChain using Alias '" + alias + "'.");

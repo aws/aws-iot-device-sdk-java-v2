@@ -47,7 +47,7 @@ android {
     buildToolsVersion "30.0.3"
 
     defaultConfig {
-        minSdkVersion 26
+        minSdkVersion 24
         targetSdkVersion 30
         versionCode = gitVersionCode()
         versionName = gitVersionName()
@@ -84,6 +84,10 @@ android {
     compileOptions {
         sourceCompatibility = 1.8
         targetCompatibility = 1.8
+        // Enable desugaring so that Android lint doesn't flag `java.time` usage. Downstream
+        // consumers will need to enable desugaring to use this library.
+        // See: https://developer.android.com/studio/write/java8-support#library-desugaring
+        coreLibraryDesugaringEnabled true
     }
 }
 
