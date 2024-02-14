@@ -11,6 +11,7 @@ This document provides information about the AWS IoT device SDK for Java V2. Thi
 * [FAQ](./documents/FAQ.md)
 * [API Docs](https://aws.github.io/aws-iot-device-sdk-java-v2/)
 * [MQTT5 User Guide](./documents/MQTT5_Userguide.md)
+* [Migration Guide from the AWS IoT SDK for Java v1](./documents/MIGRATION_GUIDE.md)
 
 ## Installation
 
