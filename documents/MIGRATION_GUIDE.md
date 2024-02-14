@@ -1,6 +1,6 @@
 # Migrate from v1 to v2 of the AWS IoT SDK for Java
 
-The AWS IoT Device SDK for Java v2 is a major rewrite of the v1 SDK code base built on top of Java 8+. It includes many updates,
+The AWS IoT Device SDK for Java v2 is a major rewrite of the AWS IoT Device SDK for Java v1 code base built on top of Java 8+. It includes many updates,
 such as improved consistency, ease of use, more detailed information about client status, and an offline operation queue
 control. This guide describes the major features that are new in the v2 SDK, and provides guidance on how to migrate
 your code to v2 from v1 of the AWS IoT SDK for Java.
@@ -13,6 +13,7 @@ your code to v2 from v1 of the AWS IoT SDK for Java.
     * [Package name change](#package-name-change)
     * [MQTT protocol](#mqtt-protocol)
     * [Client builder](#client-builder)
+    * [Client start](#client-start)
     * [Connection types and features](#connection-types-and-features)
     * [Lifecycle events](#lifecycle-events)
     * [Publish](#publish)
@@ -34,26 +35,20 @@ your code to v2 from v1 of the AWS IoT SDK for Java.
 
 ## What's new in AWS IoT Device SDK for Java v2
 
-* The v2 SDK client is truly async. Operations return `CompletableFuture` objects. Blocking calls can be emulated by waiting
+* The v2 SDK clients are truly async. Operations return `CompletableFuture` objects. Blocking calls can be emulated by waiting
 for the returned `CompletableFuture` object to be resolved.
-* The v2 SDK provides implementation for MQTT5 protocol, the next step in evolution of the MQTT protocol.
-* Public API terminology has changed. You `start()` or `stop()` the MQTT5 client rather than `Connect` or `Disconnect`
-as in the v1 SDK. This removes the semantic confusion between client-level controls and internal recurrent networking events related to connection and disconnection.
+* The v2 SDK provides an MQTT5 Client which implements the MQTT5 protocol, the next step in evolution of the MQTT protocol.
 * The v2 SDK supports AWS IoT services such as Jobs and fleet provisioning.
-
-Public API for almost all actions and operations has changed significantly. For more information about the new features
-and specific code examples, refer to the [How to get started with AWS IoT Device SDK for Java v2](#how-to-get-started-with-aws-iot-device-sdk-for-java-v2)
-section of this guide.
 
 ## How to get started with AWS IoT Device SDK for Java v2
 
-There're differences between the v1 SDK and the v2 SDK. This section describes the changes you need to apply to your project
-with the v1 SDK to start using the v2 SDK. For more information about MQTT5, visit [MQTT5 User Guide](https://github.com/aws/aws-iot-device-sdk-java-v2/blob/main/documents/MQTT5_Userguide.md#getting-started-with-mqtt5).
+Public API for almost all actions and operations has changed significantly. There're differences between the v1 SDK and
+the v2 SDK. This section describes the changes you need to apply to your project with the v1 SDK to start using the v2 SDK.
+For more information about MQTT5, visit [MQTT5 User Guide](https://github.com/aws/aws-iot-device-sdk-java-v2/blob/main/documents/MQTT5_Userguide.md#getting-started-with-mqtt5).
 
 ### Package name change
 
-A noticeable change from the v1 SDK to the v2 SDK is the package name change. Package names begin with `software.amazon.awssdk`
-in the v2 SDK, whereas the v1 SDK uses `com.amazonaws`.
+Package names for the v2 SDK now begin with `software.amazon.awssdk` instead of `com.amazonaws` which was used by the v1 SDK.
 
 These same names differentiate Maven artifacts from v1 to v2. Maven artifacts for the v2 SDK use the `software.amazon.awssdk`
 groupId, whereas the v1 SDK uses the `com.amazonaws` groupId.
@@ -135,6 +130,29 @@ Mqtt5Client client = builder.build();
 ```
 
 For more information, refer to the [Connection types and features](#connection-types-and-features) section for other connection types supported by the v2 SDK.
+
+
+### Client start
+
+To connect to the server in the v1 SDK, you call the `connect` method on an `AWSIotMqttClient` instance.
+
+The v2 SDK changed API terminology. You `start` the MQTT5 client rather than `connect` as in the v1 SDK. This removes
+the semantic confusion between client-level controls and internal recurrent networking events related to connection.
+
+#### Example of connecting to a server in the v1 SDK
+
+```java
+AWSIotMqttClient client = new AWSIotMqttClient(clientEndpoint, clientId, keyStore, keyPassword);
+client.connect();
+```
+
+#### Example of connecting to a server in the v2 SDK
+
+```java
+Mqtt5Client client = clientBuilder.build();
+client.start();
+```
+
 
 ### Connection types and features
 
@@ -305,6 +323,10 @@ object that contains a description of the PUBLISH packet. The [publish](https://
 operation takes a `PublishPacket` instance and returns a promise that contains a [PublishResult](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/PublishResult.html).
 The returned `PublishResult` will contain different data depending on the `QoS` used in the publish.
 
+> [!NOTE]
+> If you try to publish with the v2 MQTT5 client to a topic that is not allowed by a policy, you do not get the connection
+> closed but instead receive a PUBACK with a reason code.
+
 * For QoS 0 (AT_MOST_ONCE): Calling `getValue` will return `null` and the promise will be complete as soon as the packet
 has been written to the socket.
 * For QoS 1 (AT_LEAST_ONCE): Calling `getValue` will return a [PubAckPacket](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/packets/PubAckPacket.html)
@@ -363,6 +385,10 @@ operation takes a description of the `SubscribePacket` you wish to send and retu
 with the corresponding [SubAckPacket](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/packets/SubAckPacket.html)
 returned by the broker. The promise is rejected with an error if anything goes wrong before the `SubAckPacket` is received.
 You should always check the reason codes of a `SubAckPacket` completion to determine if the subscribe operation actually succeeded.
+
+> [!NOTE]
+> If you try to subscribe with the v2 MQTT5 client to a topic that is not allowed by a policy, you do not get the connection
+> closed but instead receive a SUBACK with a reason code.
 
 In the v2 SDK, if the MQTT5 client is going to subscribe and receive packets from the MQTT broker, it is important to also set up
 the [PublishEvents](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5ClientOptions.PublishEvents.html)
