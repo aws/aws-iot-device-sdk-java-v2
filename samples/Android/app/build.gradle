@@ -22,7 +22,7 @@ android {
 
     defaultConfig {
         applicationId "software.amazon.awssdk.iotsamples"
-        minSdkVersion 26
+        minSdkVersion 24
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
@@ -52,12 +52,17 @@ android {
     compileOptions {
         sourceCompatibility = 1.8
         targetCompatibility = 1.8
+        // Enable desugaring so that Android lint doesn't flag `java.time` usage. Downstream
+        // consumers will need to enable desugaring to use this library.
+        // See: https://developer.android.com/studio/write/java8-support#library-desugaring
+        coreLibraryDesugaringEnabled true
     }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     api 'software.amazon.awssdk.iotdevicesdk:aws-iot-device-sdk-android:1.20.0'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.core:core:1.2.0'
     implementation 'androidx.core:core-ktx:1.2.0'
