@@ -301,7 +301,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     sampleMain.invoke(null, (Object) args);
                 }
             } catch (Exception e){
-                writeToConsole("Exception occurred in run(): " + e.toString() + "\n");
+                writeToConsole("Exception occurred in run(): " + e.toString() +
+                "\nCause: " + e.getCause().toString());
             }
             onSampleComplete();
         }

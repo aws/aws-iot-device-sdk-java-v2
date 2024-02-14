@@ -47,7 +47,7 @@ android {
     buildToolsVersion "30.0.3"
 
     defaultConfig {
-        minSdkVersion 26
+        minSdkVersion 24
         targetSdkVersion 30
         versionCode = gitVersionCode()
         versionName = gitVersionName()
@@ -84,6 +84,10 @@ android {
     compileOptions {
         sourceCompatibility = 1.8
         targetCompatibility = 1.8
+        // Enable desugaring so that Android lint doesn't flag `java.time` usage. Downstream
+        // consumers will need to enable desugaring to use this library.
+        // See: https://developer.android.com/studio/write/java8-support#library-desugaring
+        coreLibraryDesugaringEnabled true
     }
 }
 
@@ -94,6 +98,7 @@ repositories {
 
 dependencies {
     api 'software.amazon.awssdk.crt:aws-crt-android:0.29.10'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
     implementation 'org.slf4j:slf4j-api:1.7.30'
     implementation 'com.google.code.gson:gson:2.9.0'
     implementation 'androidx.appcompat:appcompat:1.1.0'
