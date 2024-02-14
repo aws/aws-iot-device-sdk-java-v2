@@ -3,11 +3,12 @@
 
 The Android sample builds an app that can be installed and run on an Android Device. The app builds and allows you
 to run the following [samples](#links-to-individual-sample-readme-files) from aws-iot-device-sdk-java-v2:
-* BasicPubSub
-* Mqtt5PubSub
-* Jobs
-* Shadow
-* CognitoConnect
+* [Mqtt5PubSub](../Mqtt5/PubSub/README.md)
+* [Mqtt3PubSub](../BasicPubSub/README.md)
+* [KeyChainPubSub](./AndroidKeyChainPubSub/README.md)
+* [Jobs](../Jobs/README.md)
+* [Shadow](../Shadow/README.md)
+* [CognitoConnect](../CognitoConnect/README.md)
 
 *__Jump To:__*
 
@@ -29,12 +30,18 @@ files linked below.
 ### Files required by all samples:
 * `endpoint.txt` - IoT ATS Endpoint
 
-### Required to run BasicPubSub and Mqtt5PubSub samples
+### Required to run Mqtt5PubSub and Mqtt3PubSub samples
 * `certificate.pem` - IoT Thing Certificate
 * `privatekey.pem` - IoT Thing Private Key
-###### Optional Files for BasicPubSub and Mqtt5PubSub samples
+
+### Required to run KeyChainPubSub
+* `keychainAlias.txt` - Alias of PrivateKey to access from KeyChain
+  * The sample app must have permission to access KeyChain. The PrivateKey for given alias must also be granted prior to running the KeyChainPubSub sample. This can be done by selecting the `KeyChain Alias Permission` from the `Select a Sample` dropdown menu and selecting the PrivateKey associated with the alias.
+
+###### Optional Files for all PubSub samples
 * `topic.txt` - specifies --topic CLI argument
 * `message.txt` - specifies --message CLI argument
+* `count.txt` - specifies --count CLI argument
 
 ### Required to run Jobs and Shadow sample
 * `certificate.pem` - IoT Thing Certificate
@@ -45,7 +52,7 @@ files linked below.
 * `cognitoIdentity.txt` - Cognito identity ID
 * `signingRegion.txt` - Signing region
 
-### Optional files:
+### Optional files for all Samples:
 * `rootca.pem` - override the default system trust store
 * `clientId.txt` - specifies --clientId CLI argument
 * `port.txt` - specifies --port CLI argument
@@ -67,9 +74,11 @@ cd samples/Android/app
 The following links will provide more details on the individual samples available in the
 Android sample app.
 
-[**BasicPubSub**](../BasicPubSub/README.md)
-
 [**Mqtt5PubSub**](../Mqtt5/PubSub/README.md)
+
+[**Mqtt3PubSub**](../BasicPubSub/README.md)
+
+[**KeyChainPubSub**](AndroidKeyChainPubSub/README.md)
 
 [**Jobs**](../Jobs/README.md)
 

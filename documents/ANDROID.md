@@ -28,6 +28,7 @@ a dependency of the aws-iot-device-sdk-android library.
   * [Consuming from Maven](#consuming-from-maven)
   * [Consuming from locally installed](#consuming-from-locally-installed)
 * [Samples App](#samples-app)
+* [Android KeyChain](#android-keychain)
 * [PKCS#11](#pkcs11)
 
 ## Installation
@@ -36,20 +37,23 @@ a dependency of the aws-iot-device-sdk-android library.
 * Java 11+ ([Download and Install Java](https://www.java.com/en/download/help/download_options.html))
   * [Set JAVA_HOME](./PREREQUISITES.md#set-java_home)
 * Gradle 7.4.2 ([Download and Install Gradle](https://gradle.org/install/))
-* Android SDK 26 ([Doanload SDK Manager](https://developer.android.com/tools/releases/platform-tools#downloads))
+* Android SDK 24 ([Download SDK Manager](https://developer.android.com/tools/releases/platform-tools#downloads))
   * [Set ANDROID_HOME](./PREREQUISITES.md#set-android_home)
 
+> [!NOTE]
+> The SDK supports Android minimum API of 24 but requires [desugaring](https://developer.android.com/studio/write/java8-support#library-desugaring) to support Java 8 language APIs used in by the SDK. If minimum Android API Version is set to 26+ desugaring is not required.
+
 ### Build and install IoT Device SDK from source
-Supports API 26 or newer.
-NOTE: The shadow sample does not currently complete on android due to its dependence on stdin keyboard input.
+> [!NOTE]
+> The shadow sample does not currently complete on android due to its dependence on stdin keyboard input.
 
 ``` sh
 # Create a workspace directory to hold all the SDK files
 mkdir sdk-workspace
 cd sdk-workspace
 # Clone the SDK repository
-# (Use the latest version of the SDK here instead of `v1.19.1`)
-git clone --branch v1.19.1 --recurse-submodules https://github.com/aws/aws-iot-device-sdk-java-v2.git
+# (Use the latest version of the SDK here instead of `v1.20.0`)
+git clone --branch v1.20.0 --recurse-submodules https://github.com/aws/aws-iot-device-sdk-java-v2.git
 # Compile and install the SDK for Android
 cd aws-iot-device-sdk-java-v2/android
 ./gradlew build
@@ -70,10 +74,10 @@ repositories {
 }
 
 dependencies {
-    api 'software.amazon.awssdk.iotdevicesdk:aws-iot-device-sdk-android:1.19.1'
+    api 'software.amazon.awssdk.iotdevicesdk:aws-iot-device-sdk-android:1.20.0'
 }
 ```
-Replace `1.19.1` in `software.amazon.awssdk.iotdevicesdk:aws-iot-device-sdk-android:1.19.1` with the latest release version for the SDK.
+Replace `1.20.0` in `software.amazon.awssdk.iotdevicesdk:aws-iot-device-sdk-android:1.20.0` with the latest release version for the SDK.
 Look up the latest SDK version here: https://github.com/aws/aws-iot-device-sdk-java-v2/releases
 
 ### Consuming from locally installed
@@ -85,15 +89,19 @@ repositories {
 }
 
 dependencies {
-    api 'software.amazon.awssdk.iotdevicesdk:aws-iot-device-sdk-android:1.19.1'
+    api 'software.amazon.awssdk.iotdevicesdk:aws-iot-device-sdk-android:1.20.0'
 }
 ```
-Replace `1.19.1` in `software.amazon.awssdk.iotdevicesdk:aws-iot-device-sdk-android:1.19.1` with the latest release version for the SDK
+Replace `1.20.0` in `software.amazon.awssdk.iotdevicesdk:aws-iot-device-sdk-android:1.20.0` with the latest release version for the SDK
 or replace with `1.0.0-SNAPSHOT` to use the SDK built and installed from source.
 Look up the latest SDK version here: https://github.com/aws/aws-iot-device-sdk-java-v2/releases
 
 ## Samples App
+The Android IoT Samples App builds a number of aws-iot-device-sdk-java-v2 IoT samples into a single APK that can be installed onto an Android device to test different functionality.
 [Android IoT Samples App README](../samples/Android/README.md)
+
+## Android KeyChain
+Connecting using credentials stored in the Android KeyChain requires the app have permission to both access the KeyChain as well as the alias containing the PrivateKey within. The [Android KeyChain PubSub Sample](../samples/Android/AndroidKeyChainPubSub/README.md) demonstrates how you can use the context and alias with the `AndroidKeyChainHandlerBuilder` and the `AwsIotMqtt5ClientBuilder` to connect to AWS IoT Core with an Mqtt5 Client. The KeyChain PubSub sample is included in the [Android IoT Samples App](../samples/Android/README.md). The `AndroidKeyChainHandlerBuilder` also accepts a `PrivateKey` directly but requires the Certificate be set using either `withCertificateFromPath` or `withCertificateContents` functions.
 
 ## PKCS#11
 Connecting using PKCS#11 requires a PKCS#11 library which the user must supply. There are requirements the library must meet:

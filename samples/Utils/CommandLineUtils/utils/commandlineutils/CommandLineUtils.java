@@ -208,6 +208,12 @@ public class CommandLineUtils {
         registerCommand(m_cmd_cert_file, "<path>", "Path to your client certificate in PEM format.");
     }
 
+    public void addAndroidKeyChainCommands(){
+        registerCommand(m_cmd_endpoint, "<str>", "The endpoint of the mqtt server, not including a port.");
+        registerCommand(m_cmd_android_keychain_alias, "<str>", "Alias of Private Key and Certificate to access from Android KeyChain.");
+        registerCommand(m_cmd_client_id, "<int>", "Client id to use (optional, default='test-*').");
+    }
+
     /**
      * Helper functions for parsing commands
      */
@@ -279,6 +285,13 @@ public class CommandLineUtils {
         returnData.input_x509Cert = getCommandRequired(m_cmd_x509_cert_file);
         returnData.input_x509Key = getCommandRequired(m_cmd_x509_key_file);
         returnData.input_x509Ca = getCommandOrDefault(m_cmd_x509_ca_file, null);
+    }
+
+    private void parseAndroidKeyChainCommands(SampleCommandLineData returnData)
+    {
+        returnData.input_endpoint = getCommandRequired(m_cmd_endpoint);
+        returnData.input_KeyChainAlias = getCommandRequired(m_cmd_android_keychain_alias);
+        returnData.input_clientId = getCommandOrDefault(m_cmd_client_id, "test-" + UUID.randomUUID().toString());
     }
 
     /**
@@ -355,6 +368,8 @@ public class CommandLineUtils {
         public String input_pkcs12Password;
         // Greengrass Basic Discovery
         public Boolean inputPrintDiscoverRespOnly;
+        // Android KeyChain
+        public String input_KeyChainAlias;
     }
 
     public SampleCommandLineData parseSampleInputBasicConnect(String[] args)
@@ -452,6 +467,20 @@ public class CommandLineUtils {
         parseCommonMQTTCommands(returnData);
         parseKeyAndCertCommands(returnData);
         parseClientIdAndPort(returnData);
+        return returnData;
+    }
+
+    public SampleCommandLineData parseSampleInputAndroidKeyChainPubSub(String [] args)
+    {
+        addCommonLoggingCommands();
+        addAndroidKeyChainCommands();
+        addCommonTopicMessageCommands();
+        sendArguments(args);
+
+        SampleCommandLineData returnData = new SampleCommandLineData();
+        parseCommonLoggingCommands(returnData);
+        parseAndroidKeyChainCommands(returnData);
+        parseCommonTopicMessageCommands(returnData);
         return returnData;
     }
 
@@ -747,6 +776,8 @@ public class CommandLineUtils {
             return cmdUtils.parseSampleInputCustomAuthorizerConnect(args);
         } else if (sampleName.equals("CustomKeyOpsConnect")) {
             return cmdUtils.parseSampleInputCustomKeyOpsConnect(args);
+        } else if (sampleName.equals("AndroidKeyChainPubSub")) {
+            return cmdUtils.parseSampleInputAndroidKeyChainPubSub(args);
         } else if (sampleName.equals("FleetProvisioningSample")) {
             return cmdUtils.parseSampleInputFleetProvisioning(args);
         } else if (sampleName.equals("BasicDiscovery")) {
@@ -837,6 +868,7 @@ public class CommandLineUtils {
     private static final String m_cmd_pkcs12_password = "pkcs12_password";
     private static final String m_cmd_region = "region";
     private static final String m_cmd_print_discover_resp_only = "print_discover_resp_only";
+    private static final String m_cmd_android_keychain_alias = "keychain_alias";
 }
 
 class CommandLineOption {
