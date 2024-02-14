@@ -39,11 +39,10 @@ a dependency of the aws-iot-device-sdk-android library.
 * Gradle 7.4.2 ([Download and Install Gradle](https://gradle.org/install/))
 * Android SDK 24 ([Download SDK Manager](https://developer.android.com/tools/releases/platform-tools#downloads))
   * [Set ANDROID_HOME](./PREREQUISITES.md#set-android_home)
-##### The SDK supports Android minimum API of 24 but requires [desugaring](https://developer.android.com/studio/write/java8-support#library-desugaring) to support Java 8 language APIs used in by the SDK. If minimum Android API Version is set to 26+ desugaring is not required.
+##### NOTE: The SDK supports Android minimum API of 24 but requires [desugaring](https://developer.android.com/studio/write/java8-support#library-desugaring) to support Java 8 language APIs used in by the SDK. If minimum Android API Version is set to 26+ desugaring is not required.
 
 ### Build and install IoT Device SDK from source
-Supports API 26 or newer.
-NOTE: The shadow sample does not currently complete on android due to its dependence on stdin keyboard input.
+##### NOTE: The shadow sample does not currently complete on android due to its dependence on stdin keyboard input.
 
 ``` sh
 # Create a workspace directory to hold all the SDK files
