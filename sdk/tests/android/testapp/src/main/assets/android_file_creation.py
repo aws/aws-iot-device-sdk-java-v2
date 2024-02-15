@@ -10,10 +10,10 @@ from botocore.exceptions import ClientError
 cwd = os.getcwd()
 
 def saveStringToFile(fileData, fileName):
-    secret_file = open(cwd + "/" + fileName + ".txt", "w")
+    secret_file = open(cwd + "/" + fileName, "w")
     secret_file.write(fileData)
     secret_file.close()
-    print(fileName + ".txt file created")
+    print(fileName + " file created")
 
 def getSecretAndSaveToFile(client, secretName, fileName):
     try:
