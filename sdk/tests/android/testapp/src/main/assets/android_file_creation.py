@@ -63,21 +63,6 @@ def main():
     getSecretAndSaveToFile(client, "ci/mqtt5/us/mqtt5_thing/cert", "mqtt5PubSubCertificate.pem")
     getSecretAndSaveToFile(client, "ci/mqtt5/us/mqtt5_thing/key", "mqtt5PubSubPrivatekey.pem")
 
-
-    # Some testing variables and files are generated using sts and assuming a role
-    # try:
-    #     client_sts = boto3.client('sts')
-    # except Exception:
-    #     print("Error - could not make Boto3 sts client")
-
-    # role_credential_response = client_sts.assume_role(
-    #     RoleArn="arn:aws:iam::123124136734:role/assume_role_connect_iot",
-    #     RoleSessionName="CI_Test_Run"
-    # )
-    # saveStringToFile(role_credential_response['Credentials']['AccessKeyId'], "AWS_TEST_MQTT5_ROLE_CREDENTIAL_ACCESS_KEY")
-    # saveStringToFile(role_credential_response['Credentials']['SecretAccessKey'], "AWS_TEST_MQTT5_ROLE_CREDENTIAL_SECRET_ACCESS_KEY")
-    # saveStringToFile(role_credential_response['Credentials']['SessionToken'], "AWS_TEST_MQTT5_ROLE_CREDENTIAL_SESSION_TOKEN")
-
     print("Android test asset creation complete")
 
 
