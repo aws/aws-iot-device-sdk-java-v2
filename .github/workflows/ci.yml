@@ -395,7 +395,7 @@ jobs:
           cd sdk/tests/android/testapp
           ../../../../android/gradlew assembledebug
           ../../../../android/gradlew assembleAndroidTest
-          cd ../../../..
+          cd ~
       - name: Python Script
         run: |
           echo "Attempting to run python script"
