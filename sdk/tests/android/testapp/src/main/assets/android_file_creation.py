@@ -17,9 +17,7 @@ def saveStringToFile(fileData, fileName):
 
 def getSecretAndSaveToFile(client, secretName, fileName):
     try:
-        secret_value_response = client.get_secret_value(
-            SecretId=secretName
-            )
+        secret_value_response = client.get_secret_value(SecretId=secretName)
     except ClientError as e:
         print("Error encountered")
         if e.response['Error']['Code'] == 'ResourceNotFoundException':
@@ -32,6 +30,9 @@ def getSecretAndSaveToFile(client, secretName, fileName):
             print("The requested secret can't be decrypted using the provided KMS key:", e)
         elif e.response['Error']['Code'] == 'InternalServiceError':
             print("An error occurred on service side:", e)
+        else:
+            print(e)
+            raise e
     else:
         if 'SecretString' in secret_value_response:
             saveStringToFile(secret_value_response['SecretString'], fileName)
