@@ -62,6 +62,8 @@ def main():
     getSecretAndSaveToFile(client, "ci/Shadow/key", "shadowPrivatekey.pem")
     getSecretAndSaveToFile(client, "ci/mqtt5/us/mqtt5_thing/cert", "mqtt5PubSubCertificate.pem")
     getSecretAndSaveToFile(client, "ci/mqtt5/us/mqtt5_thing/key", "mqtt5PubSubPrivatekey.pem")
+    getSecretAndSaveToFile(client, "ci/PubSub/cert", "customKeyOpsCert.pem")
+    getSecretAndSaveToFile(client, "ci/PubSub/keyp8", "customKeyOpsKey.pem")
 
     print("Android test asset creation complete")
 
