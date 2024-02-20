@@ -12,6 +12,7 @@ import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.crt.auth.credentials.CredentialsProvider;
 import software.amazon.awssdk.crt.auth.credentials.DefaultChainCredentialsProvider;
 import software.amazon.awssdk.crt.auth.signing.AwsSigningConfig;
@@ -839,6 +840,7 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
      * @return The final username string
      */
     private String buildMqtt5FinalUsername(MqttConnectCustomAuthConfig config) throws Exception {
+
         ArrayList<String> paramList = new ArrayList<String>();
 
         if (config != null) {
@@ -888,7 +890,7 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
             }
 
             addToUsernameParam(paramList, "x-amz-customauthorizer-name", config.authorizerName);
-            
+
             if (usingSigning == true) {
                 addToUsernameParam(paramList, config.tokenKeyName, config.tokenValue);
 
@@ -901,7 +903,11 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
             }
         }
 
-        addToUsernameParam(paramList, "SDK", "JavaV2");
+        if(CRT.getOSIdentifier() == "android"){
+            addToUsernameParam(paramList, "SDK", "AndroidV2");
+        } else {
+            addToUsernameParam(paramList, "SDK", "JavaV2");
+        }
         addToUsernameParam(paramList, "Version", new PackageInfo().version.toString());
 
         return formUsernameFromParam(paramList);
