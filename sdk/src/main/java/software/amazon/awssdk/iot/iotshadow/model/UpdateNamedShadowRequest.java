@@ -7,13 +7,19 @@
 
 package software.amazon.awssdk.iot.iotshadow.model;
 
-import software.amazon.awssdk.iot.iotshadow.model.ShadowState;
 
 /**
  * Data needed to make an UpdateNamedShadow request.
  *
  */
 public class UpdateNamedShadowRequest {
+
+    /**
+     * Aws IoT thing to update a named shadow of.
+     *
+     */
+    public String thingName;
+
 
     /**
      * Name of the shadow to update.
@@ -27,13 +33,6 @@ public class UpdateNamedShadowRequest {
      *
      */
     public String clientToken;
-
-
-    /**
-     * Aws IoT thing to update a named shadow of.
-     *
-     */
-    public String thingName;
 
 
     /**
