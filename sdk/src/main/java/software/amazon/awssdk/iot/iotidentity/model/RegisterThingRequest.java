@@ -7,6 +7,7 @@
 
 package software.amazon.awssdk.iot.iotidentity.model;
 
+import java.util.HashMap;
 
 /**
  * Data needed to perform a RegisterThing operation.

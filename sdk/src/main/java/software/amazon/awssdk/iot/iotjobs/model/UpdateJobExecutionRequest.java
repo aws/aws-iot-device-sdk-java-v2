@@ -7,6 +7,8 @@
 
 package software.amazon.awssdk.iot.iotjobs.model;
 
+import java.util.HashMap;
+import software.amazon.awssdk.iot.iotjobs.model.JobStatus;
 
 /**
  * Data needed to make an UpdateJobExecution request.

@@ -7,6 +7,7 @@
 
 package software.amazon.awssdk.iot.iotshadow.model;
 
+import software.amazon.awssdk.iot.iotshadow.model.ShadowState;
 
 /**
  * Data needed to make an UpdateNamedShadow request.

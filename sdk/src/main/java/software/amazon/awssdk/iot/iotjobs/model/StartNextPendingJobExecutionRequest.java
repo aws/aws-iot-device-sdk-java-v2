@@ -7,6 +7,7 @@
 
 package software.amazon.awssdk.iot.iotjobs.model;
 
+import java.util.HashMap;
 
 /**
  * Data needed to make a StartNextPendingJobExecution request.
