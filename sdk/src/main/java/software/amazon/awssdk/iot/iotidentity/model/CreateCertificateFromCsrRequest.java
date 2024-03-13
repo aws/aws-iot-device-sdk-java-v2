@@ -20,4 +20,5 @@ public class CreateCertificateFromCsrRequest {
      */
     public String certificateSigningRequest;
 
+
 }
