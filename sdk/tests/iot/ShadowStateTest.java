@@ -85,10 +85,9 @@ public class ShadowStateTest {
     }
 
     @Test
-    /* TODO: maybe remove the test to a separate file */
+    /* TODO: maybe move the test to a separate file? */
     public void testCRTIsFIPS() {
         assumeTrue(System.getenv("CRT_FIPS") != null);
-        // assertTrue(CRT.isFIPS());
-        assertTrue(false);
+        assertTrue(CRT.isFIPS());
     }
 }
