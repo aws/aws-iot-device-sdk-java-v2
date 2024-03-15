@@ -56,8 +56,9 @@ jobs:
         aws-region: ${{ env.AWS_DEFAULT_REGION }}
     - name: Build ${{ env.PACKAGE_NAME }}
       run: |
+        export CRT_FIPS=ON
         aws s3 cp s3://aws-crt-test-stuff/ci/${{ env.BUILDER_VERSION }}/linux-container-ci.sh ./linux-container-ci.sh && chmod a+x ./linux-container-ci.sh
-        ./linux-container-ci.sh ${{ env.BUILDER_VERSION }} aws-crt-${{ matrix.image }} build -p ${{ env.PACKAGE_NAME }}
+        ./linux-container-ci.sh ${{ env.BUILDER_VERSION }} aws-crt-${{ matrix.image }} --env CRT_FIPS build -p ${{ env.PACKAGE_NAME }}
     # NOTE: we cannot run samples or DeviceAdvisor here due to container restrictions
 
   linux-musl:
@@ -310,8 +311,7 @@ jobs:
       - name: Build ${{ env.PACKAGE_NAME }} + consumers
         run: |
           java -version
-          mvn -B test -Daws.crt.debugnative=true
-          mvn install -Dmaven.test.skip
+          mvn install -Daws.crt.debugnative=true
       - name: configure AWS credentials (MQTT5)
         uses: aws-actions/configure-aws-credentials@v2
         with:
