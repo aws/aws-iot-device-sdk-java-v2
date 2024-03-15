@@ -24,6 +24,7 @@
     },
     "variants" : {
         "test_fips": {
+            "!run_tests": true,
             "!test_steps": [
                 "CRT_FIPS=ON mvn test -Dtest=ShadowStateTest#testCRTIsFIPS -DfailIfNoTests=false"
             ]
