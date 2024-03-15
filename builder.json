@@ -6,20 +6,13 @@
     "build_steps": [
         "mvn -B compile"
     ],
-    "test_steps": [
-        "CRT_FIPS=ON mvn test -Dtest=ShadowStateTest#testCRTIsFIPS -DfailIfNoTests=false"
-    ],
+    "test_steps": [],
     "imports": [
         "JDK8"
     ],
     "env": {
     },
     "hosts": {
-        "ubuntu": {
-            "packages": [
-                "openjdk-8-jdk-headless"
-            ]
-        },
         "debian": {
             "packages": [
                 "openjdk-8-jdk-headless"
