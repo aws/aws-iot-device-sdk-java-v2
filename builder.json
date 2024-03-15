@@ -6,7 +6,9 @@
     "build_steps": [
         "mvn -B compile"
     ],
-    "test_steps": [],
+    "test_steps": [
+        "CRT_FIPS=ON mvn test -Dtest=ShadowStateTest#testCRTIsFIPS -DfailIfNoTests=false"
+    ],
     "imports": [
         "JDK8"
     ],
