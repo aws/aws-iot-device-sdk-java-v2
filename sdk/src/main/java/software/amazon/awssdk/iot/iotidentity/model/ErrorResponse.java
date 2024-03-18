@@ -20,16 +20,19 @@ public class ErrorResponse {
      */
     public Integer statusCode;
 
-    /**
-     * Response error message
-     *
-     */
-    public String errorMessage;
 
     /**
      * Response error code
      *
      */
     public String errorCode;
+
+
+    /**
+     * Response error message
+     *
+     */
+    public String errorMessage;
+
 
 }

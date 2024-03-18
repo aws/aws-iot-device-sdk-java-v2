@@ -23,11 +23,13 @@ public class UpdateJobExecutionResponse {
      */
     public String clientToken;
 
+
     /**
-     * The time when the message was sent.
+     * Contains data about the state of a job execution.
      *
      */
-    public Timestamp timestamp;
+    public JobExecutionState executionState;
+
 
     /**
      * A UTF-8 encoded JSON document that contains information that your devices need to perform the job.
@@ -35,10 +37,12 @@ public class UpdateJobExecutionResponse {
      */
     public HashMap<String, Object> jobDocument;
 
+
     /**
-     * Contains data about the state of a job execution.
+     * The time when the message was sent.
      *
      */
-    public JobExecutionState executionState;
+    public Timestamp timestamp;
+
 
 }

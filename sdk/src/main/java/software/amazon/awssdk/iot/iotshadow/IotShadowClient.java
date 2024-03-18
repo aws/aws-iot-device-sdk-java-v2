@@ -7,7 +7,6 @@
 
 package software.amazon.awssdk.iot.iotshadow;
 
-import java.util.HashMap;
 import software.amazon.awssdk.iot.iotshadow.model.DeleteNamedShadowRequest;
 import software.amazon.awssdk.iot.iotshadow.model.DeleteNamedShadowSubscriptionRequest;
 import software.amazon.awssdk.iot.iotshadow.model.DeleteShadowRequest;
@@ -88,279 +87,39 @@ public class IotShadowClient {
     }
 
     /**
-     * Subscribes to the rejected topic for the UpdateShadow operation
+     * Deletes a named shadow for an AWS IoT thing.
      *
-     * Once subscribed, `handler` is invoked each time a message matching
-     * the `topic` is received. It is possible for such messages to arrive before
-     * the SUBACK is received.
+     * If the device is offline, the PUBLISH packet will be sent once the connection resumes.
      *
-     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#update-rejected-pub-sub-topic
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#delete-pub-sub-topic
      *
-     * @param request Subscription request configuration
-     * @param qos Maximum requested QoS that server may use when sending messages to the client.
-     *            The server may grant a lower QoS in the SUBACK
-     * @param handler callback function to invoke with messages received on the subscription topic
-     * @param exceptionHandler callback function to invoke if an exception occurred deserializing a message
+     * @param request Message to be serialized and sent
+     * @param qos Quality of Service for delivering this message
+     * @return a future containing the MQTT packet id used to perform the publish operation
      *
-     * @return a future containing the MQTT packet id used to perform the subscribe operation
+     * * For QoS 0, completes as soon as the packet is sent.
+     * * For QoS 1, completes when PUBACK is received.
+     * * QoS 2 is not supported by AWS IoT.
      */
-    public CompletableFuture<Integer> SubscribeToUpdateShadowRejected(
-        UpdateShadowSubscriptionRequest request,
-        QualityOfService qos,
-        Consumer<ErrorResponse> handler,
-        Consumer<Exception> exceptionHandler) {
-        String topic = "$aws/things/{thingName}/shadow/update/rejected";
+    public CompletableFuture<Integer> PublishDeleteNamedShadow(
+        DeleteNamedShadowRequest request,
+        QualityOfService qos) {
+        String topic = "$aws/things/{thingName}/shadow/name/{shadowName}/delete";
         if (request.thingName == null) {
             CompletableFuture<Integer> result = new CompletableFuture<Integer>();
-            result.completeExceptionally(new MqttException("UpdateShadowSubscriptionRequest must have a non-null thingName"));
-            return result;
-        }
-        topic = topic.replace("{thingName}", request.thingName);
-        Consumer<MqttMessage> messageHandler = (message) -> {
-            try {
-                String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
-                ErrorResponse response = gson.fromJson(payload, ErrorResponse.class);
-                handler.accept(response);
-            } catch (Exception e) {
-                if (exceptionHandler != null) {
-                    exceptionHandler.accept(e);
-                }
-            }
-        };
-        return connection.subscribe(topic, qos, messageHandler);
-    }
-
-    /**
-     * Subscribes to the rejected topic for the UpdateShadow operation
-     *
-     * Once subscribed, `handler` is invoked each time a message matching
-     * the `topic` is received. It is possible for such messages to arrive before
-     * the SUBACK is received.
-     *
-     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#update-rejected-pub-sub-topic
-     *
-     * @param request Subscription request configuration
-     * @param qos Maximum requested QoS that server may use when sending messages to the client.
-     *            The server may grant a lower QoS in the SUBACK
-     * @param handler callback function to invoke with messages received on the subscription topic
-     *
-     * @return a future containing the MQTT packet id used to perform the subscribe operation
-     */
-    public CompletableFuture<Integer> SubscribeToUpdateShadowRejected(
-        UpdateShadowSubscriptionRequest request,
-        QualityOfService qos,
-        Consumer<ErrorResponse> handler) {
-        return SubscribeToUpdateShadowRejected(request, qos, handler, null);
-    }
-
-    /**
-     * Subscribe to ShadowDelta events for the (classic) shadow of an AWS IoT thing.
-     *
-     * Once subscribed, `handler` is invoked each time a message matching
-     * the `topic` is received. It is possible for such messages to arrive before
-     * the SUBACK is received.
-     *
-     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#update-delta-pub-sub-topic
-     *
-     * @param request Subscription request configuration
-     * @param qos Maximum requested QoS that server may use when sending messages to the client.
-     *            The server may grant a lower QoS in the SUBACK
-     * @param handler callback function to invoke with messages received on the subscription topic
-     * @param exceptionHandler callback function to invoke if an exception occurred deserializing a message
-     *
-     * @return a future containing the MQTT packet id used to perform the subscribe operation
-     */
-    public CompletableFuture<Integer> SubscribeToShadowDeltaUpdatedEvents(
-        ShadowDeltaUpdatedSubscriptionRequest request,
-        QualityOfService qos,
-        Consumer<ShadowDeltaUpdatedEvent> handler,
-        Consumer<Exception> exceptionHandler) {
-        String topic = "$aws/things/{thingName}/shadow/update/delta";
-        if (request.thingName == null) {
-            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
-            result.completeExceptionally(new MqttException("ShadowDeltaUpdatedSubscriptionRequest must have a non-null thingName"));
-            return result;
-        }
-        topic = topic.replace("{thingName}", request.thingName);
-        Consumer<MqttMessage> messageHandler = (message) -> {
-            try {
-                String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
-                ShadowDeltaUpdatedEvent response = gson.fromJson(payload, ShadowDeltaUpdatedEvent.class);
-                handler.accept(response);
-            } catch (Exception e) {
-                if (exceptionHandler != null) {
-                    exceptionHandler.accept(e);
-                }
-            }
-        };
-        return connection.subscribe(topic, qos, messageHandler);
-    }
-
-    /**
-     * Subscribe to ShadowDelta events for the (classic) shadow of an AWS IoT thing.
-     *
-     * Once subscribed, `handler` is invoked each time a message matching
-     * the `topic` is received. It is possible for such messages to arrive before
-     * the SUBACK is received.
-     *
-     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#update-delta-pub-sub-topic
-     *
-     * @param request Subscription request configuration
-     * @param qos Maximum requested QoS that server may use when sending messages to the client.
-     *            The server may grant a lower QoS in the SUBACK
-     * @param handler callback function to invoke with messages received on the subscription topic
-     *
-     * @return a future containing the MQTT packet id used to perform the subscribe operation
-     */
-    public CompletableFuture<Integer> SubscribeToShadowDeltaUpdatedEvents(
-        ShadowDeltaUpdatedSubscriptionRequest request,
-        QualityOfService qos,
-        Consumer<ShadowDeltaUpdatedEvent> handler) {
-        return SubscribeToShadowDeltaUpdatedEvents(request, qos, handler, null);
-    }
-
-    /**
-     * Subscribes to the rejected topic for the GetNamedShadow operation.
-     *
-     * Once subscribed, `handler` is invoked each time a message matching
-     * the `topic` is received. It is possible for such messages to arrive before
-     * the SUBACK is received.
-     *
-     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#get-rejected-pub-sub-topic
-     *
-     * @param request Subscription request configuration
-     * @param qos Maximum requested QoS that server may use when sending messages to the client.
-     *            The server may grant a lower QoS in the SUBACK
-     * @param handler callback function to invoke with messages received on the subscription topic
-     * @param exceptionHandler callback function to invoke if an exception occurred deserializing a message
-     *
-     * @return a future containing the MQTT packet id used to perform the subscribe operation
-     */
-    public CompletableFuture<Integer> SubscribeToGetNamedShadowRejected(
-        GetNamedShadowSubscriptionRequest request,
-        QualityOfService qos,
-        Consumer<ErrorResponse> handler,
-        Consumer<Exception> exceptionHandler) {
-        String topic = "$aws/things/{thingName}/shadow/name/{shadowName}/get/rejected";
-        if (request.thingName == null) {
-            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
-            result.completeExceptionally(new MqttException("GetNamedShadowSubscriptionRequest must have a non-null thingName"));
+            result.completeExceptionally(new MqttException("DeleteNamedShadowRequest must have a non-null thingName"));
             return result;
         }
         topic = topic.replace("{thingName}", request.thingName);
         if (request.shadowName == null) {
             CompletableFuture<Integer> result = new CompletableFuture<Integer>();
-            result.completeExceptionally(new MqttException("GetNamedShadowSubscriptionRequest must have a non-null shadowName"));
+            result.completeExceptionally(new MqttException("DeleteNamedShadowRequest must have a non-null shadowName"));
             return result;
         }
         topic = topic.replace("{shadowName}", request.shadowName);
-        Consumer<MqttMessage> messageHandler = (message) -> {
-            try {
-                String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
-                ErrorResponse response = gson.fromJson(payload, ErrorResponse.class);
-                handler.accept(response);
-            } catch (Exception e) {
-                if (exceptionHandler != null) {
-                    exceptionHandler.accept(e);
-                }
-            }
-        };
-        return connection.subscribe(topic, qos, messageHandler);
-    }
-
-    /**
-     * Subscribes to the rejected topic for the GetNamedShadow operation.
-     *
-     * Once subscribed, `handler` is invoked each time a message matching
-     * the `topic` is received. It is possible for such messages to arrive before
-     * the SUBACK is received.
-     *
-     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#get-rejected-pub-sub-topic
-     *
-     * @param request Subscription request configuration
-     * @param qos Maximum requested QoS that server may use when sending messages to the client.
-     *            The server may grant a lower QoS in the SUBACK
-     * @param handler callback function to invoke with messages received on the subscription topic
-     *
-     * @return a future containing the MQTT packet id used to perform the subscribe operation
-     */
-    public CompletableFuture<Integer> SubscribeToGetNamedShadowRejected(
-        GetNamedShadowSubscriptionRequest request,
-        QualityOfService qos,
-        Consumer<ErrorResponse> handler) {
-        return SubscribeToGetNamedShadowRejected(request, qos, handler, null);
-    }
-
-    /**
-     * Subscribes to the rejected topic for the DeleteNamedShadow operation.
-     *
-     * Once subscribed, `handler` is invoked each time a message matching
-     * the `topic` is received. It is possible for such messages to arrive before
-     * the SUBACK is received.
-     *
-     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#delete-rejected-pub-sub-topic
-     *
-     * @param request Subscription request configuration
-     * @param qos Maximum requested QoS that server may use when sending messages to the client.
-     *            The server may grant a lower QoS in the SUBACK
-     * @param handler callback function to invoke with messages received on the subscription topic
-     * @param exceptionHandler callback function to invoke if an exception occurred deserializing a message
-     *
-     * @return a future containing the MQTT packet id used to perform the subscribe operation
-     */
-    public CompletableFuture<Integer> SubscribeToDeleteNamedShadowRejected(
-        DeleteNamedShadowSubscriptionRequest request,
-        QualityOfService qos,
-        Consumer<ErrorResponse> handler,
-        Consumer<Exception> exceptionHandler) {
-        String topic = "$aws/things/{thingName}/shadow/name/{shadowName}/delete/rejected";
-        if (request.thingName == null) {
-            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
-            result.completeExceptionally(new MqttException("DeleteNamedShadowSubscriptionRequest must have a non-null thingName"));
-            return result;
-        }
-        topic = topic.replace("{thingName}", request.thingName);
-        if (request.shadowName == null) {
-            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
-            result.completeExceptionally(new MqttException("DeleteNamedShadowSubscriptionRequest must have a non-null shadowName"));
-            return result;
-        }
-        topic = topic.replace("{shadowName}", request.shadowName);
-        Consumer<MqttMessage> messageHandler = (message) -> {
-            try {
-                String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
-                ErrorResponse response = gson.fromJson(payload, ErrorResponse.class);
-                handler.accept(response);
-            } catch (Exception e) {
-                if (exceptionHandler != null) {
-                    exceptionHandler.accept(e);
-                }
-            }
-        };
-        return connection.subscribe(topic, qos, messageHandler);
-    }
-
-    /**
-     * Subscribes to the rejected topic for the DeleteNamedShadow operation.
-     *
-     * Once subscribed, `handler` is invoked each time a message matching
-     * the `topic` is received. It is possible for such messages to arrive before
-     * the SUBACK is received.
-     *
-     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#delete-rejected-pub-sub-topic
-     *
-     * @param request Subscription request configuration
-     * @param qos Maximum requested QoS that server may use when sending messages to the client.
-     *            The server may grant a lower QoS in the SUBACK
-     * @param handler callback function to invoke with messages received on the subscription topic
-     *
-     * @return a future containing the MQTT packet id used to perform the subscribe operation
-     */
-    public CompletableFuture<Integer> SubscribeToDeleteNamedShadowRejected(
-        DeleteNamedShadowSubscriptionRequest request,
-        QualityOfService qos,
-        Consumer<ErrorResponse> handler) {
-        return SubscribeToDeleteNamedShadowRejected(request, qos, handler, null);
+        String payloadJson = gson.toJson(request);
+        MqttMessage message = new MqttMessage(topic, payloadJson.getBytes(StandardCharsets.UTF_8));
+        return connection.publish(message, qos, false);
     }
 
     /**
@@ -412,371 +171,29 @@ public class IotShadowClient {
         GetNamedShadowRequest request,
         QualityOfService qos) {
         String topic = "$aws/things/{thingName}/shadow/name/{shadowName}/get";
-        if (request.shadowName == null) {
-            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
-            result.completeExceptionally(new MqttException("GetNamedShadowRequest must have a non-null shadowName"));
-            return result;
-        }
-        topic = topic.replace("{shadowName}", request.shadowName);
         if (request.thingName == null) {
             CompletableFuture<Integer> result = new CompletableFuture<Integer>();
             result.completeExceptionally(new MqttException("GetNamedShadowRequest must have a non-null thingName"));
             return result;
         }
         topic = topic.replace("{thingName}", request.thingName);
+        if (request.shadowName == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("GetNamedShadowRequest must have a non-null shadowName"));
+            return result;
+        }
+        topic = topic.replace("{shadowName}", request.shadowName);
         String payloadJson = gson.toJson(request);
         MqttMessage message = new MqttMessage(topic, payloadJson.getBytes(StandardCharsets.UTF_8));
         return connection.publish(message, qos, false);
     }
 
     /**
-     * Subscribes to the accepted topic for the DeleteShadow operation
-     *
-     * Once subscribed, `handler` is invoked each time a message matching
-     * the `topic` is received. It is possible for such messages to arrive before
-     * the SUBACK is received.
-     *
-     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#delete-accepted-pub-sub-topic
-     *
-     * @param request Subscription request configuration
-     * @param qos Maximum requested QoS that server may use when sending messages to the client.
-     *            The server may grant a lower QoS in the SUBACK
-     * @param handler callback function to invoke with messages received on the subscription topic
-     * @param exceptionHandler callback function to invoke if an exception occurred deserializing a message
-     *
-     * @return a future containing the MQTT packet id used to perform the subscribe operation
-     */
-    public CompletableFuture<Integer> SubscribeToDeleteShadowAccepted(
-        DeleteShadowSubscriptionRequest request,
-        QualityOfService qos,
-        Consumer<DeleteShadowResponse> handler,
-        Consumer<Exception> exceptionHandler) {
-        String topic = "$aws/things/{thingName}/shadow/delete/accepted";
-        if (request.thingName == null) {
-            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
-            result.completeExceptionally(new MqttException("DeleteShadowSubscriptionRequest must have a non-null thingName"));
-            return result;
-        }
-        topic = topic.replace("{thingName}", request.thingName);
-        Consumer<MqttMessage> messageHandler = (message) -> {
-            try {
-                String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
-                DeleteShadowResponse response = gson.fromJson(payload, DeleteShadowResponse.class);
-                handler.accept(response);
-            } catch (Exception e) {
-                if (exceptionHandler != null) {
-                    exceptionHandler.accept(e);
-                }
-            }
-        };
-        return connection.subscribe(topic, qos, messageHandler);
-    }
-
-    /**
-     * Subscribes to the accepted topic for the DeleteShadow operation
-     *
-     * Once subscribed, `handler` is invoked each time a message matching
-     * the `topic` is received. It is possible for such messages to arrive before
-     * the SUBACK is received.
-     *
-     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#delete-accepted-pub-sub-topic
-     *
-     * @param request Subscription request configuration
-     * @param qos Maximum requested QoS that server may use when sending messages to the client.
-     *            The server may grant a lower QoS in the SUBACK
-     * @param handler callback function to invoke with messages received on the subscription topic
-     *
-     * @return a future containing the MQTT packet id used to perform the subscribe operation
-     */
-    public CompletableFuture<Integer> SubscribeToDeleteShadowAccepted(
-        DeleteShadowSubscriptionRequest request,
-        QualityOfService qos,
-        Consumer<DeleteShadowResponse> handler) {
-        return SubscribeToDeleteShadowAccepted(request, qos, handler, null);
-    }
-
-    /**
-     * Subscribes to the accepted topic for the GetShadow operation.
-     *
-     * Once subscribed, `handler` is invoked each time a message matching
-     * the `topic` is received. It is possible for such messages to arrive before
-     * the SUBACK is received.
-     *
-     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#get-accepted-pub-sub-topic
-     *
-     * @param request Subscription request configuration
-     * @param qos Maximum requested QoS that server may use when sending messages to the client.
-     *            The server may grant a lower QoS in the SUBACK
-     * @param handler callback function to invoke with messages received on the subscription topic
-     * @param exceptionHandler callback function to invoke if an exception occurred deserializing a message
-     *
-     * @return a future containing the MQTT packet id used to perform the subscribe operation
-     */
-    public CompletableFuture<Integer> SubscribeToGetShadowAccepted(
-        GetShadowSubscriptionRequest request,
-        QualityOfService qos,
-        Consumer<GetShadowResponse> handler,
-        Consumer<Exception> exceptionHandler) {
-        String topic = "$aws/things/{thingName}/shadow/get/accepted";
-        if (request.thingName == null) {
-            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
-            result.completeExceptionally(new MqttException("GetShadowSubscriptionRequest must have a non-null thingName"));
-            return result;
-        }
-        topic = topic.replace("{thingName}", request.thingName);
-        Consumer<MqttMessage> messageHandler = (message) -> {
-            try {
-                String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
-                GetShadowResponse response = gson.fromJson(payload, GetShadowResponse.class);
-                handler.accept(response);
-            } catch (Exception e) {
-                if (exceptionHandler != null) {
-                    exceptionHandler.accept(e);
-                }
-            }
-        };
-        return connection.subscribe(topic, qos, messageHandler);
-    }
-
-    /**
-     * Subscribes to the accepted topic for the GetShadow operation.
-     *
-     * Once subscribed, `handler` is invoked each time a message matching
-     * the `topic` is received. It is possible for such messages to arrive before
-     * the SUBACK is received.
-     *
-     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#get-accepted-pub-sub-topic
-     *
-     * @param request Subscription request configuration
-     * @param qos Maximum requested QoS that server may use when sending messages to the client.
-     *            The server may grant a lower QoS in the SUBACK
-     * @param handler callback function to invoke with messages received on the subscription topic
-     *
-     * @return a future containing the MQTT packet id used to perform the subscribe operation
-     */
-    public CompletableFuture<Integer> SubscribeToGetShadowAccepted(
-        GetShadowSubscriptionRequest request,
-        QualityOfService qos,
-        Consumer<GetShadowResponse> handler) {
-        return SubscribeToGetShadowAccepted(request, qos, handler, null);
-    }
-
-    /**
-     * Subscribes to the accepted topic for the GetNamedShadow operation.
-     *
-     * Once subscribed, `handler` is invoked each time a message matching
-     * the `topic` is received. It is possible for such messages to arrive before
-     * the SUBACK is received.
-     *
-     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#get-accepted-pub-sub-topic
-     *
-     * @param request Subscription request configuration
-     * @param qos Maximum requested QoS that server may use when sending messages to the client.
-     *            The server may grant a lower QoS in the SUBACK
-     * @param handler callback function to invoke with messages received on the subscription topic
-     * @param exceptionHandler callback function to invoke if an exception occurred deserializing a message
-     *
-     * @return a future containing the MQTT packet id used to perform the subscribe operation
-     */
-    public CompletableFuture<Integer> SubscribeToGetNamedShadowAccepted(
-        GetNamedShadowSubscriptionRequest request,
-        QualityOfService qos,
-        Consumer<GetShadowResponse> handler,
-        Consumer<Exception> exceptionHandler) {
-        String topic = "$aws/things/{thingName}/shadow/name/{shadowName}/get/accepted";
-        if (request.thingName == null) {
-            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
-            result.completeExceptionally(new MqttException("GetNamedShadowSubscriptionRequest must have a non-null thingName"));
-            return result;
-        }
-        topic = topic.replace("{thingName}", request.thingName);
-        if (request.shadowName == null) {
-            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
-            result.completeExceptionally(new MqttException("GetNamedShadowSubscriptionRequest must have a non-null shadowName"));
-            return result;
-        }
-        topic = topic.replace("{shadowName}", request.shadowName);
-        Consumer<MqttMessage> messageHandler = (message) -> {
-            try {
-                String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
-                GetShadowResponse response = gson.fromJson(payload, GetShadowResponse.class);
-                handler.accept(response);
-            } catch (Exception e) {
-                if (exceptionHandler != null) {
-                    exceptionHandler.accept(e);
-                }
-            }
-        };
-        return connection.subscribe(topic, qos, messageHandler);
-    }
-
-    /**
-     * Subscribes to the accepted topic for the GetNamedShadow operation.
-     *
-     * Once subscribed, `handler` is invoked each time a message matching
-     * the `topic` is received. It is possible for such messages to arrive before
-     * the SUBACK is received.
-     *
-     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#get-accepted-pub-sub-topic
-     *
-     * @param request Subscription request configuration
-     * @param qos Maximum requested QoS that server may use when sending messages to the client.
-     *            The server may grant a lower QoS in the SUBACK
-     * @param handler callback function to invoke with messages received on the subscription topic
-     *
-     * @return a future containing the MQTT packet id used to perform the subscribe operation
-     */
-    public CompletableFuture<Integer> SubscribeToGetNamedShadowAccepted(
-        GetNamedShadowSubscriptionRequest request,
-        QualityOfService qos,
-        Consumer<GetShadowResponse> handler) {
-        return SubscribeToGetNamedShadowAccepted(request, qos, handler, null);
-    }
-
-    /**
-     * Subscribe to ShadowUpdated events for a named shadow of an AWS IoT thing.
-     *
-     * Once subscribed, `handler` is invoked each time a message matching
-     * the `topic` is received. It is possible for such messages to arrive before
-     * the SUBACK is received.
-     *
-     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#update-documents-pub-sub-topic
-     *
-     * @param request Subscription request configuration
-     * @param qos Maximum requested QoS that server may use when sending messages to the client.
-     *            The server may grant a lower QoS in the SUBACK
-     * @param handler callback function to invoke with messages received on the subscription topic
-     * @param exceptionHandler callback function to invoke if an exception occurred deserializing a message
-     *
-     * @return a future containing the MQTT packet id used to perform the subscribe operation
-     */
-    public CompletableFuture<Integer> SubscribeToNamedShadowUpdatedEvents(
-        NamedShadowUpdatedSubscriptionRequest request,
-        QualityOfService qos,
-        Consumer<ShadowUpdatedEvent> handler,
-        Consumer<Exception> exceptionHandler) {
-        String topic = "$aws/things/{thingName}/shadow/name/{shadowName}/update/documents";
-        if (request.shadowName == null) {
-            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
-            result.completeExceptionally(new MqttException("NamedShadowUpdatedSubscriptionRequest must have a non-null shadowName"));
-            return result;
-        }
-        topic = topic.replace("{shadowName}", request.shadowName);
-        if (request.thingName == null) {
-            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
-            result.completeExceptionally(new MqttException("NamedShadowUpdatedSubscriptionRequest must have a non-null thingName"));
-            return result;
-        }
-        topic = topic.replace("{thingName}", request.thingName);
-        Consumer<MqttMessage> messageHandler = (message) -> {
-            try {
-                String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
-                ShadowUpdatedEvent response = gson.fromJson(payload, ShadowUpdatedEvent.class);
-                handler.accept(response);
-            } catch (Exception e) {
-                if (exceptionHandler != null) {
-                    exceptionHandler.accept(e);
-                }
-            }
-        };
-        return connection.subscribe(topic, qos, messageHandler);
-    }
-
-    /**
-     * Subscribe to ShadowUpdated events for a named shadow of an AWS IoT thing.
-     *
-     * Once subscribed, `handler` is invoked each time a message matching
-     * the `topic` is received. It is possible for such messages to arrive before
-     * the SUBACK is received.
-     *
-     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#update-documents-pub-sub-topic
-     *
-     * @param request Subscription request configuration
-     * @param qos Maximum requested QoS that server may use when sending messages to the client.
-     *            The server may grant a lower QoS in the SUBACK
-     * @param handler callback function to invoke with messages received on the subscription topic
-     *
-     * @return a future containing the MQTT packet id used to perform the subscribe operation
-     */
-    public CompletableFuture<Integer> SubscribeToNamedShadowUpdatedEvents(
-        NamedShadowUpdatedSubscriptionRequest request,
-        QualityOfService qos,
-        Consumer<ShadowUpdatedEvent> handler) {
-        return SubscribeToNamedShadowUpdatedEvents(request, qos, handler, null);
-    }
-
-    /**
-     * Subscribe to ShadowUpdated events for the (classic) shadow of an AWS IoT thing.
-     *
-     * Once subscribed, `handler` is invoked each time a message matching
-     * the `topic` is received. It is possible for such messages to arrive before
-     * the SUBACK is received.
-     *
-     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#update-documents-pub-sub-topic
-     *
-     * @param request Subscription request configuration
-     * @param qos Maximum requested QoS that server may use when sending messages to the client.
-     *            The server may grant a lower QoS in the SUBACK
-     * @param handler callback function to invoke with messages received on the subscription topic
-     * @param exceptionHandler callback function to invoke if an exception occurred deserializing a message
-     *
-     * @return a future containing the MQTT packet id used to perform the subscribe operation
-     */
-    public CompletableFuture<Integer> SubscribeToShadowUpdatedEvents(
-        ShadowUpdatedSubscriptionRequest request,
-        QualityOfService qos,
-        Consumer<ShadowUpdatedEvent> handler,
-        Consumer<Exception> exceptionHandler) {
-        String topic = "$aws/things/{thingName}/shadow/update/documents";
-        if (request.thingName == null) {
-            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
-            result.completeExceptionally(new MqttException("ShadowUpdatedSubscriptionRequest must have a non-null thingName"));
-            return result;
-        }
-        topic = topic.replace("{thingName}", request.thingName);
-        Consumer<MqttMessage> messageHandler = (message) -> {
-            try {
-                String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
-                ShadowUpdatedEvent response = gson.fromJson(payload, ShadowUpdatedEvent.class);
-                handler.accept(response);
-            } catch (Exception e) {
-                if (exceptionHandler != null) {
-                    exceptionHandler.accept(e);
-                }
-            }
-        };
-        return connection.subscribe(topic, qos, messageHandler);
-    }
-
-    /**
-     * Subscribe to ShadowUpdated events for the (classic) shadow of an AWS IoT thing.
-     *
-     * Once subscribed, `handler` is invoked each time a message matching
-     * the `topic` is received. It is possible for such messages to arrive before
-     * the SUBACK is received.
-     *
-     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#update-documents-pub-sub-topic
-     *
-     * @param request Subscription request configuration
-     * @param qos Maximum requested QoS that server may use when sending messages to the client.
-     *            The server may grant a lower QoS in the SUBACK
-     * @param handler callback function to invoke with messages received on the subscription topic
-     *
-     * @return a future containing the MQTT packet id used to perform the subscribe operation
-     */
-    public CompletableFuture<Integer> SubscribeToShadowUpdatedEvents(
-        ShadowUpdatedSubscriptionRequest request,
-        QualityOfService qos,
-        Consumer<ShadowUpdatedEvent> handler) {
-        return SubscribeToShadowUpdatedEvents(request, qos, handler, null);
-    }
-
-    /**
-     * Deletes a named shadow for an AWS IoT thing.
+     * Gets the (classic) shadow for an AWS IoT thing.
      *
      * If the device is offline, the PUBLISH packet will be sent once the connection resumes.
      *
-     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#delete-pub-sub-topic
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#get-pub-sub-topic
      *
      * @param request Message to be serialized and sent
      * @param qos Quality of Service for delivering this message
@@ -786,19 +203,79 @@ public class IotShadowClient {
      * * For QoS 1, completes when PUBACK is received.
      * * QoS 2 is not supported by AWS IoT.
      */
-    public CompletableFuture<Integer> PublishDeleteNamedShadow(
-        DeleteNamedShadowRequest request,
+    public CompletableFuture<Integer> PublishGetShadow(
+        GetShadowRequest request,
         QualityOfService qos) {
-        String topic = "$aws/things/{thingName}/shadow/name/{shadowName}/delete";
+        String topic = "$aws/things/{thingName}/shadow/get";
+        if (request.thingName == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("GetShadowRequest must have a non-null thingName"));
+            return result;
+        }
+        topic = topic.replace("{thingName}", request.thingName);
+        String payloadJson = gson.toJson(request);
+        MqttMessage message = new MqttMessage(topic, payloadJson.getBytes(StandardCharsets.UTF_8));
+        return connection.publish(message, qos, false);
+    }
+
+    /**
+     * Update a named shadow for a device.
+     *
+     * If the device is offline, the PUBLISH packet will be sent once the connection resumes.
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#update-pub-sub-topic
+     *
+     * @param request Message to be serialized and sent
+     * @param qos Quality of Service for delivering this message
+     * @return a future containing the MQTT packet id used to perform the publish operation
+     *
+     * * For QoS 0, completes as soon as the packet is sent.
+     * * For QoS 1, completes when PUBACK is received.
+     * * QoS 2 is not supported by AWS IoT.
+     */
+    public CompletableFuture<Integer> PublishUpdateNamedShadow(
+        UpdateNamedShadowRequest request,
+        QualityOfService qos) {
+        String topic = "$aws/things/{thingName}/shadow/name/{shadowName}/update";
+        if (request.thingName == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("UpdateNamedShadowRequest must have a non-null thingName"));
+            return result;
+        }
+        topic = topic.replace("{thingName}", request.thingName);
         if (request.shadowName == null) {
             CompletableFuture<Integer> result = new CompletableFuture<Integer>();
-            result.completeExceptionally(new MqttException("DeleteNamedShadowRequest must have a non-null shadowName"));
+            result.completeExceptionally(new MqttException("UpdateNamedShadowRequest must have a non-null shadowName"));
             return result;
         }
         topic = topic.replace("{shadowName}", request.shadowName);
+        String payloadJson = gson.toJson(request);
+        MqttMessage message = new MqttMessage(topic, payloadJson.getBytes(StandardCharsets.UTF_8));
+        return connection.publish(message, qos, false);
+    }
+
+    /**
+     * Update a device's (classic) shadow.
+     *
+     * If the device is offline, the PUBLISH packet will be sent once the connection resumes.
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#update-pub-sub-topic
+     *
+     * @param request Message to be serialized and sent
+     * @param qos Quality of Service for delivering this message
+     * @return a future containing the MQTT packet id used to perform the publish operation
+     *
+     * * For QoS 0, completes as soon as the packet is sent.
+     * * For QoS 1, completes when PUBACK is received.
+     * * QoS 2 is not supported by AWS IoT.
+     */
+    public CompletableFuture<Integer> PublishUpdateShadow(
+        UpdateShadowRequest request,
+        QualityOfService qos) {
+        String topic = "$aws/things/{thingName}/shadow/update";
         if (request.thingName == null) {
             CompletableFuture<Integer> result = new CompletableFuture<Integer>();
-            result.completeExceptionally(new MqttException("DeleteNamedShadowRequest must have a non-null thingName"));
+            result.completeExceptionally(new MqttException("UpdateShadowRequest must have a non-null thingName"));
             return result;
         }
         topic = topic.replace("{thingName}", request.thingName);
@@ -880,6 +357,144 @@ public class IotShadowClient {
     }
 
     /**
+     * Subscribes to the rejected topic for the DeleteNamedShadow operation.
+     *
+     * Once subscribed, `handler` is invoked each time a message matching
+     * the `topic` is received. It is possible for such messages to arrive before
+     * the SUBACK is received.
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#delete-rejected-pub-sub-topic
+     *
+     * @param request Subscription request configuration
+     * @param qos Maximum requested QoS that server may use when sending messages to the client.
+     *            The server may grant a lower QoS in the SUBACK
+     * @param handler callback function to invoke with messages received on the subscription topic
+     * @param exceptionHandler callback function to invoke if an exception occurred deserializing a message
+     *
+     * @return a future containing the MQTT packet id used to perform the subscribe operation
+     */
+    public CompletableFuture<Integer> SubscribeToDeleteNamedShadowRejected(
+        DeleteNamedShadowSubscriptionRequest request,
+        QualityOfService qos,
+        Consumer<ErrorResponse> handler,
+        Consumer<Exception> exceptionHandler) {
+        String topic = "$aws/things/{thingName}/shadow/name/{shadowName}/delete/rejected";
+        if (request.thingName == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("DeleteNamedShadowSubscriptionRequest must have a non-null thingName"));
+            return result;
+        }
+        topic = topic.replace("{thingName}", request.thingName);
+        if (request.shadowName == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("DeleteNamedShadowSubscriptionRequest must have a non-null shadowName"));
+            return result;
+        }
+        topic = topic.replace("{shadowName}", request.shadowName);
+        Consumer<MqttMessage> messageHandler = (message) -> {
+            try {
+                String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
+                ErrorResponse response = gson.fromJson(payload, ErrorResponse.class);
+                handler.accept(response);
+            } catch (Exception e) {
+                if (exceptionHandler != null) {
+                    exceptionHandler.accept(e);
+                }
+            }
+        };
+        return connection.subscribe(topic, qos, messageHandler);
+    }
+
+    /**
+     * Subscribes to the rejected topic for the DeleteNamedShadow operation.
+     *
+     * Once subscribed, `handler` is invoked each time a message matching
+     * the `topic` is received. It is possible for such messages to arrive before
+     * the SUBACK is received.
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#delete-rejected-pub-sub-topic
+     *
+     * @param request Subscription request configuration
+     * @param qos Maximum requested QoS that server may use when sending messages to the client.
+     *            The server may grant a lower QoS in the SUBACK
+     * @param handler callback function to invoke with messages received on the subscription topic
+     *
+     * @return a future containing the MQTT packet id used to perform the subscribe operation
+     */
+    public CompletableFuture<Integer> SubscribeToDeleteNamedShadowRejected(
+        DeleteNamedShadowSubscriptionRequest request,
+        QualityOfService qos,
+        Consumer<ErrorResponse> handler) {
+        return SubscribeToDeleteNamedShadowRejected(request, qos, handler, null);
+    }
+
+    /**
+     * Subscribes to the accepted topic for the DeleteShadow operation
+     *
+     * Once subscribed, `handler` is invoked each time a message matching
+     * the `topic` is received. It is possible for such messages to arrive before
+     * the SUBACK is received.
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#delete-accepted-pub-sub-topic
+     *
+     * @param request Subscription request configuration
+     * @param qos Maximum requested QoS that server may use when sending messages to the client.
+     *            The server may grant a lower QoS in the SUBACK
+     * @param handler callback function to invoke with messages received on the subscription topic
+     * @param exceptionHandler callback function to invoke if an exception occurred deserializing a message
+     *
+     * @return a future containing the MQTT packet id used to perform the subscribe operation
+     */
+    public CompletableFuture<Integer> SubscribeToDeleteShadowAccepted(
+        DeleteShadowSubscriptionRequest request,
+        QualityOfService qos,
+        Consumer<DeleteShadowResponse> handler,
+        Consumer<Exception> exceptionHandler) {
+        String topic = "$aws/things/{thingName}/shadow/delete/accepted";
+        if (request.thingName == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("DeleteShadowSubscriptionRequest must have a non-null thingName"));
+            return result;
+        }
+        topic = topic.replace("{thingName}", request.thingName);
+        Consumer<MqttMessage> messageHandler = (message) -> {
+            try {
+                String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
+                DeleteShadowResponse response = gson.fromJson(payload, DeleteShadowResponse.class);
+                handler.accept(response);
+            } catch (Exception e) {
+                if (exceptionHandler != null) {
+                    exceptionHandler.accept(e);
+                }
+            }
+        };
+        return connection.subscribe(topic, qos, messageHandler);
+    }
+
+    /**
+     * Subscribes to the accepted topic for the DeleteShadow operation
+     *
+     * Once subscribed, `handler` is invoked each time a message matching
+     * the `topic` is received. It is possible for such messages to arrive before
+     * the SUBACK is received.
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#delete-accepted-pub-sub-topic
+     *
+     * @param request Subscription request configuration
+     * @param qos Maximum requested QoS that server may use when sending messages to the client.
+     *            The server may grant a lower QoS in the SUBACK
+     * @param handler callback function to invoke with messages received on the subscription topic
+     *
+     * @return a future containing the MQTT packet id used to perform the subscribe operation
+     */
+    public CompletableFuture<Integer> SubscribeToDeleteShadowAccepted(
+        DeleteShadowSubscriptionRequest request,
+        QualityOfService qos,
+        Consumer<DeleteShadowResponse> handler) {
+        return SubscribeToDeleteShadowAccepted(request, qos, handler, null);
+    }
+
+    /**
      * Subscribes to the rejected topic for the DeleteShadow operation
      *
      * Once subscribed, `handler` is invoked each time a message matching
@@ -946,6 +561,216 @@ public class IotShadowClient {
     }
 
     /**
+     * Subscribes to the accepted topic for the GetNamedShadow operation.
+     *
+     * Once subscribed, `handler` is invoked each time a message matching
+     * the `topic` is received. It is possible for such messages to arrive before
+     * the SUBACK is received.
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#get-accepted-pub-sub-topic
+     *
+     * @param request Subscription request configuration
+     * @param qos Maximum requested QoS that server may use when sending messages to the client.
+     *            The server may grant a lower QoS in the SUBACK
+     * @param handler callback function to invoke with messages received on the subscription topic
+     * @param exceptionHandler callback function to invoke if an exception occurred deserializing a message
+     *
+     * @return a future containing the MQTT packet id used to perform the subscribe operation
+     */
+    public CompletableFuture<Integer> SubscribeToGetNamedShadowAccepted(
+        GetNamedShadowSubscriptionRequest request,
+        QualityOfService qos,
+        Consumer<GetShadowResponse> handler,
+        Consumer<Exception> exceptionHandler) {
+        String topic = "$aws/things/{thingName}/shadow/name/{shadowName}/get/accepted";
+        if (request.thingName == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("GetNamedShadowSubscriptionRequest must have a non-null thingName"));
+            return result;
+        }
+        topic = topic.replace("{thingName}", request.thingName);
+        if (request.shadowName == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("GetNamedShadowSubscriptionRequest must have a non-null shadowName"));
+            return result;
+        }
+        topic = topic.replace("{shadowName}", request.shadowName);
+        Consumer<MqttMessage> messageHandler = (message) -> {
+            try {
+                String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
+                GetShadowResponse response = gson.fromJson(payload, GetShadowResponse.class);
+                handler.accept(response);
+            } catch (Exception e) {
+                if (exceptionHandler != null) {
+                    exceptionHandler.accept(e);
+                }
+            }
+        };
+        return connection.subscribe(topic, qos, messageHandler);
+    }
+
+    /**
+     * Subscribes to the accepted topic for the GetNamedShadow operation.
+     *
+     * Once subscribed, `handler` is invoked each time a message matching
+     * the `topic` is received. It is possible for such messages to arrive before
+     * the SUBACK is received.
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#get-accepted-pub-sub-topic
+     *
+     * @param request Subscription request configuration
+     * @param qos Maximum requested QoS that server may use when sending messages to the client.
+     *            The server may grant a lower QoS in the SUBACK
+     * @param handler callback function to invoke with messages received on the subscription topic
+     *
+     * @return a future containing the MQTT packet id used to perform the subscribe operation
+     */
+    public CompletableFuture<Integer> SubscribeToGetNamedShadowAccepted(
+        GetNamedShadowSubscriptionRequest request,
+        QualityOfService qos,
+        Consumer<GetShadowResponse> handler) {
+        return SubscribeToGetNamedShadowAccepted(request, qos, handler, null);
+    }
+
+    /**
+     * Subscribes to the rejected topic for the GetNamedShadow operation.
+     *
+     * Once subscribed, `handler` is invoked each time a message matching
+     * the `topic` is received. It is possible for such messages to arrive before
+     * the SUBACK is received.
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#get-rejected-pub-sub-topic
+     *
+     * @param request Subscription request configuration
+     * @param qos Maximum requested QoS that server may use when sending messages to the client.
+     *            The server may grant a lower QoS in the SUBACK
+     * @param handler callback function to invoke with messages received on the subscription topic
+     * @param exceptionHandler callback function to invoke if an exception occurred deserializing a message
+     *
+     * @return a future containing the MQTT packet id used to perform the subscribe operation
+     */
+    public CompletableFuture<Integer> SubscribeToGetNamedShadowRejected(
+        GetNamedShadowSubscriptionRequest request,
+        QualityOfService qos,
+        Consumer<ErrorResponse> handler,
+        Consumer<Exception> exceptionHandler) {
+        String topic = "$aws/things/{thingName}/shadow/name/{shadowName}/get/rejected";
+        if (request.thingName == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("GetNamedShadowSubscriptionRequest must have a non-null thingName"));
+            return result;
+        }
+        topic = topic.replace("{thingName}", request.thingName);
+        if (request.shadowName == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("GetNamedShadowSubscriptionRequest must have a non-null shadowName"));
+            return result;
+        }
+        topic = topic.replace("{shadowName}", request.shadowName);
+        Consumer<MqttMessage> messageHandler = (message) -> {
+            try {
+                String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
+                ErrorResponse response = gson.fromJson(payload, ErrorResponse.class);
+                handler.accept(response);
+            } catch (Exception e) {
+                if (exceptionHandler != null) {
+                    exceptionHandler.accept(e);
+                }
+            }
+        };
+        return connection.subscribe(topic, qos, messageHandler);
+    }
+
+    /**
+     * Subscribes to the rejected topic for the GetNamedShadow operation.
+     *
+     * Once subscribed, `handler` is invoked each time a message matching
+     * the `topic` is received. It is possible for such messages to arrive before
+     * the SUBACK is received.
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#get-rejected-pub-sub-topic
+     *
+     * @param request Subscription request configuration
+     * @param qos Maximum requested QoS that server may use when sending messages to the client.
+     *            The server may grant a lower QoS in the SUBACK
+     * @param handler callback function to invoke with messages received on the subscription topic
+     *
+     * @return a future containing the MQTT packet id used to perform the subscribe operation
+     */
+    public CompletableFuture<Integer> SubscribeToGetNamedShadowRejected(
+        GetNamedShadowSubscriptionRequest request,
+        QualityOfService qos,
+        Consumer<ErrorResponse> handler) {
+        return SubscribeToGetNamedShadowRejected(request, qos, handler, null);
+    }
+
+    /**
+     * Subscribes to the accepted topic for the GetShadow operation.
+     *
+     * Once subscribed, `handler` is invoked each time a message matching
+     * the `topic` is received. It is possible for such messages to arrive before
+     * the SUBACK is received.
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#get-accepted-pub-sub-topic
+     *
+     * @param request Subscription request configuration
+     * @param qos Maximum requested QoS that server may use when sending messages to the client.
+     *            The server may grant a lower QoS in the SUBACK
+     * @param handler callback function to invoke with messages received on the subscription topic
+     * @param exceptionHandler callback function to invoke if an exception occurred deserializing a message
+     *
+     * @return a future containing the MQTT packet id used to perform the subscribe operation
+     */
+    public CompletableFuture<Integer> SubscribeToGetShadowAccepted(
+        GetShadowSubscriptionRequest request,
+        QualityOfService qos,
+        Consumer<GetShadowResponse> handler,
+        Consumer<Exception> exceptionHandler) {
+        String topic = "$aws/things/{thingName}/shadow/get/accepted";
+        if (request.thingName == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("GetShadowSubscriptionRequest must have a non-null thingName"));
+            return result;
+        }
+        topic = topic.replace("{thingName}", request.thingName);
+        Consumer<MqttMessage> messageHandler = (message) -> {
+            try {
+                String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
+                GetShadowResponse response = gson.fromJson(payload, GetShadowResponse.class);
+                handler.accept(response);
+            } catch (Exception e) {
+                if (exceptionHandler != null) {
+                    exceptionHandler.accept(e);
+                }
+            }
+        };
+        return connection.subscribe(topic, qos, messageHandler);
+    }
+
+    /**
+     * Subscribes to the accepted topic for the GetShadow operation.
+     *
+     * Once subscribed, `handler` is invoked each time a message matching
+     * the `topic` is received. It is possible for such messages to arrive before
+     * the SUBACK is received.
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#get-accepted-pub-sub-topic
+     *
+     * @param request Subscription request configuration
+     * @param qos Maximum requested QoS that server may use when sending messages to the client.
+     *            The server may grant a lower QoS in the SUBACK
+     * @param handler callback function to invoke with messages received on the subscription topic
+     *
+     * @return a future containing the MQTT packet id used to perform the subscribe operation
+     */
+    public CompletableFuture<Integer> SubscribeToGetShadowAccepted(
+        GetShadowSubscriptionRequest request,
+        QualityOfService qos,
+        Consumer<GetShadowResponse> handler) {
+        return SubscribeToGetShadowAccepted(request, qos, handler, null);
+    }
+
+    /**
      * Subscribes to the rejected topic for the GetShadow operation.
      *
      * Once subscribed, `handler` is invoked each time a message matching
@@ -1009,240 +834,6 @@ public class IotShadowClient {
         QualityOfService qos,
         Consumer<ErrorResponse> handler) {
         return SubscribeToGetShadowRejected(request, qos, handler, null);
-    }
-
-    /**
-     * Update a device's (classic) shadow.
-     *
-     * If the device is offline, the PUBLISH packet will be sent once the connection resumes.
-     *
-     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#update-pub-sub-topic
-     *
-     * @param request Message to be serialized and sent
-     * @param qos Quality of Service for delivering this message
-     * @return a future containing the MQTT packet id used to perform the publish operation
-     *
-     * * For QoS 0, completes as soon as the packet is sent.
-     * * For QoS 1, completes when PUBACK is received.
-     * * QoS 2 is not supported by AWS IoT.
-     */
-    public CompletableFuture<Integer> PublishUpdateShadow(
-        UpdateShadowRequest request,
-        QualityOfService qos) {
-        String topic = "$aws/things/{thingName}/shadow/update";
-        if (request.thingName == null) {
-            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
-            result.completeExceptionally(new MqttException("UpdateShadowRequest must have a non-null thingName"));
-            return result;
-        }
-        topic = topic.replace("{thingName}", request.thingName);
-        String payloadJson = gson.toJson(request);
-        MqttMessage message = new MqttMessage(topic, payloadJson.getBytes(StandardCharsets.UTF_8));
-        return connection.publish(message, qos, false);
-    }
-
-    /**
-     * Gets the (classic) shadow for an AWS IoT thing.
-     *
-     * If the device is offline, the PUBLISH packet will be sent once the connection resumes.
-     *
-     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#get-pub-sub-topic
-     *
-     * @param request Message to be serialized and sent
-     * @param qos Quality of Service for delivering this message
-     * @return a future containing the MQTT packet id used to perform the publish operation
-     *
-     * * For QoS 0, completes as soon as the packet is sent.
-     * * For QoS 1, completes when PUBACK is received.
-     * * QoS 2 is not supported by AWS IoT.
-     */
-    public CompletableFuture<Integer> PublishGetShadow(
-        GetShadowRequest request,
-        QualityOfService qos) {
-        String topic = "$aws/things/{thingName}/shadow/get";
-        if (request.thingName == null) {
-            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
-            result.completeExceptionally(new MqttException("GetShadowRequest must have a non-null thingName"));
-            return result;
-        }
-        topic = topic.replace("{thingName}", request.thingName);
-        String payloadJson = gson.toJson(request);
-        MqttMessage message = new MqttMessage(topic, payloadJson.getBytes(StandardCharsets.UTF_8));
-        return connection.publish(message, qos, false);
-    }
-
-    /**
-     * Subscribes to the accepted topic for the UpdateShadow operation
-     *
-     * Once subscribed, `handler` is invoked each time a message matching
-     * the `topic` is received. It is possible for such messages to arrive before
-     * the SUBACK is received.
-     *
-     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#update-accepted-pub-sub-topic
-     *
-     * @param request Subscription request configuration
-     * @param qos Maximum requested QoS that server may use when sending messages to the client.
-     *            The server may grant a lower QoS in the SUBACK
-     * @param handler callback function to invoke with messages received on the subscription topic
-     * @param exceptionHandler callback function to invoke if an exception occurred deserializing a message
-     *
-     * @return a future containing the MQTT packet id used to perform the subscribe operation
-     */
-    public CompletableFuture<Integer> SubscribeToUpdateShadowAccepted(
-        UpdateShadowSubscriptionRequest request,
-        QualityOfService qos,
-        Consumer<UpdateShadowResponse> handler,
-        Consumer<Exception> exceptionHandler) {
-        String topic = "$aws/things/{thingName}/shadow/update/accepted";
-        if (request.thingName == null) {
-            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
-            result.completeExceptionally(new MqttException("UpdateShadowSubscriptionRequest must have a non-null thingName"));
-            return result;
-        }
-        topic = topic.replace("{thingName}", request.thingName);
-        Consumer<MqttMessage> messageHandler = (message) -> {
-            try {
-                String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
-                UpdateShadowResponse response = gson.fromJson(payload, UpdateShadowResponse.class);
-                handler.accept(response);
-            } catch (Exception e) {
-                if (exceptionHandler != null) {
-                    exceptionHandler.accept(e);
-                }
-            }
-        };
-        return connection.subscribe(topic, qos, messageHandler);
-    }
-
-    /**
-     * Subscribes to the accepted topic for the UpdateShadow operation
-     *
-     * Once subscribed, `handler` is invoked each time a message matching
-     * the `topic` is received. It is possible for such messages to arrive before
-     * the SUBACK is received.
-     *
-     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#update-accepted-pub-sub-topic
-     *
-     * @param request Subscription request configuration
-     * @param qos Maximum requested QoS that server may use when sending messages to the client.
-     *            The server may grant a lower QoS in the SUBACK
-     * @param handler callback function to invoke with messages received on the subscription topic
-     *
-     * @return a future containing the MQTT packet id used to perform the subscribe operation
-     */
-    public CompletableFuture<Integer> SubscribeToUpdateShadowAccepted(
-        UpdateShadowSubscriptionRequest request,
-        QualityOfService qos,
-        Consumer<UpdateShadowResponse> handler) {
-        return SubscribeToUpdateShadowAccepted(request, qos, handler, null);
-    }
-
-    /**
-     * Subscribes to the rejected topic for the UpdateNamedShadow operation
-     *
-     * Once subscribed, `handler` is invoked each time a message matching
-     * the `topic` is received. It is possible for such messages to arrive before
-     * the SUBACK is received.
-     *
-     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#update-rejected-pub-sub-topic
-     *
-     * @param request Subscription request configuration
-     * @param qos Maximum requested QoS that server may use when sending messages to the client.
-     *            The server may grant a lower QoS in the SUBACK
-     * @param handler callback function to invoke with messages received on the subscription topic
-     * @param exceptionHandler callback function to invoke if an exception occurred deserializing a message
-     *
-     * @return a future containing the MQTT packet id used to perform the subscribe operation
-     */
-    public CompletableFuture<Integer> SubscribeToUpdateNamedShadowRejected(
-        UpdateNamedShadowSubscriptionRequest request,
-        QualityOfService qos,
-        Consumer<ErrorResponse> handler,
-        Consumer<Exception> exceptionHandler) {
-        String topic = "$aws/things/{thingName}/shadow/name/{shadowName}/update/rejected";
-        if (request.thingName == null) {
-            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
-            result.completeExceptionally(new MqttException("UpdateNamedShadowSubscriptionRequest must have a non-null thingName"));
-            return result;
-        }
-        topic = topic.replace("{thingName}", request.thingName);
-        if (request.shadowName == null) {
-            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
-            result.completeExceptionally(new MqttException("UpdateNamedShadowSubscriptionRequest must have a non-null shadowName"));
-            return result;
-        }
-        topic = topic.replace("{shadowName}", request.shadowName);
-        Consumer<MqttMessage> messageHandler = (message) -> {
-            try {
-                String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
-                ErrorResponse response = gson.fromJson(payload, ErrorResponse.class);
-                handler.accept(response);
-            } catch (Exception e) {
-                if (exceptionHandler != null) {
-                    exceptionHandler.accept(e);
-                }
-            }
-        };
-        return connection.subscribe(topic, qos, messageHandler);
-    }
-
-    /**
-     * Subscribes to the rejected topic for the UpdateNamedShadow operation
-     *
-     * Once subscribed, `handler` is invoked each time a message matching
-     * the `topic` is received. It is possible for such messages to arrive before
-     * the SUBACK is received.
-     *
-     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#update-rejected-pub-sub-topic
-     *
-     * @param request Subscription request configuration
-     * @param qos Maximum requested QoS that server may use when sending messages to the client.
-     *            The server may grant a lower QoS in the SUBACK
-     * @param handler callback function to invoke with messages received on the subscription topic
-     *
-     * @return a future containing the MQTT packet id used to perform the subscribe operation
-     */
-    public CompletableFuture<Integer> SubscribeToUpdateNamedShadowRejected(
-        UpdateNamedShadowSubscriptionRequest request,
-        QualityOfService qos,
-        Consumer<ErrorResponse> handler) {
-        return SubscribeToUpdateNamedShadowRejected(request, qos, handler, null);
-    }
-
-    /**
-     * Update a named shadow for a device.
-     *
-     * If the device is offline, the PUBLISH packet will be sent once the connection resumes.
-     *
-     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#update-pub-sub-topic
-     *
-     * @param request Message to be serialized and sent
-     * @param qos Quality of Service for delivering this message
-     * @return a future containing the MQTT packet id used to perform the publish operation
-     *
-     * * For QoS 0, completes as soon as the packet is sent.
-     * * For QoS 1, completes when PUBACK is received.
-     * * QoS 2 is not supported by AWS IoT.
-     */
-    public CompletableFuture<Integer> PublishUpdateNamedShadow(
-        UpdateNamedShadowRequest request,
-        QualityOfService qos) {
-        String topic = "$aws/things/{thingName}/shadow/name/{shadowName}/update";
-        if (request.shadowName == null) {
-            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
-            result.completeExceptionally(new MqttException("UpdateNamedShadowRequest must have a non-null shadowName"));
-            return result;
-        }
-        topic = topic.replace("{shadowName}", request.shadowName);
-        if (request.thingName == null) {
-            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
-            result.completeExceptionally(new MqttException("UpdateNamedShadowRequest must have a non-null thingName"));
-            return result;
-        }
-        topic = topic.replace("{thingName}", request.thingName);
-        String payloadJson = gson.toJson(request);
-        MqttMessage message = new MqttMessage(topic, payloadJson.getBytes(StandardCharsets.UTF_8));
-        return connection.publish(message, qos, false);
     }
 
     /**
@@ -1318,6 +909,210 @@ public class IotShadowClient {
     }
 
     /**
+     * Subscribe to ShadowUpdated events for a named shadow of an AWS IoT thing.
+     *
+     * Once subscribed, `handler` is invoked each time a message matching
+     * the `topic` is received. It is possible for such messages to arrive before
+     * the SUBACK is received.
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#update-documents-pub-sub-topic
+     *
+     * @param request Subscription request configuration
+     * @param qos Maximum requested QoS that server may use when sending messages to the client.
+     *            The server may grant a lower QoS in the SUBACK
+     * @param handler callback function to invoke with messages received on the subscription topic
+     * @param exceptionHandler callback function to invoke if an exception occurred deserializing a message
+     *
+     * @return a future containing the MQTT packet id used to perform the subscribe operation
+     */
+    public CompletableFuture<Integer> SubscribeToNamedShadowUpdatedEvents(
+        NamedShadowUpdatedSubscriptionRequest request,
+        QualityOfService qos,
+        Consumer<ShadowUpdatedEvent> handler,
+        Consumer<Exception> exceptionHandler) {
+        String topic = "$aws/things/{thingName}/shadow/name/{shadowName}/update/documents";
+        if (request.thingName == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("NamedShadowUpdatedSubscriptionRequest must have a non-null thingName"));
+            return result;
+        }
+        topic = topic.replace("{thingName}", request.thingName);
+        if (request.shadowName == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("NamedShadowUpdatedSubscriptionRequest must have a non-null shadowName"));
+            return result;
+        }
+        topic = topic.replace("{shadowName}", request.shadowName);
+        Consumer<MqttMessage> messageHandler = (message) -> {
+            try {
+                String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
+                ShadowUpdatedEvent response = gson.fromJson(payload, ShadowUpdatedEvent.class);
+                handler.accept(response);
+            } catch (Exception e) {
+                if (exceptionHandler != null) {
+                    exceptionHandler.accept(e);
+                }
+            }
+        };
+        return connection.subscribe(topic, qos, messageHandler);
+    }
+
+    /**
+     * Subscribe to ShadowUpdated events for a named shadow of an AWS IoT thing.
+     *
+     * Once subscribed, `handler` is invoked each time a message matching
+     * the `topic` is received. It is possible for such messages to arrive before
+     * the SUBACK is received.
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#update-documents-pub-sub-topic
+     *
+     * @param request Subscription request configuration
+     * @param qos Maximum requested QoS that server may use when sending messages to the client.
+     *            The server may grant a lower QoS in the SUBACK
+     * @param handler callback function to invoke with messages received on the subscription topic
+     *
+     * @return a future containing the MQTT packet id used to perform the subscribe operation
+     */
+    public CompletableFuture<Integer> SubscribeToNamedShadowUpdatedEvents(
+        NamedShadowUpdatedSubscriptionRequest request,
+        QualityOfService qos,
+        Consumer<ShadowUpdatedEvent> handler) {
+        return SubscribeToNamedShadowUpdatedEvents(request, qos, handler, null);
+    }
+
+    /**
+     * Subscribe to ShadowDelta events for the (classic) shadow of an AWS IoT thing.
+     *
+     * Once subscribed, `handler` is invoked each time a message matching
+     * the `topic` is received. It is possible for such messages to arrive before
+     * the SUBACK is received.
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#update-delta-pub-sub-topic
+     *
+     * @param request Subscription request configuration
+     * @param qos Maximum requested QoS that server may use when sending messages to the client.
+     *            The server may grant a lower QoS in the SUBACK
+     * @param handler callback function to invoke with messages received on the subscription topic
+     * @param exceptionHandler callback function to invoke if an exception occurred deserializing a message
+     *
+     * @return a future containing the MQTT packet id used to perform the subscribe operation
+     */
+    public CompletableFuture<Integer> SubscribeToShadowDeltaUpdatedEvents(
+        ShadowDeltaUpdatedSubscriptionRequest request,
+        QualityOfService qos,
+        Consumer<ShadowDeltaUpdatedEvent> handler,
+        Consumer<Exception> exceptionHandler) {
+        String topic = "$aws/things/{thingName}/shadow/update/delta";
+        if (request.thingName == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("ShadowDeltaUpdatedSubscriptionRequest must have a non-null thingName"));
+            return result;
+        }
+        topic = topic.replace("{thingName}", request.thingName);
+        Consumer<MqttMessage> messageHandler = (message) -> {
+            try {
+                String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
+                ShadowDeltaUpdatedEvent response = gson.fromJson(payload, ShadowDeltaUpdatedEvent.class);
+                handler.accept(response);
+            } catch (Exception e) {
+                if (exceptionHandler != null) {
+                    exceptionHandler.accept(e);
+                }
+            }
+        };
+        return connection.subscribe(topic, qos, messageHandler);
+    }
+
+    /**
+     * Subscribe to ShadowDelta events for the (classic) shadow of an AWS IoT thing.
+     *
+     * Once subscribed, `handler` is invoked each time a message matching
+     * the `topic` is received. It is possible for such messages to arrive before
+     * the SUBACK is received.
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#update-delta-pub-sub-topic
+     *
+     * @param request Subscription request configuration
+     * @param qos Maximum requested QoS that server may use when sending messages to the client.
+     *            The server may grant a lower QoS in the SUBACK
+     * @param handler callback function to invoke with messages received on the subscription topic
+     *
+     * @return a future containing the MQTT packet id used to perform the subscribe operation
+     */
+    public CompletableFuture<Integer> SubscribeToShadowDeltaUpdatedEvents(
+        ShadowDeltaUpdatedSubscriptionRequest request,
+        QualityOfService qos,
+        Consumer<ShadowDeltaUpdatedEvent> handler) {
+        return SubscribeToShadowDeltaUpdatedEvents(request, qos, handler, null);
+    }
+
+    /**
+     * Subscribe to ShadowUpdated events for the (classic) shadow of an AWS IoT thing.
+     *
+     * Once subscribed, `handler` is invoked each time a message matching
+     * the `topic` is received. It is possible for such messages to arrive before
+     * the SUBACK is received.
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#update-documents-pub-sub-topic
+     *
+     * @param request Subscription request configuration
+     * @param qos Maximum requested QoS that server may use when sending messages to the client.
+     *            The server may grant a lower QoS in the SUBACK
+     * @param handler callback function to invoke with messages received on the subscription topic
+     * @param exceptionHandler callback function to invoke if an exception occurred deserializing a message
+     *
+     * @return a future containing the MQTT packet id used to perform the subscribe operation
+     */
+    public CompletableFuture<Integer> SubscribeToShadowUpdatedEvents(
+        ShadowUpdatedSubscriptionRequest request,
+        QualityOfService qos,
+        Consumer<ShadowUpdatedEvent> handler,
+        Consumer<Exception> exceptionHandler) {
+        String topic = "$aws/things/{thingName}/shadow/update/documents";
+        if (request.thingName == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("ShadowUpdatedSubscriptionRequest must have a non-null thingName"));
+            return result;
+        }
+        topic = topic.replace("{thingName}", request.thingName);
+        Consumer<MqttMessage> messageHandler = (message) -> {
+            try {
+                String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
+                ShadowUpdatedEvent response = gson.fromJson(payload, ShadowUpdatedEvent.class);
+                handler.accept(response);
+            } catch (Exception e) {
+                if (exceptionHandler != null) {
+                    exceptionHandler.accept(e);
+                }
+            }
+        };
+        return connection.subscribe(topic, qos, messageHandler);
+    }
+
+    /**
+     * Subscribe to ShadowUpdated events for the (classic) shadow of an AWS IoT thing.
+     *
+     * Once subscribed, `handler` is invoked each time a message matching
+     * the `topic` is received. It is possible for such messages to arrive before
+     * the SUBACK is received.
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#update-documents-pub-sub-topic
+     *
+     * @param request Subscription request configuration
+     * @param qos Maximum requested QoS that server may use when sending messages to the client.
+     *            The server may grant a lower QoS in the SUBACK
+     * @param handler callback function to invoke with messages received on the subscription topic
+     *
+     * @return a future containing the MQTT packet id used to perform the subscribe operation
+     */
+    public CompletableFuture<Integer> SubscribeToShadowUpdatedEvents(
+        ShadowUpdatedSubscriptionRequest request,
+        QualityOfService qos,
+        Consumer<ShadowUpdatedEvent> handler) {
+        return SubscribeToShadowUpdatedEvents(request, qos, handler, null);
+    }
+
+    /**
      * Subscribes to the accepted topic for the UpdateNamedShadow operation
      *
      * Once subscribed, `handler` is invoked each time a message matching
@@ -1387,6 +1182,210 @@ public class IotShadowClient {
         QualityOfService qos,
         Consumer<UpdateShadowResponse> handler) {
         return SubscribeToUpdateNamedShadowAccepted(request, qos, handler, null);
+    }
+
+    /**
+     * Subscribes to the rejected topic for the UpdateNamedShadow operation
+     *
+     * Once subscribed, `handler` is invoked each time a message matching
+     * the `topic` is received. It is possible for such messages to arrive before
+     * the SUBACK is received.
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#update-rejected-pub-sub-topic
+     *
+     * @param request Subscription request configuration
+     * @param qos Maximum requested QoS that server may use when sending messages to the client.
+     *            The server may grant a lower QoS in the SUBACK
+     * @param handler callback function to invoke with messages received on the subscription topic
+     * @param exceptionHandler callback function to invoke if an exception occurred deserializing a message
+     *
+     * @return a future containing the MQTT packet id used to perform the subscribe operation
+     */
+    public CompletableFuture<Integer> SubscribeToUpdateNamedShadowRejected(
+        UpdateNamedShadowSubscriptionRequest request,
+        QualityOfService qos,
+        Consumer<ErrorResponse> handler,
+        Consumer<Exception> exceptionHandler) {
+        String topic = "$aws/things/{thingName}/shadow/name/{shadowName}/update/rejected";
+        if (request.thingName == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("UpdateNamedShadowSubscriptionRequest must have a non-null thingName"));
+            return result;
+        }
+        topic = topic.replace("{thingName}", request.thingName);
+        if (request.shadowName == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("UpdateNamedShadowSubscriptionRequest must have a non-null shadowName"));
+            return result;
+        }
+        topic = topic.replace("{shadowName}", request.shadowName);
+        Consumer<MqttMessage> messageHandler = (message) -> {
+            try {
+                String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
+                ErrorResponse response = gson.fromJson(payload, ErrorResponse.class);
+                handler.accept(response);
+            } catch (Exception e) {
+                if (exceptionHandler != null) {
+                    exceptionHandler.accept(e);
+                }
+            }
+        };
+        return connection.subscribe(topic, qos, messageHandler);
+    }
+
+    /**
+     * Subscribes to the rejected topic for the UpdateNamedShadow operation
+     *
+     * Once subscribed, `handler` is invoked each time a message matching
+     * the `topic` is received. It is possible for such messages to arrive before
+     * the SUBACK is received.
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#update-rejected-pub-sub-topic
+     *
+     * @param request Subscription request configuration
+     * @param qos Maximum requested QoS that server may use when sending messages to the client.
+     *            The server may grant a lower QoS in the SUBACK
+     * @param handler callback function to invoke with messages received on the subscription topic
+     *
+     * @return a future containing the MQTT packet id used to perform the subscribe operation
+     */
+    public CompletableFuture<Integer> SubscribeToUpdateNamedShadowRejected(
+        UpdateNamedShadowSubscriptionRequest request,
+        QualityOfService qos,
+        Consumer<ErrorResponse> handler) {
+        return SubscribeToUpdateNamedShadowRejected(request, qos, handler, null);
+    }
+
+    /**
+     * Subscribes to the accepted topic for the UpdateShadow operation
+     *
+     * Once subscribed, `handler` is invoked each time a message matching
+     * the `topic` is received. It is possible for such messages to arrive before
+     * the SUBACK is received.
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#update-accepted-pub-sub-topic
+     *
+     * @param request Subscription request configuration
+     * @param qos Maximum requested QoS that server may use when sending messages to the client.
+     *            The server may grant a lower QoS in the SUBACK
+     * @param handler callback function to invoke with messages received on the subscription topic
+     * @param exceptionHandler callback function to invoke if an exception occurred deserializing a message
+     *
+     * @return a future containing the MQTT packet id used to perform the subscribe operation
+     */
+    public CompletableFuture<Integer> SubscribeToUpdateShadowAccepted(
+        UpdateShadowSubscriptionRequest request,
+        QualityOfService qos,
+        Consumer<UpdateShadowResponse> handler,
+        Consumer<Exception> exceptionHandler) {
+        String topic = "$aws/things/{thingName}/shadow/update/accepted";
+        if (request.thingName == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("UpdateShadowSubscriptionRequest must have a non-null thingName"));
+            return result;
+        }
+        topic = topic.replace("{thingName}", request.thingName);
+        Consumer<MqttMessage> messageHandler = (message) -> {
+            try {
+                String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
+                UpdateShadowResponse response = gson.fromJson(payload, UpdateShadowResponse.class);
+                handler.accept(response);
+            } catch (Exception e) {
+                if (exceptionHandler != null) {
+                    exceptionHandler.accept(e);
+                }
+            }
+        };
+        return connection.subscribe(topic, qos, messageHandler);
+    }
+
+    /**
+     * Subscribes to the accepted topic for the UpdateShadow operation
+     *
+     * Once subscribed, `handler` is invoked each time a message matching
+     * the `topic` is received. It is possible for such messages to arrive before
+     * the SUBACK is received.
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#update-accepted-pub-sub-topic
+     *
+     * @param request Subscription request configuration
+     * @param qos Maximum requested QoS that server may use when sending messages to the client.
+     *            The server may grant a lower QoS in the SUBACK
+     * @param handler callback function to invoke with messages received on the subscription topic
+     *
+     * @return a future containing the MQTT packet id used to perform the subscribe operation
+     */
+    public CompletableFuture<Integer> SubscribeToUpdateShadowAccepted(
+        UpdateShadowSubscriptionRequest request,
+        QualityOfService qos,
+        Consumer<UpdateShadowResponse> handler) {
+        return SubscribeToUpdateShadowAccepted(request, qos, handler, null);
+    }
+
+    /**
+     * Subscribes to the rejected topic for the UpdateShadow operation
+     *
+     * Once subscribed, `handler` is invoked each time a message matching
+     * the `topic` is received. It is possible for such messages to arrive before
+     * the SUBACK is received.
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#update-rejected-pub-sub-topic
+     *
+     * @param request Subscription request configuration
+     * @param qos Maximum requested QoS that server may use when sending messages to the client.
+     *            The server may grant a lower QoS in the SUBACK
+     * @param handler callback function to invoke with messages received on the subscription topic
+     * @param exceptionHandler callback function to invoke if an exception occurred deserializing a message
+     *
+     * @return a future containing the MQTT packet id used to perform the subscribe operation
+     */
+    public CompletableFuture<Integer> SubscribeToUpdateShadowRejected(
+        UpdateShadowSubscriptionRequest request,
+        QualityOfService qos,
+        Consumer<ErrorResponse> handler,
+        Consumer<Exception> exceptionHandler) {
+        String topic = "$aws/things/{thingName}/shadow/update/rejected";
+        if (request.thingName == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("UpdateShadowSubscriptionRequest must have a non-null thingName"));
+            return result;
+        }
+        topic = topic.replace("{thingName}", request.thingName);
+        Consumer<MqttMessage> messageHandler = (message) -> {
+            try {
+                String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
+                ErrorResponse response = gson.fromJson(payload, ErrorResponse.class);
+                handler.accept(response);
+            } catch (Exception e) {
+                if (exceptionHandler != null) {
+                    exceptionHandler.accept(e);
+                }
+            }
+        };
+        return connection.subscribe(topic, qos, messageHandler);
+    }
+
+    /**
+     * Subscribes to the rejected topic for the UpdateShadow operation
+     *
+     * Once subscribed, `handler` is invoked each time a message matching
+     * the `topic` is received. It is possible for such messages to arrive before
+     * the SUBACK is received.
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html#update-rejected-pub-sub-topic
+     *
+     * @param request Subscription request configuration
+     * @param qos Maximum requested QoS that server may use when sending messages to the client.
+     *            The server may grant a lower QoS in the SUBACK
+     * @param handler callback function to invoke with messages received on the subscription topic
+     *
+     * @return a future containing the MQTT packet id used to perform the subscribe operation
+     */
+    public CompletableFuture<Integer> SubscribeToUpdateShadowRejected(
+        UpdateShadowSubscriptionRequest request,
+        QualityOfService qos,
+        Consumer<ErrorResponse> handler) {
+        return SubscribeToUpdateShadowRejected(request, qos, handler, null);
     }
 
 }

@@ -67,6 +67,30 @@ public class IotIdentityClient {
     }
 
     /**
+     * Creates a certificate from a certificate signing request (CSR). AWS IoT provides client certificates that are signed by the Amazon Root certificate authority (CA). The new certificate has a PENDING_ACTIVATION status. When you call RegisterThing to provision a thing with this certificate, the certificate status changes to ACTIVE or INACTIVE as described in the template.
+     *
+     * If the device is offline, the PUBLISH packet will be sent once the connection resumes.
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api
+     *
+     * @param request Message to be serialized and sent
+     * @param qos Quality of Service for delivering this message
+     * @return a future containing the MQTT packet id used to perform the publish operation
+     *
+     * * For QoS 0, completes as soon as the packet is sent.
+     * * For QoS 1, completes when PUBACK is received.
+     * * QoS 2 is not supported by AWS IoT.
+     */
+    public CompletableFuture<Integer> PublishCreateCertificateFromCsr(
+        CreateCertificateFromCsrRequest request,
+        QualityOfService qos) {
+        String topic = "$aws/certificates/create-from-csr/json";
+        String payloadJson = gson.toJson(request);
+        MqttMessage message = new MqttMessage(topic, payloadJson.getBytes(StandardCharsets.UTF_8));
+        return connection.publish(message, qos, false);
+    }
+
+    /**
      * Creates new keys and a certificate. AWS IoT provides client certificates that are signed by the Amazon Root certificate authority (CA). The new certificate has a PENDING_ACTIVATION status. When you call RegisterThing to provision a thing with this certificate, the certificate status changes to ACTIVE or INACTIVE as described in the template.
      *
      * If the device is offline, the PUBLISH packet will be sent once the connection resumes.
@@ -88,6 +112,156 @@ public class IotIdentityClient {
         String payloadJson = gson.toJson(request);
         MqttMessage message = new MqttMessage(topic, payloadJson.getBytes(StandardCharsets.UTF_8));
         return connection.publish(message, qos, false);
+    }
+
+    /**
+     * Provisions an AWS IoT thing using a pre-defined template.
+     *
+     * If the device is offline, the PUBLISH packet will be sent once the connection resumes.
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api
+     *
+     * @param request Message to be serialized and sent
+     * @param qos Quality of Service for delivering this message
+     * @return a future containing the MQTT packet id used to perform the publish operation
+     *
+     * * For QoS 0, completes as soon as the packet is sent.
+     * * For QoS 1, completes when PUBACK is received.
+     * * QoS 2 is not supported by AWS IoT.
+     */
+    public CompletableFuture<Integer> PublishRegisterThing(
+        RegisterThingRequest request,
+        QualityOfService qos) {
+        String topic = "$aws/provisioning-templates/{templateName}/provision/json";
+        if (request.templateName == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("RegisterThingRequest must have a non-null templateName"));
+            return result;
+        }
+        topic = topic.replace("{templateName}", request.templateName);
+        String payloadJson = gson.toJson(request);
+        MqttMessage message = new MqttMessage(topic, payloadJson.getBytes(StandardCharsets.UTF_8));
+        return connection.publish(message, qos, false);
+    }
+
+    /**
+     * Subscribes to the accepted topic of the CreateCertificateFromCsr operation.
+     *
+     * Once subscribed, `handler` is invoked each time a message matching
+     * the `topic` is received. It is possible for such messages to arrive before
+     * the SUBACK is received.
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api
+     *
+     * @param request Subscription request configuration
+     * @param qos Maximum requested QoS that server may use when sending messages to the client.
+     *            The server may grant a lower QoS in the SUBACK
+     * @param handler callback function to invoke with messages received on the subscription topic
+     * @param exceptionHandler callback function to invoke if an exception occurred deserializing a message
+     *
+     * @return a future containing the MQTT packet id used to perform the subscribe operation
+     */
+    public CompletableFuture<Integer> SubscribeToCreateCertificateFromCsrAccepted(
+        CreateCertificateFromCsrSubscriptionRequest request,
+        QualityOfService qos,
+        Consumer<CreateCertificateFromCsrResponse> handler,
+        Consumer<Exception> exceptionHandler) {
+        String topic = "$aws/certificates/create-from-csr/json/accepted";
+        Consumer<MqttMessage> messageHandler = (message) -> {
+            try {
+                String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
+                CreateCertificateFromCsrResponse response = gson.fromJson(payload, CreateCertificateFromCsrResponse.class);
+                handler.accept(response);
+            } catch (Exception e) {
+                if (exceptionHandler != null) {
+                    exceptionHandler.accept(e);
+                }
+            }
+        };
+        return connection.subscribe(topic, qos, messageHandler);
+    }
+
+    /**
+     * Subscribes to the accepted topic of the CreateCertificateFromCsr operation.
+     *
+     * Once subscribed, `handler` is invoked each time a message matching
+     * the `topic` is received. It is possible for such messages to arrive before
+     * the SUBACK is received.
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api
+     *
+     * @param request Subscription request configuration
+     * @param qos Maximum requested QoS that server may use when sending messages to the client.
+     *            The server may grant a lower QoS in the SUBACK
+     * @param handler callback function to invoke with messages received on the subscription topic
+     *
+     * @return a future containing the MQTT packet id used to perform the subscribe operation
+     */
+    public CompletableFuture<Integer> SubscribeToCreateCertificateFromCsrAccepted(
+        CreateCertificateFromCsrSubscriptionRequest request,
+        QualityOfService qos,
+        Consumer<CreateCertificateFromCsrResponse> handler) {
+        return SubscribeToCreateCertificateFromCsrAccepted(request, qos, handler, null);
+    }
+
+    /**
+     * Subscribes to the rejected topic of the CreateCertificateFromCsr operation.
+     *
+     * Once subscribed, `handler` is invoked each time a message matching
+     * the `topic` is received. It is possible for such messages to arrive before
+     * the SUBACK is received.
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api
+     *
+     * @param request Subscription request configuration
+     * @param qos Maximum requested QoS that server may use when sending messages to the client.
+     *            The server may grant a lower QoS in the SUBACK
+     * @param handler callback function to invoke with messages received on the subscription topic
+     * @param exceptionHandler callback function to invoke if an exception occurred deserializing a message
+     *
+     * @return a future containing the MQTT packet id used to perform the subscribe operation
+     */
+    public CompletableFuture<Integer> SubscribeToCreateCertificateFromCsrRejected(
+        CreateCertificateFromCsrSubscriptionRequest request,
+        QualityOfService qos,
+        Consumer<ErrorResponse> handler,
+        Consumer<Exception> exceptionHandler) {
+        String topic = "$aws/certificates/create-from-csr/json/rejected";
+        Consumer<MqttMessage> messageHandler = (message) -> {
+            try {
+                String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
+                ErrorResponse response = gson.fromJson(payload, ErrorResponse.class);
+                handler.accept(response);
+            } catch (Exception e) {
+                if (exceptionHandler != null) {
+                    exceptionHandler.accept(e);
+                }
+            }
+        };
+        return connection.subscribe(topic, qos, messageHandler);
+    }
+
+    /**
+     * Subscribes to the rejected topic of the CreateCertificateFromCsr operation.
+     *
+     * Once subscribed, `handler` is invoked each time a message matching
+     * the `topic` is received. It is possible for such messages to arrive before
+     * the SUBACK is received.
+     *
+     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api
+     *
+     * @param request Subscription request configuration
+     * @param qos Maximum requested QoS that server may use when sending messages to the client.
+     *            The server may grant a lower QoS in the SUBACK
+     * @param handler callback function to invoke with messages received on the subscription topic
+     *
+     * @return a future containing the MQTT packet id used to perform the subscribe operation
+     */
+    public CompletableFuture<Integer> SubscribeToCreateCertificateFromCsrRejected(
+        CreateCertificateFromCsrSubscriptionRequest request,
+        QualityOfService qos,
+        Consumer<ErrorResponse> handler) {
+        return SubscribeToCreateCertificateFromCsrRejected(request, qos, handler, null);
     }
 
     /**
@@ -211,162 +385,6 @@ public class IotIdentityClient {
     }
 
     /**
-     * Subscribes to the rejected topic of the RegisterThing operation.
-     *
-     * Once subscribed, `handler` is invoked each time a message matching
-     * the `topic` is received. It is possible for such messages to arrive before
-     * the SUBACK is received.
-     *
-     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api
-     *
-     * @param request Subscription request configuration
-     * @param qos Maximum requested QoS that server may use when sending messages to the client.
-     *            The server may grant a lower QoS in the SUBACK
-     * @param handler callback function to invoke with messages received on the subscription topic
-     * @param exceptionHandler callback function to invoke if an exception occurred deserializing a message
-     *
-     * @return a future containing the MQTT packet id used to perform the subscribe operation
-     */
-    public CompletableFuture<Integer> SubscribeToRegisterThingRejected(
-        RegisterThingSubscriptionRequest request,
-        QualityOfService qos,
-        Consumer<ErrorResponse> handler,
-        Consumer<Exception> exceptionHandler) {
-        String topic = "$aws/provisioning-templates/{templateName}/provision/json/rejected";
-        if (request.templateName == null) {
-            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
-            result.completeExceptionally(new MqttException("RegisterThingSubscriptionRequest must have a non-null templateName"));
-            return result;
-        }
-        topic = topic.replace("{templateName}", request.templateName);
-        Consumer<MqttMessage> messageHandler = (message) -> {
-            try {
-                String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
-                ErrorResponse response = gson.fromJson(payload, ErrorResponse.class);
-                handler.accept(response);
-            } catch (Exception e) {
-                if (exceptionHandler != null) {
-                    exceptionHandler.accept(e);
-                }
-            }
-        };
-        return connection.subscribe(topic, qos, messageHandler);
-    }
-
-    /**
-     * Subscribes to the rejected topic of the RegisterThing operation.
-     *
-     * Once subscribed, `handler` is invoked each time a message matching
-     * the `topic` is received. It is possible for such messages to arrive before
-     * the SUBACK is received.
-     *
-     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api
-     *
-     * @param request Subscription request configuration
-     * @param qos Maximum requested QoS that server may use when sending messages to the client.
-     *            The server may grant a lower QoS in the SUBACK
-     * @param handler callback function to invoke with messages received on the subscription topic
-     *
-     * @return a future containing the MQTT packet id used to perform the subscribe operation
-     */
-    public CompletableFuture<Integer> SubscribeToRegisterThingRejected(
-        RegisterThingSubscriptionRequest request,
-        QualityOfService qos,
-        Consumer<ErrorResponse> handler) {
-        return SubscribeToRegisterThingRejected(request, qos, handler, null);
-    }
-
-    /**
-     * Subscribes to the accepted topic of the CreateCertificateFromCsr operation.
-     *
-     * Once subscribed, `handler` is invoked each time a message matching
-     * the `topic` is received. It is possible for such messages to arrive before
-     * the SUBACK is received.
-     *
-     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api
-     *
-     * @param request Subscription request configuration
-     * @param qos Maximum requested QoS that server may use when sending messages to the client.
-     *            The server may grant a lower QoS in the SUBACK
-     * @param handler callback function to invoke with messages received on the subscription topic
-     * @param exceptionHandler callback function to invoke if an exception occurred deserializing a message
-     *
-     * @return a future containing the MQTT packet id used to perform the subscribe operation
-     */
-    public CompletableFuture<Integer> SubscribeToCreateCertificateFromCsrAccepted(
-        CreateCertificateFromCsrSubscriptionRequest request,
-        QualityOfService qos,
-        Consumer<CreateCertificateFromCsrResponse> handler,
-        Consumer<Exception> exceptionHandler) {
-        String topic = "$aws/certificates/create-from-csr/json/accepted";
-        Consumer<MqttMessage> messageHandler = (message) -> {
-            try {
-                String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
-                CreateCertificateFromCsrResponse response = gson.fromJson(payload, CreateCertificateFromCsrResponse.class);
-                handler.accept(response);
-            } catch (Exception e) {
-                if (exceptionHandler != null) {
-                    exceptionHandler.accept(e);
-                }
-            }
-        };
-        return connection.subscribe(topic, qos, messageHandler);
-    }
-
-    /**
-     * Subscribes to the accepted topic of the CreateCertificateFromCsr operation.
-     *
-     * Once subscribed, `handler` is invoked each time a message matching
-     * the `topic` is received. It is possible for such messages to arrive before
-     * the SUBACK is received.
-     *
-     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api
-     *
-     * @param request Subscription request configuration
-     * @param qos Maximum requested QoS that server may use when sending messages to the client.
-     *            The server may grant a lower QoS in the SUBACK
-     * @param handler callback function to invoke with messages received on the subscription topic
-     *
-     * @return a future containing the MQTT packet id used to perform the subscribe operation
-     */
-    public CompletableFuture<Integer> SubscribeToCreateCertificateFromCsrAccepted(
-        CreateCertificateFromCsrSubscriptionRequest request,
-        QualityOfService qos,
-        Consumer<CreateCertificateFromCsrResponse> handler) {
-        return SubscribeToCreateCertificateFromCsrAccepted(request, qos, handler, null);
-    }
-
-    /**
-     * Provisions an AWS IoT thing using a pre-defined template.
-     *
-     * If the device is offline, the PUBLISH packet will be sent once the connection resumes.
-     *
-     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api
-     *
-     * @param request Message to be serialized and sent
-     * @param qos Quality of Service for delivering this message
-     * @return a future containing the MQTT packet id used to perform the publish operation
-     *
-     * * For QoS 0, completes as soon as the packet is sent.
-     * * For QoS 1, completes when PUBACK is received.
-     * * QoS 2 is not supported by AWS IoT.
-     */
-    public CompletableFuture<Integer> PublishRegisterThing(
-        RegisterThingRequest request,
-        QualityOfService qos) {
-        String topic = "$aws/provisioning-templates/{templateName}/provision/json";
-        if (request.templateName == null) {
-            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
-            result.completeExceptionally(new MqttException("RegisterThingRequest must have a non-null templateName"));
-            return result;
-        }
-        topic = topic.replace("{templateName}", request.templateName);
-        String payloadJson = gson.toJson(request);
-        MqttMessage message = new MqttMessage(topic, payloadJson.getBytes(StandardCharsets.UTF_8));
-        return connection.publish(message, qos, false);
-    }
-
-    /**
      * Subscribes to the accepted topic of the RegisterThing operation.
      *
      * Once subscribed, `handler` is invoked each time a message matching
@@ -433,7 +451,7 @@ public class IotIdentityClient {
     }
 
     /**
-     * Subscribes to the rejected topic of the CreateCertificateFromCsr operation.
+     * Subscribes to the rejected topic of the RegisterThing operation.
      *
      * Once subscribed, `handler` is invoked each time a message matching
      * the `topic` is received. It is possible for such messages to arrive before
@@ -449,12 +467,18 @@ public class IotIdentityClient {
      *
      * @return a future containing the MQTT packet id used to perform the subscribe operation
      */
-    public CompletableFuture<Integer> SubscribeToCreateCertificateFromCsrRejected(
-        CreateCertificateFromCsrSubscriptionRequest request,
+    public CompletableFuture<Integer> SubscribeToRegisterThingRejected(
+        RegisterThingSubscriptionRequest request,
         QualityOfService qos,
         Consumer<ErrorResponse> handler,
         Consumer<Exception> exceptionHandler) {
-        String topic = "$aws/certificates/create-from-csr/json/rejected";
+        String topic = "$aws/provisioning-templates/{templateName}/provision/json/rejected";
+        if (request.templateName == null) {
+            CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+            result.completeExceptionally(new MqttException("RegisterThingSubscriptionRequest must have a non-null templateName"));
+            return result;
+        }
+        topic = topic.replace("{templateName}", request.templateName);
         Consumer<MqttMessage> messageHandler = (message) -> {
             try {
                 String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
@@ -470,7 +494,7 @@ public class IotIdentityClient {
     }
 
     /**
-     * Subscribes to the rejected topic of the CreateCertificateFromCsr operation.
+     * Subscribes to the rejected topic of the RegisterThing operation.
      *
      * Once subscribed, `handler` is invoked each time a message matching
      * the `topic` is received. It is possible for such messages to arrive before
@@ -485,35 +509,11 @@ public class IotIdentityClient {
      *
      * @return a future containing the MQTT packet id used to perform the subscribe operation
      */
-    public CompletableFuture<Integer> SubscribeToCreateCertificateFromCsrRejected(
-        CreateCertificateFromCsrSubscriptionRequest request,
+    public CompletableFuture<Integer> SubscribeToRegisterThingRejected(
+        RegisterThingSubscriptionRequest request,
         QualityOfService qos,
         Consumer<ErrorResponse> handler) {
-        return SubscribeToCreateCertificateFromCsrRejected(request, qos, handler, null);
-    }
-
-    /**
-     * Creates a certificate from a certificate signing request (CSR). AWS IoT provides client certificates that are signed by the Amazon Root certificate authority (CA). The new certificate has a PENDING_ACTIVATION status. When you call RegisterThing to provision a thing with this certificate, the certificate status changes to ACTIVE or INACTIVE as described in the template.
-     *
-     * If the device is offline, the PUBLISH packet will be sent once the connection resumes.
-     *
-     * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html#fleet-provision-api
-     *
-     * @param request Message to be serialized and sent
-     * @param qos Quality of Service for delivering this message
-     * @return a future containing the MQTT packet id used to perform the publish operation
-     *
-     * * For QoS 0, completes as soon as the packet is sent.
-     * * For QoS 1, completes when PUBACK is received.
-     * * QoS 2 is not supported by AWS IoT.
-     */
-    public CompletableFuture<Integer> PublishCreateCertificateFromCsr(
-        CreateCertificateFromCsrRequest request,
-        QualityOfService qos) {
-        String topic = "$aws/certificates/create-from-csr/json";
-        String payloadJson = gson.toJson(request);
-        MqttMessage message = new MqttMessage(topic, payloadJson.getBytes(StandardCharsets.UTF_8));
-        return connection.publish(message, qos, false);
+        return SubscribeToRegisterThingRejected(request, qos, handler, null);
     }
 
 }

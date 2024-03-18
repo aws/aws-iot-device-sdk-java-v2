@@ -20,11 +20,6 @@ public class CreateKeysAndCertificateResponse {
      */
     public String certificateId;
 
-    /**
-     * The token to prove ownership of the certificate during provisioning.
-     *
-     */
-    public String certificateOwnershipToken;
 
     /**
      * The certificate data, in PEM format.
@@ -32,10 +27,19 @@ public class CreateKeysAndCertificateResponse {
      */
     public String certificatePem;
 
+
     /**
      * The private key.
      *
      */
     public String privateKey;
+
+
+    /**
+     * The token to prove ownership of the certificate during provisioning.
+     *
+     */
+    public String certificateOwnershipToken;
+
 
 }

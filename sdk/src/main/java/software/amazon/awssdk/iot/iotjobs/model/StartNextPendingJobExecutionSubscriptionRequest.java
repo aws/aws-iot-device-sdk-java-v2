@@ -20,4 +20,5 @@ public class StartNextPendingJobExecutionSubscriptionRequest {
      */
     public String thingName;
 
+
 }
