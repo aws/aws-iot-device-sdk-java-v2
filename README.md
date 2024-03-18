@@ -9,6 +9,7 @@ This document provides information about the AWS IoT device SDK for Java V2. Thi
 * [Samples](samples)
 * [Getting Help](#getting-help)
 * [FAQ](./documents/FAQ.md)
+* [FIPS Compliance](#fips-compliance)
 * [API Docs](https://aws.github.io/aws-iot-device-sdk-java-v2/)
 * [MQTT5 User Guide](./documents/MQTT5_Userguide.md)
 * [Migration Guide from the AWS IoT SDK for Java v1](./documents/MIGRATION_GUIDE.md)
@@ -90,6 +91,15 @@ Please make sure to check out our resources too before opening an issue:
 is provided by code that been generated from a model of the service.
 * [Contributions Guidelines](./documents/CONTRIBUTING.md)
 * [DEVELOPING](./documents/DEVELOPING.md)
+
+## FIPS Compliance
+
+This SDK supports FIPS compliance on *some platforms*. See the [Platform-Specific JARs section](https://github.com/awslabs/aws-crt-java?tab=readme-ov-file#platform-specific-jars) in the CRT project for the current list of FIPS-compliant platforms.
+To interact with AWS IoT in a FIPS-compliant manner, you must use a [FIPS compliant endpoint](https://docs.aws.amazon.com/iot/latest/developerguide/iot-connect-fips.html#iot-connect-fips-data).
+
+> [!NOTE]
+> The Java IoT SDK can connect to FIPS complaint endpoints on non-FIPS-complaint platforms.
+> Check `CRT.isFIPS()` at runtime to ensure you are on a FIPS compliant platform.
 
 ## License
 
