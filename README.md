@@ -94,12 +94,26 @@ is provided by code that been generated from a model of the service.
 
 ## FIPS Compliance
 
-This SDK supports FIPS compliance on *some platforms*. See the [Platform-Specific JARs section](https://github.com/awslabs/aws-crt-java?tab=readme-ov-file#platform-specific-jars) in the CRT project for the current list of FIPS-compliant platforms.
+This SDK supports [FIPS compliance](https://aws.amazon.com/compliance/fips/) on *some platforms*. If you're on a FIPS-complaint
+platform, FIPS will be enabled by default. See the [Platform-Specific JARs section](https://github.com/awslabs/aws-crt-java?tab=readme-ov-file#platform-specific-jars)
+in the CRT project for the current list of FIPS-compliant platforms.
+
 To interact with AWS IoT in a FIPS-compliant manner, you must use a [FIPS compliant endpoint](https://docs.aws.amazon.com/iot/latest/developerguide/iot-connect-fips.html#iot-connect-fips-data).
 
-> [!NOTE]
-> The Java IoT SDK can connect to FIPS complaint endpoints on non-FIPS-complaint platforms.
-> Check `CRT.isFIPS()` at runtime to ensure you are on a FIPS compliant platform.
+> [!WARNING]
+> The Java IoT SDK can successfully connect to FIPS complaint endpoints on **non-FIPS-complaint** platforms.
+> Use `CRT.isFIPS()` call at runtime to ensure you are on a FIPS compliant platform.
+
+If you're on a platform that supports FIPS, but you want to disable it, you need to remove `<classifier>fips-compat</classifier>` line from the CRT dependency in `sdk/pom.xml`.
+
+```xml
+    <dependency>
+      <groupId>software.amazon.awssdk.crt</groupId>
+      <artifactId>aws-crt</artifactId>
+      <version>0.29.12</version>
+      <classifier>fips-compat</classifier>    # Remove this line to disable FIPS support.
+    </dependency>
+```
 
 ## License
 
