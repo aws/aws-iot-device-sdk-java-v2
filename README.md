@@ -104,6 +104,8 @@ To interact with AWS IoT in a FIPS-compliant manner, you must use a [FIPS compli
 > The Java IoT SDK can successfully connect to FIPS complaint endpoints on **non-FIPS-complaint** platforms.
 > Use `CRT.isFIPS()` call at runtime to ensure you are on a FIPS compliant platform.
 
+### Disabling FIPS compliance support
+
 If you're on a platform that supports FIPS, but you want to disable it, you need to remove `<classifier>fips-compat</classifier>` line from the CRT dependency in `sdk/pom.xml`.
 
 ```xml
