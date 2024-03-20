@@ -103,6 +103,9 @@ def main():
         update(filepath='android/iotdevicesdk/build.gradle',
             preceded_by=r"api 'software.amazon.awssdk.crt:aws-crt-android:",
             followed_by=r"'")
+        update(filepath='README.md',
+            preceded_by=r'<artifactId>aws-crt</artifactId>\s*<version>',
+            followed_by=r'</version>')
 
 
 def update(*, filepath, preceded_by, followed_by, force_version=None):
