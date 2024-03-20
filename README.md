@@ -106,14 +106,14 @@ To interact with AWS IoT in a FIPS-compliant manner, you must use a [FIPS compli
 
 ### Disabling FIPS compliance support
 
-If you're on a platform that supports FIPS, but you want to disable it, you need to remove `<classifier>fips-compat</classifier>` line from the CRT dependency in `sdk/pom.xml`.
+If you're on a platform that supports FIPS, but you want to disable it, you need to remove `<classifier>fips-where-available</classifier>` line from the CRT dependency in `sdk/pom.xml`.
 
 ```xml
     <dependency>
       <groupId>software.amazon.awssdk.crt</groupId>
       <artifactId>aws-crt</artifactId>
-      <version>0.29.12</version>
-      <classifier>fips-compat</classifier>    # Remove this line to disable FIPS support.
+      <version>0.29.13</version>
+      <classifier>fips-where-available</classifier>    # Remove this line to disable FIPS support.
     </dependency>
 ```
 
