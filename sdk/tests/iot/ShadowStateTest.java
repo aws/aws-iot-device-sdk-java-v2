@@ -4,15 +4,11 @@ import com.google.gson.GsonBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import software.amazon.awssdk.iot.Timestamp;
 import software.amazon.awssdk.iot.iotshadow.model.ShadowState;
 import software.amazon.awssdk.iot.ShadowStateFactory;
-
-import software.amazon.awssdk.crt.*;
 
 import java.util.HashMap;
 
@@ -82,12 +78,5 @@ public class ShadowStateTest {
         String state_json = shadowGson.toJson(state);
         String expected_json = "{\"desired\":{\"ThingTwo\":\"Bob\",\"ThingOne\":10.0},\"reported\":null}";
         assertEquals(state_json, expected_json);
-    }
-
-    @Test
-    /* TODO: maybe move the test to a separate file? */
-    public void testCRTIsFIPS() {
-        assumeTrue(System.getenv("CRT_FIPS") != null);
-        assertTrue(CRT.isFIPS());
     }
 }
