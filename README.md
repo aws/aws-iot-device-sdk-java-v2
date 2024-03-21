@@ -95,7 +95,7 @@ is provided by code that been generated from a model of the service.
 ## FIPS Compliance
 
 This SDK supports [FIPS compliance](https://aws.amazon.com/compliance/fips/) on *some platforms*. If you're on a FIPS-compliant
-platform, FIPS will be enabled by default. See the [Platform-Specific JARs section](https://github.com/awslabs/aws-crt-java?tab=readme-ov-file#platform-specific-jars)
+platform, FIPS will be enabled by default. See the [FIPS Compliance section](https://github.com/awslabs/aws-crt-java?tab=readme-ov-file#fips-compliance)
 in the CRT project for the current list of FIPS-compliant platforms.
 
 To interact with AWS IoT in a FIPS-compliant manner, you must use a [FIPS compliant endpoint](https://docs.aws.amazon.com/iot/latest/developerguide/iot-connect-fips.html#iot-connect-fips-data).
