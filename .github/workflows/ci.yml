@@ -368,6 +368,9 @@ jobs:
       - name: run MQTT5 PubSub sample
         run: |
           python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_mqtt5_pubsub_cfg.json
+      - name: run MQTT5 PubSub sample with FIPS endpoint
+        run: |
+          python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_mqtt5_pubsub_fips_cfg.json
       - name: configure AWS credentials (Device Advisor)
         uses: aws-actions/configure-aws-credentials@v2
         with:
