@@ -13,11 +13,6 @@
     "env": {
     },
     "hosts": {
-        "ubuntu": {
-            "packages": [
-                "openjdk-8-jdk-headless"
-            ]
-        },
         "debian": {
             "packages": [
                 "openjdk-8-jdk-headless"
@@ -28,8 +23,11 @@
         }
     },
     "variants" : {
-        "skip_test": {
-            "!test_steps": []
+        "test_fips": {
+            "!run_tests": true,
+            "!test_steps": [
+                "CRT_FIPS=ON mvn test -Dtest=IotTest#testCRTIsFIPS -DfailIfNoTests=false"
+            ]
         }
       }
 }

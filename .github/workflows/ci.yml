@@ -60,6 +60,29 @@ jobs:
         ./linux-container-ci.sh ${{ env.BUILDER_VERSION }} aws-crt-${{ matrix.image }} build -p ${{ env.PACKAGE_NAME }}
     # NOTE: we cannot run samples or DeviceAdvisor here due to container restrictions
 
+  linux-fips:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        image:
+          - manylinux2014-x64
+          - ubuntu-20-aarch64
+    permissions:
+      id-token: write # This is required for requesting the JWT
+    steps:
+    - name: configure AWS credentials (containers)
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        role-to-assume: ${{ env.CI_IOT_CONTAINERS }}
+        aws-region: ${{ env.AWS_DEFAULT_REGION }}
+    - name: Install qemu/docker
+      run: docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+    - name: Build ${{ env.PACKAGE_NAME }}
+      run: |
+        aws s3 cp s3://aws-crt-test-stuff/ci/${{ env.BUILDER_VERSION }}/linux-container-ci.sh ./linux-container-ci.sh && chmod a+x ./linux-container-ci.sh
+        ./linux-container-ci.sh ${{ env.BUILDER_VERSION }} aws-crt-${{ matrix.image }} build -p ${{ env.PACKAGE_NAME }} --variant=test_fips
+
   linux-musl:
     runs-on: ubuntu-22.04 # latest
     strategy:
@@ -310,8 +333,7 @@ jobs:
       - name: Build ${{ env.PACKAGE_NAME }} + consumers
         run: |
           java -version
-          mvn -B test -Daws.crt.debugnative=true
-          mvn install -Dmaven.test.skip
+          mvn install -Daws.crt.debugnative=true
       - name: configure AWS credentials (MQTT5)
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -346,6 +368,9 @@ jobs:
       - name: run MQTT5 PubSub sample
         run: |
           python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_mqtt5_pubsub_cfg.json
+      - name: run MQTT5 PubSub sample with FIPS endpoint
+        run: |
+          python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_mqtt5_pubsub_fips_cfg.json
       - name: configure AWS credentials (Device Advisor)
         uses: aws-actions/configure-aws-credentials@v2
         with:
