@@ -17,10 +17,18 @@ import software.amazon.awssdk.iot.iotjobs.model.JobStatus;
 public class JobExecutionState {
 
     /**
+     * The status of the job execution. Can be one of: QUEUED, IN_PROGRESS, FAILED, SUCCEEDED, CANCELED, TIMED_OUT, REJECTED, or REMOVED.
+     *
+     */
+    public JobStatus status;
+
+
+    /**
      * A collection of name-value pairs that describe the status of the job execution.
      *
      */
     public HashMap<String, String> statusDetails;
+
 
     /**
      * The version of the job execution. Job execution versions are incremented each time they are updated by a device.
@@ -28,10 +36,5 @@ public class JobExecutionState {
      */
     public Integer versionNumber;
 
-    /**
-     * The status of the job execution. Can be one of: QUEUED, IN_PROGRESS, FAILED, SUCCEEDED, CANCELED, TIMED_OUT, REJECTED, or REMOVED.
-     *
-     */
-    public JobStatus status;
 
 }

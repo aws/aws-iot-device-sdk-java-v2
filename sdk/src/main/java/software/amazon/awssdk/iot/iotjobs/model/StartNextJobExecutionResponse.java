@@ -22,16 +22,19 @@ public class StartNextJobExecutionResponse {
      */
     public String clientToken;
 
-    /**
-     * The time when the message was sent to the device. 
-     *
-     */
-    public Timestamp timestamp;
 
     /**
      * Contains data about a job execution.
      *
      */
     public JobExecutionData execution;
+
+
+    /**
+     * The time when the message was sent to the device. 
+     *
+     */
+    public Timestamp timestamp;
+
 
 }

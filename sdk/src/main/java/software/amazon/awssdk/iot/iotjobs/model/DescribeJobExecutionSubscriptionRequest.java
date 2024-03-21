@@ -20,10 +20,12 @@ public class DescribeJobExecutionSubscriptionRequest {
      */
     public String thingName;
 
+
     /**
      * Job ID that you want to subscribe to DescribeJobExecution response events for.
      *
      */
     public String jobId;
+
 
 }

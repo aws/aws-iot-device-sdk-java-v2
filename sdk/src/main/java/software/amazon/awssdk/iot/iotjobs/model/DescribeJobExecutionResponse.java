@@ -17,21 +17,24 @@ import software.amazon.awssdk.iot.iotjobs.model.JobExecutionData;
 public class DescribeJobExecutionResponse {
 
     /**
+     * A client token used to correlate requests and responses.
+     *
+     */
+    public String clientToken;
+
+
+    /**
      * Contains data about a job execution.
      *
      */
     public JobExecutionData execution;
 
-    /**
-     * A client token used to correlate requests and responses.
-     *
-     */
-    public String clientToken;
 
     /**
      * The time when the message was sent.
      *
      */
     public Timestamp timestamp;
+
 
 }

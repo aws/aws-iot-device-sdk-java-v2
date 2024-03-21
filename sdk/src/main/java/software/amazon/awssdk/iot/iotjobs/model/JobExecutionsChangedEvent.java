@@ -22,10 +22,12 @@ public class JobExecutionsChangedEvent {
      */
     public HashMap<software.amazon.awssdk.iot.iotjobs.model.JobStatus, java.util.List<software.amazon.awssdk.iot.iotjobs.model.JobExecutionSummary>> jobs;
 
+
     /**
      * The time when the message was sent.
      *
      */
     public Timestamp timestamp;
+
 
 }

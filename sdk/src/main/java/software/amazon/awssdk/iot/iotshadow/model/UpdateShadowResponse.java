@@ -18,13 +18,6 @@ import software.amazon.awssdk.iot.iotshadow.model.ShadowState;
 public class UpdateShadowResponse {
 
     /**
-     * Updated device shadow state.
-     *
-     */
-    public ShadowState state;
-
-
-    /**
      * An opaque token used to correlate requests and responses.  Present only if a client token was used in the request.
      *
      */
@@ -32,10 +25,10 @@ public class UpdateShadowResponse {
 
 
     /**
-     * The current version of the document for the device's shadow shared in AWS IoT. It is increased by one over the previous version of the document.
+     * Updated device shadow state.
      *
      */
-    public Integer version;
+    public ShadowState state;
 
 
     /**
@@ -50,6 +43,13 @@ public class UpdateShadowResponse {
      *
      */
     public Timestamp timestamp;
+
+
+    /**
+     * The current version of the document for the device's shadow shared in AWS IoT. It is increased by one over the previous version of the document.
+     *
+     */
+    public Integer version;
 
 
 }

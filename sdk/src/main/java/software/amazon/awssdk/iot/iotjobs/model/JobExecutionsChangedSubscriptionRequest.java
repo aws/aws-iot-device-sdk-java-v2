@@ -20,4 +20,5 @@ public class JobExecutionsChangedSubscriptionRequest {
      */
     public String thingName;
 
+
 }

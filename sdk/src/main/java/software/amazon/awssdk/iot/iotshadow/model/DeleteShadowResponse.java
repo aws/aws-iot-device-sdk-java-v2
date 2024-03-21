@@ -16,13 +16,6 @@ import software.amazon.awssdk.iot.Timestamp;
 public class DeleteShadowResponse {
 
     /**
-     * The current version of the document for the device's shadow.
-     *
-     */
-    public Integer version;
-
-
-    /**
      * A client token used to correlate requests and responses.
      *
      */
@@ -34,6 +27,13 @@ public class DeleteShadowResponse {
      *
      */
     public Timestamp timestamp;
+
+
+    /**
+     * The current version of the document for the device's shadow.
+     *
+     */
+    public Integer version;
 
 
 }

@@ -15,15 +15,17 @@ package software.amazon.awssdk.iot.iotjobs.model;
 public class UpdateJobExecutionSubscriptionRequest {
 
     /**
+     * Name of the IoT Thing that you want to subscribe to UpdateJobExecution response events for.
+     *
+     */
+    public String thingName;
+
+
+    /**
      * Job ID that you want to subscribe to UpdateJobExecution response events for.
      *
      */
     public String jobId;
 
-    /**
-     * Name of the IoT Thing that you want to subscribe to UpdateJobExecution response events for.
-     *
-     */
-    public String thingName;
 
 }

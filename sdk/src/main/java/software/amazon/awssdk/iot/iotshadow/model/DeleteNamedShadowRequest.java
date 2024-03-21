@@ -15,10 +15,10 @@ package software.amazon.awssdk.iot.iotshadow.model;
 public class DeleteNamedShadowRequest {
 
     /**
-     * Optional. A client token used to correlate requests and responses. Enter an arbitrary value here and it is reflected in the response.
+     * AWS IoT thing to delete a named shadow from.
      *
      */
-    public String clientToken;
+    public String thingName;
 
 
     /**
@@ -29,10 +29,10 @@ public class DeleteNamedShadowRequest {
 
 
     /**
-     * AWS IoT thing to delete a named shadow from.
+     * Optional. A client token used to correlate requests and responses. Enter an arbitrary value here and it is reflected in the response.
      *
      */
-    public String thingName;
+    public String clientToken;
 
 
 }
