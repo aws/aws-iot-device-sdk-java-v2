@@ -15,17 +15,17 @@ package software.amazon.awssdk.iot.iotshadow.model;
 public class NamedShadowUpdatedSubscriptionRequest {
 
     /**
-     * Name of the shadow to get NamedShadowUpdated events for.
-     *
-     */
-    public String shadowName;
-
-
-    /**
      * Name of the AWS IoT thing to get NamedShadowUpdated events for.
      *
      */
     public String thingName;
+
+
+    /**
+     * Name of the shadow to get NamedShadowUpdated events for.
+     *
+     */
+    public String shadowName;
 
 
 }

@@ -20,4 +20,5 @@ public class RegisterThingSubscriptionRequest {
      */
     public String templateName;
 
+
 }

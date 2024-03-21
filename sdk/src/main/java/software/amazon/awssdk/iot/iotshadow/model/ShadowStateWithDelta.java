@@ -16,10 +16,10 @@ import java.util.HashMap;
 public class ShadowStateWithDelta {
 
     /**
-     * The delta between the reported and desired states.
+     * The desired shadow state (from external services and devices).
      *
      */
-    public HashMap<String, Object> delta;
+    public HashMap<String, Object> desired;
 
 
     /**
@@ -30,10 +30,10 @@ public class ShadowStateWithDelta {
 
 
     /**
-     * The desired shadow state (from external services and devices).
+     * The delta between the reported and desired states.
      *
      */
-    public HashMap<String, Object> desired;
+    public HashMap<String, Object> delta;
 
 
 }
