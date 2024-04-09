@@ -30,15 +30,15 @@ public class ObjectModelTests {
 
     @Test
     void testBlobAndDeserializeEquivalence() {
-        byte[] testContent = new byte[] { (byte)0xDE, (byte)0xAD, (byte)0xBE, (byte)0xEF };
+        byte[] testContentdum = new byte[] { (byte)0xDE, (byte)0xAD, (byte)0xBE, (byte)0xEF };
         final EchoMessageRequest requestObject = new EchoMessageRequest();
         final MessageData data = new MessageData();
-        data.setBlobMessage(testContent);
+        data.setBlobMessage(testContentdum);
         requestObject.setMessage(data);
         final JSONObject jsonObject = new JSONObject(new String(EchoTestRPCServiceModel.getInstance().toJson(requestObject), StandardCharsets.UTF_8));
         Assertions.assertTrue(jsonObject.has("message"));
         Assertions.assertTrue(jsonObject.getJSONObject("message").has("blobMessage"));
-        Assertions.assertEquals(new String(Base64.getEncoder().encode(testContent), StandardCharsets.UTF_8),
+        Assertions.assertEquals(new String(Base64.getEncoder().encode(testContentdum), StandardCharsets.UTF_8),
                 jsonObject.getJSONObject("message").getString("blobMessage"));
 
         final EchoMessageRequest deserialized = EchoTestRPCServiceModel.getInstance().fromJson(EchoMessageRequest.class,
