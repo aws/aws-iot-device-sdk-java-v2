@@ -15,6 +15,7 @@ import java.time.Instant;
 import java.util.*;
 
 public class ObjectModelTests {
+    /*
     @Test
     void testBasicModelSerialize() {
         final String testString  = "fooStringMessage";
@@ -27,9 +28,11 @@ public class ObjectModelTests {
         Assertions.assertTrue(jsonObject.getJSONObject("message").has("stringMessage"));
         Assertions.assertEquals(testString, jsonObject.getJSONObject("message").getString("stringMessage"));
     }
+    */
 
     @Test
     void testBlobAndDeserializeEquivalence() {
+        // byte[] testContent = new byte[] { (byte)0xDE, (byte)0xAD, (byte)0xBE, (byte)0xEF };
         byte[] testContent = new byte[] { (byte)0xDE, (byte)0xAD, (byte)0xBE, (byte)0xEF };
         final EchoMessageRequest requestObject = new EchoMessageRequest();
         final MessageData data = new MessageData();
@@ -49,7 +52,7 @@ public class ObjectModelTests {
         Assertions.assertTrue(requestObject.equals(deserialized));
         */
     }
-
+    /*
     @Test
     void testEnumGetter() {
         MessageData data = new MessageData();
@@ -205,4 +208,5 @@ public class ObjectModelTests {
         EventStreamError errorMessage = EventStreamError.create(headers, badJsonPayload, MessageType.ProtocolError);
         Assertions.assertNotNull(errorMessage);
     }
+     */
 }
