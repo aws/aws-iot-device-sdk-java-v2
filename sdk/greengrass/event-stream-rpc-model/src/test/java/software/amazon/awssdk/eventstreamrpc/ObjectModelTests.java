@@ -40,14 +40,10 @@ public class ObjectModelTests {
         data.setBlobMessage(testContent);
         requestObject.setMessage(data);
 
-        System.out.println("DEBUG library path:" + System.getProperty("java.library.path"));
+        System.out.println("DEBUG: This next line fails with java.lang.UnsatisfiedLinkError");
+        final JSONObject jsonObject = new JSONObject(new String(EchoTestRPCServiceModel.getInstance().toJsonTEST(requestObject), StandardCharsets.UTF_8));
+        System.out.println("DEBUG: This should not be reached due to the error");
 
-        byte[] testResult = StringUtils.base64Decode(testContent);
-
-        // System.out.println("DEBUG: This next line fails with java.lang.UnsatisfiedLinkError");
-        // final JSONObject jsonObject = new JSONObject(new String(EchoTestRPCServiceModel.getInstance().toJsonTEST(requestObject), StandardCharsets.UTF_8));
-        // System.out.println("DEBUG: This should not be reached due to the error");
-        /*
         Assertions.assertTrue(jsonObject.has("message"));
         Assertions.assertTrue(jsonObject.getJSONObject("message").has("blobMessage"));
         Assertions.assertEquals(new String(Base64.getEncoder().encode(testContent), StandardCharsets.UTF_8),
@@ -55,7 +51,7 @@ public class ObjectModelTests {
         final EchoMessageRequest deserialized = EchoTestRPCServiceModel.getInstance().fromJson(EchoMessageRequest.class,
                 jsonObject.toString().getBytes(StandardCharsets.UTF_8));
         Assertions.assertTrue(requestObject.equals(deserialized));
-        */
+
     }
     /*
     @Test
