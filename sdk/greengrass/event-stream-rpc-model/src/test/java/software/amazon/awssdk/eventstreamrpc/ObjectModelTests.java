@@ -30,7 +30,6 @@ public class ObjectModelTests {
 
     @Test
     void testBlobAndDeserializeEquivalence() {
-        System.out.println()
         byte[] testContent = new byte[] { (byte)0xDE, (byte)0xAD, (byte)0xBE, (byte)0xEF };
         final EchoMessageRequest requestObject = new EchoMessageRequest();
         final MessageData data = new MessageData();
