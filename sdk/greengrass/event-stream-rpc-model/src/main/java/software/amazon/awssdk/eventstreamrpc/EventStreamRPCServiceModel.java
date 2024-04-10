@@ -302,7 +302,8 @@ public abstract class EventStreamRPCServiceModel {
     public byte[] toJsonTEST(final EventStreamJsonMessage message) {
         try {
             System.out.println("DEBUG toJson 1");
-            final byte[] json = message.toPayload(getGson());
+            // final byte[] json = message.toPayload(getGson());
+            final byte[] json = message.toPayloadTEST(getGson());
             System.out.println("DEBUG toJson 2");
             final String stringJson = new String(json, StandardCharsets.UTF_8);
             System.out.println("DEBUG toJson 3");

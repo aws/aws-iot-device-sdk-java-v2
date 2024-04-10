@@ -26,6 +26,18 @@ public interface EventStreamJsonMessage {
         return payloadString.getBytes(StandardCharsets.UTF_8);
     }
 
+    default byte[] toPayloadTEST(final Gson gson) {
+        System.out.println("DEBUG toPayload() 1");
+        final String payloadString = gson.toJson(this);
+        System.out.println("DEBUG toPayload() 2");
+        if (payloadString == null || payloadString.isEmpty() || payloadString.equals("null")) {
+            System.out.println("DEBUG toPayload() 3a");
+            return "{}".getBytes(StandardCharsets.UTF_8);
+        }
+        System.out.println("DEBUG toPayload() 3b");
+        return payloadString.getBytes(StandardCharsets.UTF_8);
+    }
+
     /**
      * Converts the given GSON and payload into a EventStreamJsonMessage
      * @param gson The GSON to convert
