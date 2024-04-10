@@ -9,7 +9,7 @@ import software.amazon.awssdk.awstest.EchoTestRPCServiceModel;
 import software.amazon.awssdk.awstest.model.*;
 import software.amazon.awssdk.crt.eventstream.Header;
 import software.amazon.awssdk.crt.eventstream.MessageType;
-import software.amazon.awssdk.crt.io.EventLoopGroup;
+import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.eventstreamrpc.model.EventStreamError;
 
 import java.nio.charset.StandardCharsets;
@@ -19,8 +19,7 @@ import java.util.*;
 public class ObjectModelTests {
     @BeforeAll
     public static void setUp() {
-        try (final EventLoopGroup elGroup = new EventLoopGroup(1)) {
-        }
+        new CRT();
     }
 
     @Test
