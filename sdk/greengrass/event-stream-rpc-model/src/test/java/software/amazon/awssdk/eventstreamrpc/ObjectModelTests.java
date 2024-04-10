@@ -30,30 +30,21 @@ public class ObjectModelTests {
 
     @Test
     void testBlobAndDeserializeEquivalence() {
-        System.out.println("DEBUG: 1");
         byte[] testContent = new byte[] { (byte)0xDE, (byte)0xAD, (byte)0xBE, (byte)0xEF };
-        System.out.println("DEBUG: 2");
         final EchoMessageRequest requestObject = new EchoMessageRequest();
-        System.out.println("DEBUG: 3");
         final MessageData data = new MessageData();
-        System.out.println("DEBUG: 4");
         data.setBlobMessage(testContent);
-        System.out.println("DEBUG: 5");
         requestObject.setMessage(data);
-        System.out.println("DEBUG: 6");
+
+        System.out.println("DEBUG: This next line fails with java.lang.UnsatisfiedLinkError");
         final JSONObject jsonObject = new JSONObject(new String(EchoTestRPCServiceModel.getInstance().toJson(requestObject), StandardCharsets.UTF_8));
-        System.out.println("DEBUG: 7");
+
         Assertions.assertTrue(jsonObject.has("message"));
-        System.out.println("DEBUG: 8");
         Assertions.assertTrue(jsonObject.getJSONObject("message").has("blobMessage"));
-        System.out.println("DEBUG: 9");
         Assertions.assertEquals(new String(Base64.getEncoder().encode(testContent), StandardCharsets.UTF_8),
                 jsonObject.getJSONObject("message").getString("blobMessage"));
-                System.out.println("DEBUG: 10");
-
         final EchoMessageRequest deserialized = EchoTestRPCServiceModel.getInstance().fromJson(EchoMessageRequest.class,
                 jsonObject.toString().getBytes(StandardCharsets.UTF_8));
-        System.out.println("DEBUG: 11");
         Assertions.assertTrue(requestObject.equals(deserialized));
     }
 

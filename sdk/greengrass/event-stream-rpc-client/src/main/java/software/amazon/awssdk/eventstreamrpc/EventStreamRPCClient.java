@@ -145,7 +145,7 @@ public class EventStreamRPCClient {
                     }
                 }
             }
-            
+
             @Override
             protected void onContinuationClosed() {
                 super.onContinuationClosed();
@@ -169,10 +169,10 @@ public class EventStreamRPCClient {
         return response;
     }
 
-    
+
 
     /**
-     * Sends an empty close message on the open stream. 
+     * Sends an empty close message on the open stream.
      * @param continuation continuation to send the close message on
      * @return CompletableFuture indicating flush of the close message.
      */
@@ -181,7 +181,7 @@ public class EventStreamRPCClient {
             return continuation.sendMessage(null, null,
                     MessageType.ApplicationMessage, MessageFlags.TerminateStream.getByteValue());
         } else {
-            LOGGER.warning("Stream already closed");    //May help debug extra closes? May remove to avoid noise
+            // LOGGER.warning("Stream already closed");    //May help debug extra closes? May remove to avoid noise
             return CompletableFuture.completedFuture(null);
         }
     }
