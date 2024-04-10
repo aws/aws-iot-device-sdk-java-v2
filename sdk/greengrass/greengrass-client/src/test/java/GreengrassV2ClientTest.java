@@ -128,7 +128,7 @@ public class GreengrassV2ClientTest {
         GreengrassCoreIPCClientV2.StreamingResponse<SubscribeToTopicResponse, SubscribeToTopicResponseHandler> subResp =
                 client.subscribeToTopic(new SubscribeToTopicRequest().withTopic("abc"), (x) -> {
                     if (!Thread.currentThread().getName().contains("pool")) {
-                        System.out.println(Thread.currentThread().getName());
+                        // System.out.println(Thread.currentThread().getName());
                         finalReceivedMessage.completeExceptionally(
                                 new RuntimeException("Ran on event loop instead of executor"));
                     }

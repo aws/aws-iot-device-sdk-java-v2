@@ -93,18 +93,18 @@ public class EchoTestServiceTests {
 
         CrtResource.waitForNoResources();
     }
-    
+
     @Test //this test takes too long to complete so turn it off by default
     public void testLongRunningServerOperations() throws Exception {
         final int numIterations = Integer.parseInt(System.getProperty("numIterations", "10"));
-        final int threadPoolSize = Integer.parseInt(System.getProperty("threadPoolSize", "16"));          //max threads, since tasks are IO intense, doesn't need to be large 
+        final int threadPoolSize = Integer.parseInt(System.getProperty("threadPoolSize", "16"));          //max threads, since tasks are IO intense, doesn't need to be large
         final int parallelTaskMultiplyFactor = Integer.parseInt(System.getProperty("parallelTaskFactor", "10"));  //however many tasks to run in parallel
         final int taskLengthMultiplyFactor = Integer.parseInt(System.getProperty("taskLengthFactor", "10")); //whatever work each task does (very small), do it this many times within a single run with a short sleep in between
         final long taskRepeatSleepDelayMs = 10; //time to sleep before repeating a tasks' impl
-        
+
         final ArrayList<BiConsumer<EventStreamRPCConnection, EchoTestRPC>> tasks = new ArrayList<>();
         final ExecutorService service = Executors.newFixedThreadPool(threadPoolSize);
-        
+
         tasks.add((connection, client) -> {
             final MessageData data = new MessageData();
             data.setEnumMessage(FruitEnum.PINEAPPLE);
@@ -180,7 +180,7 @@ public class EchoTestServiceTests {
                                 } catch (InterruptedException e) {
                                     throw new RuntimeException(e);
                                 }
-                                System.out.println("Task repeat...");
+                                // System.out.println("Task repeat...");
                             }
                         }))
                         .collect(Collectors.toList()));
@@ -193,7 +193,7 @@ public class EchoTestServiceTests {
                     Assertions.fail(e);
                 }
             });
-            System.out.println("ALL TASKS finished an ITERATION: " + ++count[0]);
+            // System.out.println("ALL TASKS finished an ITERATION: " + ++count[0]);
         }, numIterations);
         CrtResource.waitForNoResources();
     }
