@@ -40,6 +40,8 @@ public class ObjectModelTests {
         data.setBlobMessage(testContent);
         requestObject.setMessage(data);
 
+        System.out.println("DEBUG library path:" + System.getProperty("java.library.path"));
+
         byte[] testResult = StringUtils.base64Decode(testContent);
 
         // System.out.println("DEBUG: This next line fails with java.lang.UnsatisfiedLinkError");
