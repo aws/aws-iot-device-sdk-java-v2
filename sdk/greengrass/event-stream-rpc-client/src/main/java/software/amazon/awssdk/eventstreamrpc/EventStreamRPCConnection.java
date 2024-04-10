@@ -34,12 +34,12 @@ public class EventStreamRPCConnection implements AutoCloseable {
             CONNECTED,
             CLOSING
         };
-        
+
         Phase connectionPhase;
         ClientConnection connection;
         Throwable closeReason;
         boolean onConnectCalled;
-        
+
         protected ConnectionState(Phase phase, ClientConnection connection) {
             this.connectionPhase = phase;
             this.connection = connection;
@@ -75,7 +75,7 @@ public class EventStreamRPCConnection implements AutoCloseable {
 
     /**
      * Connects to the event stream RPC server asynchronously
-     * 
+     *
      * @return A future that completes when connected
      */
     public CompletableFuture<Void> connect(final LifecycleHandler lifecycleHandler) {
@@ -93,8 +93,8 @@ public class EventStreamRPCConnection implements AutoCloseable {
                 config.getTlsContext(), config.getClientBootstrap(), new ClientConnectionHandler() {
                     @Override
                     protected void onConnectionSetup(final ClientConnection clientConnection, int errorCode) {
-                        LOGGER.info(String.format("Socket connection %s:%d to server result [%s]",
-                                config.getHost(), config.getPort(), CRT.awsErrorName(errorCode)));
+                        // LOGGER.info(String.format("Socket connection %s:%d to server result [%s]",
+                        //         config.getHost(), config.getPort(), CRT.awsErrorName(errorCode)));
                         synchronized (connectionState) {
                             connectionState.connection = clientConnection;
                             if (CRT.AWS_CRT_SUCCESS != errorCode) {
@@ -145,7 +145,7 @@ public class EventStreamRPCConnection implements AutoCloseable {
                                 if ((messageFlags & MessageFlags.ConnectionAccepted.getByteValue()) != 0) {
                                     connectionState.connectionPhase = ConnectionState.Phase.CONNECTED;
                                     //now the client is open for business to invoke operations
-                                    LOGGER.info("Connection established with event stream RPC server");
+                                    // LOGGER.info("Connection established with event stream RPC server");
                                     if (!initialConnectFuture.isDone()) {
                                         initialConnectFuture.complete(null);
                                     }
@@ -156,7 +156,7 @@ public class EventStreamRPCConnection implements AutoCloseable {
                                     LOGGER.warning("AccessDenied to event stream RPC server");
                                     connectionState.connectionPhase = ConnectionState.Phase.CLOSING;
                                     connectionState.connection.closeConnection(0);
-                                    
+
                                     final AccessDeniedException ade = new AccessDeniedException("Connection access denied to event stream RPC server");
                                     if (!initialConnectFuture.isDone()) {
                                         initialConnectFuture.completeExceptionally(ade);
@@ -179,7 +179,7 @@ public class EventStreamRPCConnection implements AutoCloseable {
                             disconnect();
                         } else if (MessageType.ProtocolError.equals(messageType) || MessageType.ServerError.equals(messageType)) {
                             LOGGER.severe("Received " + messageType.name() + ": " + CRT.awsErrorName(CRT.awsLastError()));
-                            connectionState.closeReason = EventStreamError.create(headers, payload, messageType);                            
+                            connectionState.closeReason = EventStreamError.create(headers, payload, messageType);
                             doOnError(lifecycleHandler, connectionState.closeReason);
                             disconnect();
                         } else {
@@ -222,7 +222,7 @@ public class EventStreamRPCConnection implements AutoCloseable {
     /**
      * Creates a new stream with the given continuation handler.
      * Trhows an exception if not connected
-     * 
+     *
      * @param continuationHandler The continuation handler to use
      * @return A new ClientConnectionContinuation containing the new stream.
      */
@@ -375,7 +375,7 @@ public class EventStreamRPCConnection implements AutoCloseable {
           * Do nothing on ping by default. Inform handler of ping data
          *
          * TODO: Could use boolean return here as a hint on whether a pong reply should be sent?
-         * 
+         *
           * @param headers The ping headers
           * @param payload The ping payload
           */
