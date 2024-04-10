@@ -286,15 +286,21 @@ public abstract class EventStreamRPCServiceModel {
 
     public byte[] toJson(final EventStreamJsonMessage message) {
         try {
+            System.out.println("DEBUG toJson 1");
             final byte[] json = message.toPayload(getGson());
+            System.out.println("DEBUG toJson 2");
             final String stringJson = new String(json, StandardCharsets.UTF_8);
+            System.out.println("DEBUG toJson 3");
             //this feels like a hack. I'd prefer if java objects with no fields set serialized to being an empty object
             //rather than "null"
             if (null == stringJson || "null".equals(stringJson) || stringJson.isEmpty()) {
+                System.out.println("DEBUG toJson 4a");
                 return "{}".getBytes(StandardCharsets.UTF_8);
             }
+            System.out.println("DEBUG toJson 4b");
             return json;
         } catch (Exception e) {
+            System.out.println("DEBUG toJson ex");
             throw new SerializationException(message, e);
         }
     }
