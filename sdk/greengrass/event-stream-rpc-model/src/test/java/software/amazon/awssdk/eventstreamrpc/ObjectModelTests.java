@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 
 import software.amazon.awssdk.awstest.EchoTestRPCServiceModel;
 import software.amazon.awssdk.awstest.model.*;
-import software.amazon.awssdk.crt.utils.StringUtils;
 import software.amazon.awssdk.crt.eventstream.Header;
 import software.amazon.awssdk.crt.eventstream.MessageType;
 import software.amazon.awssdk.eventstreamrpc.model.EventStreamError;
@@ -31,6 +30,7 @@ public class ObjectModelTests {
 
     @Test
     void testBlobAndDeserializeEquivalence() {
+        System.out.println()
         byte[] testContent = new byte[] { (byte)0xDE, (byte)0xAD, (byte)0xBE, (byte)0xEF };
         final EchoMessageRequest requestObject = new EchoMessageRequest();
         final MessageData data = new MessageData();
