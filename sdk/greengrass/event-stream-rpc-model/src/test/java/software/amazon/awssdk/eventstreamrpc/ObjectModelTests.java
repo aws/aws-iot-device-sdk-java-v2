@@ -4,7 +4,6 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.awstest.EchoTestRPCServiceModel;
 import software.amazon.awssdk.awstest.model.*;
 import software.amazon.awssdk.crt.eventstream.Header;
