@@ -37,7 +37,7 @@ public class ObjectModelTests {
         requestObject.setMessage(data);
 
         System.out.println("DEBUG: This next line fails with java.lang.UnsatisfiedLinkError");
-        final JSONObject jsonObject = new JSONObject(new String(EchoTestRPCServiceModel.getInstance().toJson(requestObject), StandardCharsets.UTF_8));
+        final JSONObject jsonObject = new JSONObject(new String(EchoTestRPCServiceModel.getInstance().toJsonTEST(requestObject), StandardCharsets.UTF_8));
         System.out.println("DEBUG: This should not be reached due to the error");
 
         Assertions.assertTrue(jsonObject.has("message"));
