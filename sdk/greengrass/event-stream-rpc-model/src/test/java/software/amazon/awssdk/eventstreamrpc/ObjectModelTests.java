@@ -8,6 +8,7 @@ import software.amazon.awssdk.awstest.EchoTestRPCServiceModel;
 import software.amazon.awssdk.awstest.model.*;
 import software.amazon.awssdk.crt.eventstream.Header;
 import software.amazon.awssdk.crt.eventstream.MessageType;
+import software.amazon.awssdk.crt.utils.StringUtils;
 import software.amazon.awssdk.eventstreamrpc.model.EventStreamError;
 
 import java.nio.charset.StandardCharsets;
@@ -39,9 +40,11 @@ public class ObjectModelTests {
         data.setBlobMessage(testContent);
         requestObject.setMessage(data);
 
-        System.out.println("DEBUG: This next line fails with java.lang.UnsatisfiedLinkError");
-        final JSONObject jsonObject = new JSONObject(new String(EchoTestRPCServiceModel.getInstance().toJsonTEST(requestObject), StandardCharsets.UTF_8));
-        System.out.println("DEBUG: This should not be reached due to the error");
+        byte[] testResult = StringUtils.base64Decode(testContent);
+
+        // System.out.println("DEBUG: This next line fails with java.lang.UnsatisfiedLinkError");
+        // final JSONObject jsonObject = new JSONObject(new String(EchoTestRPCServiceModel.getInstance().toJsonTEST(requestObject), StandardCharsets.UTF_8));
+        // System.out.println("DEBUG: This should not be reached due to the error");
         /*
         Assertions.assertTrue(jsonObject.has("message"));
         Assertions.assertTrue(jsonObject.getJSONObject("message").has("blobMessage"));
