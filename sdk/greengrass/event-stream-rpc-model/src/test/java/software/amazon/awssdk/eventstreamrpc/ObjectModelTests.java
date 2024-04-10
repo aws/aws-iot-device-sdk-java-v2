@@ -2,12 +2,14 @@ package software.amazon.awssdk.eventstreamrpc;
 
 import org.json.JSONObject;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import software.amazon.awssdk.awstest.EchoTestRPCServiceModel;
 import software.amazon.awssdk.awstest.model.*;
 import software.amazon.awssdk.crt.eventstream.Header;
 import software.amazon.awssdk.crt.eventstream.MessageType;
+import software.amazon.awssdk.crt.io.EventLoopGroup;
 import software.amazon.awssdk.eventstreamrpc.model.EventStreamError;
 
 import java.nio.charset.StandardCharsets;
@@ -15,6 +17,12 @@ import java.time.Instant;
 import java.util.*;
 
 public class ObjectModelTests {
+    @BeforeAll
+    public static void setUp() {
+        try (final EventLoopGroup elGroup = new EventLoopGroup(1)) {
+        }
+    }
+
     @Test
     void testBasicModelSerialize() {
         final String testString  = "fooStringMessage";
