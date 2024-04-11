@@ -35,12 +35,14 @@ phases:
 
       # install settings.xml to ~/.m2/settings.xml
       - mkdir -p $HOME/.m2
-      - export CD_SETTINGS=$(aws secretsmanager get-secret-value --secret-id cd/aws-crt-java-settings --query "SecretString" | cut -f2 -d\")
+      - export CD_SETTINGS=$(aws secretsmanager get-secret-value --secret-id cd/aws-crt-java-settings/token --query "SecretString" | cut -f2 -d\")
       - echo $CD_SETTINGS > $HOME/.m2/settings.xml
 
-      - export ST_PASSWORD=$(aws --query "SecretString" secretsmanager get-secret-value --secret-id cd/Sonatype/JIRA/Password | cut -f2 -d":" | sed -e 's/[\\\"\}]//g')
-      # Use the password from secret manager to update the settings
-      - sed -i 's/password-to-replace/'"$ST_PASSWORD"'/g' $HOME/.m2/settings.xml
+      # Use the password and username from secret manager to update the settings
+      - export ST_USERNAME=$(aws --query "SecretString" secretsmanager get-secret-value --secret-id Sonatype/JIRA/token | cut -f2 -d":" | cut -f1 -d"," | sed -e 's/[\\\"\}]//g')
+      - export ST_PASSWORD=$(aws --query "SecretString" secretsmanager get-secret-value --secret-id Sonatype/JIRA/token | cut -f3 -d":" | sed -e 's/[\\\"\}]//g')
+      - sed -i 's|token-username|'"$ST_USERNAME"'|g' $HOME/.m2/settings.xml
+      - sed -i 's|token-password|'"$ST_PASSWORD"'|g' $HOME/.m2/settings.xml
 
       # import gpg key
       - export CD_KEY=$(aws secretsmanager get-secret-value --secret-id cd/aws-crt-java-key --query "SecretString" | cut -f2 -d\")
