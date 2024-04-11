@@ -23,29 +23,6 @@ public class JobExecutionData {
      */
     public String jobId;
 
-    /**
-     * The content of the job document.
-     *
-     */
-    public HashMap<String, Object> jobDocument;
-
-    /**
-     * The status of the job execution. Can be one of: QUEUED, IN_PROGRESS, FAILED, SUCCEEDED, CANCELED, TIMED_OUT, REJECTED, or REMOVED.
-     *
-     */
-    public JobStatus status;
-
-    /**
-     * The version of the job execution. Job execution versions are incremented each time they are updated by a device.
-     *
-     */
-    public Integer versionNumber;
-
-    /**
-     * The time when the job execution was enqueued.
-     *
-     */
-    public Timestamp queuedAt;
 
     /**
      * The name of the thing that is executing the job.
@@ -53,11 +30,20 @@ public class JobExecutionData {
      */
     public String thingName;
 
+
     /**
-     * A number that identifies a job execution on a device. It can be used later in commands that return or update job execution information.
+     * The content of the job document.
      *
      */
-    public Long executionNumber;
+    public HashMap<String, Object> jobDocument;
+
+
+    /**
+     * The status of the job execution. Can be one of: QUEUED, IN_PROGRESS, FAILED, SUCCEEDED, CANCELED, TIMED_OUT, REJECTED, or REMOVED.
+     *
+     */
+    public JobStatus status;
+
 
     /**
      * A collection of name-value pairs that describe the status of the job execution.
@@ -65,16 +51,40 @@ public class JobExecutionData {
      */
     public HashMap<String, String> statusDetails;
 
+
     /**
-     * The time when the job execution started. 
+     * The time when the job execution was enqueued.
      *
      */
-    public Timestamp lastUpdatedAt;
+    public Timestamp queuedAt;
+
 
     /**
      * The time when the job execution started.
      *
      */
     public Timestamp startedAt;
+
+
+    /**
+     * The time when the job execution started. 
+     *
+     */
+    public Timestamp lastUpdatedAt;
+
+
+    /**
+     * The version of the job execution. Job execution versions are incremented each time they are updated by a device.
+     *
+     */
+    public Integer versionNumber;
+
+
+    /**
+     * A number that identifies a job execution on a device. It can be used later in commands that return or update job execution information.
+     *
+     */
+    public Long executionNumber;
+
 
 }

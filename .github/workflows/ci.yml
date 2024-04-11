@@ -7,7 +7,7 @@ on:
       - 'docs'
 
 env:
-  BUILDER_VERSION: v0.9.56
+  BUILDER_VERSION: v0.9.58
   BUILDER_SOURCE: releases
   BUILDER_HOST: https://d19elf31gohf1l.cloudfront.net
   PACKAGE_NAME: aws-iot-device-sdk-java-v2
@@ -72,7 +72,7 @@ jobs:
       id-token: write # This is required for requesting the JWT
     steps:
       - name: configure AWS credentials (containers)
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           role-to-assume: ${{ env.CI_IOT_CONTAINERS }}
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
@@ -98,7 +98,7 @@ jobs:
       id-token: write # This is required for requesting the JWT
     steps:
       - name: configure AWS credentials (containers)
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           role-to-assume: ${{ env.CI_IOT_CONTAINERS }}
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
@@ -384,29 +384,20 @@ jobs:
           ./gradlew assembledebug
           ./gradlew publishToMavenLocal -PnewVersion="1.0.0-SNAPSHOT"
           echo "Build status report=${{ job.status }}."
-
-      - name: Setup Android Test Files
+      - name: Setup Android Test Files New
         run: |
           cd sdk/tests/android/testapp/src/main/assets
-          endpoint=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/endpoint" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$endpoint" > endpoint.txt
-          pubSubCert=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/PubSub/cert" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$pubSubCert" > pubSubCertificate.pem
-          pubSubKey=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/PubSub/key" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$pubSubKey" > pubSubPrivatekey.pem
-          cognitoIdentity=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/Cognito/identity_id" --query "SecretString" | cut -f2 -d\") && echo -e "$cognitoIdentity" > cognitoIdentity.txt
-          jobsCert=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/Jobs/cert" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$jobsCert" > jobsCertificate.pem
-          jobsKey=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/Jobs/key" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$jobsKey" > jobsPrivatekey.pem
-          shadowCert=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/Shadow/cert" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$shadowCert" > shadowCertificate.pem
-          shadowKey=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/Shadow/key" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$shadowKey" > shadowPrivatekey.pem
-          mqtt5PubSubCert=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/mqtt5/us/mqtt5_thing/cert" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$mqtt5PubSubCert" > mqtt5PubSubCertificate.pem
-          mqtt5PubSubKey=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/mqtt5/us/mqtt5_thing/key" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$mqtt5PubSubKey" > mqtt5PubSubPrivatekey.pem
-          cd ../../..
+          python3 -m pip install boto3
+          python3 ./android_file_creation.py
+      - name: Build Test App
+        run: |
+          cd sdk/tests/android/testapp
           ../../../../android/gradlew assembledebug
           ../../../../android/gradlew assembleAndroidTest
-          cd ../../../..
-
+          cd ~
       - name: Python Script
         run: |
           echo "Attempting to run python script"
-          python3 -m pip install boto3
           python3 -m pip install requests
           python3 ./utils/run_android_ci.py \
           --region ${{ env.AWS_DEVICE_FARM_REGION }} \

@@ -16,15 +16,17 @@ import java.util.HashMap;
 public class RegisterThingResponse {
 
     /**
+     * The device configuration defined in the template.
+     *
+     */
+    public HashMap<String, String> deviceConfiguration;
+
+
+    /**
      * The name of the IoT thing created during provisioning.
      *
      */
     public String thingName;
 
-    /**
-     * The device configuration defined in the template.
-     *
-     */
-    public HashMap<String, String> deviceConfiguration;
 
 }

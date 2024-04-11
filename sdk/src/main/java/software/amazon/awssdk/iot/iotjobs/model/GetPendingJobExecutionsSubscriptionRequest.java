@@ -20,4 +20,5 @@ public class GetPendingJobExecutionsSubscriptionRequest {
      */
     public String thingName;
 
+
 }

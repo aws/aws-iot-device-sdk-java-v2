@@ -20,16 +20,19 @@ public class CreateCertificateFromCsrResponse {
      */
     public String certificateId;
 
-    /**
-     * The token to prove ownership of the certificate during provisioning.
-     *
-     */
-    public String certificateOwnershipToken;
 
     /**
      * The certificate data, in PEM format.
      *
      */
     public String certificatePem;
+
+
+    /**
+     * The token to prove ownership of the certificate during provisioning.
+     *
+     */
+    public String certificateOwnershipToken;
+
 
 }

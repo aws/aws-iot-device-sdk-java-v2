@@ -126,7 +126,7 @@ AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newMtlsBuilder(clien
 
 ### **Direct MQTT with Custom Authorizer Method**
 
-A MQTT5 direct connection can be made using a [Custom Authorizer](https://docs.aws.amazon.com/iot/latest/developerguide/custom-authentication.html) rather than a certificate and key file like in the Direct Connection section above. Instead of using Mutual TLS to connect, a Custom Authorizer can be invoked instead and used to authorize the connection. When making a connection to a Custom Authorizer, the MQTT5 client can optionally passing username, password, and/or token signature arguments based on the configuration of the Custom Authorizer on AWS IoT Core.
+A MQTT5 direct connection can be made using a [Custom Authorizer](https://docs.aws.amazon.com/iot/latest/developerguide/custom-authentication.html) rather than a certificate and key file like in the Direct Connection section above. Instead of using Mutual TLS to connect, a Custom Authorizer can be invoked instead and used to authorize the connection. When making a connection using a Custom Authorizer, the MQTT5 client can optionally passing username, password, and/or token signature arguments based on the configuration of the Custom Authorizer on AWS IoT Core.
 
 You will need to setup your Custom Authorizer so that the lambda function returns a policy document to properly connect. See [this page on the documentation](https://docs.aws.amazon.com/iot/latest/developerguide/config-custom-auth.html) for more details and example return results.
 

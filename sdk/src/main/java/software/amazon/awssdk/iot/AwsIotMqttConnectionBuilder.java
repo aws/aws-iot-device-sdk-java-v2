@@ -12,6 +12,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.function.Consumer;
 
+import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.crt.CrtResource;
 import software.amazon.awssdk.crt.CrtRuntimeException;
 import software.amazon.awssdk.crt.Log;
@@ -660,7 +661,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
                     throw new CrtRuntimeException(uee.toString());
                 }
             }
-            
+
             usernameString = addUsernameParameter(usernameString, authorizerSignature, "x-amz-customauthorizer-signature=", addedStringToUsername);
         }
 
@@ -770,7 +771,18 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
             if (usernameOrEmpty.contains("?")) {
                 queryStringConcatenation = "&";
             }
-            connectionConfig.setUsername(String.format("%s%sSDK=JavaV2&Version=%s", usernameOrEmpty, queryStringConcatenation, new PackageInfo().version.toString()));
+
+            if(CRT.getOSIdentifier() == "android"){
+                connectionConfig.setUsername(String.format("%s%sSDK=AndroidV2&Version=%s",
+                usernameOrEmpty,
+                queryStringConcatenation,
+                new PackageInfo().version.toString()));
+            } else {
+                connectionConfig.setUsername(String.format("%s%sSDK=JavaV2&Version=%s",
+                usernameOrEmpty,
+                queryStringConcatenation,
+                new PackageInfo().version.toString()));
+            }
 
             if (connectionConfig.getUseWebsockets() && connectionConfig.getWebsocketHandshakeTransform() == null) {
                 if (websocketCredentialsProvider == null) {

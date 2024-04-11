@@ -20,4 +20,5 @@ public class NextJobExecutionChangedSubscriptionRequest {
      */
     public String thingName;
 
+
 }
