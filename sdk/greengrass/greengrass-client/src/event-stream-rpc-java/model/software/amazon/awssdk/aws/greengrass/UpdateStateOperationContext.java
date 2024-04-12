@@ -17,6 +17,9 @@ import software.amazon.awssdk.eventstreamrpc.EventStreamRPCServiceModel;
 import software.amazon.awssdk.eventstreamrpc.OperationModelContext;
 import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
 
+/**
+ * Update status of this component
+ */
 public class UpdateStateOperationContext implements OperationModelContext<UpdateStateRequest, UpdateStateResponse, EventStreamJsonMessage, EventStreamJsonMessage> {
   @Override
   public EventStreamRPCServiceModel getServiceModel() {

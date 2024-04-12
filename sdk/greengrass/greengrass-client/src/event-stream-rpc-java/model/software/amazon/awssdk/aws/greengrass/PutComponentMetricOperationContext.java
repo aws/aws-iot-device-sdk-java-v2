@@ -17,6 +17,10 @@ import software.amazon.awssdk.eventstreamrpc.EventStreamRPCServiceModel;
 import software.amazon.awssdk.eventstreamrpc.OperationModelContext;
 import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
 
+/**
+ * Send component metrics
+ * NOTE Only usable by AWS components
+ */
 public class PutComponentMetricOperationContext implements OperationModelContext<PutComponentMetricRequest, PutComponentMetricResponse, EventStreamJsonMessage, EventStreamJsonMessage> {
   @Override
   public EventStreamRPCServiceModel getServiceModel() {

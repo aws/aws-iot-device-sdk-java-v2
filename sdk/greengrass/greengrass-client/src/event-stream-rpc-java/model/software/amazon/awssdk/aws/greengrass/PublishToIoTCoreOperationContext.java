@@ -17,6 +17,9 @@ import software.amazon.awssdk.eventstreamrpc.EventStreamRPCServiceModel;
 import software.amazon.awssdk.eventstreamrpc.OperationModelContext;
 import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
 
+/**
+ * Publish an MQTT message to AWS IoT message broker
+ */
 public class PublishToIoTCoreOperationContext implements OperationModelContext<PublishToIoTCoreRequest, PublishToIoTCoreResponse, EventStreamJsonMessage, EventStreamJsonMessage> {
   @Override
   public EventStreamRPCServiceModel getServiceModel() {

@@ -17,6 +17,9 @@ import software.amazon.awssdk.eventstreamrpc.EventStreamRPCServiceModel;
 import software.amazon.awssdk.eventstreamrpc.OperationModelContext;
 import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
 
+/**
+ * Gets the status and version of the component with the given component name
+ */
 public class GetComponentDetailsOperationContext implements OperationModelContext<GetComponentDetailsRequest, GetComponentDetailsResponse, EventStreamJsonMessage, EventStreamJsonMessage> {
   @Override
   public EventStreamRPCServiceModel getServiceModel() {

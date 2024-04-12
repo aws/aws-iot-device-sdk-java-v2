@@ -17,6 +17,9 @@ import software.amazon.awssdk.eventstreamrpc.EventStreamRPCServiceModel;
 import software.amazon.awssdk.eventstreamrpc.OperationModelContext;
 import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
 
+/**
+ * Retrieves a device shadow document stored by the local shadow service
+ */
 public class GetThingShadowOperationContext implements OperationModelContext<GetThingShadowRequest, GetThingShadowResponse, EventStreamJsonMessage, EventStreamJsonMessage> {
   @Override
   public EventStreamRPCServiceModel getServiceModel() {

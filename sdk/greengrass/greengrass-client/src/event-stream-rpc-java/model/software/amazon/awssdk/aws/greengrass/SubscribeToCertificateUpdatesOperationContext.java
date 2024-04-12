@@ -18,6 +18,9 @@ import software.amazon.awssdk.eventstreamrpc.EventStreamRPCServiceModel;
 import software.amazon.awssdk.eventstreamrpc.OperationModelContext;
 import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
 
+/**
+ * Create a subscription for new certificates
+ */
 public class SubscribeToCertificateUpdatesOperationContext implements OperationModelContext<SubscribeToCertificateUpdatesRequest, SubscribeToCertificateUpdatesResponse, EventStreamJsonMessage, CertificateUpdateEvent> {
   @Override
   public EventStreamRPCServiceModel getServiceModel() {

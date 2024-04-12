@@ -17,6 +17,11 @@ import software.amazon.awssdk.eventstreamrpc.EventStreamRPCServiceModel;
 import software.amazon.awssdk.eventstreamrpc.OperationModelContext;
 import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
 
+/**
+ * This operation should be used in response to event received as part of SubscribeToValidateConfigurationUpdates
+ * subscription. It is not necessary to send the report if the configuration is valid (GGC will wait for timeout
+ * period and proceed). Sending the report with invalid config status will prevent GGC from applying the updates
+ */
 public class SendConfigurationValidityReportOperationContext implements OperationModelContext<SendConfigurationValidityReportRequest, SendConfigurationValidityReportResponse, EventStreamJsonMessage, EventStreamJsonMessage> {
   @Override
   public EventStreamRPCServiceModel getServiceModel() {

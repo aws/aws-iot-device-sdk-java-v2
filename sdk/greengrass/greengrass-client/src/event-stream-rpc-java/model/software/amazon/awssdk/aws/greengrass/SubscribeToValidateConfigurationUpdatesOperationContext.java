@@ -18,6 +18,12 @@ import software.amazon.awssdk.eventstreamrpc.EventStreamRPCServiceModel;
 import software.amazon.awssdk.eventstreamrpc.OperationModelContext;
 import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
 
+/**
+ * Subscribes to be notified when GGC is about to update configuration for this component
+ * GGC will wait for a timeout period before it proceeds with the update.
+ * If the new configuration is not valid this component can use the SendConfigurationValidityReport
+ * operation to indicate that
+ */
 public class SubscribeToValidateConfigurationUpdatesOperationContext implements OperationModelContext<SubscribeToValidateConfigurationUpdatesRequest, SubscribeToValidateConfigurationUpdatesResponse, EventStreamJsonMessage, ValidateConfigurationUpdateEvents> {
   @Override
   public EventStreamRPCServiceModel getServiceModel() {

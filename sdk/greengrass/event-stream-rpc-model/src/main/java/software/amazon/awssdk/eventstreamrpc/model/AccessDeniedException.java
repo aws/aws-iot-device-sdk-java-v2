@@ -1,3 +1,8 @@
+/**
+ * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * SPDX-License-Identifier: Apache-2.0.
+ */
+
 package software.amazon.awssdk.eventstreamrpc.model;
 
 /**
@@ -27,7 +32,7 @@ public class AccessDeniedException extends EventStreamOperationError {
      * or the principal/authN that was rejected
      *
      * Do not overexpose reason or logic for AccessDenied. Prefer internal logging
-     * 
+     *
      * @param serviceName The name of the service that caused the exception
      */
     public AccessDeniedException(String serviceName) {
