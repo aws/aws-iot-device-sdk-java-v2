@@ -18,6 +18,9 @@ import software.amazon.awssdk.eventstreamrpc.EventStreamRPCServiceModel;
 import software.amazon.awssdk.eventstreamrpc.OperationModelContext;
 import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
 
+/**
+ * Subscribes to be notified when GGC updates the configuration for a given componentName and keyName.
+ */
 public class SubscribeToConfigurationUpdateOperationContext implements OperationModelContext<SubscribeToConfigurationUpdateRequest, SubscribeToConfigurationUpdateResponse, EventStreamJsonMessage, ConfigurationUpdateEvents> {
   @Override
   public EventStreamRPCServiceModel getServiceModel() {

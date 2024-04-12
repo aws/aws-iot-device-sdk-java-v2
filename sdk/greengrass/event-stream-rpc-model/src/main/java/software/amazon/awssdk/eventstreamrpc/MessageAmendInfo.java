@@ -1,3 +1,8 @@
+/**
+ * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * SPDX-License-Identifier: Apache-2.0.
+ */
+
 package software.amazon.awssdk.eventstreamrpc;
 
 import software.amazon.awssdk.crt.eventstream.Header;
@@ -36,7 +41,7 @@ public class MessageAmendInfo {
      * Returns the headers stored in the object. For sent messages,
      * the headers stored in the object may be used to append to existing headers,
      * where it won't overwrite an existing one that may be outgoing.
-     * 
+     *
      * @return The headers stored
      */
     public List<Header> getHeaders() {

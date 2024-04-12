@@ -1,3 +1,8 @@
+/**
+ * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * SPDX-License-Identifier: Apache-2.0.
+ */
+
 package software.amazon.awssdk.eventstreamrpc;
 
 import software.amazon.awssdk.crt.eventstream.ClientConnectionContinuation;
@@ -145,7 +150,7 @@ public class EventStreamRPCClient {
                     }
                 }
             }
-            
+
             @Override
             protected void onContinuationClosed() {
                 super.onContinuationClosed();
@@ -169,10 +174,8 @@ public class EventStreamRPCClient {
         return response;
     }
 
-    
-
     /**
-     * Sends an empty close message on the open stream. 
+     * Sends an empty close message on the open stream.
      * @param continuation continuation to send the close message on
      * @return CompletableFuture indicating flush of the close message.
      */
