@@ -8,6 +8,7 @@ import sys
 
 CODEGEN_PHRASES = [
     'This file is generated',
+    'This file is part of greengrass-ipc project'
 ]
 
 IGNORE_PATTERNS = [
@@ -15,7 +16,7 @@ IGNORE_PATTERNS = [
 ]
 
 ERROR_MSG = """
-ERROR: You have changed code-generated files.
+ERROR: You have changed code-generated files or files from third-party projects.
 
 If you edited these files by hand, your changes will be erased when the
 code-generator is run again. An SDK team member MUST update the code-gen
