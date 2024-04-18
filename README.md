@@ -38,11 +38,11 @@ Consuming this SDK via Maven is the preferred method of consuming it and using i
 <dependency>
   <groupId>software.amazon.awssdk.iotdevicesdk</groupId>
   <artifactId>aws-iot-device-sdk</artifactId>
-  <version>1.20.4</version>
+  <version>1.20.5</version>
 </dependency>
 ```
 
-Replace `1.20.4` in `<version>1.20.4</version>` with the latest release version for the SDK.
+Replace `1.20.5` in `<version>1.20.5</version>` with the latest release version for the SDK.
 Look up the latest SDK version here: https://github.com/aws/aws-iot-device-sdk-java-v2/releases
 
 ### Build IoT Device SDK from source
@@ -95,4 +95,4 @@ is provided by code that been generated from a model of the service.
 
 This library is licensed under the [Apache 2.0 License](./documents/LICENSE).
 
-Latest released version: v1.20.4
+Latest released version: v1.20.5
