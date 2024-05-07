@@ -35,265 +35,615 @@ env:
   CI_JOBS_SERVICE_CLIENT_ROLE: arn:aws:iam::180635532705:role/CI_JobsServiceClient_Role
 
 jobs:
-  linux-compat:
+  #linux-compat:
+  #  runs-on: ubuntu-latest
+  #  strategy:
+  #    fail-fast: false
+  #    matrix:
+  #      image:
+  #        - manylinux2014-x64
+  #        - al2-x64
+  #        - fedora-34-x64
+  #        - rhel8-x64
+  #        #- manylinux2014-x86 until we find 32-bit linux binaries we can use
+  #  permissions:
+  #    id-token: write # This is required for requesting the JWT
+  #  steps:
+  #  - name: configure AWS credentials (containers)
+  #    uses: aws-actions/configure-aws-credentials@v2
+  #    with:
+  #      role-to-assume: ${{ env.CI_IOT_CONTAINERS }}
+  #      aws-region: ${{ env.AWS_DEFAULT_REGION }}
+  #  - name: Build ${{ env.PACKAGE_NAME }}
+  #    run: |
+  #      aws s3 cp s3://aws-crt-test-stuff/ci/${{ env.BUILDER_VERSION }}/linux-container-ci.sh ./linux-container-ci.sh && chmod a+x ./linux-container-ci.sh
+  #      ./linux-container-ci.sh ${{ env.BUILDER_VERSION }} aws-crt-${{ matrix.image }} build -p ${{ env.PACKAGE_NAME }}
+  #  # NOTE: we cannot run samples or DeviceAdvisor here due to container restrictions
+
+  #linux-musl:
+  #  runs-on: ubuntu-22.04 # latest
+  #  strategy:
+  #    matrix:
+  #      image:
+  #        - alpine-3.16-x64
+  #        - alpine-3.16-arm64
+  #        - openwrt-x64-openjdk8
+  #  permissions:
+  #    id-token: write # This is required for requesting the JWT
+  #  steps:
+  #    - name: configure AWS credentials (containers)
+  #      uses: aws-actions/configure-aws-credentials@v2
+  #      with:
+  #        role-to-assume: ${{ env.CI_IOT_CONTAINERS }}
+  #        aws-region: ${{ env.AWS_DEFAULT_REGION }}
+  #    - name: Install qemu/docker
+  #      run: docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+  #    - name: Checkout Sources
+  #      uses: actions/checkout@v2
+  #      with:
+  #        submodules: true
+  #    - name: Build ${{ env.PACKAGE_NAME }}
+  #      run: |
+  #        aws s3 cp s3://aws-crt-test-stuff/ci/${{ env.BUILDER_VERSION }}/linux-container-ci.sh ./linux-container-ci.sh && chmod a+x ./linux-container-ci.sh
+  #        ./linux-container-ci.sh ${{ env.BUILDER_VERSION }} aws-crt-${{ matrix.image }} build -p ${{ env.PACKAGE_NAME }}
+
+  ## armv7 needs its own action due to inability to differentiate at runtime armv6 vs armv7 in the jvm:
+  ##
+  ## At build time we can properly figure out that we're targeting armv7.
+  ## At run time we have to force armv7 (via environment variable) in order to achieve proper resource path
+  ## resolution.
+  #linux-musl-armv7:
+  #  runs-on: ubuntu-20.04 # latest
+  #  permissions:
+  #    id-token: write # This is required for requesting the JWT
+  #  steps:
+  #    - name: configure AWS credentials (containers)
+  #      uses: aws-actions/configure-aws-credentials@v2
+  #      with:
+  #        role-to-assume: ${{ env.CI_IOT_CONTAINERS }}
+  #        aws-region: ${{ env.AWS_DEFAULT_REGION }}
+  #    - name: Install qemu/docker
+  #      run: docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+  #    - name: Checkout Sources
+  #      uses: actions/checkout@v2
+  #      with:
+  #        submodules: true
+  #    - name: Build ${{ env.PACKAGE_NAME }}
+  #      run: |
+  #        export AWS_CRT_ARCH=armv7
+  #        aws s3 cp s3://aws-crt-test-stuff/ci/${{ env.BUILDER_VERSION }}/linux-container-ci.sh ./linux-container-ci.sh && chmod a+x ./linux-container-ci.sh
+  #        ./linux-container-ci.sh ${{ env.BUILDER_VERSION }} aws-crt-alpine-3.16-armv7 build -p ${{ env.PACKAGE_NAME }}
+
+  #raspberry:
+  #  runs-on: ubuntu-20.04 # latest
+  #  strategy:
+  #    fail-fast: false
+  #    matrix:
+  #      image:
+  #        - raspbian-bullseye
+  #  permissions:
+  #    id-token: write # This is required for requesting the JWT
+  #  steps:
+  #  - name: configure AWS credentials (containers)
+  #    uses: aws-actions/configure-aws-credentials@v2
+  #    with:
+  #      role-to-assume: ${{ env.CI_IOT_CONTAINERS }}
+  #      aws-region: ${{ env.AWS_DEFAULT_REGION }}
+  #  # set arm arch
+  #  - name: Install qemu/docker
+  #    run: docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+  #  - name: Build ${{ env.PACKAGE_NAME }}
+  #    run: |
+  #      aws s3 cp s3://aws-crt-test-stuff/ci/${{ env.BUILDER_VERSION }}/linux-container-ci.sh ./linux-container-ci.sh && chmod a+x ./linux-container-ci.sh
+  #      ./linux-container-ci.sh ${{ env.BUILDER_VERSION }} aws-crt-${{ matrix.image }} build -p ${{ env.PACKAGE_NAME }}
+
+  #windows:
+  #  runs-on: windows-latest
+  #  strategy:
+  #    fail-fast: false
+  #    matrix:
+  #      version:
+  #        - 8
+  #        - 11
+  #        - 17
+  #  permissions:
+  #    id-token: write # This is required for requesting the JWT
+  #  steps:
+  #  - name: Checkout Sources
+  #    uses: actions/checkout@v2
+  #  - name: Setup Java
+  #    uses: actions/setup-java@v2
+  #    with:
+  #      distribution: temurin
+  #      java-version: ${{ matrix.version }}
+  #      cache: maven
+  #  - name: Build ${{ env.PACKAGE_NAME }} + consumers
+  #    run: |
+  #      python -c "from urllib.request import urlretrieve; urlretrieve('${{ env.BUILDER_HOST }}/${{ env.BUILDER_SOURCE }}/${{ env.BUILDER_VERSION }}/builder.pyz?run=${{ env.RUN }}', 'builder.pyz')"
+  #      python builder.pyz build -p ${{ env.PACKAGE_NAME }} --spec=downstream
+  #  - name: configure AWS credentials (MQTT5)
+  #    uses: aws-actions/configure-aws-credentials@v2
+  #    with:
+  #      role-to-assume: ${{ env.CI_MQTT5_ROLE }}
+  #      aws-region: ${{ env.AWS_DEFAULT_REGION }}
+  #  - name: MQTT311 tests
+  #    shell: bash
+  #    run: |
+  #      source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt us-east-1
+  #      mvn test -Dtest=MqttBuilderTest -Dsurefire.failIfNoSpecifiedTests=false
+  #      source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt cleanup
+  #  - name: MQTT5 tests
+  #    shell: bash
+  #    run: |
+  #      source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt us-east-1
+  #      mvn test -Dtest=Mqtt5BuilderTest -Dsurefire.failIfNoSpecifiedTests=false
+  #      source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt cleanup
+  #  - name: Running samples in CI setup
+  #    run: |
+  #      python -m pip install boto3
+  #      mvn install -DskipTests
+  #  - name: configure AWS credentials (PubSub)
+  #    uses: aws-actions/configure-aws-credentials@v2
+  #    with:
+  #      role-to-assume: ${{ env.CI_PUBSUB_ROLE }}
+  #      aws-region: ${{ env.AWS_DEFAULT_REGION }}
+  #  - name: run PubSub sample
+  #    run: |
+  #      python ./utils/run_in_ci.py --file ./.github/workflows/ci_run_pubsub_cfg.json
+  #  - name: run Windows Certificate Connect sample
+  #    run: |
+  #      python ./utils/run_in_ci.py --file ./.github/workflows/ci_run_windows_cert_connect_cfg.json
+  #  - name: configure AWS credentials (MQTT5)
+  #    uses: aws-actions/configure-aws-credentials@v2
+  #    with:
+  #      role-to-assume: ${{ env.CI_MQTT5_ROLE }}
+  #      aws-region: ${{ env.AWS_DEFAULT_REGION }}
+  #  - name: run MQTT5 PubSub sample
+  #    run: |
+  #      python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_mqtt5_pubsub_cfg.json
+  #  - name: configure AWS credentials (Device Advisor)
+  #    uses: aws-actions/configure-aws-credentials@v2
+  #    with:
+  #      role-to-assume: ${{ env.CI_DEVICE_ADVISOR }}
+  #      aws-region: ${{ env.AWS_DEFAULT_REGION }}
+  #  - name: run DeviceAdvisor
+  #    run: |
+  #      python ./deviceadvisor/script/DATestRun.py
+
+  #osx:
+  #  runs-on: macos-latest
+  #  strategy:
+  #    fail-fast: false
+  #    matrix:
+  #      version:
+  #        - 8
+  #        - 11
+  #        - 17
+  #  permissions:
+  #    id-token: write # This is required for requesting the JWT
+  #  steps:
+  #  - name: Checkout Sources
+  #    uses: actions/checkout@v2
+  #  - name: Setup Java
+  #    uses: actions/setup-java@v2
+  #    with:
+  #      distribution: temurin
+  #      java-version: ${{ matrix.version }}
+  #      cache: maven
+  #  - name: Build ${{ env.PACKAGE_NAME }} + consumers
+  #    run: |
+  #      python3 -c "from urllib.request import urlretrieve; urlretrieve('${{ env.BUILDER_HOST }}/${{ env.BUILDER_SOURCE }}/${{ env.BUILDER_VERSION }}/builder.pyz?run=${{ env.RUN }}', 'builder')"
+  #      chmod a+x builder
+  #      ./builder build -p ${{ env.PACKAGE_NAME }} --spec=downstream
+  #  - name: configure AWS credentials (MQTT5)
+  #    uses: aws-actions/configure-aws-credentials@v2
+  #    with:
+  #      role-to-assume: ${{ env.CI_MQTT5_ROLE }}
+  #      aws-region: ${{ env.AWS_DEFAULT_REGION }}
+  #  - name: MQTT311 tests
+  #    run: |
+  #      source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt us-east-1
+  #      mvn test -Dtest=MqttBuilderTest -DfailIfNoTests=false -Dsurefire.failIfNoSpecifiedTests=false
+  #      source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt cleanup
+  #  - name: MQTT5 tests
+  #    run: |
+  #      source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt us-east-1
+  #      mvn test -Dtest=Mqtt5BuilderTest -DfailIfNoTests=false -Dsurefire.failIfNoSpecifiedTests=false
+  #      source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt cleanup
+  #  - name: Running samples in CI setup
+  #    run: |
+  #      python3 -m pip install boto3
+  #      mvn install -Dmaven.test.skip=true
+  #  - name: configure AWS credentials (PubSub)
+  #    uses: aws-actions/configure-aws-credentials@v2
+  #    with:
+  #      role-to-assume: ${{ env.CI_PUBSUB_ROLE }}
+  #      aws-region: ${{ env.AWS_DEFAULT_REGION }}
+  #  - name: run PubSub sample
+  #    run: |
+  #      python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_pubsub_cfg.json
+  #  - name: run PKCS12 Connect sample
+  #    run: |
+  #      cert=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/PubSub/cert" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$cert" > /tmp/certificate.pem
+  #      key=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/PubSub/key" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$key" > /tmp/privatekey.pem
+  #      pkcs12_password=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/PubSub/key_pkcs12_password" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\")
+  #      openssl pkcs12 -export -in /tmp/certificate.pem -inkey /tmp/privatekey.pem -out ./pkcs12-key.p12 -name PubSub_Thing_Alias -password pass:$pkcs12_password
+  #      python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_pkcs12_connect_cfg.json
+  #  - name: configure AWS credentials (MQTT5)
+  #    uses: aws-actions/configure-aws-credentials@v2
+  #    with:
+  #      role-to-assume: ${{ env.CI_MQTT5_ROLE }}
+  #      aws-region: ${{ env.AWS_DEFAULT_REGION }}
+  #  - name: run MQTT5 PubSub sample
+  #    run: |
+  #      python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_mqtt5_pubsub_cfg.json
+  #  - name: configure AWS credentials (Device Advisor)
+  #    uses: aws-actions/configure-aws-credentials@v2
+  #    with:
+  #      role-to-assume: ${{ env.CI_DEVICE_ADVISOR }}
+  #      aws-region: ${{ env.AWS_DEFAULT_REGION }}
+  #  - name: run DeviceAdvisor
+  #    run: |
+  #      python3 ./deviceadvisor/script/DATestRun.py
+
+  #java-compat:
+  #  runs-on: ubuntu-latest
+  #  strategy:
+  #    fail-fast: false
+  #    matrix:
+  #      version:
+  #        - 8
+  #        - 11
+  #        - 17
+  #  permissions:
+  #    id-token: write # This is required for requesting the JWT
+  #  steps:
+  #    - name: Checkout Sources
+  #      uses: actions/checkout@v2
+  #    - name: Setup Java
+  #      uses: actions/setup-java@v2
+  #      with:
+  #        distribution: temurin
+  #        java-version: ${{ matrix.version }}
+  #        cache: maven
+  #    - name: Build ${{ env.PACKAGE_NAME }} + consumers
+  #      run: |
+  #        java -version
+  #        mvn -B test -Daws.crt.debugnative=true
+  #        mvn install -Dmaven.test.skip
+  #    - name: configure AWS credentials (MQTT5)
+  #      uses: aws-actions/configure-aws-credentials@v2
+  #      with:
+  #        role-to-assume: ${{ env.CI_MQTT5_ROLE }}
+  #        aws-region: ${{ env.AWS_DEFAULT_REGION }}
+  #    - name: MQTT311 tests
+  #      run: |
+  #        source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt us-east-1
+  #        mvn test -Dtest=MqttBuilderTest -DfailIfNoTests=false
+  #        source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt cleanup
+  #    - name: MQTT5 tests
+  #      run: |
+  #        source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt us-east-1
+  #        mvn test -Dtest=Mqtt5BuilderTest -DfailIfNoTests=false
+  #        source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt cleanup
+  #    - name: Running samples in CI setup
+  #      run: |
+  #        python3 -m pip install boto3
+  #    - name: configure AWS credentials (PubSub)
+  #      uses: aws-actions/configure-aws-credentials@v2
+  #      with:
+  #        role-to-assume: ${{ env.CI_PUBSUB_ROLE }}
+  #        aws-region: ${{ env.AWS_DEFAULT_REGION }}
+  #    - name: run PubSub sample
+  #      run: |
+  #        python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_pubsub_cfg.json
+  #    - name: configure AWS credentials (MQTT5)
+  #      uses: aws-actions/configure-aws-credentials@v2
+  #      with:
+  #        role-to-assume: ${{ env.CI_MQTT5_ROLE }}
+  #        aws-region: ${{ env.AWS_DEFAULT_REGION }}
+  #    - name: run MQTT5 PubSub sample
+  #      run: |
+  #        python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_mqtt5_pubsub_cfg.json
+  #    - name: configure AWS credentials (Device Advisor)
+  #      uses: aws-actions/configure-aws-credentials@v2
+  #      with:
+  #        role-to-assume: ${{ env.CI_DEVICE_ADVISOR }}
+  #        aws-region: ${{ env.AWS_DEFAULT_REGION }}
+  #    - name: run DeviceAdvisor
+  #      run: |
+  #        python3 ./deviceadvisor/script/DATestRun.py
+
+  #android-device-farm:
+  #  name: Android Device Farm
+  #  runs-on: ubuntu-20.04 # latest
+  #  permissions:
+  #    # These permissions needed to interact with GitHub's OIDC Token endpoint
+  #    id-token: write # This is required for requesting the JWT
+  #  steps:
+  #    - name: Checkout Sources
+  #      uses: actions/checkout@v2
+  #      with:
+  #          submodules: true
+  #    # Setup JDK 11
+  #    - name: set up JDK 11
+  #      uses: actions/setup-java@v3
+  #      with:
+  #        java-version: '11'
+  #        distribution: 'temurin'
+  #        cache: 'gradle'
+  #    - name: Configure AWS credentials for Device Farm
+  #      uses: aws-actions/configure-aws-credentials@v2
+  #      with:
+  #        role-to-assume: ${{ env.CI_ANDROID_DEVICE_TESTING_ROLE }}
+  #        aws-region: ${{ env.AWS_DEVICE_FARM_REGION }}
+
+  #    - name: Build ${{ env.PACKAGE_NAME }}
+  #      run: |
+  #        cd android
+  #        ./gradlew assembledebug
+  #        ./gradlew publishToMavenLocal -PnewVersion="1.0.0-SNAPSHOT"
+  #        echo "Build status report=${{ job.status }}."
+  #    - name: Setup Android Test Files New
+  #      run: |
+  #        cd sdk/tests/android/testapp/src/main/assets
+  #        python3 -m pip install boto3
+  #        python3 ./android_file_creation.py
+  #    - name: Build Test App
+  #      run: |
+  #        cd sdk/tests/android/testapp
+  #        ../../../../android/gradlew assembledebug
+  #        ../../../../android/gradlew assembleAndroidTest
+  #        cd ~
+  #    - name: Python Script
+  #      run: |
+  #        echo "Attempting to run python script"
+  #        python3 -m pip install requests
+  #        python3 ./utils/run_android_ci.py \
+  #        --region ${{ env.AWS_DEVICE_FARM_REGION }} \
+  #        --run_id ${{ github.run_id }} \
+  #        --run_attempt ${{ github.run_attempt }} \
+  #        --project_arn $(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/DeviceFarm/ProjectArn" --query "SecretString" | cut -f5 -d\" | cut -f1 -d'\') \
+  #        --device_pool_arn $(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/DeviceFarm/DevicePoolArn" --query "SecretString" | cut -f5 -d\" | cut -f1 -d'\')
+
+  ## check that docs can still build
+  #check-docs:
+  #  runs-on: ubuntu-20.04 # latest
+  #  steps:
+  #    - uses: actions/checkout@v2
+  #    - name: Check docs
+  #      run: |
+  #        mvn install -Dmaven.test.skip
+  #        ./make-docs.py
+
+  ## ensure that aws-crt version is consistent among different files
+  #consistent-crt-version:
+  #  runs-on: ubuntu-20.04 # latest
+  #  steps:
+  #    - uses: actions/checkout@v2
+  #    - name: Consistent aws-crt version
+  #      run: |
+  #        ./update-crt.py --check_consistency
+
+  #check-codegen-edits:
+  #  runs-on: ubuntu-20.04 # latest
+  #  steps:
+  #    - uses: actions/checkout@v2
+  #      with:
+  #        fetch-depth: 0
+  #    - name: Check for edits to code-generated files
+  #      run: |
+  #        ./utils/check_codegen_edits.py
+
+  ## Runs the samples and ensures that everything is working
+  #linux-smoke-tests:
+  #  runs-on: ubuntu-latest
+  #  strategy:
+  #    fail-fast: false
+  #    matrix:
+  #      version:
+  #        - 17
+  #  permissions:
+  #    id-token: write # This is required for requesting the JWT
+  #  steps:
+  #    - name: Checkout Sources
+  #      uses: actions/checkout@v2
+  #    - name: Setup Java
+  #      uses: actions/setup-java@v2
+  #      with:
+  #        distribution: temurin
+  #        java-version: ${{ matrix.version }}
+  #        cache: maven
+  #    - name: Build ${{ env.PACKAGE_NAME }} + consumers
+  #      run: |
+  #        java -version
+  #        mvn install -Dmaven.test.skip
+  #    - name: Running samples and service client tests in CI setup
+  #      run: |
+  #        python3 -m pip install boto3
+  #        sudo apt-get update -y
+  #        sudo apt-get install softhsm -y
+  #        softhsm2-util --version
+  #    - name: configure AWS credentials (Fleet provisioning)
+  #      uses: aws-actions/configure-aws-credentials@v2
+  #      with:
+  #        role-to-assume: ${{ env.CI_FLEET_PROVISIONING_ROLE }}
+  #        aws-region: ${{ env.AWS_DEFAULT_REGION }}
+  #    - name: run Fleet Provisioning service client test for MQTT311
+  #      working-directory: ./servicetests
+  #      run: |
+  #        export PYTHONPATH=${{ github.workspace }}/utils
+  #        python3 ./test_cases/test_fleet_provisioning.py --thing-name-prefix Fleet_Thing_ --mqtt-version 3
+  #    - name: run Fleet Provisioning service client test for MQTT5
+  #      working-directory: ./servicetests
+  #      run: |
+  #        export PYTHONPATH=${{ github.workspace }}/utils
+  #        python3 ./test_cases/test_fleet_provisioning.py --thing-name-prefix Fleet_Thing_ --mqtt-version 5
+  #    - name: run Fleet Provisioning with CSR service client test for MQTT311
+  #      working-directory: ./servicetests
+  #      run: |
+  #        export PYTHONPATH=${{ github.workspace }}/utils
+  #        python3 ./test_cases/test_fleet_provisioning.py --thing-name-prefix Fleet_Thing_ --mqtt-version 3 --use-csr
+  #    - name: run Fleet Provisioning with CSR service client test for MQTT5
+  #      working-directory: ./servicetests
+  #      run: |
+  #        export PYTHONPATH=${{ github.workspace }}/utils
+  #        python3 ./test_cases/test_fleet_provisioning.py --thing-name-prefix Fleet_Thing_ --mqtt-version 5 --use-csr
+  #    - name: configure AWS credentials (Shadow)
+  #      uses: aws-actions/configure-aws-credentials@v2
+  #      with:
+  #        role-to-assume: ${{ env.CI_SHADOW_SERVICE_CLIENT_ROLE }}
+  #        aws-region: ${{ env.AWS_DEFAULT_REGION }}
+  #    - name: run Shadow service client test for MQTT311
+  #      working-directory: ./servicetests
+  #      run: |
+  #        export PYTHONPATH=${{ github.workspace }}/utils
+  #        python3 ./test_cases/test_shadow_update.py --mqtt-version 3
+  #    - name: run Shadow service client test for MQTT5
+  #      working-directory: ./servicetests
+  #      run: |
+  #        export PYTHONPATH=${{ github.workspace }}/utils
+  #        python3 ./test_cases/test_shadow_update.py --mqtt-version 5
+  #    - name: run Named Shadow service client test for MQTT311
+  #      working-directory: ./servicetests
+  #      run: |
+  #        export PYTHONPATH=${{ github.workspace }}/utils
+  #        python3 ./test_cases/test_shadow_update.py --mqtt-version 3 --use-named-shadow
+  #    - name: run Named Shadow service client test for MQTT5
+  #      working-directory: ./servicetests
+  #      run: |
+  #        export PYTHONPATH=${{ github.workspace }}/utils
+  #        python3 ./test_cases/test_shadow_update.py --mqtt-version 5 --use-named-shadow
+  #    - name: configure AWS credentials (Jobs)
+  #      uses: aws-actions/configure-aws-credentials@v2
+  #      with:
+  #        role-to-assume: ${{ env.CI_JOBS_SERVICE_CLIENT_ROLE }}
+  #        aws-region: ${{ env.AWS_DEFAULT_REGION }}
+  #    - name: run Jobs service client test for MQTT311
+  #      working-directory: ./servicetests
+  #      run: |
+  #        export PYTHONPATH=${{ github.workspace }}/utils
+  #        python3 ./test_cases/test_jobs_execution.py --mqtt-version 3
+  #    - name: run Jobs service client test for MQTT5
+  #      working-directory: ./servicetests
+  #      run: |
+  #        export PYTHONPATH=${{ github.workspace }}/utils
+  #        python3 ./test_cases/test_jobs_execution.py --mqtt-version 5
+  #    - name: configure AWS credentials (Connect and PubSub)
+  #      uses: aws-actions/configure-aws-credentials@v2
+  #      with:
+  #        role-to-assume: ${{ env.CI_PUBSUB_ROLE }}
+  #        aws-region: ${{ env.AWS_DEFAULT_REGION }}
+  #    - name: run Basic Connect sample
+  #      run: |
+  #        python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_basic_connect_cfg.json
+  #    - name: run Websocket Connect sample
+  #      run: |
+  #        python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_websocket_connect_cfg.json
+  #    - name: run PubSub sample
+  #      run: |
+  #        python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_pubsub_cfg.json
+  #    - name: run CustomKeyOperations sample
+  #      run: |
+  #        python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_custom_key_ops_cfg.json
+  #    - name: run PKCS11 Connect sample
+  #      run: |
+  #        mkdir -p /tmp/tokens
+  #        export SOFTHSM2_CONF=/tmp/softhsm2.conf
+  #        echo "directories.tokendir = /tmp/tokens" > /tmp/softhsm2.conf
+  #        python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_pkcs11_connect_cfg.json
+  #    - name: run Java keystore Connect sample
+  #      run: |
+  #        cert=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/PubSub/cert" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$cert" > /tmp/certificate.pem
+  #        key=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/PubSub/key" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$key" > /tmp/privatekey.pem
+  #        pkcs12_password=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/PubSub/key_pkcs12_password" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\")
+  #        openssl pkcs12 -export -in /tmp/certificate.pem -inkey /tmp/privatekey.pem -out /tmp/pkcs12-key.p12 -name PubSub_Thing_Alias -password pass:$pkcs12_password
+  #        keytool -importkeystore -srckeystore /tmp/pkcs12-key.p12 -destkeystore ./java_keystore.keys -srcstoretype PKCS12 -alias PubSub_Thing_Alias -srcstorepass $pkcs12_password -deststorepass $pkcs12_password
+  #        python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_keystore_connect_cfg.json
+  #    - name: configure AWS credentials (Cognito)
+  #      uses: aws-actions/configure-aws-credentials@v2
+  #      with:
+  #        role-to-assume: ${{ env.CI_COGNITO_ROLE }}
+  #        aws-region: ${{ env.AWS_DEFAULT_REGION }}
+  #    - name: run CognitoConnect sample
+  #      run: |
+  #        python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_cognito_connect_cfg.json
+  #    - name: configure AWS credentials (Custom Authorizer)
+  #      uses: aws-actions/configure-aws-credentials@v2
+  #      with:
+  #        role-to-assume: ${{ env.CI_CUSTOM_AUTHORIZER_ROLE }}
+  #        aws-region: ${{ env.AWS_DEFAULT_REGION }}
+  #    - name: run CustomAuthorizerConnect sample
+  #      run: |
+  #        python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_custom_authorizer_connect_cfg.json
+  #    - name: configure AWS credentials (Shadow)
+  #      uses: aws-actions/configure-aws-credentials@v2
+  #      with:
+  #        role-to-assume: ${{ env.CI_SHADOW_ROLE }}
+  #        aws-region: ${{ env.AWS_DEFAULT_REGION }}
+  #    - name: run Shadow sample
+  #      run: |
+  #        python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_shadow_cfg.json
+  #    - name: run Mqtt5 Shadow sample
+  #      run: |
+  #        python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_shadow_mqtt5_cfg.json
+  #    - name: configure AWS credentials (Jobs)
+  #      uses: aws-actions/configure-aws-credentials@v2
+  #      with:
+  #        role-to-assume: ${{ env.CI_JOBS_ROLE }}
+  #        aws-region: ${{ env.AWS_DEFAULT_REGION }}
+  #    - name: run Jobs sample
+  #      run: |
+  #        python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_jobs_cfg.json
+  #    - name: run Mqtt5 Jobs sample
+  #      run: |
+  #        python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_jobs_mqtt5_cfg.json
+  #    - name: configure AWS credentials (Fleet provisioning)
+  #      uses: aws-actions/configure-aws-credentials@v2
+  #      with:
+  #        role-to-assume: ${{ env.CI_FLEET_PROVISIONING_ROLE }}
+  #        aws-region: ${{ env.AWS_DEFAULT_REGION }}
+  #    - name: run Fleet Provisioning sample
+  #      run: |
+  #        python3 ./utils/run_fleet_provisioning_sample.py --file ./.github/workflows/ci_run_fleet_provisioning_cfg.json --thing-name-prefix "Fleet_Thing_"
+  #    - name: run Mqtt5 Fleet Provisioning sample
+  #      run: |
+  #        python3 ./utils/run_fleet_provisioning_sample.py --file ./.github/workflows/ci_run_fleet_provisioning_mqtt5_cfg.json --thing-name-prefix "Fleet_Thing_"
+  #    - name: configure AWS credentials (X509)
+  #      uses: aws-actions/configure-aws-credentials@v2
+  #      with:
+  #        role-to-assume: ${{ env.CI_X509_ROLE }}
+  #        aws-region: ${{ env.AWS_DEFAULT_REGION }}
+  #    - name: run X509 sample
+  #      run: |
+  #        python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_x509_connect_cfg.json
+  #    - name: configure AWS credentials (MQTT5)
+  #      uses: aws-actions/configure-aws-credentials@v2
+  #      with:
+  #        role-to-assume: ${{ env.CI_MQTT5_ROLE }}
+  #        aws-region: ${{ env.AWS_DEFAULT_REGION }}
+  #    - name: run MQTT5 PubSub sample
+  #      run: |
+  #        python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_mqtt5_pubsub_cfg.json
+  #    - name: run MQTT5 Shared Subscription sample
+  #      run: |
+  #        python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_mqtt5_shared_subscription_cfg.json
+  #    - name: configure AWS credentials (Greengrass)
+  #      uses: aws-actions/configure-aws-credentials@v2
+  #      with:
+  #        role-to-assume: ${{ env.CI_GREENGRASS_ROLE }}
+  #        aws-region: ${{ env.AWS_DEFAULT_REGION }}
+  #    - name: run Greengrass Discovery sample
+  #      run: |
+  #        python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_greengrass_discovery_cfg.json
+
+  # Runs the Greengrass samples
+  linux-greengrass-tests:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        image:
-          - manylinux2014-x64
-          - al2-x64
-          - fedora-34-x64
-          - rhel8-x64
-          #- manylinux2014-x86 until we find 32-bit linux binaries we can use
-    permissions:
-      id-token: write # This is required for requesting the JWT
-    steps:
-    - name: configure AWS credentials (containers)
-      uses: aws-actions/configure-aws-credentials@v2
-      with:
-        role-to-assume: ${{ env.CI_IOT_CONTAINERS }}
-        aws-region: ${{ env.AWS_DEFAULT_REGION }}
-    - name: Build ${{ env.PACKAGE_NAME }}
-      run: |
-        aws s3 cp s3://aws-crt-test-stuff/ci/${{ env.BUILDER_VERSION }}/linux-container-ci.sh ./linux-container-ci.sh && chmod a+x ./linux-container-ci.sh
-        ./linux-container-ci.sh ${{ env.BUILDER_VERSION }} aws-crt-${{ matrix.image }} build -p ${{ env.PACKAGE_NAME }}
-    # NOTE: we cannot run samples or DeviceAdvisor here due to container restrictions
-
-  linux-musl:
-    runs-on: ubuntu-22.04 # latest
-    strategy:
-      matrix:
-        image:
-          - alpine-3.16-x64
-          - alpine-3.16-arm64
-          - openwrt-x64-openjdk8
-    permissions:
-      id-token: write # This is required for requesting the JWT
-    steps:
-      - name: configure AWS credentials (containers)
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          role-to-assume: ${{ env.CI_IOT_CONTAINERS }}
-          aws-region: ${{ env.AWS_DEFAULT_REGION }}
-      - name: Install qemu/docker
-        run: docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-      - name: Checkout Sources
-        uses: actions/checkout@v2
-        with:
-          submodules: true
-      - name: Build ${{ env.PACKAGE_NAME }}
-        run: |
-          aws s3 cp s3://aws-crt-test-stuff/ci/${{ env.BUILDER_VERSION }}/linux-container-ci.sh ./linux-container-ci.sh && chmod a+x ./linux-container-ci.sh
-          ./linux-container-ci.sh ${{ env.BUILDER_VERSION }} aws-crt-${{ matrix.image }} build -p ${{ env.PACKAGE_NAME }}
-
-  # armv7 needs its own action due to inability to differentiate at runtime armv6 vs armv7 in the jvm:
-  #
-  # At build time we can properly figure out that we're targeting armv7.
-  # At run time we have to force armv7 (via environment variable) in order to achieve proper resource path
-  # resolution.
-  linux-musl-armv7:
-    runs-on: ubuntu-20.04 # latest
-    permissions:
-      id-token: write # This is required for requesting the JWT
-    steps:
-      - name: configure AWS credentials (containers)
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          role-to-assume: ${{ env.CI_IOT_CONTAINERS }}
-          aws-region: ${{ env.AWS_DEFAULT_REGION }}
-      - name: Install qemu/docker
-        run: docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-      - name: Checkout Sources
-        uses: actions/checkout@v2
-        with:
-          submodules: true
-      - name: Build ${{ env.PACKAGE_NAME }}
-        run: |
-          export AWS_CRT_ARCH=armv7
-          aws s3 cp s3://aws-crt-test-stuff/ci/${{ env.BUILDER_VERSION }}/linux-container-ci.sh ./linux-container-ci.sh && chmod a+x ./linux-container-ci.sh
-          ./linux-container-ci.sh ${{ env.BUILDER_VERSION }} aws-crt-alpine-3.16-armv7 build -p ${{ env.PACKAGE_NAME }}
-
-  raspberry:
-    runs-on: ubuntu-20.04 # latest
-    strategy:
-      fail-fast: false
-      matrix:
-        image:
-          - raspbian-bullseye
-    permissions:
-      id-token: write # This is required for requesting the JWT
-    steps:
-    - name: configure AWS credentials (containers)
-      uses: aws-actions/configure-aws-credentials@v2
-      with:
-        role-to-assume: ${{ env.CI_IOT_CONTAINERS }}
-        aws-region: ${{ env.AWS_DEFAULT_REGION }}
-    # set arm arch
-    - name: Install qemu/docker
-      run: docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-    - name: Build ${{ env.PACKAGE_NAME }}
-      run: |
-        aws s3 cp s3://aws-crt-test-stuff/ci/${{ env.BUILDER_VERSION }}/linux-container-ci.sh ./linux-container-ci.sh && chmod a+x ./linux-container-ci.sh
-        ./linux-container-ci.sh ${{ env.BUILDER_VERSION }} aws-crt-${{ matrix.image }} build -p ${{ env.PACKAGE_NAME }}
-
-  windows:
-    runs-on: windows-latest
-    strategy:
-      fail-fast: false
-      matrix:
         version:
-          - 8
-          - 11
-          - 17
-    permissions:
-      id-token: write # This is required for requesting the JWT
-    steps:
-    - name: Checkout Sources
-      uses: actions/checkout@v2
-    - name: Setup Java
-      uses: actions/setup-java@v2
-      with:
-        distribution: temurin
-        java-version: ${{ matrix.version }}
-        cache: maven
-    - name: Build ${{ env.PACKAGE_NAME }} + consumers
-      run: |
-        python -c "from urllib.request import urlretrieve; urlretrieve('${{ env.BUILDER_HOST }}/${{ env.BUILDER_SOURCE }}/${{ env.BUILDER_VERSION }}/builder.pyz?run=${{ env.RUN }}', 'builder.pyz')"
-        python builder.pyz build -p ${{ env.PACKAGE_NAME }} --spec=downstream
-    - name: configure AWS credentials (MQTT5)
-      uses: aws-actions/configure-aws-credentials@v2
-      with:
-        role-to-assume: ${{ env.CI_MQTT5_ROLE }}
-        aws-region: ${{ env.AWS_DEFAULT_REGION }}
-    - name: MQTT311 tests
-      shell: bash
-      run: |
-        source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt us-east-1
-        mvn test -Dtest=MqttBuilderTest -Dsurefire.failIfNoSpecifiedTests=false
-        source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt cleanup
-    - name: MQTT5 tests
-      shell: bash
-      run: |
-        source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt us-east-1
-        mvn test -Dtest=Mqtt5BuilderTest -Dsurefire.failIfNoSpecifiedTests=false
-        source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt cleanup
-    - name: Running samples in CI setup
-      run: |
-        python -m pip install boto3
-        mvn install -DskipTests
-    - name: configure AWS credentials (PubSub)
-      uses: aws-actions/configure-aws-credentials@v2
-      with:
-        role-to-assume: ${{ env.CI_PUBSUB_ROLE }}
-        aws-region: ${{ env.AWS_DEFAULT_REGION }}
-    - name: run PubSub sample
-      run: |
-        python ./utils/run_in_ci.py --file ./.github/workflows/ci_run_pubsub_cfg.json
-    - name: run Windows Certificate Connect sample
-      run: |
-        python ./utils/run_in_ci.py --file ./.github/workflows/ci_run_windows_cert_connect_cfg.json
-    - name: configure AWS credentials (MQTT5)
-      uses: aws-actions/configure-aws-credentials@v2
-      with:
-        role-to-assume: ${{ env.CI_MQTT5_ROLE }}
-        aws-region: ${{ env.AWS_DEFAULT_REGION }}
-    - name: run MQTT5 PubSub sample
-      run: |
-        python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_mqtt5_pubsub_cfg.json
-    - name: configure AWS credentials (Device Advisor)
-      uses: aws-actions/configure-aws-credentials@v2
-      with:
-        role-to-assume: ${{ env.CI_DEVICE_ADVISOR }}
-        aws-region: ${{ env.AWS_DEFAULT_REGION }}
-    - name: run DeviceAdvisor
-      run: |
-        python ./deviceadvisor/script/DATestRun.py
-
-  osx:
-    runs-on: macos-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        version:
-          - 8
-          - 11
-          - 17
-    permissions:
-      id-token: write # This is required for requesting the JWT
-    steps:
-    - name: Checkout Sources
-      uses: actions/checkout@v2
-    - name: Setup Java
-      uses: actions/setup-java@v2
-      with:
-        distribution: temurin
-        java-version: ${{ matrix.version }}
-        cache: maven
-    - name: Build ${{ env.PACKAGE_NAME }} + consumers
-      run: |
-        python3 -c "from urllib.request import urlretrieve; urlretrieve('${{ env.BUILDER_HOST }}/${{ env.BUILDER_SOURCE }}/${{ env.BUILDER_VERSION }}/builder.pyz?run=${{ env.RUN }}', 'builder')"
-        chmod a+x builder
-        ./builder build -p ${{ env.PACKAGE_NAME }} --spec=downstream
-    - name: configure AWS credentials (MQTT5)
-      uses: aws-actions/configure-aws-credentials@v2
-      with:
-        role-to-assume: ${{ env.CI_MQTT5_ROLE }}
-        aws-region: ${{ env.AWS_DEFAULT_REGION }}
-    - name: MQTT311 tests
-      run: |
-        source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt us-east-1
-        mvn test -Dtest=MqttBuilderTest -DfailIfNoTests=false -Dsurefire.failIfNoSpecifiedTests=false
-        source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt cleanup
-    - name: MQTT5 tests
-      run: |
-        source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt us-east-1
-        mvn test -Dtest=Mqtt5BuilderTest -DfailIfNoTests=false -Dsurefire.failIfNoSpecifiedTests=false
-        source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt cleanup
-    - name: Running samples in CI setup
-      run: |
-        python3 -m pip install boto3
-        mvn install -Dmaven.test.skip=true
-    - name: configure AWS credentials (PubSub)
-      uses: aws-actions/configure-aws-credentials@v2
-      with:
-        role-to-assume: ${{ env.CI_PUBSUB_ROLE }}
-        aws-region: ${{ env.AWS_DEFAULT_REGION }}
-    - name: run PubSub sample
-      run: |
-        python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_pubsub_cfg.json
-    - name: run PKCS12 Connect sample
-      run: |
-        cert=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/PubSub/cert" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$cert" > /tmp/certificate.pem
-        key=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/PubSub/key" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$key" > /tmp/privatekey.pem
-        pkcs12_password=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/PubSub/key_pkcs12_password" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\")
-        openssl pkcs12 -export -in /tmp/certificate.pem -inkey /tmp/privatekey.pem -out ./pkcs12-key.p12 -name PubSub_Thing_Alias -password pass:$pkcs12_password
-        python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_pkcs12_connect_cfg.json
-    - name: configure AWS credentials (MQTT5)
-      uses: aws-actions/configure-aws-credentials@v2
-      with:
-        role-to-assume: ${{ env.CI_MQTT5_ROLE }}
-        aws-region: ${{ env.AWS_DEFAULT_REGION }}
-    - name: run MQTT5 PubSub sample
-      run: |
-        python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_mqtt5_pubsub_cfg.json
-    - name: configure AWS credentials (Device Advisor)
-      uses: aws-actions/configure-aws-credentials@v2
-      with:
-        role-to-assume: ${{ env.CI_DEVICE_ADVISOR }}
-        aws-region: ${{ env.AWS_DEFAULT_REGION }}
-    - name: run DeviceAdvisor
-      run: |
-        python3 ./deviceadvisor/script/DATestRun.py
-
-  java-compat:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        version:
-          - 8
-          - 11
           - 17
     permissions:
       id-token: write # This is required for requesting the JWT
@@ -306,333 +656,14 @@ jobs:
           distribution: temurin
           java-version: ${{ matrix.version }}
           cache: maven
-      - name: Build ${{ env.PACKAGE_NAME }} + consumers
-        run: |
-          java -version
-          mvn -B test -Daws.crt.debugnative=true
-          mvn install -Dmaven.test.skip
-      - name: configure AWS credentials (MQTT5)
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          role-to-assume: ${{ env.CI_MQTT5_ROLE }}
-          aws-region: ${{ env.AWS_DEFAULT_REGION }}
-      - name: MQTT311 tests
-        run: |
-          source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt us-east-1
-          mvn test -Dtest=MqttBuilderTest -DfailIfNoTests=false
-          source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt cleanup
-      - name: MQTT5 tests
-        run: |
-          source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt us-east-1
-          mvn test -Dtest=Mqtt5BuilderTest -DfailIfNoTests=false
-          source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt cleanup
-      - name: Running samples in CI setup
-        run: |
-          python3 -m pip install boto3
-      - name: configure AWS credentials (PubSub)
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          role-to-assume: ${{ env.CI_PUBSUB_ROLE }}
-          aws-region: ${{ env.AWS_DEFAULT_REGION }}
-      - name: run PubSub sample
-        run: |
-          python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_pubsub_cfg.json
-      - name: configure AWS credentials (MQTT5)
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          role-to-assume: ${{ env.CI_MQTT5_ROLE }}
-          aws-region: ${{ env.AWS_DEFAULT_REGION }}
-      - name: run MQTT5 PubSub sample
-        run: |
-          python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_mqtt5_pubsub_cfg.json
-      - name: configure AWS credentials (Device Advisor)
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          role-to-assume: ${{ env.CI_DEVICE_ADVISOR }}
-          aws-region: ${{ env.AWS_DEFAULT_REGION }}
-      - name: run DeviceAdvisor
-        run: |
-          python3 ./deviceadvisor/script/DATestRun.py
-
-  android-device-farm:
-    name: Android Device Farm
-    runs-on: ubuntu-20.04 # latest
-    permissions:
-      # These permissions needed to interact with GitHub's OIDC Token endpoint
-      id-token: write # This is required for requesting the JWT
-    steps:
-      - name: Checkout Sources
-        uses: actions/checkout@v2
-        with:
-            submodules: true
-      # Setup JDK 11
-      - name: set up JDK 11
-        uses: actions/setup-java@v3
-        with:
-          java-version: '11'
-          distribution: 'temurin'
-          cache: 'gradle'
-      - name: Configure AWS credentials for Device Farm
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          role-to-assume: ${{ env.CI_ANDROID_DEVICE_TESTING_ROLE }}
-          aws-region: ${{ env.AWS_DEVICE_FARM_REGION }}
-
-      - name: Build ${{ env.PACKAGE_NAME }}
-        run: |
-          cd android
-          ./gradlew assembledebug
-          ./gradlew publishToMavenLocal -PnewVersion="1.0.0-SNAPSHOT"
-          echo "Build status report=${{ job.status }}."
-      - name: Setup Android Test Files New
-        run: |
-          cd sdk/tests/android/testapp/src/main/assets
-          python3 -m pip install boto3
-          python3 ./android_file_creation.py
-      - name: Build Test App
-        run: |
-          cd sdk/tests/android/testapp
-          ../../../../android/gradlew assembledebug
-          ../../../../android/gradlew assembleAndroidTest
-          cd ~
-      - name: Python Script
-        run: |
-          echo "Attempting to run python script"
-          python3 -m pip install requests
-          python3 ./utils/run_android_ci.py \
-          --region ${{ env.AWS_DEVICE_FARM_REGION }} \
-          --run_id ${{ github.run_id }} \
-          --run_attempt ${{ github.run_attempt }} \
-          --project_arn $(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/DeviceFarm/ProjectArn" --query "SecretString" | cut -f5 -d\" | cut -f1 -d'\') \
-          --device_pool_arn $(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/DeviceFarm/DevicePoolArn" --query "SecretString" | cut -f5 -d\" | cut -f1 -d'\')
-
-  # check that docs can still build
-  check-docs:
-    runs-on: ubuntu-20.04 # latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Check docs
-        run: |
-          mvn install -Dmaven.test.skip
-          ./make-docs.py
-
-  # ensure that aws-crt version is consistent among different files
-  consistent-crt-version:
-    runs-on: ubuntu-20.04 # latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Consistent aws-crt version
-        run: |
-          ./update-crt.py --check_consistency
-
-  check-codegen-edits:
-    runs-on: ubuntu-20.04 # latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: Check for edits to code-generated files
-        run: |
-          ./utils/check_codegen_edits.py
-
-  # Runs the samples and ensures that everything is working
-  linux-smoke-tests:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        version:
-          - 17
-    permissions:
-      id-token: write # This is required for requesting the JWT
-    steps:
-      - name: Checkout Sources
-        uses: actions/checkout@v2
-      - name: Setup Java
-        uses: actions/setup-java@v2
-        with:
-          distribution: temurin
-          java-version: ${{ matrix.version }}
-          cache: maven
-      - name: Build ${{ env.PACKAGE_NAME }} + consumers
-        run: |
-          java -version
-          mvn install -Dmaven.test.skip
-      - name: Running samples and service client tests in CI setup
-        run: |
-          python3 -m pip install boto3
-          sudo apt-get update -y
-          sudo apt-get install softhsm -y
-          softhsm2-util --version
-      - name: configure AWS credentials (Fleet provisioning)
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          role-to-assume: ${{ env.CI_FLEET_PROVISIONING_ROLE }}
-          aws-region: ${{ env.AWS_DEFAULT_REGION }}
-      - name: run Fleet Provisioning service client test for MQTT311
-        working-directory: ./servicetests
-        run: |
-          export PYTHONPATH=${{ github.workspace }}/utils
-          python3 ./test_cases/test_fleet_provisioning.py --thing-name-prefix Fleet_Thing_ --mqtt-version 3
-      - name: run Fleet Provisioning service client test for MQTT5
-        working-directory: ./servicetests
-        run: |
-          export PYTHONPATH=${{ github.workspace }}/utils
-          python3 ./test_cases/test_fleet_provisioning.py --thing-name-prefix Fleet_Thing_ --mqtt-version 5
-      - name: run Fleet Provisioning with CSR service client test for MQTT311
-        working-directory: ./servicetests
-        run: |
-          export PYTHONPATH=${{ github.workspace }}/utils
-          python3 ./test_cases/test_fleet_provisioning.py --thing-name-prefix Fleet_Thing_ --mqtt-version 3 --use-csr
-      - name: run Fleet Provisioning with CSR service client test for MQTT5
-        working-directory: ./servicetests
-        run: |
-          export PYTHONPATH=${{ github.workspace }}/utils
-          python3 ./test_cases/test_fleet_provisioning.py --thing-name-prefix Fleet_Thing_ --mqtt-version 5 --use-csr
-      - name: configure AWS credentials (Shadow)
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          role-to-assume: ${{ env.CI_SHADOW_SERVICE_CLIENT_ROLE }}
-          aws-region: ${{ env.AWS_DEFAULT_REGION }}
-      - name: run Shadow service client test for MQTT311
-        working-directory: ./servicetests
-        run: |
-          export PYTHONPATH=${{ github.workspace }}/utils
-          python3 ./test_cases/test_shadow_update.py --mqtt-version 3
-      - name: run Shadow service client test for MQTT5
-        working-directory: ./servicetests
-        run: |
-          export PYTHONPATH=${{ github.workspace }}/utils
-          python3 ./test_cases/test_shadow_update.py --mqtt-version 5
-      - name: run Named Shadow service client test for MQTT311
-        working-directory: ./servicetests
-        run: |
-          export PYTHONPATH=${{ github.workspace }}/utils
-          python3 ./test_cases/test_shadow_update.py --mqtt-version 3 --use-named-shadow
-      - name: run Named Shadow service client test for MQTT5
-        working-directory: ./servicetests
-        run: |
-          export PYTHONPATH=${{ github.workspace }}/utils
-          python3 ./test_cases/test_shadow_update.py --mqtt-version 5 --use-named-shadow
-      - name: configure AWS credentials (Jobs)
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          role-to-assume: ${{ env.CI_JOBS_SERVICE_CLIENT_ROLE }}
-          aws-region: ${{ env.AWS_DEFAULT_REGION }}
-      - name: run Jobs service client test for MQTT311
-        working-directory: ./servicetests
-        run: |
-          export PYTHONPATH=${{ github.workspace }}/utils
-          python3 ./test_cases/test_jobs_execution.py --mqtt-version 3
-      - name: run Jobs service client test for MQTT5
-        working-directory: ./servicetests
-        run: |
-          export PYTHONPATH=${{ github.workspace }}/utils
-          python3 ./test_cases/test_jobs_execution.py --mqtt-version 5
-      - name: configure AWS credentials (Connect and PubSub)
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          role-to-assume: ${{ env.CI_PUBSUB_ROLE }}
-          aws-region: ${{ env.AWS_DEFAULT_REGION }}
-      - name: run Basic Connect sample
-        run: |
-          python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_basic_connect_cfg.json
-      - name: run Websocket Connect sample
-        run: |
-          python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_websocket_connect_cfg.json
-      - name: run PubSub sample
-        run: |
-          python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_pubsub_cfg.json
-      - name: run CustomKeyOperations sample
-        run: |
-          python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_custom_key_ops_cfg.json
-      - name: run PKCS11 Connect sample
-        run: |
-          mkdir -p /tmp/tokens
-          export SOFTHSM2_CONF=/tmp/softhsm2.conf
-          echo "directories.tokendir = /tmp/tokens" > /tmp/softhsm2.conf
-          python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_pkcs11_connect_cfg.json
-      - name: run Java keystore Connect sample
-        run: |
-          cert=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/PubSub/cert" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$cert" > /tmp/certificate.pem
-          key=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/PubSub/key" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$key" > /tmp/privatekey.pem
-          pkcs12_password=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/PubSub/key_pkcs12_password" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\")
-          openssl pkcs12 -export -in /tmp/certificate.pem -inkey /tmp/privatekey.pem -out /tmp/pkcs12-key.p12 -name PubSub_Thing_Alias -password pass:$pkcs12_password
-          keytool -importkeystore -srckeystore /tmp/pkcs12-key.p12 -destkeystore ./java_keystore.keys -srcstoretype PKCS12 -alias PubSub_Thing_Alias -srcstorepass $pkcs12_password -deststorepass $pkcs12_password
-          python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_keystore_connect_cfg.json
-      - name: configure AWS credentials (Cognito)
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          role-to-assume: ${{ env.CI_COGNITO_ROLE }}
-          aws-region: ${{ env.AWS_DEFAULT_REGION }}
-      - name: run CognitoConnect sample
-        run: |
-          python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_cognito_connect_cfg.json
-      - name: configure AWS credentials (Custom Authorizer)
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          role-to-assume: ${{ env.CI_CUSTOM_AUTHORIZER_ROLE }}
-          aws-region: ${{ env.AWS_DEFAULT_REGION }}
-      - name: run CustomAuthorizerConnect sample
-        run: |
-          python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_custom_authorizer_connect_cfg.json
-      - name: configure AWS credentials (Shadow)
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          role-to-assume: ${{ env.CI_SHADOW_ROLE }}
-          aws-region: ${{ env.AWS_DEFAULT_REGION }}
-      - name: run Shadow sample
-        run: |
-          python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_shadow_cfg.json
-      - name: run Mqtt5 Shadow sample
-        run: |
-          python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_shadow_mqtt5_cfg.json
-      - name: configure AWS credentials (Jobs)
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          role-to-assume: ${{ env.CI_JOBS_ROLE }}
-          aws-region: ${{ env.AWS_DEFAULT_REGION }}
-      - name: run Jobs sample
-        run: |
-          python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_jobs_cfg.json
-      - name: run Mqtt5 Jobs sample
-        run: |
-          python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_jobs_mqtt5_cfg.json
-      - name: configure AWS credentials (Fleet provisioning)
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          role-to-assume: ${{ env.CI_FLEET_PROVISIONING_ROLE }}
-          aws-region: ${{ env.AWS_DEFAULT_REGION }}
-      - name: run Fleet Provisioning sample
-        run: |
-          python3 ./utils/run_fleet_provisioning_sample.py --file ./.github/workflows/ci_run_fleet_provisioning_cfg.json --thing-name-prefix "Fleet_Thing_"
-      - name: run Mqtt5 Fleet Provisioning sample
-        run: |
-          python3 ./utils/run_fleet_provisioning_sample.py --file ./.github/workflows/ci_run_fleet_provisioning_mqtt5_cfg.json --thing-name-prefix "Fleet_Thing_"
-      - name: configure AWS credentials (X509)
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          role-to-assume: ${{ env.CI_X509_ROLE }}
-          aws-region: ${{ env.AWS_DEFAULT_REGION }}
-      - name: run X509 sample
-        run: |
-          python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_x509_connect_cfg.json
-      - name: configure AWS credentials (MQTT5)
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          role-to-assume: ${{ env.CI_MQTT5_ROLE }}
-          aws-region: ${{ env.AWS_DEFAULT_REGION }}
-      - name: run MQTT5 PubSub sample
-        run: |
-          python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_mqtt5_pubsub_cfg.json
-      - name: run MQTT5 Shared Subscription sample
-        run: |
-          python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_mqtt5_shared_subscription_cfg.json
       - name: configure AWS credentials (Greengrass)
         uses: aws-actions/configure-aws-credentials@v2
         with:
           role-to-assume: ${{ env.CI_GREENGRASS_ROLE }}
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
-      - name: run Greengrass Discovery sample
+      - name: Install Greengrass core
         run: |
-          python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_greengrass_discovery_cfg.json
+          curl -s https://d2s8p88vqu9w66.cloudfront.net/releases/greengrass-nucleus-latest.zip > greengrass-nucleus-latest.zip
+          unzip greengrass-nucleus-latest.zip -d GreengrassInstaller && rm greengrass-nucleus-latest.zip
+          java -jar ./GreengrassInstaller/lib/Greengrass.jar --version
+          sudo -E java -Droot="/greengrass/v2" -Dlog.store=FILE -jar ./GreengrassInstaller/lib/Greengrass.jar --aws-region region --thing-name CI_GreengrassCore --thing-group-name CI_GreengrassCoreGroup --thing-policy-name GreengrassV2IoTThingPolicy --tes-role-name GreengrassV2TokenExchangeRole --tes-role-alias-name GreengrassCoreTokenExchangeRoleAlias --component-default-user ggc_user:ggc_group --provision true --setup-system-service true
