@@ -27,6 +27,7 @@ env:
   CI_JOBS_ROLE: arn:aws:iam::180635532705:role/CI_Jobs_Role
   CI_FLEET_PROVISIONING_ROLE: arn:aws:iam::180635532705:role/service-role/CI_FleetProvisioning_Role
   CI_GREENGRASS_ROLE: arn:aws:iam::180635532705:role/CI_Greengrass_Role
+  CI_GREENGRASS_INSTALLER_ROLE: arn:aws:iam::180635532705:role/CI_GreengrassInstaller_Role
   CI_DEVICE_ADVISOR: arn:aws:iam::180635532705:role/CI_DeviceAdvisor_Role
   CI_X509_ROLE: arn:aws:iam::180635532705:role/CI_X509_Role
   CI_MQTT5_ROLE: arn:aws:iam::180635532705:role/CI_MQTT5_Role
@@ -659,7 +660,7 @@ jobs:
       - name: configure AWS credentials (Greengrass)
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: ${{ env.CI_GREENGRASS_ROLE }}
+          role-to-assume: ${{ env.CI_GREENGRASS_INSTALLER_ROLE }}
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
       - name: Install Greengrass core
         run: |
