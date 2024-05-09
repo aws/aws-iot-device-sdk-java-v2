@@ -211,7 +211,7 @@ jobs:
         python ./deviceadvisor/script/DATestRun.py
 
   osx:
-    runs-on: macos-latest
+    runs-on: macos
     strategy:
       fail-fast: false
       matrix:
@@ -252,9 +252,6 @@ jobs:
         source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt cleanup
     - name: Running samples in CI setup
       run: |
-        python3 -m venv .venv
-        source .venv/bin/activate
-        python3 -m pip install boto3
         mvn install -Dmaven.test.skip=true
     - name: configure AWS credentials (PubSub)
       uses: aws-actions/configure-aws-credentials@v2
