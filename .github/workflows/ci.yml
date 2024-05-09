@@ -252,6 +252,7 @@ jobs:
         source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt cleanup
     - name: Running samples in CI setup
       run: |
+        python3 -m pip install boto3
         mvn install -Dmaven.test.skip=true
     - name: configure AWS credentials (PubSub)
       uses: aws-actions/configure-aws-credentials@v2
