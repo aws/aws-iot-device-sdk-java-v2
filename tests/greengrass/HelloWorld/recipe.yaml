@@ -1,9 +1,9 @@
 ---
 RecipeFormatVersion: "2020-01-25"
 ComponentName: com.example.PythonHelloWorld
-ComponentVersion: "1.0.0"
-ComponentDescription: "This is simple Hello World component written in Python."
-ComponentPublisher: "Amazon"
+ComponentVersion: '1.0.0'
+ComponentDescription: This is simple Hello World component written in Python.
+ComponentPublisher: Amazon
 ComponentConfiguration:
   DefaultConfiguration:
     Message: "World"
@@ -11,6 +11,7 @@ Manifests:
   - Platform:
       os: all
     Artifacts:
-      - URI: "file://main.py"
+      - URI: "file:main.py"
     Lifecycle:
-      Run: "python3 -u {artifacts:path}/main.py {configuration:/Message}"
+      Run: |
+        echo "Path is"
