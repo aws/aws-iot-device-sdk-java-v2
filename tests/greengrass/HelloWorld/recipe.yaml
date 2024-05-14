@@ -12,6 +12,10 @@ Manifests:
       os: all
     Artifacts:
       - URI: "file:main.py"
+      - URI: "file:src/greeter.py"
     Lifecycle:
       Run: |
-        echo "Path is"
+        echo "Path is" {artifacts:path}
+        mkdir {artifacts:path}/src/
+        mv {artifacts:path}/greeter.py {artifacts:path}/src/
+        python3 -u {artifacts:path}/main.py '{configuration:/Message}'
