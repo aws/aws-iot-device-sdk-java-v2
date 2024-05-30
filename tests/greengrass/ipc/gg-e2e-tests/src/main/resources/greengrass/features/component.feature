@@ -1,10 +1,11 @@
-Feature: Testing device
-    @HelloWorld
+Feature: Testing features of Greengrassv2 IPC sample
+
+    @testgg
     Scenario: As a developer, I can create a component and deploy it on my device
         Given my device is registered as a Thing
         And my device is running Greengrass
         When I create a Greengrass deployment with components
-            | com.example.PythonHelloWorld | file:/Users/igorabd/projects/aws-iot-device-sdk-java-v2/tests/greengrass/HelloWorld/recipe.yaml |
+            | software.amazon.awssdk.sdk-gg-ipc | file:recipe.yaml |
         And I deploy the Greengrass deployment configuration
         Then the Greengrass deployment is COMPLETED on the device after 180 seconds
-        And I call my custom step
+        And the software.amazon.awssdk.sdk-gg-ipc log on the device contains the line "Successfully published IPC message to IoT Core" within 20 seconds

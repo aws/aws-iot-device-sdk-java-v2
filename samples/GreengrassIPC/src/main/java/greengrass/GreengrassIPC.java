@@ -3,19 +3,6 @@
  * SPDX-License-Identifier: Apache-2.0.
  */
 
-/**
- * This sample uses AWS IoT Greengrass V2 to publish messages from the Greengrass device to the
- * AWS IoT MQTT broker.
- *
- * This sample can be deployed as a Greengrass V2 component and it will publish 10 MQTT messages
- * over the course of 10 seconds. The IPC integration with Greengrass V2 allows this code to run
- * without additional IoT certificates or secrets, because it directly communicates with the
- * Greengrass core running on the device. As such, to run this sample you need Greengrass Core running.
- *
- * For more information, see the samples README.md file at:
- * https://github.com/aws/aws-iot-device-sdk-python-v2/tree/main/samples
- */
-
 package greengrass;
 
 import java.nio.charset.StandardCharsets;
@@ -29,7 +16,18 @@ import software.amazon.awssdk.aws.greengrass.model.PublishToIoTCoreRequest;
 import software.amazon.awssdk.aws.greengrass.model.PublishToIoTCoreResponse;
 import software.amazon.awssdk.aws.greengrass.model.QOS;
 
-class GreengrassIPC {
+/**
+ * This sample uses AWS IoT Greengrass V2 to publish messages from the Greengrass device to the
+ * AWS IoT MQTT broker.
+ * <p>
+ * This sample can be deployed as a Greengrass V2 component and it will publish 10 MQTT messages
+ * over the course of 10 seconds. The IPC integration with Greengrass V2 allows this code to run
+ * without additional IoT certificates or secrets, because it directly communicates with the
+ * Greengrass core running on the device. As such, to run this sample you need Greengrass Core running.
+ * <p>
+ * For more information, see the samples <a href="https://github.com/aws/aws-iot-device-sdk-java-v2/blob/main/samples/GreengrassIPC/README.md">README.md</a> file.
+ */
+public class GreengrassIPC {
     // When run normally, we want to exit nicely even if something goes wrong
     // When run from CI, we want to let an exception escape which in turn causes the
     // exec:java task to return a non-zero exit code
@@ -45,9 +43,9 @@ class GreengrassIPC {
     static int sampleMessagesSent = 0;
 
     /*
-    * When called during a CI run, throw an exception that will escape and fail the exec:java task
-    * When called otherwise, print what went wrong (if anything) and just continue (return from main)
-    */
+     * When called during a CI run, throw an exception that will escape and fail the exec:java task
+     * When called otherwise, print what went wrong (if anything) and just continue (return from main)
+     */
     static void onApplicationFailure(Throwable cause) {
         if (isCI) {
             throw new RuntimeException("BasicPubSub execution failure", cause);
@@ -58,7 +56,7 @@ class GreengrassIPC {
 
     /**
      * A simple helper function to print a message when running locally (will not print in CI)
-    */
+     */
     static void logMessage(String message) {
         if (!isCI) {
             System.out.println(message);
@@ -67,7 +65,7 @@ class GreengrassIPC {
 
     /**
      * A helper function to generate a JSON payload to send via IPC to simplify/separate sample code.
-    */
+     */
     public static String getIpcPayloadString() {
         // Get the current time as a formatted string
         String timestamp = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH:mm:ss").format(LocalDateTime.now());
@@ -108,7 +106,7 @@ class GreengrassIPC {
             logMessage("Could not get IoT Thing name from AWS_IOT_THING_NAME. Using name 'TestThing'...");
             topicNameFromEnv = "TestThing";
         }
-        String topicName = String.format("my/iot/%s/telementry", topicNameFromEnv);
+        String topicName = String.format("my/iot/%s/telemetry", topicNameFromEnv);
 
         // Create the IPC request, except the payload. The payload will be created right before sending.
         PublishToIoTCoreRequest publishRequest = new PublishToIoTCoreRequest();
@@ -150,7 +148,7 @@ class GreengrassIPC {
             System.exit(-1);
         }
 
-         logMessage("Greengrass IPC sample finished");
-         System.exit(0);
+        logMessage("Greengrass IPC sample finished");
+        System.exit(0);
     }
 }
