@@ -657,15 +657,27 @@ jobs:
           distribution: temurin
           java-version: ${{ matrix.version }}
           cache: maven
+      - name: Build ${{ env.PACKAGE_NAME }} + consumers
+        run: |
+          java -version
+          mvn install -Dmaven.test.skip
       - name: configure AWS credentials (Greengrass)
         uses: aws-actions/configure-aws-credentials@v2
         with:
           role-to-assume: ${{ env.CI_GREENGRASS_INSTALLER_ROLE }}
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
-      - name: Install Greengrass core
+      - name: Build and run Greengrass IPC sample
+        working-directory: ./tests/greengrass/ipc
         run: |
-          curl -s https://d2s8p88vqu9w66.cloudfront.net/releases/greengrass-nucleus-latest.zip > greengrass-nucleus-latest.zip
-          unzip greengrass-nucleus-latest.zip -d GreengrassInstaller && rm greengrass-nucleus-latest.zip
-          java -jar ./GreengrassInstaller/lib/Greengrass.jar --version
-          sudo -E java -Droot="/greengrass/v2" -Dlog.store=FILE -jar ./GreengrassInstaller/lib/Greengrass.jar --aws-region us-east-1 --thing-name CI_GreengrassCore --thing-group-name CI_GreengrassCoreGroup --thing-policy-name GreengrassV2IoTThingPolicy --tes-role-name GreengrassV2TokenExchangeRole --tes-role-alias-name GreengrassCoreTokenExchangeRoleAlias --component-default-user ggc_user:ggc_group --provision true --setup-system-service true --deploy-dev-tools true
-          /greengrass/v2/bin/greengrass-cli deployment create
+          gdk component build
+          gdk test-e2e build
+          gdk test-e2e run
+      - name: Show logs
+        working-directory: ./tests/greengrass/ipc
+        # Print logs unconditionally to provide more details on Greengrass run even if the test failed.
+        if: always()
+        run: |
+          echo "=== greengrass.log"
+          cat testResults/gg*/greengrass.log
+          echo "=== software.amazon.awssdk.sdk-gg-ipc.log"
+          cat testResults/gg*/software.amazon.awssdk.sdk-gg-ipc.log
