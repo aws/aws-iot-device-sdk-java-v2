@@ -211,10 +211,13 @@ jobs:
         python ./deviceadvisor/script/DATestRun.py
 
   osx:
-    runs-on: macos-13
+    runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: false
       matrix:
+        runner:
+          - macos-13
+          - macos-latest
         version:
           - 8
           - 11
