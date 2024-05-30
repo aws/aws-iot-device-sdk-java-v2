@@ -211,10 +211,13 @@ jobs:
         python ./deviceadvisor/script/DATestRun.py
 
   osx:
-    runs-on: macos-13
+    runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: false
       matrix:
+        runner:
+          - macos-13
+          - macos-latest
         version:
           - 8
           - 11
@@ -252,6 +255,8 @@ jobs:
         source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt cleanup
     - name: Running samples in CI setup
       run: |
+        python3 -m venv .venv
+        source .venv/bin/activate
         python3 -m pip install boto3
         mvn install -Dmaven.test.skip=true
     - name: configure AWS credentials (PubSub)
@@ -261,6 +266,7 @@ jobs:
         aws-region: ${{ env.AWS_DEFAULT_REGION }}
     - name: run PubSub sample
       run: |
+        source .venv/bin/activate
         python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_pubsub_cfg.json
     - name: run PKCS12 Connect sample
       run: |
@@ -268,6 +274,7 @@ jobs:
         key=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/PubSub/key" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$key" > /tmp/privatekey.pem
         pkcs12_password=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/PubSub/key_pkcs12_password" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\")
         openssl pkcs12 -export -in /tmp/certificate.pem -inkey /tmp/privatekey.pem -out ./pkcs12-key.p12 -name PubSub_Thing_Alias -password pass:$pkcs12_password
+        source .venv/bin/activate
         python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_pkcs12_connect_cfg.json
     - name: configure AWS credentials (MQTT5)
       uses: aws-actions/configure-aws-credentials@v2
@@ -276,6 +283,7 @@ jobs:
         aws-region: ${{ env.AWS_DEFAULT_REGION }}
     - name: run MQTT5 PubSub sample
       run: |
+        source .venv/bin/activate
         python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_mqtt5_pubsub_cfg.json
     - name: configure AWS credentials (Device Advisor)
       uses: aws-actions/configure-aws-credentials@v2
@@ -284,6 +292,7 @@ jobs:
         aws-region: ${{ env.AWS_DEFAULT_REGION }}
     - name: run DeviceAdvisor
       run: |
+        source .venv/bin/activate
         python3 ./deviceadvisor/script/DATestRun.py
 
   java-compat:
