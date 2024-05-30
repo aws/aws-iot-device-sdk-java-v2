@@ -8,7 +8,7 @@ For Greengrass IPC sample to work, it should be deployed as a Greengrass compone
 The following files defines this component:
 
 - [gdk-config.json](./gdk-config.json) - `gdk` reads this file to build and publish component.
-- [copy_files.sh](./copy_files.sh) - utility to copy all required files for `gdk` to be able to build the component.
+- [pom.xml](./pom.xml) - Maven configuration for Greengrass IPC test.
 - [recipe.yaml](./recipe.yaml) - defines a component's details, dependencies, artifacts, and lifecycles.
 
 ### How the test runs
