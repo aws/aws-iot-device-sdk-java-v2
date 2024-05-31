@@ -518,8 +518,6 @@ public class CommandLineUtils {
         registerCommand(m_cmd_thing_name, "<str>", "The name of the IoT thing.");
         registerCommand(m_cmd_topic, "<str>", "Topic to subscribe/publish to (optional, default='test/topic').");
         registerCommand(m_cmd_mode, "<str>", "Mode options: 'both', 'publish', or 'subscribe' (optional, default='both').");
-        registerCommand(m_cmd_message, "<str>", "The message to send in the payload (optional, default='')");
-        registerCommand(m_cmd_count, "<int>", "Number of messages to publish (optional, default='10').");
         registerCommand(m_cmd_print_discover_resp_only, "<str>", "Exists the sample after printing the discovery result (optional, default='False')");
         sendArguments(args);
 
@@ -531,8 +529,6 @@ public class CommandLineUtils {
         returnData.input_signingRegion = getCommandRequired(m_cmd_region, m_cmd_signing_region);
         returnData.input_topic = getCommandOrDefault(m_cmd_topic, "test/topic");
         returnData.input_mode = getCommandOrDefault(m_cmd_mode, "Hello World!");
-        returnData.input_message = getCommandOrDefault(m_cmd_message, "");
-        returnData.input_count = Integer.parseInt(getCommandOrDefault(m_cmd_count, "10"));
         returnData.input_proxyHost = getCommandOrDefault(m_cmd_proxy_host, "");
         returnData.input_proxyPort = Integer.parseInt(getCommandOrDefault(m_cmd_proxy_port, "0"));
         returnData.inputPrintDiscoverRespOnly = hasCommand(m_cmd_print_discover_resp_only);
