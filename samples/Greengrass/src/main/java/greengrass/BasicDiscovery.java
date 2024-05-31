@@ -47,7 +47,7 @@ public class BasicDiscovery {
 
     public static void main(String[] args) {
 
-        /**
+        /*
          * cmdData is the arguments/input from the command line placed into a single struct for
          * use in this sample. This handles all of the command line parsing, validating, etc.
          * See the Utils/CommandLineUtils for more information.
@@ -96,17 +96,12 @@ public class BasicDiscovery {
                         }
 
                         final Scanner scanner = new Scanner(System.in);
-                        int cnt = 0;
-                        while (cnt++ < 3) {
+                        while (true) {
                             String input = null;
                             if ("publish".equals(cmdData.input_mode) || "both".equals(cmdData.input_mode)) {
-                                if (cmdData.input_message.isEmpty()) {
-                                    System.out.println("Enter the message you want to publish to topic " + cmdData.input_topic + " and press Enter. " +
-                                            "Type 'exit' or 'quit' to exit this program: ");
-                                    input = scanner.nextLine();
-                                } else {
-                                    input = cmdData.input_message;
-                                }
+                                System.out.println("Enter the message you want to publish to topic " + cmdData.input_topic + " and press Enter. " +
+                                        "Type 'exit' or 'quit' to exit this program: ");
+                                input = scanner.nextLine();
                             }
 
                             if ("exit".equals(input) || "quit".equals(input)) {
@@ -127,7 +122,6 @@ public class BasicDiscovery {
             System.out.println("Exception thrown: " + ex.toString());
             ex.printStackTrace();
         }
-        System.out.println("Waiting for CRT cleanup...");
         CrtResource.waitForNoResources();
         System.out.println("Complete!");
     }

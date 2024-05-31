@@ -261,6 +261,13 @@ def launch_runnable(runnable_dir):
         print("No configuration JSON file data found!")
         return -1
 
+    # Prepare data for runnable's STDIN
+    subprocess_stdin = None
+    if "stdin_file" in config_json:
+        stdin_file = os.path.join(runnable_dir, config_json['stdin_file'])
+        with open(stdin_file, "rb") as file:
+            subprocess_stdin = file.read()
+
     exit_code = 0
 
     print("Launching runnable...")
@@ -303,7 +310,7 @@ def launch_runnable(runnable_dir):
 
         argument_string = subprocess.list2cmdline(arguments) + " " + arguments_as_string
         print(f"Running cmd: {argument_string}")
-        runnable_return = subprocess.run(argument_string, shell=True)
+        runnable_return = subprocess.run(argument_string, input=subprocess_stdin, shell=True)
         exit_code = runnable_return.returncode
 
     # C++

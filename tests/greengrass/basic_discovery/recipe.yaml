@@ -23,6 +23,7 @@ Manifests:
       - URI: "file:target/run_in_ci.py"
       - URI: "file:target/GreengrassDiscoveryTest-1.0-SNAPSHOT-jar-with-dependencies.jar"
       - URI: "file:hello_world_subscriber.py"
+      - URI: "file:messages.txt"
     Lifecycle:
       Install: |
         echo "GG core:" {iot:thingName}
