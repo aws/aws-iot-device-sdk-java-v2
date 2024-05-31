@@ -661,15 +661,30 @@ jobs:
         run: |
           java -version
           mvn install -Dmaven.test.skip
+      - name: Install Greengrass Development Kit
+        run: |
+          python3 -m pip install awsiotsdk
+          python3 -m pip install -U git+https://github.com/aws-greengrass/aws-greengrass-gdk-cli.git@v1.6.2
       - name: configure AWS credentials (Greengrass)
         uses: aws-actions/configure-aws-credentials@v2
         with:
           role-to-assume: ${{ env.CI_GREENGRASS_INSTALLER_ROLE }}
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
-      - name: Install Greengrass Development Kit
+      - name: Build and run Greengrass basic discovery sample
+        working-directory: ./tests/greengrass/basic_discovery
         run: |
-          python3 -m pip install awsiotsdk
-          python3 -m pip install -U git+https://github.com/aws-greengrass/aws-greengrass-gdk-cli.git@v1.6.2
+          gdk component build
+          gdk test-e2e build
+          gdk test-e2e run
+      - name: Show logs
+        working-directory: ./tests/greengrass/basic_discovery
+        # Print logs unconditionally to provide more details on Greengrass run even if the test failed.
+        if: always()
+        run: |
+          echo "=== greengrass.log"
+          cat testResults/gg*/greengrass.log
+          echo "=== software.amazon.awssdk.sdk-gg-test-discovery.log"
+          cat testResults/gg*/software.amazon.awssdk.sdk-gg-test-discovery.log
       - name: Build and run Greengrass IPC sample
         working-directory: ./tests/greengrass/ipc
         run: |
