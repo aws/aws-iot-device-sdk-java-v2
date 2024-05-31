@@ -298,9 +298,6 @@ def launch_runnable(runnable_dir):
 
         arguments = ["java"]
         arguments.append("-Daws.crt.ci=True")
-        arguments.append("-DNATIVE_DEBUG_PROPERTY_NAME=1")
-        arguments.append("-Daws.crt.debugnative=true")
-        arguments.append("-Daws.crt.log.level=Debug")
         arguments.append("-jar")
         arguments.append(runnable_file)
 
