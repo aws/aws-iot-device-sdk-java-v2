@@ -155,60 +155,60 @@ public class BasicDiscovery {
     ) throws ExecutionException, InterruptedException {
         final CompletableFuture<DiscoverResponse> futureResponse = discoveryClient.discover(input_thingName);
         final DiscoverResponse response = futureResponse.get();
-        if (response.getGGGroups() != null) {
-            final Optional<GGGroup> groupOpt = response.getGGGroups().stream().findFirst();
-            if (groupOpt.isPresent()) {
-                final GGGroup group = groupOpt.get();
-                final GGCore core = group.getCores().stream().findFirst().get();
 
-                for (ConnectivityInfo connInfo : core.getConnectivity()) {
-                    final String dnsOrIp = connInfo.getHostAddress();
-                    final Integer port = connInfo.getPortNumber();
+        if (response.getGGGroups() == null) {
+            throw new RuntimeException("ThingName " + input_thingName + " does not have a Greengrass group/core configuration");
+        }
+        final Optional<GGGroup> groupOpt = response.getGGGroups().stream().findFirst();
+        if (!groupOpt.isPresent()) {
+            throw new RuntimeException("ThingName " + input_thingName + " does not have a Greengrass group/core configuration");
+        }
 
-                    System.out.println(String.format("Connecting to group ID %s, with thing arn %s, using endpoint %s:%d",
-                            group.getGGGroupId(), core.getThingArn(), dnsOrIp, port));
+        final GGGroup group = groupOpt.get();
+        final GGCore core = group.getCores().stream().findFirst().get();
 
-                    final AwsIotMqttConnectionBuilder connectionBuilder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(input_certPath, input_keyPath)
-                            .withClientId(input_thingName)
-                            .withPort(port)
-                            .withEndpoint(dnsOrIp)
-                            .withConnectionEventCallbacks(new MqttClientConnectionEvents() {
-                                @Override
-                                public void onConnectionInterrupted(int errorCode) {
-                                    System.out.println("Connection interrupted: " + errorCode);
-                                }
+        for (ConnectivityInfo connInfo : core.getConnectivity()) {
+            final String dnsOrIp = connInfo.getHostAddress();
+            final Integer port = connInfo.getPortNumber();
 
-                                @Override
-                                public void onConnectionResumed(boolean sessionPresent) {
-                                    System.out.println("Connection resumed!");
-                                }
-                            });
-                    if (group.getCAs() != null) {
-                        connectionBuilder.withCertificateAuthority(group.getCAs().get(0));
-                    }
+            System.out.printf("Connecting to group ID %s, with thing arn %s, using endpoint %s:%d%n",
+                    group.getGGGroupId(), core.getThingArn(), dnsOrIp, port);
 
-                    try (MqttClientConnection connection = connectionBuilder.build()) {
-                        if (connection.connect().get()) {
-                            System.out.println("Session resumed");
-                        } else {
-                            System.out.println("Started a clean session");
+            try (final AwsIotMqttConnectionBuilder connectionBuilder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(input_certPath, input_keyPath)
+                    .withClientId(input_thingName)
+                    .withPort(port)
+                    .withEndpoint(dnsOrIp)
+                    .withConnectionEventCallbacks(new MqttClientConnectionEvents() {
+                        @Override
+                        public void onConnectionInterrupted(int errorCode) {
+                            System.out.println("Connection interrupted: " + errorCode);
                         }
 
-                        /* This lets the connection escape the try block without getting cleaned up */
-                        connection.addRef();
-                        // TODO Use try-with-resources
-                        connectionBuilder.close();
-                        return connection;
-                    } catch (Exception e) {
-                        System.out.println(String.format("Connection failed with exception %s", e.toString()));
-                    }
-
-                    connectionBuilder.close();
+                        @Override
+                        public void onConnectionResumed(boolean sessionPresent) {
+                            System.out.println("Connection resumed!");
+                        }
+                    })) {
+                if (group.getCAs() != null) {
+                    connectionBuilder.withCertificateAuthority(group.getCAs().get(0));
                 }
 
-                throw new RuntimeException("ThingName " + input_thingName + " could not connect to the green grass core using any of the endpoint connectivity options");
+                try (MqttClientConnection connection = connectionBuilder.build()) {
+                    if (connection.connect().get()) {
+                        System.out.println("Session resumed");
+                    } else {
+                        System.out.println("Started a clean session");
+                    }
+
+                    /* This lets the connection escape the try block without getting cleaned up */
+                    connection.addRef();
+                    return connection;
+                } catch (Exception e) {
+                    System.out.println(String.format("Connection failed with exception %s", e.toString()));
+                }
             }
         }
-        throw new RuntimeException("ThingName " + input_thingName + " does not have a Greengrass group/core configuration");
+
+        throw new RuntimeException("ThingName " + input_thingName + " could not connect to the green grass core using any of the endpoint connectivity options");
     }
 }

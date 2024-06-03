@@ -290,7 +290,7 @@ def launch_runnable(runnable_dir):
         # We have to do this as a string, unfortunately, due to how -Dexec.args= works...
         argument_string = subprocess.list2cmdline(arguments) + " -Dexec.args=\"" + arguments_as_string + "\""
         print(f"Running cmd: {argument_string}")
-        runnable_return = subprocess.run(argument_string, shell=True)
+        runnable_return = subprocess.run(argument_string, input=subprocess_stdin, shell=True)
         exit_code = runnable_return.returncode
 
     elif (config_json['language'] == "Java JAR"):
@@ -316,7 +316,7 @@ def launch_runnable(runnable_dir):
     # C++
     elif (config_json['language'] == "CPP"):
         runnable_file = os.path.join(runnable_dir, config_json['runnable_file'])
-        runnable_return = subprocess.run(args=config_json_arguments_list, executable=runnable_file)
+        runnable_return = subprocess.run(args=config_json_arguments_list, input=subprocess_stdin, executable=runnable_file)
         exit_code = runnable_return.returncode
 
     elif (config_json['language'] == "Python"):
@@ -324,7 +324,7 @@ def launch_runnable(runnable_dir):
         config_json_arguments_list.append("True")
 
         runnable_return = subprocess.run(
-            args=[sys.executable, config_json['runnable_file']] + config_json_arguments_list)
+            args=[sys.executable, config_json['runnable_file']] + config_json_arguments_list, input=subprocess_stdin)
         exit_code = runnable_return.returncode
 
     elif (config_json['language'] == "Javascript"):
@@ -354,7 +354,7 @@ def launch_runnable(runnable_dir):
                     args=arguments + config_json_arguments_list, shell=True)
             else:
                 runnable_return_two = subprocess.run(
-                    args=arguments + config_json_arguments_list)
+                    args=arguments + config_json_arguments_list, input=subprocess_stdin)
 
             if (runnable_return_two != None):
                 exit_code = runnable_return_two.returncode
