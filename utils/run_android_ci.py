@@ -18,6 +18,7 @@ parser.add_argument('--run_id', required=True, help="A unique number for each wo
 parser.add_argument('--run_attempt', required=True, help="A unique number for each attempt of a particular workflow run in a repository")
 parser.add_argument('--project_arn', required=True, help="Arn for the Device Farm Project the apk will be tested on")
 parser.add_argument('--device_pool_arn', required=True, help="Arn for device pool of the Device Farm Project the apk will be tested on")
+parser.add_argument('--device_pool', required=True, help="Which device pool is being used for this test")
 
 current_working_directory = os.getcwd()
 build_file_location = current_working_directory + '/sdk/tests/android/testapp/build/outputs/apk/debug/testapp-debug.apk'
@@ -30,6 +31,7 @@ def main():
     run_attempt = args.run_attempt
     project_arn = args.project_arn
     device_pool_arn = args.device_pool_arn
+    device_pool = args.device_pool
 
     print("Beginning Android Device Farm Setup\n")
 
@@ -43,7 +45,7 @@ def main():
 
 
     # Upload the build apk file to Device Farm
-    upload_file_name = 'CI-' + run_id + '-' + run_attempt + '.apk'
+    upload_file_name = 'CI-' + run_id + '-' + run_attempt + '-' + device_pool + '.apk'
     print('Upload file name: ' + upload_file_name)
 
     # Setup upload to Device Farm project
@@ -70,7 +72,7 @@ def main():
         device_farm_upload_status = client.get_upload(arn=device_farm_upload_arn)
 
     # Upload the instrumentation test package to Device Farm
-    upload_test_file_name = 'CI-' + run_id + '-' + run_attempt + 'tests.apk'
+    upload_test_file_name = 'CI-' + run_id + '-' + run_attempt + '-' + device_pool + 'tests.apk'
     create_upload_response = client.create_upload(
         projectArn=project_arn,
         name=upload_test_file_name,
