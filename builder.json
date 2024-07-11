@@ -31,7 +31,9 @@
         "linux": {
             "architectures": {
                 "armv7": {
-                    "!packages": []
+                    "!packages": [
+                        "maven"
+                    ]
                 }
             }
         }
