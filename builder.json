@@ -27,6 +27,17 @@
             "!packages": []
         }
     },
+    "targets": {
+        "linux": {
+            "architectures": {
+                "armv7": {
+                    "!packages": [
+                        "maven"
+                    ]
+                }
+            }
+        }
+    },
     "variants" : {
         "skip_test": {
             "!test_steps": []
