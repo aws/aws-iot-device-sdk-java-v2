@@ -8,6 +8,7 @@
 package software.amazon.awssdk.aws.greengrass.model;
 
 import com.google.gson.annotations.Expose;
+import java.lang.Boolean;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
@@ -47,10 +48,17 @@ public class GetSecretValueRequest implements EventStreamJsonMessage {
   )
   private Optional<String> versionStage;
 
+  @Expose(
+      serialize = true,
+      deserialize = true
+  )
+  private Optional<Boolean> refresh;
+
   public GetSecretValueRequest() {
     this.secretId = Optional.empty();
     this.versionId = Optional.empty();
     this.versionStage = Optional.empty();
+    this.refresh = Optional.empty();
   }
 
   /**
@@ -128,6 +136,31 @@ public class GetSecretValueRequest implements EventStreamJsonMessage {
     return this;
   }
 
+  /**
+   * (Optional) Whether to fetch the latest secret from cloud when the request is handled. Defaults to false.
+   */
+  public Boolean isRefresh() {
+    if (refresh.isPresent()) {
+      return refresh.get();
+    }
+    return null;
+  }
+
+  /**
+   * (Optional) Whether to fetch the latest secret from cloud when the request is handled. Defaults to false.
+   */
+  public void setRefresh(final Boolean refresh) {
+    this.refresh = Optional.ofNullable(refresh);
+  }
+
+  /**
+   * (Optional) Whether to fetch the latest secret from cloud when the request is handled. Defaults to false.
+   */
+  public GetSecretValueRequest withRefresh(final Boolean refresh) {
+    setRefresh(refresh);
+    return this;
+  }
+
   @Override
   public String getApplicationModelType() {
     return APPLICATION_MODEL_TYPE;
@@ -143,11 +176,12 @@ public class GetSecretValueRequest implements EventStreamJsonMessage {
     isEquals = isEquals && this.secretId.equals(other.secretId);
     isEquals = isEquals && this.versionId.equals(other.versionId);
     isEquals = isEquals && this.versionStage.equals(other.versionStage);
+    isEquals = isEquals && this.refresh.equals(other.refresh);
     return isEquals;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(secretId, versionId, versionStage);
+    return Objects.hash(secretId, versionId, versionStage, refresh);
   }
 }
