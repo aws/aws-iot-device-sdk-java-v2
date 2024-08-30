@@ -1,3 +1,10 @@
+/**
+ * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * SPDX-License-Identifier: Apache-2.0.
+ */
+
+/* This file is part of greengrass-ipc project. */
+
 package software.amazon.awssdk.eventstreamrpc;
 
 import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
@@ -11,7 +18,7 @@ import java.util.Optional;
  * Smithy code generation should produce one of these per model, but we aren't going to take steps to prevent
  * hand construction.
  *
- * @param <RequestType> The initial-request 
+ * @param <RequestType> The initial-request
  * @param <ResponseType> The initial-response
  * @param <StreamingRequestType> The streaming initial-request
  * @param <StreamingResponseType> The streaming initial-response

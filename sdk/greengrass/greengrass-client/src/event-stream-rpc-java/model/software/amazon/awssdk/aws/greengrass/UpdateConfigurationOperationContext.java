@@ -17,6 +17,10 @@ import software.amazon.awssdk.eventstreamrpc.EventStreamRPCServiceModel;
 import software.amazon.awssdk.eventstreamrpc.OperationModelContext;
 import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
 
+/**
+ * Update this component's configuration by replacing the value of given keyName with the newValue.
+ * If an oldValue is specified then update will only take effect id the current value matches the given oldValue
+ */
 public class UpdateConfigurationOperationContext implements OperationModelContext<UpdateConfigurationRequest, UpdateConfigurationResponse, EventStreamJsonMessage, EventStreamJsonMessage> {
   @Override
   public EventStreamRPCServiceModel getServiceModel() {

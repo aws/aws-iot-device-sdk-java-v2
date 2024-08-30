@@ -7,7 +7,7 @@ on:
       - 'docs'
 
 env:
-  BUILDER_VERSION: v0.9.53
+  BUILDER_VERSION: v0.9.60
   BUILDER_SOURCE: releases
   BUILDER_HOST: https://d19elf31gohf1l.cloudfront.net
   PACKAGE_NAME: aws-iot-device-sdk-java-v2
@@ -27,6 +27,7 @@ env:
   CI_JOBS_ROLE: arn:aws:iam::180635532705:role/CI_Jobs_Role
   CI_FLEET_PROVISIONING_ROLE: arn:aws:iam::180635532705:role/service-role/CI_FleetProvisioning_Role
   CI_GREENGRASS_ROLE: arn:aws:iam::180635532705:role/CI_Greengrass_Role
+  CI_GREENGRASS_INSTALLER_ROLE: arn:aws:iam::180635532705:role/CI_GreengrassInstaller_Role
   CI_DEVICE_ADVISOR: arn:aws:iam::180635532705:role/CI_DeviceAdvisor_Role
   CI_X509_ROLE: arn:aws:iam::180635532705:role/CI_X509_Role
   CI_MQTT5_ROLE: arn:aws:iam::180635532705:role/CI_MQTT5_Role
@@ -72,7 +73,7 @@ jobs:
       id-token: write # This is required for requesting the JWT
     steps:
       - name: configure AWS credentials (containers)
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           role-to-assume: ${{ env.CI_IOT_CONTAINERS }}
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
@@ -98,7 +99,7 @@ jobs:
       id-token: write # This is required for requesting the JWT
     steps:
       - name: configure AWS credentials (containers)
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           role-to-assume: ${{ env.CI_IOT_CONTAINERS }}
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
@@ -211,10 +212,13 @@ jobs:
         python ./deviceadvisor/script/DATestRun.py
 
   osx:
-    runs-on: macos-latest
+    runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: false
       matrix:
+        runner:
+          - macos-13
+          - macos-latest
         version:
           - 8
           - 11
@@ -252,6 +256,8 @@ jobs:
         source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt cleanup
     - name: Running samples in CI setup
       run: |
+        python3 -m venv .venv
+        source .venv/bin/activate
         python3 -m pip install boto3
         mvn install -Dmaven.test.skip=true
     - name: configure AWS credentials (PubSub)
@@ -261,6 +267,7 @@ jobs:
         aws-region: ${{ env.AWS_DEFAULT_REGION }}
     - name: run PubSub sample
       run: |
+        source .venv/bin/activate
         python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_pubsub_cfg.json
     - name: run PKCS12 Connect sample
       run: |
@@ -268,6 +275,7 @@ jobs:
         key=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/PubSub/key" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$key" > /tmp/privatekey.pem
         pkcs12_password=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/PubSub/key_pkcs12_password" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\")
         openssl pkcs12 -export -in /tmp/certificate.pem -inkey /tmp/privatekey.pem -out ./pkcs12-key.p12 -name PubSub_Thing_Alias -password pass:$pkcs12_password
+        source .venv/bin/activate
         python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_pkcs12_connect_cfg.json
     - name: configure AWS credentials (MQTT5)
       uses: aws-actions/configure-aws-credentials@v2
@@ -276,6 +284,7 @@ jobs:
         aws-region: ${{ env.AWS_DEFAULT_REGION }}
     - name: run MQTT5 PubSub sample
       run: |
+        source .venv/bin/activate
         python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_mqtt5_pubsub_cfg.json
     - name: configure AWS credentials (Device Advisor)
       uses: aws-actions/configure-aws-credentials@v2
@@ -284,6 +293,7 @@ jobs:
         aws-region: ${{ env.AWS_DEFAULT_REGION }}
     - name: run DeviceAdvisor
       run: |
+        source .venv/bin/activate
         python3 ./deviceadvisor/script/DATestRun.py
 
   java-compat:
@@ -384,36 +394,39 @@ jobs:
           ./gradlew assembledebug
           ./gradlew publishToMavenLocal -PnewVersion="1.0.0-SNAPSHOT"
           echo "Build status report=${{ job.status }}."
-
-      - name: Setup Android Test Files
+      - name: Setup Android Test Files New
         run: |
           cd sdk/tests/android/testapp/src/main/assets
-          endpoint=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/endpoint" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$endpoint" > endpoint.txt
-          pubSubCert=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/PubSub/cert" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$pubSubCert" > pubSubCertificate.pem
-          pubSubKey=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/PubSub/key" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$pubSubKey" > pubSubPrivatekey.pem
-          cognitoIdentity=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/Cognito/identity_id" --query "SecretString" | cut -f2 -d\") && echo -e "$cognitoIdentity" > cognitoIdentity.txt
-          jobsCert=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/Jobs/cert" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$jobsCert" > jobsCertificate.pem
-          jobsKey=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/Jobs/key" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$jobsKey" > jobsPrivatekey.pem
-          shadowCert=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/Shadow/cert" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$shadowCert" > shadowCertificate.pem
-          shadowKey=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/Shadow/key" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$shadowKey" > shadowPrivatekey.pem
-          mqtt5PubSubCert=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/mqtt5/us/mqtt5_thing/cert" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$mqtt5PubSubCert" > mqtt5PubSubCertificate.pem
-          mqtt5PubSubKey=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/mqtt5/us/mqtt5_thing/key" --query "SecretString" | cut -f2 -d":" | cut -f2 -d\") && echo -e "$mqtt5PubSubKey" > mqtt5PubSubPrivatekey.pem
-          cd ../../..
+          python3 -m pip install boto3
+          python3 ./android_file_creation.py
+      - name: Build Test App
+        run: |
+          cd sdk/tests/android/testapp
           ../../../../android/gradlew assembledebug
           ../../../../android/gradlew assembleAndroidTest
-          cd ../../../..
-
-      - name: Python Script
+          cd ~
+      - name: Device Farm Tests Highly Available
         run: |
           echo "Attempting to run python script"
-          python3 -m pip install boto3
           python3 -m pip install requests
           python3 ./utils/run_android_ci.py \
           --region ${{ env.AWS_DEVICE_FARM_REGION }} \
           --run_id ${{ github.run_id }} \
           --run_attempt ${{ github.run_attempt }} \
           --project_arn $(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/DeviceFarm/ProjectArn" --query "SecretString" | cut -f5 -d\" | cut -f1 -d'\') \
-          --device_pool_arn $(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/DeviceFarm/DevicePoolArn" --query "SecretString" | cut -f5 -d\" | cut -f1 -d'\')
+          --device_pool_arn $(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/DeviceFarm/DevicePoolArn" --query "SecretString" | cut -f5 -d\" | cut -f1 -d'\') \
+          --device_pool highly_available
+      - name: Device Farm Tests Android 8
+        run: |
+          echo "Attempting to run python script"
+          python3 -m pip install requests
+          python3 ./utils/run_android_ci.py \
+          --region ${{ env.AWS_DEVICE_FARM_REGION }} \
+          --run_id ${{ github.run_id }} \
+          --run_attempt ${{ github.run_attempt }} \
+          --project_arn $(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/DeviceFarm/ProjectArn" --query "SecretString" | cut -f5 -d\" | cut -f1 -d'\') \
+          --device_pool_arn $(aws secretsmanager get-secret-value --region us-east-1 --secret-id "ci/DeviceFarm/DevicePoolArn/Android8" --query "SecretString" | cut -f5 -d\" | cut -f1 -d'\') \
+          --device_pool android_8
 
   # check that docs can still build
   check-docs:
@@ -637,11 +650,66 @@ jobs:
       - name: run MQTT5 Shared Subscription sample
         run: |
           python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_mqtt5_shared_subscription_cfg.json
+
+  # Runs the Greengrass samples
+  linux-greengrass-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        version:
+          - 17
+    permissions:
+      id-token: write # This is required for requesting the JWT
+    steps:
+      - name: Checkout Sources
+        uses: actions/checkout@v2
+      - name: Setup Java
+        uses: actions/setup-java@v2
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.version }}
+          cache: maven
+      - name: Build ${{ env.PACKAGE_NAME }} + consumers
+        run: |
+          java -version
+          mvn install -Dmaven.test.skip
+      - name: Install Greengrass Development Kit
+        run: |
+          python3 -m pip install awsiotsdk
+          python3 -m pip install -U git+https://github.com/aws-greengrass/aws-greengrass-gdk-cli.git@v1.6.2
       - name: configure AWS credentials (Greengrass)
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: ${{ env.CI_GREENGRASS_ROLE }}
+          role-to-assume: ${{ env.CI_GREENGRASS_INSTALLER_ROLE }}
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
-      - name: run Greengrass Discovery sample
+      - name: Build and run Greengrass basic discovery sample
+        working-directory: ./tests/greengrass/basic_discovery
         run: |
-          python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_greengrass_discovery_cfg.json
+          gdk component build
+          gdk test-e2e build
+          gdk test-e2e run
+      - name: Show logs
+        working-directory: ./tests/greengrass/basic_discovery
+        # Print logs unconditionally to provide more details on Greengrass run even if the test failed.
+        if: always()
+        run: |
+          echo "=== greengrass.log"
+          cat testResults/gg*/greengrass.log
+          echo "=== software.amazon.awssdk.sdk-gg-test-discovery.log"
+          cat testResults/gg*/software.amazon.awssdk.sdk-gg-test-discovery.log
+      - name: Build and run Greengrass IPC sample
+        working-directory: ./tests/greengrass/ipc
+        run: |
+          gdk component build
+          gdk test-e2e build
+          gdk test-e2e run
+      - name: Show logs
+        working-directory: ./tests/greengrass/ipc
+        # Print logs unconditionally to provide more details on Greengrass run even if the test failed.
+        if: always()
+        run: |
+          echo "=== greengrass.log"
+          cat testResults/gg*/greengrass.log
+          echo "=== software.amazon.awssdk.sdk-gg-ipc.log"
+          cat testResults/gg*/software.amazon.awssdk.sdk-gg-ipc.log

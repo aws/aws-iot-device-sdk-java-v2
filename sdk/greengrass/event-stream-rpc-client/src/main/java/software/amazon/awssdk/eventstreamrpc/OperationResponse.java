@@ -1,3 +1,10 @@
+/**
+ * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * SPDX-License-Identifier: Apache-2.0.
+ */
+
+/* This file is part of greengrass-ipc project. */
+
 package software.amazon.awssdk.eventstreamrpc;
 
 import software.amazon.awssdk.crt.eventstream.ClientConnectionContinuation;

@@ -18,13 +18,6 @@ import software.amazon.awssdk.iot.iotshadow.model.ShadowStateWithDelta;
 public class GetShadowResponse {
 
     /**
-     * The current version of the document for the device's shadow shared in AWS IoT. It is increased by one over the previous version of the document.
-     *
-     */
-    public Integer version;
-
-
-    /**
      * An opaque token used to correlate requests and responses.
      *
      */
@@ -50,6 +43,13 @@ public class GetShadowResponse {
      *
      */
     public Timestamp timestamp;
+
+
+    /**
+     * The current version of the document for the device's shadow shared in AWS IoT. It is increased by one over the previous version of the document.
+     *
+     */
+    public Integer version;
 
 
 }

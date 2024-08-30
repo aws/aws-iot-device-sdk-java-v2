@@ -31,7 +31,6 @@ android {
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
-        ndkVersion "23.1.7779620"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -44,6 +43,7 @@ android {
             java.srcDir '../../../../samples/Jobs/src/main/java'
             java.srcDir '../../../../samples/Shadow/src/main/java'
             java.srcDir '../../../../samples/CognitoConnect/src/main/java'
+            java.srcDir '../../../../samples/CustomKeyOpsConnect/src/main/java'
             java.srcDir 'src/main/java'
         }
     }

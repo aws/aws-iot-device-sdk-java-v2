@@ -1,0 +1,62 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>software.amazon.awssdk.iotdevicesdk</groupId>
+    <artifactId>GreengrassIPCTest</artifactId>
+    <packaging>jar</packaging>
+    <version>1.0-SNAPSHOT</version>
+    <name>${project.groupId}:${project.artifactId}</name>
+    <description>Test for Greengrass IPC sample</description>
+    <url>https://github.com/awslabs/aws-iot-device-sdk-java-v2</url>
+<build>
+  <plugins>
+    <plugin>
+      <artifactId>maven-assembly-plugin</artifactId>
+      <configuration>
+        <descriptorRefs>
+          <descriptorRef>jar-with-dependencies</descriptorRef>
+        </descriptorRefs>
+        <archive>
+          <manifest>
+            <mainClass>greengrass.GreengrassIPC</mainClass>
+          </manifest>
+        </archive>
+      </configuration>
+      <executions>
+          <execution>
+            <id>make-assembly</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+    </plugin>
+  </plugins>
+</build>
+    <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+    <profiles>
+        <profile>
+            <id>default</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>software.amazon.awssdk.iotdevicesdk</groupId>
+                    <artifactId>aws-iot-device-sdk</artifactId>
+                    <version>1.0.0-SNAPSHOT </version>
+                </dependency>
+                <dependency>
+                    <groupId>software.amazon.awssdk.iotdevicesdk</groupId>
+                    <artifactId>GreengrassIPC</artifactId>
+                    <version>1.0-SNAPSHOT</version>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
+</project>

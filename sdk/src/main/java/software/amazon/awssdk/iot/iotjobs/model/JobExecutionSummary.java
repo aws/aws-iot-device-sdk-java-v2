@@ -16,10 +16,11 @@ import software.amazon.awssdk.iot.Timestamp;
 public class JobExecutionSummary {
 
     /**
-     * The time when the job execution was last updated.
+     * The unique identifier you assigned to this job when it was created.
      *
      */
-    public Timestamp lastUpdatedAt;
+    public String jobId;
+
 
     /**
      * A number that identifies a job execution on a device.
@@ -27,11 +28,6 @@ public class JobExecutionSummary {
      */
     public Long executionNumber;
 
-    /**
-     * The time when the job execution started.
-     *
-     */
-    public Timestamp startedAt;
 
     /**
      * The version of the job execution. Job execution versions are incremented each time the AWS IoT Jobs service receives an update from a device.
@@ -39,16 +35,26 @@ public class JobExecutionSummary {
      */
     public Integer versionNumber;
 
+
     /**
-     * The unique identifier you assigned to this job when it was created.
+     * The time when the job execution was last updated.
      *
      */
-    public String jobId;
+    public Timestamp lastUpdatedAt;
+
 
     /**
      * The time when the job execution was enqueued.
      *
      */
     public Timestamp queuedAt;
+
+
+    /**
+     * The time when the job execution started.
+     *
+     */
+    public Timestamp startedAt;
+
 
 }

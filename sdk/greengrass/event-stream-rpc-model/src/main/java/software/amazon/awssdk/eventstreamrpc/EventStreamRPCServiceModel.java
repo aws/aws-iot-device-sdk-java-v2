@@ -1,3 +1,10 @@
+/**
+ * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * SPDX-License-Identifier: Apache-2.0.
+ */
+
+/* This file is part of greengrass-ipc project. */
+
 package software.amazon.awssdk.eventstreamrpc;
 
 import com.google.gson.Gson;
@@ -18,6 +25,7 @@ import software.amazon.awssdk.eventstreamrpc.model.AccessDeniedException;
 import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
 import software.amazon.awssdk.eventstreamrpc.model.UnsupportedOperationException;
 import software.amazon.awssdk.eventstreamrpc.model.ValidationException;
+import software.amazon.awssdk.crt.utils.StringUtils;
 
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
@@ -25,7 +33,6 @@ import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -204,17 +211,14 @@ public abstract class EventStreamRPCServiceModel {
     }
 
     private static class Base64BlobSerializerDeserializer implements JsonSerializer<byte[]>, JsonDeserializer<byte[]> {
-        private static final Base64.Encoder BASE_64_ENCODER = Base64.getEncoder();
-        private static final Base64.Decoder BASE_64_DECODER = Base64.getDecoder();
-
         @Override
         public byte[] deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-            return BASE_64_DECODER.decode(json.getAsString());
+            return StringUtils.base64Decode(json.getAsString().getBytes());
         }
 
         @Override
         public JsonElement serialize(byte[] src, Type typeOfSrc, JsonSerializationContext context) {
-            return new JsonPrimitive(BASE_64_ENCODER.encodeToString(src));
+            return new JsonPrimitive(new String(StringUtils.base64Encode(src)));
         }
     }
 
@@ -281,7 +285,7 @@ public abstract class EventStreamRPCServiceModel {
      *
      * This may not be a useful interface as generated code will typically pull a known operation model context
      * Public visibility is useful for testing
-     * 
+     *
      * @param operationName The name of the operation
      * @return The operation context associated with the given operation name
      */

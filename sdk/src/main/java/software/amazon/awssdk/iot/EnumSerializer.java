@@ -21,11 +21,27 @@ import java.lang.reflect.Type;
  * @param <E> the enumeration type the serializer should work with
  */
 public class EnumSerializer<E> implements JsonSerializer<E>, JsonDeserializer<E> {
+
+    /**
+     * Serializes the given enum to a JsonElement
+     * @param enumValue The enum to convert
+     * @param typeOfEnum The enum to convert type
+     * @param context The JsonSerializationContext to use
+     * @return The enum as a JsonElement
+     */
     public JsonElement serialize(E enumValue, Type typeOfEnum, JsonSerializationContext context) {
         return new JsonPrimitive(enumValue.toString());
     }
 
     private Method fromString;
+
+    /**
+     * Deserializes the JsonElement to an enum
+     * @param json The json to convert
+     * @param typeOfEnum The type of enum to convert to
+     * @param context The JsonDeserializationContext to use
+     * @return The enum from the JsonElement data
+     */
     public E deserialize(JsonElement json, Type typeOfEnum, JsonDeserializationContext context)
             throws JsonParseException {
         if (fromString == null) {

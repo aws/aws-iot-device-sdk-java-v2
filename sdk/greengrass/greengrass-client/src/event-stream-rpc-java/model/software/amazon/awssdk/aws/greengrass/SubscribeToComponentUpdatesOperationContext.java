@@ -18,6 +18,9 @@ import software.amazon.awssdk.eventstreamrpc.EventStreamRPCServiceModel;
 import software.amazon.awssdk.eventstreamrpc.OperationModelContext;
 import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
 
+/**
+ * Subscribe to receive notification if GGC is about to update any components
+ */
 public class SubscribeToComponentUpdatesOperationContext implements OperationModelContext<SubscribeToComponentUpdatesRequest, SubscribeToComponentUpdatesResponse, EventStreamJsonMessage, ComponentUpdatePolicyEvents> {
   @Override
   public EventStreamRPCServiceModel getServiceModel() {

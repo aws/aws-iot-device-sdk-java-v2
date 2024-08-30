@@ -18,6 +18,9 @@ import software.amazon.awssdk.eventstreamrpc.EventStreamRPCServiceModel;
 import software.amazon.awssdk.eventstreamrpc.OperationModelContext;
 import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
 
+/**
+ * Subscribe to a topic in AWS IoT message broker.
+ */
 public class SubscribeToIoTCoreOperationContext implements OperationModelContext<SubscribeToIoTCoreRequest, SubscribeToIoTCoreResponse, EventStreamJsonMessage, IoTCoreMessage> {
   @Override
   public EventStreamRPCServiceModel getServiceModel() {

@@ -17,6 +17,10 @@ import software.amazon.awssdk.eventstreamrpc.EventStreamRPCServiceModel;
 import software.amazon.awssdk.eventstreamrpc.OperationModelContext;
 import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
 
+/**
+ * Updates a device shadow document stored in the local shadow service
+ * The update is an upsert operation, with optimistic locking support
+ */
 public class UpdateThingShadowOperationContext implements OperationModelContext<UpdateThingShadowRequest, UpdateThingShadowResponse, EventStreamJsonMessage, EventStreamJsonMessage> {
   @Override
   public EventStreamRPCServiceModel getServiceModel() {

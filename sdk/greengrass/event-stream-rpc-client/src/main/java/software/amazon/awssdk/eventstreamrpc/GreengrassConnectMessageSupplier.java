@@ -1,3 +1,10 @@
+/**
+ * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * SPDX-License-Identifier: Apache-2.0.
+ */
+
+/* This file is part of greengrass-ipc project. */
+
 package software.amazon.awssdk.eventstreamrpc;
 
 import com.google.gson.Gson;
@@ -13,7 +20,7 @@ import java.util.function.Supplier;
  * The connect message supplier for Greengrass
  */
 public class GreengrassConnectMessageSupplier {
-    
+
     /**
      * Returns a new connect message supplier using the given token
      * @param authToken The auth token to use

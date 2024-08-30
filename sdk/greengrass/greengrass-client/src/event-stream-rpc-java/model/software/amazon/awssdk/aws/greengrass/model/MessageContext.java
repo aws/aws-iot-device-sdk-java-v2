@@ -15,6 +15,10 @@ import java.util.Objects;
 import java.util.Optional;
 import software.amazon.awssdk.eventstreamrpc.model.EventStreamJsonMessage;
 
+/**
+ * Contextual information about the message.
+ * NOTE The context is ignored if used in PublishMessage.
+ */
 public class MessageContext implements EventStreamJsonMessage {
   public static final String APPLICATION_MODEL_TYPE = "aws.greengrass#MessageContext";
 

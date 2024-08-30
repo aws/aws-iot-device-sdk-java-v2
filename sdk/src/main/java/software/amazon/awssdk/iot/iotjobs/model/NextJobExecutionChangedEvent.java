@@ -22,10 +22,12 @@ public class NextJobExecutionChangedEvent {
      */
     public JobExecutionData execution;
 
+
     /**
      * The time when the message was sent.
      *
      */
     public Timestamp timestamp;
+
 
 }

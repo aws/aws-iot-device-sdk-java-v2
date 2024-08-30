@@ -65,6 +65,11 @@ class MainActivityTest {
                 resourceNames.add("mqtt5PubSubCertificate.pem")
                 resourceNames.add("mqtt5PubSubPrivatekey.pem")
             }
+
+            "customkeyopsconnect.CustomKeyOpsConnect" -> {
+                resourceNames.add("customKeyOpsKey.pem")
+                resourceNames.add("customKeyOpsCert.pem")
+            }
         }
 
         // Load resource into a cached location for use by sample
@@ -128,6 +133,12 @@ class MainActivityTest {
                     "--message", "message.txt", "Hello World From Android"
                 ))
             }
+
+            "customkeyopsconnect.CustomKeyOpsConnect" -> {
+                args.addAll(arrayOf(
+                    "--cert", resourceMap["customKeyOpsCert.pem"],
+                    "--key", resourceMap["customKeyOpsKey.pem"]))
+            }
         }
 
         return args.toTypedArray()
@@ -170,5 +181,10 @@ class MainActivityTest {
     @Test
     fun mqtt5PubSubSample(){
         runSample("mqtt5.pubsub.PubSub")
+    }
+
+    @Test
+    fun customKeyOpsSample(){
+        runSample("customkeyopsconnect.CustomKeyOpsConnect")
     }
 }
