@@ -249,10 +249,16 @@ public class CommandLineUtils {
         returnData.input_ca = getCommandOrDefault(m_cmd_ca_file, "");
     }
 
-    private void parseKeyAndCertCommands(SampleCommandLineData returnData)
+    private void parseKeyAndCertCommandsRequired(SampleCommandLineData returnData)
     {
         returnData.input_cert = getCommandRequired(m_cmd_cert_file);
         returnData.input_key = getCommandRequired(m_cmd_key_file);
+    }
+
+    private void parseKeyAndCertCommandsOptional(SampleCommandLineData returnData)
+    {
+        returnData.input_cert = getCommandOrDefault(m_cmd_cert_file, "");
+        returnData.input_key = getCommandOrDefault(m_cmd_key_file, "");
     }
 
     private void parseClientIdAndPort(SampleCommandLineData returnData) {
@@ -385,7 +391,7 @@ public class CommandLineUtils {
         parseCommonLoggingCommands(returnData);
         parseCommonMQTTCommands(returnData);
         parseCommonProxyCommands(returnData);
-        parseKeyAndCertCommands(returnData);
+        parseKeyAndCertCommandsRequired(returnData);
         parseClientIdAndPort(returnData);
         return returnData;
     }
@@ -403,7 +409,7 @@ public class CommandLineUtils {
         SampleCommandLineData returnData = new SampleCommandLineData();
         parseCommonLoggingCommands(returnData);
         parseCommonMQTTCommands(returnData);
-        parseKeyAndCertCommands(returnData);
+        parseKeyAndCertCommandsRequired(returnData);
         parseCommonTopicMessageCommands(returnData);
         parseCommonProxyCommands(returnData);
         parseClientIdAndPort(returnData);
@@ -465,7 +471,7 @@ public class CommandLineUtils {
         SampleCommandLineData returnData = new SampleCommandLineData();
         parseCommonLoggingCommands(returnData);
         parseCommonMQTTCommands(returnData);
-        parseKeyAndCertCommands(returnData);
+        parseKeyAndCertCommandsRequired(returnData);
         parseClientIdAndPort(returnData);
         return returnData;
     }
@@ -499,7 +505,7 @@ public class CommandLineUtils {
         parseMqttVersion(returnData);
         parseCommonLoggingCommands(returnData);
         parseCommonMQTTCommands(returnData);
-        parseKeyAndCertCommands(returnData);
+        parseKeyAndCertCommandsRequired(returnData);
         parseClientIdAndPort(returnData);
         returnData.input_templateName = getCommandRequired(m_cmd_fleet_template_name);
         returnData.input_templateParameters = getCommandRequired(m_cmd_fleet_template_parameters);
@@ -523,7 +529,7 @@ public class CommandLineUtils {
 
         SampleCommandLineData returnData = new SampleCommandLineData();
         parseCommonLoggingCommands(returnData);
-        parseKeyAndCertCommands(returnData);
+        parseKeyAndCertCommandsRequired(returnData);
         returnData.input_ca = getCommandOrDefault(m_cmd_ca_file, null);
         returnData.input_thingName = getCommandRequired(m_cmd_thing_name);
         returnData.input_signingRegion = getCommandRequired(m_cmd_region, m_cmd_signing_region);
@@ -574,7 +580,7 @@ public class CommandLineUtils {
         parseMqttVersion(returnData);
         parseCommonLoggingCommands(returnData);
         parseCommonMQTTCommands(returnData);
-        parseKeyAndCertCommands(returnData);
+        parseKeyAndCertCommandsRequired(returnData);
         parseClientIdAndPort(returnData);
         returnData.input_thingName = getCommandRequired(m_cmd_thing_name);
         return returnData;
@@ -595,7 +601,7 @@ public class CommandLineUtils {
         parseCommonLoggingCommands(returnData);
         parseCommonMQTTCommands(returnData);
         parseCommonTopicMessageCommands(returnData);
-        parseKeyAndCertCommands(returnData);
+        parseKeyAndCertCommandsOptional(returnData);
         parseCommonProxyCommands(returnData);
         parseClientIdAndPort(returnData);
         returnData.input_signingRegion = getCommandOrDefault(m_cmd_signing_region, null);
@@ -617,7 +623,7 @@ public class CommandLineUtils {
         parseCommonLoggingCommands(returnData);
         parseCommonMQTTCommands(returnData);
         parseCommonTopicMessageCommands(returnData);
-        parseKeyAndCertCommands(returnData);
+        parseKeyAndCertCommandsRequired(returnData);
         parseCommonProxyCommands(returnData);
         parseClientIdAndPort(returnData);
         returnData.input_groupIdentifier = getCommandOrDefault(m_cmd_group_identifier, "java-sample");
@@ -669,7 +675,7 @@ public class CommandLineUtils {
         parseMqttVersion(returnData);
         parseCommonLoggingCommands(returnData);
         parseCommonMQTTCommands(returnData);
-        parseKeyAndCertCommands(returnData);
+        parseKeyAndCertCommandsRequired(returnData);
         parseClientIdAndPort(returnData);
         returnData.input_thingName = getCommandRequired(m_cmd_thing_name);
         returnData.input_shadowProperty = getCommand(m_cmd_shadow_property);
