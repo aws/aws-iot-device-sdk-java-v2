@@ -185,7 +185,7 @@ A MQTT5 direct connection can be made using a PKCS12 file rather than using a PE
 ~~~ java
 
 String clientEndpoint = "<prefix>-ats.iot.<region>.amazonaws.com";
-AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newDirectMqttBuilderWithMtlsFromPkcs11(clientEndpoint, "<PKCS12 file path>", "<PKCS12 password>");
+AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newDirectMqttBuilderWithMtlsFromPkcs12(clientEndpoint, "<PKCS12 file path>", "<PKCS12 password>");
 ~~~
 
 **Note**: Currently, TLS integration with PKCS12 is only available on MacOS devices.
