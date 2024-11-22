@@ -5,7 +5,6 @@
 * [How do I enable logging](#how-do-i-enable-logging)
 * [I keep getting AWS_ERROR_MQTT_UNEXPECTED_HANGUP](#i-keep-getting-aws_error_mqtt_unexpected_hangup)
 * [I am experiencing deadlocks](#i-am-experiencing-deadlocks)
-* [Mac-Only TLS Behavior](#mac-only-tls-behavior)
 * [How do debug in VSCode?](#how-do-debug-in-vscode)
 * [What certificates do I need?](#what-certificates-do-i-need)
 * [How do I build and use the Android SDK?](#how-do-i-build-and-use-the-android-sdk)
@@ -63,14 +62,6 @@ After getting it working make sure to only allow the actions and resources that 
 ### I am experiencing deadlocks
 
 You MUST NOT perform blocking operations on any callback, or you will cause a deadlock. For example: in the on_publish_received callback, do not send a publish, and then wait for the future to complete within the callback. The Client cannot do work until your callback returns, so the thread will be stuck.
-
-### Mac-Only TLS Behavior
-
-Please note that on Mac, once a private key is used with a certificate, that certificate-key pair is imported into the Mac Keychain.  All subsequent uses of that certificate will use the stored private key and ignore anything passed in programmatically.  Beginning in v1.7.3, when a stored private key from the Keychain is used, the following will be logged at the "info" log level:
-
-```
-static: certificate has an existing certificate-key pair that was previously imported into the Keychain.  Using key from Keychain instead of the one provided.
-```
 
 ### How do debug in VSCode?
 
