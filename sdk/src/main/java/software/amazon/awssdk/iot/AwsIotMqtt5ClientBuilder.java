@@ -213,7 +213,7 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
         }
         return builder;
     }
-    
+
     /**
      * Create a new MQTT5 client builder that will use websockets and AWS Sigv4 signing to establish
      * mutually-authenticated (mTLS) connections.
