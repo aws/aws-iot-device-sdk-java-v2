@@ -716,6 +716,6 @@ jobs:
 
 # Runs the Greengrass samples
   codebuild-based-github-action:
-    runs-on: codebuild-CI_Java_V2_LinuxSmokeTests-${{ github.run_id }}-${{ github.run_attempt }}
+    runs-on: codebuild-Java_V2_Codebuild_Based_Github_Runner-${{ github.run_id }}-${{ github.run_attempt }}
     steps:
       - run: echo "Hello World!"
