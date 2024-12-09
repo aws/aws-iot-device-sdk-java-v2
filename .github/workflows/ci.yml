@@ -732,6 +732,7 @@ jobs:
           echo Build started on `date`
           pwd
           echo $CODEBUILD_SRC_DIR
+          cd $CODEBUILD_SRC_DIR/actions-runner/_work/aws-iot-device-sdk-java-v2/aws-iot-device-sdk-java-v2
           ./codebuild/samples/setup-linux.sh
           ./codebuild/samples/connect-linux.sh
           ./codebuild/samples/custom-auth-linux.sh
