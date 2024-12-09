@@ -724,13 +724,13 @@ jobs:
           sudo add-apt-repository ppa:ubuntu-toolchain-r/test
           sudo apt-get update -y
           sudo apt-get install softhsm -y
-          echo "\nBuild version data:"
-          echo "\nJava Version:"; java -version
-          echo "\nMaven Version:"; mvn --version
-          echo "\nSoftHSM (PKCS11) version:"; softhsm2-util --version
-          echo "\n"
+          echo "Build version data:"
+          echo "Java Version:"; java -version
+          echo "Maven Version:"; mvn --version
+          echo "SoftHSM (PKCS11) version:"; softhsm2-util --version
           echo Build started on `date`
           pwd
+          ls 
           echo $CODEBUILD_SRC_DIR
           $CODEBUILD_SRC_DIR/actions-runner/_work/aws-iot-device-sdk-java-v2/aws-iot-device-sdk-java-v2/codebuild/samples/setup-linux.sh
           $CODEBUILD_SRC_DIR/actions-runner/_work/aws-iot-device-sdk-java-v2/aws-iot-device-sdk-java-v2/codebuild/samples/connect-linux.sh
