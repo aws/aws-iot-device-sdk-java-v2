@@ -732,12 +732,12 @@ jobs:
           echo Build started on `date`
           pwd
           echo $CODEBUILD_SRC_DIR
-          $CODEBUILD_SRC_DIR/codebuild/samples/setup-linux.sh
-          $CODEBUILD_SRC_DIR/codebuild/samples/connect-linux.sh
-          $CODEBUILD_SRC_DIR/codebuild/samples/custom-auth-linux.sh
-          $CODEBUILD_SRC_DIR/codebuild/samples/custom-key-ops-linux.sh
-          $CODEBUILD_SRC_DIR/codebuild/samples/pkcs11-connect-linux.sh
-          $CODEBUILD_SRC_DIR/codebuild/samples/pubsub-linux.sh
-          $CODEBUILD_SRC_DIR/codebuild/samples/shadow-linux.sh
-          $CODEBUILD_SRC_DIR/codebuild/samples/pubsub-mqtt5-linux.sh
+          ./codebuild/samples/setup-linux.sh
+          ./codebuild/samples/connect-linux.sh
+          ./codebuild/samples/custom-auth-linux.sh
+          ./codebuild/samples/custom-key-ops-linux.sh
+          ./codebuild/samples/pkcs11-connect-linux.sh
+          ./codebuild/samples/pubsub-linux.sh
+          ./codebuild/samples/shadow-linux.sh
+          ./codebuild/samples/pubsub-mqtt5-linux.sh
           echo Build completed on `date`
