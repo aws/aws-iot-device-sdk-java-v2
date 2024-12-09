@@ -730,6 +730,7 @@ jobs:
         echo "\n"
         echo Build started on `date`
         pwd
+        echo $CODEBUILD_SRC_DIR
         $CODEBUILD_SRC_DIR/codebuild/samples/setup-linux.sh
         $CODEBUILD_SRC_DIR/codebuild/samples/connect-linux.sh
         $CODEBUILD_SRC_DIR/codebuild/samples/custom-auth-linux.sh
