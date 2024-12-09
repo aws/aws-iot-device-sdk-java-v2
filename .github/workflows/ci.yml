@@ -718,4 +718,24 @@ jobs:
   codebuild-based-github-action:
     runs-on: codebuild-Java_V2_Codebuild_Based_Github_Runner-${{ github.run_id }}-${{ github.run_attempt }}
     steps:
-      - run: echo "Hello World!"
+      - run: |
+        sudo add-apt-repository ppa:openjdk-r/ppa
+        sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+        sudo apt-get update -y
+        sudo apt-get install softhsm -y
+        echo "\nBuild version data:"
+        echo "\nJava Version:"; java -version
+        echo "\nMaven Version:"; mvn --version
+        echo "\nSoftHSM (PKCS11) version:"; softhsm2-util --version
+        echo "\n"
+        echo Build started on `date`
+        pwd
+        $CODEBUILD_SRC_DIR/codebuild/samples/setup-linux.sh
+        $CODEBUILD_SRC_DIR/codebuild/samples/connect-linux.sh
+        $CODEBUILD_SRC_DIR/codebuild/samples/custom-auth-linux.sh
+        $CODEBUILD_SRC_DIR/codebuild/samples/custom-key-ops-linux.sh
+        $CODEBUILD_SRC_DIR/codebuild/samples/pkcs11-connect-linux.sh
+        $CODEBUILD_SRC_DIR/codebuild/samples/pubsub-linux.sh
+        $CODEBUILD_SRC_DIR/codebuild/samples/shadow-linux.sh
+        $CODEBUILD_SRC_DIR/codebuild/samples/pubsub-mqtt5-linux.sh
+        echo Build completed on `date`
