@@ -713,3 +713,9 @@ jobs:
           cat testResults/gg*/greengrass.log
           echo "=== software.amazon.awssdk.sdk-gg-ipc.log"
           cat testResults/gg*/software.amazon.awssdk.sdk-gg-ipc.log
+
+# Runs the Greengrass samples
+  codebuild-based-github-action:
+    runs-on: codebuild-CI_Java_V2_LinuxSmokeTests-${{ github.run_id }}-${{ github.run_attempt }}
+    steps:
+      - run: echo "Hello World!"
