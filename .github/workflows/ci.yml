@@ -732,13 +732,12 @@ jobs:
           echo Build started on `date`
           pwd
           echo $CODEBUILD_SRC_DIR
-          cd $CODEBUILD_SRC_DIR/actions-runner/_work/aws-iot-device-sdk-java-v2/aws-iot-device-sdk-java-v2
-          ./codebuild/samples/setup-linux.sh
-          ./codebuild/samples/connect-linux.sh
-          ./codebuild/samples/custom-auth-linux.sh
-          ./codebuild/samples/custom-key-ops-linux.sh
-          ./codebuild/samples/pkcs11-connect-linux.sh
-          ./codebuild/samples/pubsub-linux.sh
-          ./codebuild/samples/shadow-linux.sh
-          ./codebuild/samples/pubsub-mqtt5-linux.sh
+          $CODEBUILD_SRC_DIR/actions-runner/_work/aws-iot-device-sdk-java-v2/aws-iot-device-sdk-java-v2/codebuild/samples/setup-linux.sh
+          $CODEBUILD_SRC_DIR/actions-runner/_work/aws-iot-device-sdk-java-v2/aws-iot-device-sdk-java-v2/codebuild/samples/connect-linux.sh
+          $CODEBUILD_SRC_DIR/actions-runner/_work/aws-iot-device-sdk-java-v2/aws-iot-device-sdk-java-v2/codebuild/samples/custom-auth-linux.sh
+          $CODEBUILD_SRC_DIR/actions-runner/_work/aws-iot-device-sdk-java-v2/aws-iot-device-sdk-java-v2/codebuild/samples/custom-key-ops-linux.sh
+          $CODEBUILD_SRC_DIR/actions-runner/_work/aws-iot-device-sdk-java-v2/aws-iot-device-sdk-java-v2/codebuild/samples/pkcs11-connect-linux.sh
+          $CODEBUILD_SRC_DIR/actions-runner/_work/aws-iot-device-sdk-java-v2/aws-iot-device-sdk-java-v2/codebuild/samples/pubsub-linux.sh
+          $CODEBUILD_SRC_DIR/actions-runner/_work/aws-iot-device-sdk-java-v2/aws-iot-device-sdk-java-v2/codebuild/samples/shadow-linux.sh
+          $CODEBUILD_SRC_DIR/actions-runner/_work/aws-iot-device-sdk-java-v2/aws-iot-device-sdk-java-v2/codebuild/samples/pubsub-mqtt5-linux.sh
           echo Build completed on `date`
