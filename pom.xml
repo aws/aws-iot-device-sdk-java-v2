@@ -23,6 +23,7 @@
         <module>samples/CustomKeyOpsConnect</module>
         <module>samples/WindowsCertConnect</module>
         <module>samples/Shadow</module>
+        <module>samples/ShadowV2</module>
         <module>samples/FleetProvisioning</module>
         <module>samples/Mqtt5/PubSub</module>
         <module>samples/Mqtt5/SharedSubscription</module>

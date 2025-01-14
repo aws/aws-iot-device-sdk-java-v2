@@ -17,6 +17,7 @@ import software.amazon.awssdk.iot.iotidentity.model.ErrorResponse;
 import software.amazon.awssdk.iot.iotidentity.model.RegisterThingRequest;
 import software.amazon.awssdk.iot.iotidentity.model.RegisterThingResponse;
 import software.amazon.awssdk.iot.iotidentity.model.RegisterThingSubscriptionRequest;
+import software.amazon.awssdk.iot.iotidentity.model.V2ErrorResponse;
 
 import java.nio.charset.StandardCharsets;
 

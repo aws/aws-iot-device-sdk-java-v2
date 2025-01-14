@@ -29,6 +29,7 @@ import software.amazon.awssdk.iot.iotjobs.model.StartNextPendingJobExecutionSubs
 import software.amazon.awssdk.iot.iotjobs.model.UpdateJobExecutionRequest;
 import software.amazon.awssdk.iot.iotjobs.model.UpdateJobExecutionResponse;
 import software.amazon.awssdk.iot.iotjobs.model.UpdateJobExecutionSubscriptionRequest;
+import software.amazon.awssdk.iot.iotjobs.model.V2ErrorResponse;
 
 import java.nio.charset.StandardCharsets;
 
