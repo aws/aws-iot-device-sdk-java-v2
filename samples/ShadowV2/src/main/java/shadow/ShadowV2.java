@@ -12,6 +12,7 @@ import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.crt.CrtResource;
 import software.amazon.awssdk.crt.iot.*;
 import software.amazon.awssdk.crt.mqtt5.*;
+import software.amazon.awssdk.crt.mqtt5.packets.ConnectPacket;
 import software.amazon.awssdk.iot.AwsIotMqtt5ClientBuilder;
 import software.amazon.awssdk.iot.iotshadow.IotShadowV2Client;
 import software.amazon.awssdk.iot.iotshadow.model.*;
@@ -19,6 +20,7 @@ import software.amazon.awssdk.iot.ShadowStateFactory;
 import software.amazon.awssdk.iot.Timestamp;
 import software.amazon.awssdk.iot.V2ClientStreamOptions;
 
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ExecutionException;
@@ -129,6 +131,11 @@ public class ShadowV2 {
         try (AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newDirectMqttBuilderWithMtlsFromPath(
                 commandLine.getOptionValue("endpoint"), commandLine.getOptionValue("cert"), commandLine.getOptionValue("key"))) {
             builder.withLifeCycleEvents(lifecycleEvents);
+
+            ConnectPacket.ConnectPacketBuilder connectProperties = new ConnectPacket.ConnectPacketBuilder();
+            connectProperties.withClientId(String.format("test-%s", UUID.randomUUID()));
+            builder.withConnectProperties(connectProperties);
+
             context.protocolClient = builder.build();
         }
 
@@ -229,9 +236,9 @@ public class ShadowV2 {
 
     private static void handleUpdateDesired(ApplicationContext context, String value) {
         ShadowState state = new ShadowState();
+        state.desiredIsNullable = true;
         if (value.equals("null")) {
             state.desired = null;
-            state.desiredIsNullable = true;
         } else {
             state.desired = context.gson.fromJson(value, HashMap.class);
         }
@@ -241,9 +248,9 @@ public class ShadowV2 {
 
     private static void handleUpdateReported(ApplicationContext context, String value) {
         ShadowState state = new ShadowState();
+        state.reportedIsNullable = true;
         if (value.equals("null")) {
             state.reported = null;
-            state.reportedIsNullable = true;
         } else {
             state.reported = context.gson.fromJson(value, HashMap.class);
         }
