@@ -269,11 +269,7 @@ public class IotShadowV2Client implements AutoCloseable {
     }
 
     static private Throwable createV2ErrorResponseException(String message, V2ErrorResponse errorResponse) {
-        if (errorResponse != null) {
-            return new V2ErrorResponseException(message, errorResponse);
-        } else {
-            return new V2ErrorResponseException(message);
-        }
+        return new V2ErrorResponseException(message, errorResponse);
     }
 
     private <T, E> void submitOperation(V2ClientFuture<T> finalFuture, RequestResponseOperation operation, String responseTopic, Class<T> responseClass, String errorTopic, Class<E> errorClass, BiFunction<String, E, Throwable> exceptionFactory) {
