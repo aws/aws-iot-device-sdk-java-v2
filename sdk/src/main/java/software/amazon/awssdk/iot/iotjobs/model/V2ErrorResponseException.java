@@ -5,7 +5,7 @@
  * This file is generated.
  */
 
-package software.amazon.awssdk.iot.iotshadow.model;
+package software.amazon.awssdk.iot.iotjobs.model;
 
 import software.amazon.awssdk.crt.CrtRuntimeException;
 

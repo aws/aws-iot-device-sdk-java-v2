@@ -77,8 +77,8 @@ public class IotJobsClient {
     }
 
     private void addTypeAdapters(GsonBuilder gson) {
-        gson.registerTypeAdapter(RejectedErrorCode.class, new EnumSerializer<RejectedErrorCode>());
         gson.registerTypeAdapter(JobStatus.class, new EnumSerializer<JobStatus>());
+        gson.registerTypeAdapter(RejectedErrorCode.class, new EnumSerializer<RejectedErrorCode>());
     }
 
     /**
