@@ -52,6 +52,7 @@ public class IotIdentityV2Client implements AutoCloseable {
 
     /**
      * Constructs a new IotIdentityV2Client, using an MQTT5 client as transport
+     *
      * @param protocolClient the MQTT5 client to use
      * @param options configuration options to use
      */
@@ -62,6 +63,7 @@ public class IotIdentityV2Client implements AutoCloseable {
 
     /**
      * Constructs a new IotIdentityV2Client, using an MQTT311 client as transport
+     *
      * @param protocolClient the MQTT311 client to use
      * @param options configuration options to use
      */
