@@ -160,7 +160,7 @@ public class ShadowV2 {
             })
             .build();
 
-        context.shadowUpdatedStream = context.client.createShadowUpdatedEventStream(shadowUpdatedRequest, shadowUpdatedOptions);
+        context.shadowUpdatedStream = context.client.createShadowUpdatedStream(shadowUpdatedRequest, shadowUpdatedOptions);
         context.shadowUpdatedStream.open();
 
         // ShadowDeltaUpdated streaming operation
@@ -173,7 +173,7 @@ public class ShadowV2 {
             })
             .build();
 
-        context.shadowDeltaUpdatedStream = context.client.createShadowDeltaUpdatedEventStream(shadowDeltaUpdatedRequest, shadowDeltaUpdatedOptions);
+        context.shadowDeltaUpdatedStream = context.client.createShadowDeltaUpdatedStream(shadowDeltaUpdatedRequest, shadowDeltaUpdatedOptions);
         context.shadowDeltaUpdatedStream.open();
 
         return context;

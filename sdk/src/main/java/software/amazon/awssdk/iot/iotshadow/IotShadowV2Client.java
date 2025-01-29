@@ -123,7 +123,7 @@ public class IotShadowV2Client implements AutoCloseable {
             builder.withPayload(payloadJson.getBytes(StandardCharsets.UTF_8));
 
             // Subscriptions
-            String subscription0 = $aws/things/{thingName}/shadow/name/{shadowName}/delete/+;
+            String subscription0 = "$aws/things/{thingName}/shadow/name/{shadowName}/delete/+";
             subscription0 = subscription0.replace("{thingName}", request.thingName);
             subscription0 = subscription0.replace("{shadowName}", request.shadowName);
             builder.withSubscription(subscription0);
@@ -185,7 +185,7 @@ public class IotShadowV2Client implements AutoCloseable {
             builder.withPayload(payloadJson.getBytes(StandardCharsets.UTF_8));
 
             // Subscriptions
-            String subscription0 = $aws/things/{thingName}/shadow/delete/+;
+            String subscription0 = "$aws/things/{thingName}/shadow/delete/+";
             subscription0 = subscription0.replace("{thingName}", request.thingName);
             builder.withSubscription(subscription0);
 
@@ -251,7 +251,7 @@ public class IotShadowV2Client implements AutoCloseable {
             builder.withPayload(payloadJson.getBytes(StandardCharsets.UTF_8));
 
             // Subscriptions
-            String subscription0 = $aws/things/{thingName}/shadow/name/{shadowName}/get/+;
+            String subscription0 = "$aws/things/{thingName}/shadow/name/{shadowName}/get/+";
             subscription0 = subscription0.replace("{thingName}", request.thingName);
             subscription0 = subscription0.replace("{shadowName}", request.shadowName);
             builder.withSubscription(subscription0);
@@ -313,7 +313,7 @@ public class IotShadowV2Client implements AutoCloseable {
             builder.withPayload(payloadJson.getBytes(StandardCharsets.UTF_8));
 
             // Subscriptions
-            String subscription0 = $aws/things/{thingName}/shadow/get/+;
+            String subscription0 = "$aws/things/{thingName}/shadow/get/+";
             subscription0 = subscription0.replace("{thingName}", request.thingName);
             builder.withSubscription(subscription0);
 
@@ -379,11 +379,11 @@ public class IotShadowV2Client implements AutoCloseable {
             builder.withPayload(payloadJson.getBytes(StandardCharsets.UTF_8));
 
             // Subscriptions
-            String subscription0 = $aws/things/{thingName}/shadow/name/{shadowName}/update/accepted;
+            String subscription0 = "$aws/things/{thingName}/shadow/name/{shadowName}/update/accepted";
             subscription0 = subscription0.replace("{thingName}", request.thingName);
             subscription0 = subscription0.replace("{shadowName}", request.shadowName);
             builder.withSubscription(subscription0);
-            String subscription1 = $aws/things/{thingName}/shadow/name/{shadowName}/update/rejected;
+            String subscription1 = "$aws/things/{thingName}/shadow/name/{shadowName}/update/rejected";
             subscription1 = subscription1.replace("{thingName}", request.thingName);
             subscription1 = subscription1.replace("{shadowName}", request.shadowName);
             builder.withSubscription(subscription1);
@@ -445,10 +445,10 @@ public class IotShadowV2Client implements AutoCloseable {
             builder.withPayload(payloadJson.getBytes(StandardCharsets.UTF_8));
 
             // Subscriptions
-            String subscription0 = $aws/things/{thingName}/shadow/update/accepted;
+            String subscription0 = "$aws/things/{thingName}/shadow/update/accepted";
             subscription0 = subscription0.replace("{thingName}", request.thingName);
             builder.withSubscription(subscription0);
-            String subscription1 = $aws/things/{thingName}/shadow/update/rejected;
+            String subscription1 = "$aws/things/{thingName}/shadow/update/rejected";
             subscription1 = subscription1.replace("{thingName}", request.thingName);
             builder.withSubscription(subscription1);
 

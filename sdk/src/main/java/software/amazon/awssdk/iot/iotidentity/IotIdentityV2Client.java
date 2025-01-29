@@ -20,7 +20,7 @@ import software.amazon.awssdk.crt.iot.*;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
 import software.amazon.awssdk.crt.mqtt5.Mqtt5Client;
 import software.amazon.awssdk.iot.*;
-import software.amazon.awssdk.iot.iotshadow.model.*;
+import software.amazon.awssdk.iot.iotidentity.model.*;
 
 /**
  * An AWS IoT service that assists with provisioning a device and installing unique client certificates on it
@@ -107,9 +107,9 @@ public class IotIdentityV2Client implements AutoCloseable {
             builder.withPayload(payloadJson.getBytes(StandardCharsets.UTF_8));
 
             // Subscriptions
-            String subscription0 = $aws/certificates/create-from-csr/json/accepted;
+            String subscription0 = "$aws/certificates/create-from-csr/json/accepted";
             builder.withSubscription(subscription0);
-            String subscription1 = $aws/certificates/create-from-csr/json/rejected;
+            String subscription1 = "$aws/certificates/create-from-csr/json/rejected";
             builder.withSubscription(subscription1);
 
             // Response paths
@@ -124,7 +124,7 @@ public class IotIdentityV2Client implements AutoCloseable {
             builder.withResponsePath(pathBuilder2.build());
 
             // Submit
-            submitOperation(responseFuture, builder.build(), responseTopic1, CreateCertificateFromCsrResponse.class, responseTopic2, V2ErrorResponse.class, IotShadowV2Client::createV2ErrorResponseException);
+            submitOperation(responseFuture, builder.build(), responseTopic1, CreateCertificateFromCsrResponse.class, responseTopic2, V2ErrorResponse.class, IotIdentityV2Client::createV2ErrorResponseException);
         } catch (Exception e) {
             responseFuture.completeExceptionally(createV2ErrorResponseException(e.getMessage(), null));
         }
@@ -158,9 +158,9 @@ public class IotIdentityV2Client implements AutoCloseable {
             builder.withPayload(payloadJson.getBytes(StandardCharsets.UTF_8));
 
             // Subscriptions
-            String subscription0 = $aws/certificates/create/json/accepted;
+            String subscription0 = "$aws/certificates/create/json/accepted";
             builder.withSubscription(subscription0);
-            String subscription1 = $aws/certificates/create/json/rejected;
+            String subscription1 = "$aws/certificates/create/json/rejected";
             builder.withSubscription(subscription1);
 
             // Response paths
@@ -175,7 +175,7 @@ public class IotIdentityV2Client implements AutoCloseable {
             builder.withResponsePath(pathBuilder2.build());
 
             // Submit
-            submitOperation(responseFuture, builder.build(), responseTopic1, CreateKeysAndCertificateResponse.class, responseTopic2, V2ErrorResponse.class, IotShadowV2Client::createV2ErrorResponseException);
+            submitOperation(responseFuture, builder.build(), responseTopic1, CreateKeysAndCertificateResponse.class, responseTopic2, V2ErrorResponse.class, IotIdentityV2Client::createV2ErrorResponseException);
         } catch (Exception e) {
             responseFuture.completeExceptionally(createV2ErrorResponseException(e.getMessage(), null));
         }
@@ -214,10 +214,10 @@ public class IotIdentityV2Client implements AutoCloseable {
             builder.withPayload(payloadJson.getBytes(StandardCharsets.UTF_8));
 
             // Subscriptions
-            String subscription0 = $aws/provisioning-templates/{templateName}/provision/json/accepted;
+            String subscription0 = "$aws/provisioning-templates/{templateName}/provision/json/accepted";
             subscription0 = subscription0.replace("{templateName}", request.templateName);
             builder.withSubscription(subscription0);
-            String subscription1 = $aws/provisioning-templates/{templateName}/provision/json/rejected;
+            String subscription1 = "$aws/provisioning-templates/{templateName}/provision/json/rejected";
             subscription1 = subscription1.replace("{templateName}", request.templateName);
             builder.withSubscription(subscription1);
 
@@ -233,7 +233,7 @@ public class IotIdentityV2Client implements AutoCloseable {
             builder.withResponsePath(pathBuilder2.build());
 
             // Submit
-            submitOperation(responseFuture, builder.build(), responseTopic1, RegisterThingResponse.class, responseTopic2, V2ErrorResponse.class, IotShadowV2Client::createV2ErrorResponseException);
+            submitOperation(responseFuture, builder.build(), responseTopic1, RegisterThingResponse.class, responseTopic2, V2ErrorResponse.class, IotIdentityV2Client::createV2ErrorResponseException);
         } catch (Exception e) {
             responseFuture.completeExceptionally(createV2ErrorResponseException(e.getMessage(), null));
         }

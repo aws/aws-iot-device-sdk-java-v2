@@ -20,7 +20,7 @@ import software.amazon.awssdk.crt.iot.*;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
 import software.amazon.awssdk.crt.mqtt5.Mqtt5Client;
 import software.amazon.awssdk.iot.*;
-import software.amazon.awssdk.iot.iotshadow.model.*;
+import software.amazon.awssdk.iot.iotjobs.model.*;
 
 /**
  * The AWS IoT jobs service can be used to define a set of remote operations that are sent to and executed on one or more devices connected to AWS IoT.
@@ -123,7 +123,7 @@ public class IotJobsV2Client implements AutoCloseable {
             builder.withPayload(payloadJson.getBytes(StandardCharsets.UTF_8));
 
             // Subscriptions
-            String subscription0 = $aws/things/{thingName}/jobs/{jobId}/get/+;
+            String subscription0 = "$aws/things/{thingName}/jobs/{jobId}/get/+";
             subscription0 = subscription0.replace("{thingName}", request.thingName);
             subscription0 = subscription0.replace("{jobId}", request.jobId);
             builder.withSubscription(subscription0);
@@ -142,7 +142,7 @@ public class IotJobsV2Client implements AutoCloseable {
             builder.withResponsePath(pathBuilder2.build());
 
             // Submit
-            submitOperation(responseFuture, builder.build(), responseTopic1, DescribeJobExecutionResponse.class, responseTopic2, V2ErrorResponse.class, IotShadowV2Client::createV2ErrorResponseException);
+            submitOperation(responseFuture, builder.build(), responseTopic1, DescribeJobExecutionResponse.class, responseTopic2, V2ErrorResponse.class, IotJobsV2Client::createV2ErrorResponseException);
         } catch (Exception e) {
             responseFuture.completeExceptionally(createV2ErrorResponseException(e.getMessage(), null));
         }
@@ -185,7 +185,7 @@ public class IotJobsV2Client implements AutoCloseable {
             builder.withPayload(payloadJson.getBytes(StandardCharsets.UTF_8));
 
             // Subscriptions
-            String subscription0 = $aws/things/{thingName}/jobs/get/+;
+            String subscription0 = "$aws/things/{thingName}/jobs/get/+";
             subscription0 = subscription0.replace("{thingName}", request.thingName);
             builder.withSubscription(subscription0);
 
@@ -203,7 +203,7 @@ public class IotJobsV2Client implements AutoCloseable {
             builder.withResponsePath(pathBuilder2.build());
 
             // Submit
-            submitOperation(responseFuture, builder.build(), responseTopic1, GetPendingJobExecutionsResponse.class, responseTopic2, V2ErrorResponse.class, IotShadowV2Client::createV2ErrorResponseException);
+            submitOperation(responseFuture, builder.build(), responseTopic1, GetPendingJobExecutionsResponse.class, responseTopic2, V2ErrorResponse.class, IotJobsV2Client::createV2ErrorResponseException);
         } catch (Exception e) {
             responseFuture.completeExceptionally(createV2ErrorResponseException(e.getMessage(), null));
         }
@@ -246,7 +246,7 @@ public class IotJobsV2Client implements AutoCloseable {
             builder.withPayload(payloadJson.getBytes(StandardCharsets.UTF_8));
 
             // Subscriptions
-            String subscription0 = $aws/things/{thingName}/jobs/start-next/+;
+            String subscription0 = "$aws/things/{thingName}/jobs/start-next/+";
             subscription0 = subscription0.replace("{thingName}", request.thingName);
             builder.withSubscription(subscription0);
 
@@ -264,7 +264,7 @@ public class IotJobsV2Client implements AutoCloseable {
             builder.withResponsePath(pathBuilder2.build());
 
             // Submit
-            submitOperation(responseFuture, builder.build(), responseTopic1, StartNextJobExecutionResponse.class, responseTopic2, V2ErrorResponse.class, IotShadowV2Client::createV2ErrorResponseException);
+            submitOperation(responseFuture, builder.build(), responseTopic1, StartNextJobExecutionResponse.class, responseTopic2, V2ErrorResponse.class, IotJobsV2Client::createV2ErrorResponseException);
         } catch (Exception e) {
             responseFuture.completeExceptionally(createV2ErrorResponseException(e.getMessage(), null));
         }
@@ -312,7 +312,7 @@ public class IotJobsV2Client implements AutoCloseable {
             builder.withPayload(payloadJson.getBytes(StandardCharsets.UTF_8));
 
             // Subscriptions
-            String subscription0 = $aws/things/{thingName}/jobs/{jobId}/update/+;
+            String subscription0 = "$aws/things/{thingName}/jobs/{jobId}/update/+";
             subscription0 = subscription0.replace("{thingName}", request.thingName);
             subscription0 = subscription0.replace("{jobId}", request.jobId);
             builder.withSubscription(subscription0);
@@ -331,7 +331,7 @@ public class IotJobsV2Client implements AutoCloseable {
             builder.withResponsePath(pathBuilder2.build());
 
             // Submit
-            submitOperation(responseFuture, builder.build(), responseTopic1, UpdateJobExecutionResponse.class, responseTopic2, V2ErrorResponse.class, IotShadowV2Client::createV2ErrorResponseException);
+            submitOperation(responseFuture, builder.build(), responseTopic1, UpdateJobExecutionResponse.class, responseTopic2, V2ErrorResponse.class, IotJobsV2Client::createV2ErrorResponseException);
         } catch (Exception e) {
             responseFuture.completeExceptionally(createV2ErrorResponseException(e.getMessage(), null));
         }
