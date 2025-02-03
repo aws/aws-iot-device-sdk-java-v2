@@ -13,31 +13,44 @@ import org.junit.jupiter.api.AfterEach;
 import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
 import software.amazon.awssdk.crt.mqtt5.*;
+import software.amazon.awssdk.crt.mqtt5.packets.ConnectPacket;
 import software.amazon.awssdk.iot.AwsIotMqtt5ClientBuilder;
 import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
 
 public class V2ServiceClientTestFixture {
 
-    private String host;
-    private String certificatePath;
-    private String keyPath;
+    private String baseHost;
+    private String baseCertificatePath;
+    private String baseKeyPath;
+
+    private String provisioningHost;
+    private String provisioningCertificatePath;
+    private String provisioningKeyPath;
 
     Mqtt5Client mqtt5Client;
     MqttClientConnection mqtt311Client;
 
     void populateTestingEnvironmentVariables() {
-        host = System.getenv("AWS_TEST_MQTT5_IOT_CORE_HOST");
-        certificatePath = System.getenv("AWS_TEST_MQTT5_IOT_CERTIFICATE_PATH");
-        keyPath = System.getenv("AWS_TEST_MQTT5_IOT_KEY_PATH");
+        baseHost = System.getenv("AWS_TEST_MQTT5_IOT_CORE_HOST");
+        baseCertificatePath = System.getenv("AWS_TEST_MQTT5_IOT_CERTIFICATE_PATH");
+        baseKeyPath = System.getenv("AWS_TEST_MQTT5_IOT_KEY_PATH");
+
+        provisioningHost = System.getenv("AWS_TEST_IOT_CORE_PROVISIONING_HOST");
+        provisioningCertificatePath = System.getenv("AWS_TEST_IOT_CORE_PROVISIONING_CERTIFICATE_PATH");
+        provisioningKeyPath = System.getenv("AWS_TEST_IOT_CORE_PROVISIONING_KEY_PATH");
     }
 
     V2ServiceClientTestFixture() {}
 
-    boolean hasTestEnvironment() {
-        return host != null && certificatePath != null && keyPath != null;
+    boolean hasBaseTestEnvironment() {
+        return baseHost != null && baseCertificatePath != null && baseKeyPath != null;
     }
 
-    void setupMqtt5Client() {
+    boolean hasProvisioningTestEnvironment() {
+        return provisioningHost != null && provisioningCertificatePath != null && provisioningKeyPath != null;
+    }
+
+    private void setupMqtt5Client(String host, String certificatePath, String keyPath) {
         try (AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newDirectMqttBuilderWithMtlsFromPath(
                 host, certificatePath, keyPath)) {
 
@@ -66,6 +79,10 @@ public class V2ServiceClientTestFixture {
 
             builder.withLifeCycleEvents(eventHandler);
 
+            ConnectPacket.ConnectPacketBuilder connectBuilder = new ConnectPacket.ConnectPacketBuilder();
+            connectBuilder.withClientId("test-" + UUID.randomUUID().toString());
+            builder.withConnectProperties(connectBuilder);
+
             this.mqtt5Client = builder.build();
 
             try {
@@ -77,7 +94,15 @@ public class V2ServiceClientTestFixture {
         }
     }
 
-    void setupMqtt311Client() {
+    void setupBaseMqtt5Client() {
+        setupMqtt5Client(baseHost, baseCertificatePath, baseKeyPath);
+    }
+
+    void setupProvisioningMqtt5Client() {
+        setupMqtt5Client(provisioningHost, provisioningCertificatePath, provisioningKeyPath);
+    }
+
+    private void setupMqtt311Client(String host, String certificatePath, String keyPath) {
         try (AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(certificatePath, keyPath)) {
             builder.withEndpoint(host);
             String clientId = "test-" + UUID.randomUUID().toString();
@@ -91,6 +116,14 @@ public class V2ServiceClientTestFixture {
                 fail("Exception in connecting: " + ex.toString());
             }
         }
+    }
+
+    void setupBaseMqtt311Client() {
+        setupMqtt311Client(baseHost, baseCertificatePath, baseKeyPath);
+    }
+
+    void setupProvisioningMqtt311Client() {
+        setupMqtt311Client(provisioningHost, provisioningCertificatePath, provisioningKeyPath);
     }
 
     @AfterEach
@@ -107,6 +140,4 @@ public class V2ServiceClientTestFixture {
             mqtt5Client = null;
         }
     }
-
-
 }

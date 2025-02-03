@@ -37,6 +37,10 @@ public class ShadowTests extends V2ServiceClientTestFixture {
         return builder.create();
     }
 
+    boolean hasTestEnvironment() {
+        return hasBaseTestEnvironment();
+    }
+
     public ShadowTests() {
         super();
         populateTestingEnvironmentVariables();
@@ -51,7 +55,7 @@ public class ShadowTests extends V2ServiceClientTestFixture {
     }
 
     void setupShadowClient5(MqttRequestResponseClientOptions serviceClientOptions) {
-        setupMqtt5Client();
+        setupBaseMqtt5Client();
 
         if (serviceClientOptions == null) {
             serviceClientOptions = createDefaultServiceClientOptions();
@@ -61,7 +65,7 @@ public class ShadowTests extends V2ServiceClientTestFixture {
     }
 
     void setupShadowClient311(MqttRequestResponseClientOptions serviceClientOptions) {
-        setupMqtt311Client();
+        setupBaseMqtt311Client();
 
         if (serviceClientOptions == null) {
             serviceClientOptions = createDefaultServiceClientOptions();
@@ -114,7 +118,7 @@ public class ShadowTests extends V2ServiceClientTestFixture {
     @Test
     public void getNonexistentShadow311()
     {
-        assumeTrue(hasTestEnvironment());
+        assumeTrue(hasBaseTestEnvironment());
         setupShadowClient311(null);
 
         String thingName = UUID.randomUUID().toString();

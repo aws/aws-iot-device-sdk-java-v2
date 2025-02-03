@@ -69,7 +69,7 @@ public class JobsTests extends V2ServiceClientTestFixture {
     }
 
     boolean hasTestEnvironment() {
-        return testRegion != null && super.hasTestEnvironment();
+        return testRegion != null && super.hasBaseTestEnvironment();
     }
 
     public JobsTests() {
@@ -97,7 +97,7 @@ public class JobsTests extends V2ServiceClientTestFixture {
     }
 
     void setupJobsClient5(MqttRequestResponseClientOptions serviceClientOptions) {
-        setupMqtt5Client();
+        setupBaseMqtt5Client();
 
         if (serviceClientOptions == null) {
             serviceClientOptions = createDefaultServiceClientOptions();
@@ -107,7 +107,7 @@ public class JobsTests extends V2ServiceClientTestFixture {
     }
 
     void setupJobsClient311(MqttRequestResponseClientOptions serviceClientOptions) {
-        setupMqtt311Client();
+        setupBaseMqtt311Client();
 
         if (serviceClientOptions == null) {
             serviceClientOptions = createDefaultServiceClientOptions();
