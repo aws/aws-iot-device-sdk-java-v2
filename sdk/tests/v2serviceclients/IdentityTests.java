@@ -7,23 +7,23 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import software.amazon.awssdk.crt.iot.MqttRequestResponseClientOptions;
+import software.amazon.awssdk.iot.iotidentity.IotIdentityV2Client;
+import software.amazon.awssdk.iot.iotidentity.model.CreateCertificateFromCsrRequest;
+import software.amazon.awssdk.iot.iotidentity.model.CreateCertificateFromCsrResponse;
 import software.amazon.awssdk.iot.iotidentity.model.CreateKeysAndCertificateRequest;
 import software.amazon.awssdk.iot.iotidentity.model.CreateKeysAndCertificateResponse;
 import software.amazon.awssdk.iot.iotidentity.model.RegisterThingRequest;
 import software.amazon.awssdk.iot.iotidentity.model.RegisterThingResponse;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.iot.IotClient;
-import software.amazon.awssdk.crt.iot.MqttRequestResponseClientOptions;
-import software.amazon.awssdk.iot.iotidentity.IotIdentityV2Client;
-import software.amazon.awssdk.iot.iotidentity.model.*;
 import software.amazon.awssdk.services.iot.model.*;
 import software.amazon.awssdk.services.sts.StsClient;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
-import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
@@ -32,7 +32,6 @@ public class IdentityTests extends V2ServiceClientTestFixture {
     private static class TestContext {
         private String thingName = null;
         private String certificateId = null;
-        private String certificateArn = null;
     }
 
     private IotIdentityV2Client identityClient;
@@ -40,6 +39,7 @@ public class IdentityTests extends V2ServiceClientTestFixture {
 
     private String testRegion;
     private String provisioningTemplateName;
+    private String provisioningCsrPath;
 
     private TestContext testContext;
 
@@ -47,10 +47,12 @@ public class IdentityTests extends V2ServiceClientTestFixture {
         super.populateTestingEnvironmentVariables();
         provisioningTemplateName = System.getenv("AWS_TEST_IOT_CORE_PROVISIONING_TEMPLATE_NAME");
         testRegion = System.getenv("AWS_TEST_MQTT5_IOT_CORE_REGION");
+        provisioningCsrPath = System.getenv("AWS_TEST_IOT_CORE_PROVISIONING_CSR_PATH");
     }
 
     boolean hasTestEnvironment() {
-        return testRegion != null && provisioningTemplateName != null && super.hasProvisioningTestEnvironment();
+        return testRegion != null && provisioningTemplateName != null && provisioningCsrPath != null &&
+                super.hasProvisioningTestEnvironment();
     }
 
     public IdentityTests() {
@@ -147,20 +149,7 @@ public class IdentityTests extends V2ServiceClientTestFixture {
         testContext = new IdentityTests.TestContext();
     }
 
-    @Test
-    public void createDestroy5() {
-        assumeTrue(hasTestEnvironment());
-        setupIdentityClient5(null);
-    }
-
-    @Test
-    public void createDestroy311() {
-        assumeTrue(hasTestEnvironment());
-        setupIdentityClient311(null);
-
-    }
-
-    void doCreateCertificateAndKeysTest() {
+    void doBasicProvisioningTest() {
         try {
             CreateKeysAndCertificateRequest createRequest = new CreateKeysAndCertificateRequest();
 
@@ -190,16 +179,60 @@ public class IdentityTests extends V2ServiceClientTestFixture {
     }
 
     @Test
-    public void createCertificateAndKeys5() {
+    public void basicProvisioning5() {
         assumeTrue(hasTestEnvironment());
         setupIdentityClient5(null);
-        doCreateCertificateAndKeysTest();
+        doBasicProvisioningTest();
     }
 
     @Test
-    public void createCertificateAndKeys311() {
+    public void basicProvisioning311() {
         assumeTrue(hasTestEnvironment());
         setupIdentityClient311(null);
-        doCreateCertificateAndKeysTest();
+        doBasicProvisioningTest();
+    }
+
+    void doCsrProvisioningTest() {
+        try {
+            String csrContents = new String(Files.readAllBytes(Paths.get(provisioningCsrPath)));
+            CreateCertificateFromCsrRequest createCertificateFromCsrRequest = new CreateCertificateFromCsrRequest();
+            createCertificateFromCsrRequest.certificateSigningRequest = csrContents;
+
+            CreateCertificateFromCsrResponse createResponse = identityClient.createCertificateFromCsr(createCertificateFromCsrRequest).get();
+            testContext.certificateId = createResponse.certificateId;
+
+            Assertions.assertNotNull(createResponse.certificateId);
+            Assertions.assertNotNull(createResponse.certificatePem);
+            Assertions.assertNotNull(createResponse.certificateOwnershipToken);
+
+            HashMap<String, String> parameters = new HashMap<>();
+            parameters.put("SerialNumber", UUID.randomUUID().toString());
+
+            RegisterThingRequest registerRequest = new RegisterThingRequest();
+            registerRequest.templateName = provisioningTemplateName;
+            registerRequest.certificateOwnershipToken = createResponse.certificateOwnershipToken;
+            registerRequest.parameters = parameters;
+
+            RegisterThingResponse registerResponse = identityClient.registerThing(registerRequest).get();
+            testContext.thingName = registerResponse.thingName;
+
+            Assertions.assertNotNull(registerResponse.thingName);
+        } catch (Exception ex) {
+            Assertions.fail(ex);
+        }
+    }
+
+    @Test
+    public void csrProvisioning5() {
+        assumeTrue(hasTestEnvironment());
+        setupIdentityClient5(null);
+        doCsrProvisioningTest();
+    }
+
+    @Test
+    public void csrProvisioning311() {
+        assumeTrue(hasTestEnvironment());
+        setupIdentityClient311(null);
+        doCsrProvisioningTest();
     }
 }
