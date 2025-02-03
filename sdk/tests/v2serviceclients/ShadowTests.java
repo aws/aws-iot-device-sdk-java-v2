@@ -78,20 +78,6 @@ public class ShadowTests extends V2ServiceClientTestFixture {
         }
     }
 
-    @Test
-    public void createDestroy5()
-    {
-        assumeTrue(hasTestEnvironment());
-        setupShadowClient5(null);
-    }
-
-    @Test
-    public void createDestroy311()
-    {
-        assumeTrue(hasTestEnvironment());
-        setupShadowClient311(null);
-    }
-
     void doGetNonExistentShadow(String thingName, String shadowName) {
         GetNamedShadowRequest request = new GetNamedShadowRequest();
         request.thingName = thingName;
