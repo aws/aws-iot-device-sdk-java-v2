@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0.
  */
 
-package shadow;
+package jobs;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -14,17 +14,24 @@ import software.amazon.awssdk.crt.iot.*;
 import software.amazon.awssdk.crt.mqtt5.*;
 import software.amazon.awssdk.crt.mqtt5.packets.ConnectPacket;
 import software.amazon.awssdk.iot.AwsIotMqtt5ClientBuilder;
-import software.amazon.awssdk.iot.iotshadow.IotShadowV2Client;
-import software.amazon.awssdk.iot.iotshadow.model.*;
-import software.amazon.awssdk.iot.ShadowStateFactory;
-import software.amazon.awssdk.iot.Timestamp;
+import software.amazon.awssdk.iot.iotjobs.IotJobsV2Client;
+import software.amazon.awssdk.iot.iotjobs.model.*;
 import software.amazon.awssdk.iot.V2ClientStreamOptions;
+
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.iot.IotClient;
+import software.amazon.awssdk.services.iot.model.CreateThingRequest;
+import software.amazon.awssdk.services.iot.model.CreateThingResponse;
+import software.amazon.awssdk.services.iot.model.DescribeThingRequest;
+import software.amazon.awssdk.services.iot.model.DescribeThingResponse;
+import software.amazon.awssdk.services.sts.StsClient;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ExecutionException;
-import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.Scanner;
 
 import org.apache.commons.cli.CommandLineParser;
@@ -35,32 +42,33 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
 
-public class ShadowV2 {
+public class JobsSandbox {
 
     static class ApplicationContext implements AutoCloseable {
         public final Gson gson = createGson();
         public final CompletableFuture<Void> connectedFuture = new CompletableFuture<>();
         public final CompletableFuture<Void> stoppedFuture = new CompletableFuture<>();
 
-        private StreamingOperation shadowUpdatedStream;
-        private StreamingOperation shadowDeltaUpdatedStream;
+        private StreamingOperation jobExecutionsChangedStream;
+        private StreamingOperation nextJobExecutionChangedStream;
 
         public String thingName;
 
+        public IotClient controlPlaneClient;
         public Mqtt5Client protocolClient;
-        public IotShadowV2Client client;
+        public IotJobsV2Client jobsClient;
 
         public void close() {
-            if (this.shadowUpdatedStream != null) {
-                this.shadowUpdatedStream.close();
+            if (this.jobExecutionsChangedStream != null) {
+                this.jobExecutionsChangedStream.close();
             }
 
-            if (this.shadowDeltaUpdatedStream != null) {
-                this.shadowDeltaUpdatedStream.close();
+            if (this.nextJobExecutionChangedStream != null) {
+                this.nextJobExecutionChangedStream.close();
             }
 
-            if (this.client != null) {
-                this.client.close();
+            if (this.jobsClient != null) {
+                this.jobsClient.close();
             }
 
             if (this.protocolClient != null) {
@@ -71,9 +79,6 @@ public class ShadowV2 {
         private static Gson createGson() {
             GsonBuilder builder = new GsonBuilder();
             builder.disableHtmlEscaping();
-            builder.registerTypeAdapter(Timestamp.class, new Timestamp.Serializer());
-            builder.registerTypeAdapter(Timestamp.class, new Timestamp.Deserializer());
-            builder.registerTypeAdapterFactory(new ShadowStateFactory());
             return builder.create();
         }
     }
@@ -87,6 +92,7 @@ public class ShadowV2 {
         cliOptions.addOption(Option.builder("k").longOpt("key").desc("file path to an X509 private key to use when establishing mTLS context").hasArg().required().build());
         cliOptions.addOption(Option.builder("t").longOpt("thing").desc("name of the AWS IoT thing resource to interact with").hasArg().required().build());
         cliOptions.addOption(Option.builder("e").longOpt("endpoint").desc("AWS IoT endpoint to connect to").hasArg().required().build());
+        cliOptions.addOption(Option.builder("r").longOpt("region").desc("AWS Region the AWS IoT endpoint is using").hasArg().required().build());
         cliOptions.addOption(Option.builder("h").longOpt("help").desc("Prints command line help").build());
 
         CommandLineParser parser = new DefaultParser();
@@ -94,11 +100,60 @@ public class ShadowV2 {
 
         if (commandLine.hasOption("help")) {
             HelpFormatter formatter = new HelpFormatter();
-            formatter.printHelp("ShadowV2", cliOptions);
+            formatter.printHelp("JobsSandbox", cliOptions);
             return null;
         }
 
+        String endpoint = commandLine.getOptionValue("endpoint");
+        String region = null;
+        if (commandLine.hasOption("region")) {
+            region = commandLine.getOptionValue("region");
+        }
+
+        if (region == null) {
+            System.out.println("No region supplied on the command line, attempting to extract from standard IoT Core endpoint pattern");
+
+            //  Try the standard account-specific endpoint
+            Pattern standardRegionPattern = Pattern.compile(".+-ats\\.iot.*\\.(.+)\\.amazonaws\\.com");
+            Matcher standardMatch = standardRegionPattern.matcher(endpoint);
+            region = standardMatch.group(1);
+        }
+
+        if (region == null) {
+            System.out.println("No region supplied on the command line, attempting to extract from jobs IoT Core endpoint pattern");
+
+            // Try the jobs specific endpoint
+            // account-specific-prefix.jobs.iot.aws-region.amazonaws.com
+            Pattern jobsRegionPattern = Pattern.compile(".*\\.jobs\\.iot.*\\.(.+)\\.amazonaws\\.com");
+            Matcher standardMatch = jobsRegionPattern.matcher(endpoint);
+            region = standardMatch.group(1);
+        }
+
+        if (region == null) {
+            System.out.println("ERROR: could not determine region from endpoint");
+            return null;
+        }
+
+        System.out.println(String.format("Using region '%s'", region));
+
+        // needed to pull in STS to the class path so that profile-based STS lookups work correctly
+        StsClient stsClient = StsClient.builder()
+                .region(Region.of(region))
+                .build();
+
+        context.controlPlaneClient = IotClient.builder()
+                .region(Region.of(region))
+                .build();
+
         context.thingName = commandLine.getOptionValue("thing");
+
+        try {
+            DescribeThingResponse describeResponse = context.controlPlaneClient.describeThing(DescribeThingRequest.builder().thingName(context.thingName).build());
+        } catch (Exception ex) {
+            System.out.println(String.format("Thing '%s' does not exist.  Creating it...", context.thingName));
+            CreateThingResponse createResponse = context.controlPlaneClient.createThing(CreateThingRequest.builder().thingName(context.thingName).build());
+        }
+
         Mqtt5ClientOptions.LifecycleEvents lifecycleEvents = new Mqtt5ClientOptions.LifecycleEvents() {
             @Override
             public void onAttemptingConnect(Mqtt5Client client, OnAttemptingConnectReturn onAttemptingConnectReturn) {
@@ -148,33 +203,33 @@ public class ShadowV2 {
             .withOperationTimeoutSeconds(30)
             .build();
 
-        context.client = IotShadowV2Client.newFromMqtt5(context.protocolClient, rrClientOptions);
+        context.jobsClient = IotJobsV2Client.newFromMqtt5(context.protocolClient, rrClientOptions);
 
-        // ShadowUpdated streaming operation
-        ShadowUpdatedSubscriptionRequest shadowUpdatedRequest = new ShadowUpdatedSubscriptionRequest();
-        shadowUpdatedRequest.thingName = context.thingName;
+        // JobExecutionsChanged streaming operation
+        JobExecutionsChangedSubscriptionRequest jobExecutionsChangedRequest = new JobExecutionsChangedSubscriptionRequest();
+        jobExecutionsChangedRequest.thingName = context.thingName;
 
-        V2ClientStreamOptions<ShadowUpdatedEvent> shadowUpdatedOptions = V2ClientStreamOptions.<ShadowUpdatedEvent>builder()
+        V2ClientStreamOptions<JobExecutionsChangedEvent> jobExecutionsChangedOptions = V2ClientStreamOptions.<JobExecutionsChangedEvent>builder()
             .withStreamEventHandler((event) -> {
-                System.out.println("ShadowUpdated event: \n  " + context.gson.toJson(event));
+                System.out.println("JobExecutionsChanged event: \n  " + context.gson.toJson(event));
             })
             .build();
 
-        context.shadowUpdatedStream = context.client.createShadowUpdatedStream(shadowUpdatedRequest, shadowUpdatedOptions);
-        context.shadowUpdatedStream.open();
+        context.jobExecutionsChangedStream = context.jobsClient.createJobExecutionsChangedStream(jobExecutionsChangedRequest, jobExecutionsChangedOptions);
+        context.jobExecutionsChangedStream.open();
 
-        // ShadowDeltaUpdated streaming operation
-        ShadowDeltaUpdatedSubscriptionRequest shadowDeltaUpdatedRequest = new ShadowDeltaUpdatedSubscriptionRequest();
-        shadowDeltaUpdatedRequest.thingName = context.thingName;
+        // NextJobExecutionChanged streaming operation
+        NextJobExecutionChangedSubscriptionRequest nextJobExecutionChangedRequest = new NextJobExecutionChangedSubscriptionRequest();
+        nextJobExecutionChangedRequest.thingName = context.thingName;
 
-        V2ClientStreamOptions<ShadowDeltaUpdatedEvent> shadowDeltaUpdatedOptions = V2ClientStreamOptions.<ShadowDeltaUpdatedEvent>builder()
+        V2ClientStreamOptions<NextJobExecutionChangedEvent> nextJobExecutionChangedOptions = V2ClientStreamOptions.<NextJobExecutionChangedEvent>builder()
             .withStreamEventHandler((event) -> {
-                System.out.println("ShadowDeltaUpdated event: \n  " + context.gson.toJson(event));
+                System.out.println("NextJobExecutionChanged event: \n  " + context.gson.toJson(event));
             })
             .build();
 
-        context.shadowDeltaUpdatedStream = context.client.createShadowDeltaUpdatedStream(shadowDeltaUpdatedRequest, shadowDeltaUpdatedOptions);
-        context.shadowDeltaUpdatedStream.open();
+        context.nextJobExecutionChangedStream = context.jobsClient.createNextJobExecutionChangedStream(nextJobExecutionChangedRequest, nextJobExecutionChangedOptions);
+        context.nextJobExecutionChangedStream.open();
 
         return context;
     }
@@ -197,73 +252,8 @@ public class ShadowV2 {
         }
     }
 
-    private static void handleGet(ApplicationContext context) {
-        GetShadowRequest request = new GetShadowRequest();
-        request.thingName = context.thingName;
-
-        try {
-            GetShadowResponse response = context.client.getShadow(request).get();
-            System.out.println("GetShadowResponse: \n  " + context.gson.toJson(response));
-        } catch (Exception ex) {
-            handleOperationException("Get", ex, context);
-        }
-    }
-
-    private static void handleDelete(ApplicationContext context) {
-        DeleteShadowRequest request = new DeleteShadowRequest();
-        request.thingName = context.thingName;
-
-        try {
-            DeleteShadowResponse response = context.client.deleteShadow(request).get();
-            System.out.println("DeleteShadowResponse: \n  " + context.gson.toJson(response));
-        } catch (Exception ex) {
-            handleOperationException("Delete", ex, context);
-        }
-    }
-
-    private static void handleUpdate(ApplicationContext context, ShadowState newState) {
-        UpdateShadowRequest request = new UpdateShadowRequest();
-        request.thingName = context.thingName;
-        request.state = newState;
-
-        try {
-            UpdateShadowResponse response = context.client.updateShadow(request).get();
-            System.out.println("UpdateShadowResponse: \n  " + context.gson.toJson(response));
-        } catch (Exception ex) {
-            handleOperationException("Update", ex, context);
-        }
-    }
-
-    private static void handleUpdateDesired(ApplicationContext context, String value) {
-        ShadowState state = new ShadowState();
-        state.desiredIsNullable = true;
-        if (value.equals("null")) {
-            state.desired = null;
-        } else {
-            state.desired = context.gson.fromJson(value, HashMap.class);
-        }
-
-        handleUpdate(context, state);
-    }
-
-    private static void handleUpdateReported(ApplicationContext context, String value) {
-        ShadowState state = new ShadowState();
-        state.reportedIsNullable = true;
-        if (value.equals("null")) {
-            state.reported = null;
-        } else {
-            state.reported = context.gson.fromJson(value, HashMap.class);
-        }
-
-        handleUpdate(context, state);
-    }
-
     private static void printCommandHelp() {
         System.out.println("Usage");
-        System.out.println("  get -- gets the thing's current shadow document");
-        System.out.println("  delete -- deletes the thing;s shadow document");
-        System.out.println("  update-desired <Desired state JSON> -- updates the desired component of the thing's shadow document");
-        System.out.println("  update-reported <Reported state JSON> -- updates the reported component of the thing's shadow document");
         System.out.println("  quit -- exit the application");
     }
 
@@ -277,26 +267,6 @@ public class ShadowV2 {
         switch (command) {
             case "quit":
                 return true;
-
-            case "get":
-                handleGet(context);
-                return false;
-
-            case "delete":
-                handleDelete(context);
-                return false;
-
-            case "update-desired":
-                if (commandLineSplit.length == 2) {
-                    handleUpdateDesired(context, commandLineSplit[1]);
-                }
-                return false;
-
-            case "update-reported":
-                if (commandLineSplit.length == 2) {
-                    handleUpdateReported(context, commandLineSplit[1]);
-                }
-                return false;
 
             default:
                 break;

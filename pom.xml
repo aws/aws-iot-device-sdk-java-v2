@@ -19,14 +19,16 @@
         <module>samples/CognitoConnect</module>
         <module>samples/Greengrass</module>
         <module>samples/GreengrassIPC</module>
-        <module>samples/Jobs</module>
         <module>samples/CustomKeyOpsConnect</module>
         <module>samples/WindowsCertConnect</module>
-        <module>samples/Shadow</module>
-        <module>samples/ShadowV2</module>
-        <module>samples/FleetProvisioning</module>
+        <module>samples/IdentitySandbox</module>
+        <module>samples/JobsSandbox</module>
+        <module>samples/ShadowSandbox</module>
         <module>samples/Mqtt5/PubSub</module>
         <module>samples/Mqtt5/SharedSubscription</module>
+        <module>samples/deprecated/FleetProvisioning</module>
+        <module>samples/deprecated/Jobs</module>
+        <module>samples/deprecated/Shadow</module>
     </modules>
 
     <build>
