@@ -20,8 +20,12 @@ import software.amazon.awssdk.iot.V2ClientStreamOptions;
 
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.iot.IotClient;
+import software.amazon.awssdk.services.iot.model.CreateJobRequest;
+import software.amazon.awssdk.services.iot.model.CreateJobResponse;
 import software.amazon.awssdk.services.iot.model.CreateThingRequest;
 import software.amazon.awssdk.services.iot.model.CreateThingResponse;
+import software.amazon.awssdk.services.iot.model.DeleteJobRequest;
+import software.amazon.awssdk.services.iot.model.DeleteJobResponse;
 import software.amazon.awssdk.services.iot.model.DescribeThingRequest;
 import software.amazon.awssdk.services.iot.model.DescribeThingResponse;
 import software.amazon.awssdk.services.sts.StsClient;
@@ -53,6 +57,7 @@ public class JobsSandbox {
         private StreamingOperation nextJobExecutionChangedStream;
 
         public String thingName;
+        public String thingArn;
 
         public IotClient controlPlaneClient;
         public Mqtt5Client protocolClient;
@@ -154,6 +159,9 @@ public class JobsSandbox {
             CreateThingResponse createResponse = context.controlPlaneClient.createThing(CreateThingRequest.builder().thingName(context.thingName).build());
         }
 
+        DescribeThingResponse describeResponse = context.controlPlaneClient.describeThing(DescribeThingRequest.builder().thingName(context.thingName).build());
+        context.thingArn = describeResponse.thingArn();
+
         Mqtt5ClientOptions.LifecycleEvents lifecycleEvents = new Mqtt5ClientOptions.LifecycleEvents() {
             @Override
             public void onAttemptingConnect(Mqtt5Client client, OnAttemptingConnectReturn onAttemptingConnectReturn) {
@@ -253,8 +261,102 @@ public class JobsSandbox {
     }
 
     private static void printCommandHelp() {
-        System.out.println("Usage");
-        System.out.println("  quit -- exit the application");
+        System.out.println("Usage\n");
+        System.out.println("  IoT control plane commands:");
+        System.out.println("    create-job <jobId> <job-document-as-json> -- create a new job with the specified job id and (JSON) document");
+        System.out.println("    delete-job <jobId> -- deletes a job with the specified job id\n");
+        System.out.println("  MQTT Jobs service commands:");
+        System.out.println("    describe-job-execution <jobId> -- gets the service status of a job execution with the specified job id");
+        System.out.println("    get-pending-job-executions -- gets all incomplete job executions");
+        System.out.println("    start-next-pending-job-execution -- moves the next pending job execution into the IN_PROGRESS state");
+        System.out.println("    update-job-execution <jobId> <SUCCEEDED | IN_PROGRESS | FAILED | CANCELED> -- updates a job execution with a new status\n");
+        System.out.println("  Miscellaneous commands:");
+        System.out.println("    quit -- exit the application\n");
+    }
+
+    private static void handleCreateJob(ApplicationContext context, String arguments) {
+        String[] argumentSplit = arguments.trim().split(" ", 2);
+        if (argumentSplit.length < 2) {
+            printCommandHelp();
+            return;
+        }
+
+        try {
+            CreateJobResponse response = context.controlPlaneClient.createJob(CreateJobRequest.builder().jobId(argumentSplit[0]).document(argumentSplit[1]).targets(context.thingArn).build());
+            System.out.println("CreateJobResponse: \n  " + context.gson.toJson(response));
+        } catch (Exception ex) {
+            handleOperationException("create-job", ex, context);
+        }
+    }
+
+    private static void handleDeleteJob(ApplicationContext context, String arguments) {
+        String jobId = arguments.trim();
+
+        try {
+            DeleteJobResponse response = context.controlPlaneClient.deleteJob(DeleteJobRequest.builder().jobId(jobId).build());
+            System.out.println("DeleteJobResponse: \n  " + context.gson.toJson(response));
+        } catch (Exception ex) {
+            handleOperationException("delete-job", ex, context);
+        }
+    }
+
+    private static void handleDescribeJobExecution(ApplicationContext context, String arguments) {
+        String jobId = arguments.trim();
+
+        try {
+            DescribeJobExecutionRequest request = new DescribeJobExecutionRequest();
+            request.jobId = jobId;
+            request.thingName = context.thingName;
+
+            DescribeJobExecutionResponse response = context.jobsClient.describeJobExecution(request).get();
+            System.out.println("DescribeJobExecutionResponse: \n  " + context.gson.toJson(response));
+        } catch (Exception ex) {
+            handleOperationException("describe-job-execution", ex, context);
+        }
+    }
+
+    private static void handleGetPendingJobExecutions(ApplicationContext context) {
+        try {
+            GetPendingJobExecutionsRequest request = new GetPendingJobExecutionsRequest();
+            request.thingName = context.thingName;
+
+            GetPendingJobExecutionsResponse response = context.jobsClient.getPendingJobExecutions(request).get();
+            System.out.println("GetPendingJobExecutionsResponse: \n  " + context.gson.toJson(response));
+        } catch (Exception ex) {
+            handleOperationException("get-pending-job-executions", ex, context);
+        }
+    }
+
+    private static void handleStartNextPendingJobExecution(ApplicationContext context) {
+        try {
+            StartNextPendingJobExecutionRequest request = new StartNextPendingJobExecutionRequest();
+            request.thingName = context.thingName;
+
+            StartNextJobExecutionResponse response = context.jobsClient.startNextPendingJobExecution(request).get();
+            System.out.println("StartNextJobExecutionResponse: \n  " + context.gson.toJson(response));
+        } catch (Exception ex) {
+            handleOperationException("start-next-pending-job-execution", ex, context);
+        }
+    }
+
+    private static void handleUpdateJobExecution(ApplicationContext context, String arguments) {
+        String[] argumentSplit = arguments.trim().split(" ", 2);
+        if (argumentSplit.length < 2) {
+            printCommandHelp();
+            return;
+        }
+
+        try {
+            UpdateJobExecutionRequest request = new UpdateJobExecutionRequest();
+            request.jobId = argumentSplit[0];
+            request.thingName = context.thingName;
+            request.status = JobStatus.valueOf(argumentSplit[1]);
+
+            UpdateJobExecutionResponse response = context.jobsClient.updateJobExecution(request).get();
+            System.out.println("UpdateJobExecutionResponse: \n  " + context.gson.toJson(response));
+        } catch (Exception ex) {
+            handleOperationException("update-job-execution", ex, context);
+        }
     }
 
     private static boolean handleCommand(String commandLine, ApplicationContext context) {
@@ -265,6 +367,38 @@ public class JobsSandbox {
 
         String command = commandLineSplit[0];
         switch (command) {
+            case "create-job":
+                if (commandLineSplit.length == 2) {
+                    handleCreateJob(context, commandLineSplit[1]);
+                }
+                return false;
+
+            case "delete-job":
+                if (commandLineSplit.length == 2) {
+                    handleDeleteJob(context, commandLineSplit[1]);
+                }
+                return false;
+
+            case "describe-job-execution":
+                if (commandLineSplit.length == 2) {
+                    handleDescribeJobExecution(context, commandLineSplit[1]);
+                }
+                return false;
+
+            case "get-pending-job-executions":
+                handleGetPendingJobExecutions(context);
+                return false;
+
+            case "start-next-pending-job-execution":
+                handleStartNextPendingJobExecution(context);
+                return false;
+
+            case "update-job-execution":
+                if (commandLineSplit.length == 2) {
+                    handleUpdateJobExecution(context, commandLineSplit[1]);
+                }
+                return false;
+
             case "quit":
                 return true;
 

@@ -21,7 +21,8 @@
         <module>samples/GreengrassIPC</module>
         <module>samples/CustomKeyOpsConnect</module>
         <module>samples/WindowsCertConnect</module>
-        <module>samples/IdentitySandbox</module>
+        <module>samples/Provisioning/Basic</module>
+        <module>samples/Provisioning/Csr</module>
         <module>samples/JobsSandbox</module>
         <module>samples/ShadowSandbox</module>
         <module>samples/Mqtt5/PubSub</module>

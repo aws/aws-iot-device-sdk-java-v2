@@ -17,11 +17,11 @@ import software.amazon.awssdk.iot.iotidentity.IotIdentityV2Client;
 import software.amazon.awssdk.iot.iotidentity.model.*;
 
 
+import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ExecutionException;
-import java.util.Scanner;
 
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.CommandLine;
@@ -31,15 +31,17 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
 
-public class IdentitySandbox {
+public class BasicProvisioning {
 
     static class ApplicationContext implements AutoCloseable {
-        public final Gson gson = createGson();
         public final CompletableFuture<Void> connectedFuture = new CompletableFuture<>();
         public final CompletableFuture<Void> stoppedFuture = new CompletableFuture<>();
 
         public Mqtt5Client protocolClient;
         public IotIdentityV2Client identityClient;
+
+        public String templateName;
+        public String templateParameters;
 
         public void close() {
             if (this.identityClient != null) {
@@ -50,12 +52,6 @@ public class IdentitySandbox {
                 this.protocolClient.close();
             }
         }
-
-        private static Gson createGson() {
-            GsonBuilder builder = new GsonBuilder();
-            builder.disableHtmlEscaping();
-            return builder.create();
-        }
     }
 
     private static ApplicationContext buildSampleContext(String [] args) throws Exception {
@@ -65,7 +61,8 @@ public class IdentitySandbox {
 
         cliOptions.addOption(Option.builder("c").longOpt("cert").desc("file path to an X509 certificate to use when establishing mTLS context").hasArg().required().build());
         cliOptions.addOption(Option.builder("k").longOpt("key").desc("file path to an X509 private key to use when establishing mTLS context").hasArg().required().build());
-        cliOptions.addOption(Option.builder("t").longOpt("thing").desc("name of the AWS IoT thing resource to interact with").hasArg().required().build());
+        cliOptions.addOption(Option.builder("t").longOpt("template").desc("name of the provisioning template resource to interact with").hasArg().required().build());
+        cliOptions.addOption(Option.builder("p").longOpt("params").desc("Json document with values for all the provisioning template's parameters").hasArg().build());
         cliOptions.addOption(Option.builder("e").longOpt("endpoint").desc("AWS IoT endpoint to connect to").hasArg().required().build());
         cliOptions.addOption(Option.builder("h").longOpt("help").desc("Prints command line help").build());
 
@@ -74,11 +71,14 @@ public class IdentitySandbox {
 
         if (commandLine.hasOption("help")) {
             HelpFormatter formatter = new HelpFormatter();
-            formatter.printHelp("IdentitySandbox", cliOptions);
+            formatter.printHelp("BasicProvisioning", cliOptions);
             return null;
         }
 
-        String endpoint = commandLine.getOptionValue("endpoint");
+        context.templateName = commandLine.getOptionValue("template");
+        if (commandLine.hasOption("params")) {
+            context.templateParameters = commandLine.getOptionValue("params");
+        }
 
         Mqtt5ClientOptions.LifecycleEvents lifecycleEvents = new Mqtt5ClientOptions.LifecycleEvents() {
             @Override
@@ -134,66 +134,50 @@ public class IdentitySandbox {
         return context;
     }
 
-    private static void handleOperationException(String operationName, Exception ex, ApplicationContext context) {
+    private static void handleException(Exception ex, Gson gson) {
         if (ex instanceof ExecutionException) {
-            System.out.printf("%s ExecutionException!\n", operationName);
+            System.out.printf("ExecutionException!\n");
             Throwable source = ex.getCause();
             if (source != null) {
-                System.out.printf("  %s source exception: %s\n", operationName, source.getMessage());
+                System.out.printf("  source exception: %s\n", source.getMessage());
                 if (source instanceof V2ErrorResponseException) {
                     V2ErrorResponseException v2exception = (V2ErrorResponseException) source;
                     if (v2exception.getModeledError() != null) {
-                        System.out.printf("  %s Modeled error: %s\n", operationName, context.gson.toJson(v2exception.getModeledError()));
+                        System.out.printf("  Modeled error: %s\n", gson.toJson(v2exception.getModeledError()));
                     }
                 }
             }
         } else {
-            System.out.printf("%s Exception: %s\n", operationName, ex.getMessage());
+            System.out.printf("Exception: %s\n", ex.getMessage());
         }
-    }
-
-    private static void printCommandHelp() {
-        System.out.println("Usage");
-        System.out.println("  quit -- exit the application");
-    }
-
-    private static boolean handleCommand(String commandLine, ApplicationContext context) {
-        String[] commandLineSplit = commandLine.trim().split(" ", 2);
-        if (commandLineSplit.length == 0) {
-            return false;
-        }
-
-        String command = commandLineSplit[0];
-        switch (command) {
-            case "quit":
-                return true;
-
-            default:
-                break;
-        }
-
-        printCommandHelp();
-        return false;
     }
 
     public static void main(String[] args) {
+        GsonBuilder builder = new GsonBuilder();
+        builder.disableHtmlEscaping();
+        Gson gson = builder.create();
+
         try (ApplicationContext context = buildSampleContext(args)) {
             if (context == null) {
                 return;
             }
 
-            boolean done = false;
-            Scanner scanner = new Scanner(System.in);
-            while (!done) {
-                String userInput = scanner.nextLine();
-                done = handleCommand(userInput, context);
-            }
-            scanner.close();
+            CreateKeysAndCertificateRequest createRequest = new CreateKeysAndCertificateRequest();
+            CreateKeysAndCertificateResponse createResponse = context.identityClient.createKeysAndCertificate(createRequest).get();
+            System.out.println("CreateKeysAndCertificateResponse: \n  " + gson.toJson(createResponse));
+
+            RegisterThingRequest registerRequest = new RegisterThingRequest();
+            registerRequest.templateName = context.templateName;
+            registerRequest.certificateOwnershipToken = createResponse.certificateOwnershipToken;
+            registerRequest.parameters = gson.fromJson(context.templateParameters, HashMap.class);
+
+            RegisterThingResponse registerResponse = context.identityClient.registerThing(registerRequest).get();
+            System.out.println("RegisterThingResponse: \n  " + gson.toJson(registerResponse));
 
             context.protocolClient.stop(null);
             context.stoppedFuture.get(60, TimeUnit.SECONDS);
         } catch (Exception ex) {
-            System.out.println("Exception encountered: " + ex.toString());
+            handleException(ex, gson);
             System.exit(1);
         }
 
