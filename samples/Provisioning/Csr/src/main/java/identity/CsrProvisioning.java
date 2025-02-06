@@ -7,6 +7,7 @@ package identity;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.ToNumberPolicy;
 import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.crt.CrtResource;
 import software.amazon.awssdk.crt.iot.*;
@@ -161,6 +162,8 @@ public class CsrProvisioning {
     public static void main(String[] args) {
         GsonBuilder builder = new GsonBuilder();
         builder.disableHtmlEscaping();
+        // otherwise integers get turned to doubles which breaks thing name construction
+        builder.setObjectToNumberStrategy(ToNumberPolicy.LONG_OR_DOUBLE);
         Gson gson = builder.create();
 
         try (ApplicationContext context = buildSampleContext(args)) {

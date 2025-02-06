@@ -1,39 +1,22 @@
-# ShadowSandbox
-
+# CSR-based Fleet Provisioning
 [**Return to main sample list**](../../README.md)
 
-This is an interactive sample that supports a set of commands that allow you to interact with "classic" (unnamed) shadows of the AWS IoT [Device Shadow](https://docs.aws.amazon.com/iot/latest/developerguide/iot-device-shadows.html) Service.
+This sample uses the AWS IoT [Fleet provisioning](https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html) to provision devices using a certificate signing request. This allows you to create new AWS IoT Core things using a Fleet Provisioning Template.
 
-### Commands
-Once connected, the sample supports the following shadow-related commands:
-
-* `get` - gets the current full state of the classic (unnamed) shadow.  This includes both a "desired" state component and a "reported" state component.
-* `delete` - deletes the classic (unnamed) shadow completely
-* `update-desired <desired-state-json-document>` - applies an update to the classic shadow's desired state component.  Properties in the JSON document set to non-null will be set to new values.  Properties in the JSON document set to null will be removed.
-* `update-reported <reported-state-json-document>` - applies an update to the classic shadow's reported state component.  Properties in the JSON document set to non-null will be set to new values.  Properties in the JSON document set to null will be removed.
-
-Two additional commands are supported:
-* `help` - prints the set of supported commands
-* `quit` - quits the sample application
-
-### Prerequisites
-Your IoT Core Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-policies.html) must provide privileges for this sample to connect, subscribe, publish, and receive. Below is a sample policy that can be used on your IoT Core Thing that will allow this sample to run as intended.
+The [IAM Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-policies.html) attached to your provisioning certificate must provide privileges for this sample to connect, subscribe, publish, and receive. Below is a sample policy that can be used that will allow this sample to run as intended.
 
 <details>
-<summary>Sample Policy</summary>
+<summary>(see sample policy)</summary>
 <pre>
 {
   "Version": "2012-10-17",
   "Statement": [
     {
       "Effect": "Allow",
-      "Action": [
-        "iot:Publish"
-      ],
+      "Action": "iot:Publish",
       "Resource": [
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/<b>thingname</b>/shadow/get",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/<b>thingname</b>/shadow/delete",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/<b>thingname</b>/shadow/update"
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/certificates/create-from-csr/json",
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/provisioning-templates/<b>templatename</b>/provision/json"
       ]
     },
     {
@@ -42,9 +25,10 @@ Your IoT Core Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerg
         "iot:Receive"
       ],
       "Resource": [
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/<b>thingname</b>/shadow/get/*",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/<b>thingname</b>/shadow/delete/*",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/things/<b>thingname</b>/shadow/update/*"
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/certificates/create-from-csr/json/accepted",
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/certificates/create-from-csr/json/rejected",
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/provisioning-templates/<b>templatename</b>/provision/json/accepted",
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topic/$aws/provisioning-templates/<b>templatename</b>/provision/json/rejected"
       ]
     },
     {
@@ -53,9 +37,10 @@ Your IoT Core Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerg
         "iot:Subscribe"
       ],
       "Resource": [
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topicfilter/$aws/things/<b>thingname</b>/shadow/get/*",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topicfilter/$aws/things/<b>thingname</b>/shadow/delete/*",
-        "arn:aws:iot:<b>region</b>:<b>account</b>:topicfilter/$aws/things/<b>thingname</b>/shadow/update/*"
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topicfilter/$aws/certificates/create-from-csr/json/accepted",
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topicfilter/$aws/certificates/create-from-csr/json/rejected",
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topicfilter/$aws/provisioning-templates/<b>templatename</b>/provision/json/accepted",
+        "arn:aws:iot:<b>region</b>:<b>account</b>:topicfilter/$aws/provisioning-templates/<b>templatename</b>/provision/json/rejected"
       ]
     },
     {
@@ -70,209 +55,215 @@ Your IoT Core Thing's [Policy](https://docs.aws.amazon.com/iot/latest/developerg
 Replace with the following with the data from your AWS account:
 * `<region>`: The AWS IoT Core region where you created your AWS IoT Core thing you wish to use with this sample. For example `us-east-1`.
 * `<account>`: Your AWS IoT Core account ID. This is the set of numbers in the top right next to your AWS account name when using the AWS IoT Core website.
-* `<thingname>`: The name of your AWS IoT Core thing you want the device connection to be associated with
+* `<templatename>`: The name of your AWS Fleet Provisioning template you want to use to create new AWS IoT Core Things.
 
 Note that in a real application, you may want to avoid the use of wildcards in your ClientID or use them selectively. Please follow best practices when working with AWS on production applications using the SDK. Also, for the purposes of this sample, please make sure your policy allows a client ID of `test-*` to connect or use `--client_id <client ID here>` to send the client ID your policy supports.
 
 </details>
 
-## Walkthrough
+## How to run
 
-To run the Shadow sample use the following command:
+There are many different ways to run the Fleet Provisioning sample because of how many different ways there are to setup a Fleet Provisioning template in AWS IoT Core. **The easiest and most common way is to run the sample with the following**:
 
 ``` sh
-mvn compile exec:java -pl samples/ShadowV2 -Dexec.mainClass=shadow.ShadowV2 -Dexec.args="--endpoint <endpoint> --cert <path to certificate> --key <path to private key> --thing <thing name>"
+mvn compile exec:java -pl samples/Provisioning/Csr -Dexec.mainClass=identity.CsrProvisioning -Dexec.args="--endpoint <endpoint> --cert <path to certificate> --key <path to private key> --template <provisioning template name> --csr <csr file>"
 ```
 
-The sample also listens to a pair of event streams related to the classic (unnamed) shadow state of your thing, so in addition to responses, you will occasionally see output from these streaming operations as they receive events from the shadow service.
+### Fleet Provisioning Detailed Instructions
 
-Once successfully connected, you can issue commands.
+#### Aws Resource Setup
 
-### Initialization
+Fleet provisioning requires some additional AWS resources be set up first. These steps assume you have the [AWS CLI](https://aws.amazon.com/cli/) installed and have your AWS credentials for the AWS CLI setup and with sufficient permissions to perform all of the operations in this guide. For instructions on how to setup AWS CLI, see the following: [Configuring the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html).
 
-Start off by getting the shadow state:
+You will also need Python version 3 installed to be able to run the `parse_cert_set_result.py` file, which is a helper script to make running this sample easier. You can find Python3 installers for your platform on the [Python website](https://www.python.org/).
 
-```
-get
-```
+These steps are based on the provisioning setup steps
+that can be found at [Embedded C SDK Setup](https://docs.aws.amazon.com/freertos/latest/lib-ref/c-sdk/provisioning/provisioning_tests.html#provisioning_system_tests_setup).
 
-If your thing does have shadow state, you will get its current value, which this sample has no control over.  
 
-If your thing does not have any shadow state, you'll get a ResourceNotFound error:
+First, create the IAM role that will be needed by the fleet provisioning template. Replace `<RoleName>` with a name of the role you want to create.
 
-```
-Get ExecutionException!
-  Get source exception: Request-response operation failure
-  Get Modeled error: {"clientToken":"<Some UUID>","code":404,"message":"No shadow exists with name: '<YourThingName>'"}
+``` sh
+aws iam create-role \
+    --role-name <RoleName> \
+    --assume-role-policy-document '{"Version":"2012-10-17","Statement":[{"Action":"sts:AssumeRole","Effect":"Allow","Principal":{"Service":"iot.amazonaws.com"}}]}'
 ```
 
-To create a shadow, you can issue an update call that will initialize the shadow to a starting state:
+This is the IAM role the Fleet Provisioning template will use to create the new AWS IoT things. However, before it can do so, it will need to have a policy attached to it to give the new role permission to perform the operations it needs. To do this, run the following command and replace `<RoleName>` with the name of the role you created in the previous step.
 
-```
-update-reported {"Color":"green"}
-```
-
-which will yield output similar to:
-
-```
-UpdateShadowResponse: 
-  {"clientToken":"c3bae0fb-5f5c-46d3-ab6e-ef276ce2e6af","state":{"reported":{"Color":"green"}},"metadata":{"reported":{"Color":{"timestamp":1.736882722E9}}},"timestamp":1736882722,"version":1}
-ShadowUpdated event: 
-  {"current":{"state":{"reported":{"Color":"green"}},"metadata":{"reported":{"Color":{"timestamp":1.736882722E9}}},"version":1},"timestamp":1736882722}
+``` sh
+aws iam attach-role-policy \
+        --role-name <RoleName> \
+        --policy-arn arn:aws:iam::aws:policy/service-role/AWSIoTThingsRegistration
 ```
 
-Notice that in addition to receiving a response to the update request, you also receive a `ShadowUpdated` event containing what changed about
-the shadow plus additional metadata (version, update timestamps, etc...).  Every time a shadow is updated, this
-event is triggered.  If you wish to listen and react to this event, use the `createShadowUpdatedStream` API in the shadow client to create a
-streaming operation that converts the raw MQTT publish messages into modeled data that the streaming operation emits.
+The next step is to make a template resource that will be used for provisioning the new AWS IoT Core things. This template tells AWS IoT Core how to setup the new AWS IoT Core Things you create when your Fleet Provisioning role is invoked, setting up material such as the name and tags, for example.
 
-Issue one more update to get the shadow's reported and desired states in sync:
+To create a new Fleet Provisioning template, you can use the following AWS CLI command, replacing `<TemplateName>` with the name of the template you wish to create, `<RoleName>` with the name of the role you created two steps prior, and `<Account>` with your AWS IoT Core account number. Finally, make sure to replace `<TemplateJSON>` with a valid JSON document as a single line. An example JSON document is provided further below.
 
-```
-update-desired {"Color":"green"}
-```
-
-yielding output similar to:
-
-```
-UpdateShadowResponse: 
-  {"clientToken":"a7e0454b-3bdf-4f01-bae3-17fb1ec3c094","state":{"desired":{"Color":"green"}},"metadata":{"desired":{"Color":{"timestamp":1.736882875E9}}},"timestamp":1736882875,"version":2}
-<ShadowUpdated event omitted>
+``` sh
+aws iot create-provisioning-template \
+        --template-name <TemplateName> \
+        --provisioning-role-arn arn:aws:iam::<Account>:role/<RoleName> \
+        --template-body "<TemplateJSON>" \
+        --enabled
 ```
 
-### Changing Properties
-A device shadow contains two independent states: reported and desired.  "Reported" represents the device's last-known local state, while
-"desired" represents the state that control application(s) would like the device to change to.  In general, each application (whether on the device or running
-remotely as a control process) will only update one of these two state components.
+For the purposes of this sample, the following template JSON document is presumed to be used:
 
-Let's walk through the multi-step process to coordinate a change-of-state on the device.  First, a control application needs to update the shadow's desired
-state with the change it would like applied:
+<details>
+<summary>(see template body)</summary>
 
-```
-update-desired {"Color":"red"}
-```
-
-For our sample, this yields output similar to:
-
-```
-ShadowUpdated event: 
-  {"previous":{"state":{"desired":{"Color":"green"},"reported":{"Color":"green"}},"metadata":{"desired":{"Color":{"timestamp":1.736882875E9}},"reported":{"Color":{"timestamp":1.736882722E9}}},"version":2},"current":{"state":{"desired":{"Color":"red"},"reported":{"Color":"green"}},"metadata":{"desired":{"Color":{"timestamp":1.736882961E9}},"reported":{"Color":{"timestamp":1.736882722E9}}},"version":3},"timestamp":1736882961}
-ShadowDeltaUpdated event: 
-  {"state":{"Color":"red"},"metadata":{"Color":{"timestamp":1.736882961E9}},"timestamp":1736882961,"version":3,"clientToken":"c2447b9b-3601-4150-b113-320c7d93da6d"}
-UpdateShadowResponse: 
-  {"clientToken":"c2447b9b-3601-4150-b113-320c7d93da6d","state":{"desired":{"Color":"red"}},"metadata":{"desired":{"Color":{"timestamp":1.736882961E9}}},"timestamp":1736882961,"version":3}
-```
-
-The key thing to notice here is that in addition to the update response (which only the control application would see) and the ShadowUpdated event,
-there is a new event, ShadowDeltaUpdated, which indicates properties on the shadow that are out-of-sync between desired and reported.  All out-of-sync
-properties will be included in this event, including properties that became out-of-sync due to a previous update.
-
-Like the ShadowUpdated event, ShadowDeltaUpdated events can be listened to by creating and configuring a streaming operation, this time by using
-the createShadowDeltaUpdatedStream API.  Using the ShadowDeltaUpdated events (rather than ShadowUpdated) lets a device focus on just what has
-changed without having to do complex JSON diffs on the full shadow state itself.
-
-Assuming that the change expressed in the desired state is reasonable, the device should apply it internally and then let the service know it
-has done so by updating the reported state of the shadow:
-
-```
-update-reported {"Color":"red"}
-```
-
-yielding
-
-```
-UpdateShadowResponse: 
-  {"clientToken":"5209d058-261b-471a-8859-d682e795798d","state":{"reported":{"Color":"red"}},"metadata":{"reported":{"Color":{"timestamp":1.736883022E9}}},"timestamp":1736883022,"version":4}
-ShadowUpdated event: 
-  {"previous":{"state":{"desired":{"Color":"red"},"reported":{"Color":"green"}},"metadata":{"desired":{"Color":{"timestamp":1.736882961E9}},"reported":{"Color":{"timestamp":1.736882722E9}}},"version":3},"current":{"state":{"desired":{"Color":"red"},"reported":{"Color":"red"}},"metadata":{"desired":{"Color":{"timestamp":1.736882961E9}},"reported":{"Color":{"timestamp":1.736883022E9}}},"version":4},"timestamp":1736883022}
-```
-
-Notice that no ShadowDeltaUpdated event is generated because the reported and desired states are now back in sync.
-
-### Multiple Properties
-Not all shadow properties represent device configuration.  To illustrate several more aspects of the Shadow service, let's add a second property to our shadow document,
-starting out in sync (output omitted):
-
-```
-update-reported {"Status":"Great"}
-```
-
-```
-update-desired {"Status":"Great"}
-```
-
-Notice that shadow updates work by deltas rather than by complete state changes.  Updating the "Status" property to a value had no effect on the shadow's
-"Color" property:
-
-```
-get
-```
-
-yields
-
-```
-GetShadowResponse: 
-  {"clientToken":"bcefd4e7-f9ac-48b3-8542-aa2fce3d044d","state":{"desired":{"Status":"Great","Color":"red"},"reported":{"Status":"Great","Color":"red"}},"metadata":{"desired":{"Status":{"timestamp":1.736885497E9},"Color":{"timestamp":1.736882961E9}},"reported":{"Status":{"timestamp":1.736885487E9},"Color":{"timestamp":1.736883022E9}}},"timestamp":1736885515,"version":6}
-```
-
-Suppose something goes wrong with the device and its status is no longer "Great"
-
-```
-update-reported {"Status":"Awful"}
-```
-
-which yields output similar to:
-
-```
-UpdateShadowResponse: 
-  {"clientToken":"55c67835-67c9-412a-a943-1e2052d8c76f","state":{"reported":{"Status":"Awful"}},"metadata":{"reported":{"Status":{"timestamp":1.736885551E9}}},"timestamp":1736885551,"version":7}
-ShadowDeltaUpdated event: 
-  {"state":{"Status":"Great"},"metadata":{"Status":{"timestamp":1.736885497E9}},"timestamp":1736885551,"version":7,"clientToken":"55c67835-67c9-412a-a943-1e2052d8c76f"}
-ShadowUpdated event: 
-  {"previous":{"state":{"desired":{"Status":"Great","Color":"red"},"reported":{"Status":"Great","Color":"red"}},"metadata":{"desired":{"Status":{"timestamp":1.736885497E9},"Color":{"timestamp":1.736882961E9}},"reported":{"Status":{"timestamp":1.736885487E9},"Color":{"timestamp":1.736883022E9}}},"version":6},"current":{"state":{"desired":{"Status":"Great","Color":"red"},"reported":{"Status":"Awful","Color":"red"}},"metadata":{"desired":{"Status":{"timestamp":1.736885497E9},"Color":{"timestamp":1.736882961E9}},"reported":{"Status":{"timestamp":1.736885551E9},"Color":{"timestamp":1.736883022E9}}},"version":7},"timestamp":1736885551}
-```
-
-Similar to how updates are delta-based, notice how the ShadowDeltaUpdated event only includes the "Status" property, leaving the "Color" property out because it
-is still in sync between desired and reported.
-
-### Removing properties
-Properties can be removed from a shadow by setting them to null.  Removing a property completely would require its removal from both the
-reported and desired states of the shadow (output omitted):
-
-```
-update-reported {"Status":null}
+```json
+{
+  "Parameters": {
+    "DeviceLocation": {
+      "Type": "String"
+    },
+    "AWS::IoT::Certificate::Id": {
+      "Type": "String"
+    },
+    "SerialNumber": {
+      "Type": "String"
+    }
+  },
+  "Mappings": {
+    "LocationTable": {
+      "Seattle": {
+        "LocationUrl": "https://example.aws"
+      }
+    }
+  },
+  "Resources": {
+    "thing": {
+      "Type": "AWS::IoT::Thing",
+      "Properties": {
+        "ThingName": {
+          "Fn::Join": [
+            "",
+            [
+              "ThingPrefix_",
+              {
+                "Ref": "SerialNumber"
+              }
+            ]
+          ]
+        },
+        "AttributePayload": {
+          "version": "v1",
+          "serialNumber": "serialNumber"
+        }
+      },
+      "OverrideSettings": {
+        "AttributePayload": "MERGE",
+        "ThingTypeName": "REPLACE",
+        "ThingGroups": "DO_NOTHING"
+      }
+    },
+    "certificate": {
+      "Type": "AWS::IoT::Certificate",
+      "Properties": {
+        "CertificateId": {
+          "Ref": "AWS::IoT::Certificate::Id"
+        },
+        "Status": "Active"
+      },
+      "OverrideSettings": {
+        "Status": "REPLACE"
+      }
+    },
+    "policy": {
+      "Type": "AWS::IoT::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "iot:Connect",
+                "iot:Subscribe",
+                "iot:Publish",
+                "iot:Receive"
+              ],
+              "Resource": "*"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "DeviceConfiguration": {
+    "FallbackUrl": "https://www.example.com/test-site",
+    "LocationUrl": {
+      "Fn::FindInMap": [
+        "LocationTable",
+        {
+          "Ref": "DeviceLocation"
+        },
+        "LocationUrl"
+      ]
+    }
+  }
+}
 ```
 
-```
-update-desired {"Status":null}
+</details>
+
+And here is the same JSON document, but as a single line for easier copy-pasting:
+
+<details>
+<summary>(see template body)</summary>
+
+``` json
+{"Parameters": {"DeviceLocation": {"Type": "String"},"AWS::IoT::Certificate::Id": {"Type": "String"},"SerialNumber": {"Type": "String"}},"Mappings": {"LocationTable": {"Seattle": {"LocationUrl": "https://example.aws"}}},"Resources": {"thing": {"Type": "AWS::IoT::Thing","Properties": {"ThingName": {"Fn::Join": ["",["ThingPrefix_",{"Ref": "SerialNumber"}]]},"AttributePayload": {"version": "v1","serialNumber": "serialNumber"}},"OverrideSettings": {"AttributePayload": "MERGE","ThingTypeName": "REPLACE","ThingGroups": "DO_NOTHING"}},"certificate": {"Type": "AWS::IoT::Certificate","Properties": {"CertificateId": {"Ref": "AWS::IoT::Certificate::Id"},"Status": "Active"},"OverrideSettings": {"Status": "REPLACE"}},"policy": {"Type": "AWS::IoT::Policy","Properties": {"PolicyDocument": {"Version": "2012-10-17","Statement": [{"Effect": "Allow","Action": ["iot:Connect","iot:Subscribe","iot:Publish","iot:Receive"],"Resource": "*"}]}}}},"DeviceConfiguration": {"FallbackUrl": "https://www.example.com/test-site","LocationUrl": {"Fn::FindInMap": ["LocationTable",{"Ref": "DeviceLocation"},"LocationUrl"]}}}
 ```
 
-If you now get the shadow state:
+</details>
 
+You can use this JSON document as the `<TemplateJSON>` in the AWS CLI command. This sample will assume you have used the template JSON above, so you may need to adjust if you are using a different template JSON. Thankfully, all of these steps need to only be done and, now that they are complete, you will need not perform them again.
+
+#### Creating a certificate-key set from a provisioning claim
+
+To run the provisioning sample, you'll need a certificate and key set with permissions to perform the provisioning operations. Provisioning certificates are normally created ahead of time and placed on your device, but for this sample, we will just create them on the fly. This is primarily done for example purposes.
+
+You can also use any certificate set you've already created if it has sufficient IoT permissions. If you wish to do this, you can skip the step that calls `create-provisioning-claim` below and move right to the next step: [Running the sample using a certificate-key set](#running-the-sample-using-a-certificate-key-set)
+
+We've included a script in the utils folder that creates certificate and key files from the response of calling
+`create-provisioning-claim`. These dynamically sourced certificates are **only valid for five minutes**. When running the command,
+you'll need to substitute the name of the template you previously created. If on Windows, replace the paths with something appropriate.
+
+**Note**: The following assumes you are running this command from the `aws-iot-device-sdk-java-v2` folder, which is the main GitHub folder. If you are running this from another folder then you will need to adjust the filepaths accordingly.
+
+```sh
+aws iot create-provisioning-claim \
+    --template-name <TemplateName> \
+    | python3 ./utils/parse_cert_set_result.py \
+    --path /tmp \
+    --filename provision
 ```
-get
+* Replace `<TemplateName>` with the name of the Fleet Provisioning template you created earlier.
+
+This will create a certificate and key in the `/tmp` folder with file names starting with `provision`. You can now use these temporary keys
+to perform the actual provisioning in the section below.
+
+### Create a certificate signing request and run the sample
+
+You'll need to create a certificate signing request in addition to the other steps above (creating the role, setting its policy, setting the template JSON, etc).
+
+First create a certificate-key pair:
+``` sh
+openssl genrsa -out /tmp/deviceCert.key 2048
 ```
 
-its output yields something like
-
-```
-GetShadowResponse: 
-  {"clientToken":"02c11e3d-5e5f-47bf-a5a6-9bc584defeed","state":{"desired":{"Color":"Red"},"reported":{"Color":"Red"}},"metadata":{"desired":{"Color":{"timestamp":1.736880637E9}},"reported":{"Color":{"timestamp":1.736880651E9}}},"timestamp":1736888076,"version":17}
+Next create a certificate signing request from it:
+``` sh
+openssl req -new -key /tmp/deviceCert.key -out /tmp/deviceCert.csr
 ```
 
-The Status property has been fully removed from the shadow state.
+Finally, you pass the certificate signing request while invoking the Fleet Provisioning sample.
 
-### Removing a shadow
-To remove a shadow, you must invoke the DeleteShadow API (setting the reported and desired
-states to null will only clear the states, but not delete the shadow resource itself).
-
-```
-delete
+``` sh
+mvn compile exec:java -pl samples/Provisioning/Csr -Dexec.mainClass=identity.CsrProvisioning -Dexec.args="--endpoint <endpoint> --cert <path to certificate> --key <path to private key> --template <provisioning template name> --params '{"SerialNumber":"1","DeviceLocation":"Seattle"}' --csr <path to csr file>"
 ```
 
-yields something like
-
-```
-DeleteShadowResponse: 
-  {"clientToken":"ec7e0fd2-0ef0-4215-bead-693a3a37f0f1","timestamp":1736888506,"version":17}
-```
