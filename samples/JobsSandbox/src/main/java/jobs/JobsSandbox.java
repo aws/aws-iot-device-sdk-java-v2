@@ -5,6 +5,8 @@
 
 package jobs;
 
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -18,16 +20,12 @@ import software.amazon.awssdk.iot.iotjobs.IotJobsV2Client;
 import software.amazon.awssdk.iot.iotjobs.model.*;
 import software.amazon.awssdk.iot.V2ClientStreamOptions;
 
+import software.amazon.awssdk.iot.iotjobs.model.DescribeJobExecutionRequest;
+import software.amazon.awssdk.iot.iotjobs.model.DescribeJobExecutionResponse;
+import software.amazon.awssdk.iot.iotjobs.model.JobStatus;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.iot.IotClient;
-import software.amazon.awssdk.services.iot.model.CreateJobRequest;
-import software.amazon.awssdk.services.iot.model.CreateJobResponse;
-import software.amazon.awssdk.services.iot.model.CreateThingRequest;
-import software.amazon.awssdk.services.iot.model.CreateThingResponse;
-import software.amazon.awssdk.services.iot.model.DeleteJobRequest;
-import software.amazon.awssdk.services.iot.model.DeleteJobResponse;
-import software.amazon.awssdk.services.iot.model.DescribeThingRequest;
-import software.amazon.awssdk.services.iot.model.DescribeThingResponse;
+import software.amazon.awssdk.services.iot.model.*;
 import software.amazon.awssdk.services.sts.StsClient;
 
 import java.util.UUID;
@@ -97,7 +95,7 @@ public class JobsSandbox {
         cliOptions.addOption(Option.builder("k").longOpt("key").desc("file path to an X509 private key to use when establishing mTLS context").hasArg().required().build());
         cliOptions.addOption(Option.builder("t").longOpt("thing").desc("name of the AWS IoT thing resource to interact with").hasArg().required().build());
         cliOptions.addOption(Option.builder("e").longOpt("endpoint").desc("AWS IoT endpoint to connect to").hasArg().required().build());
-        cliOptions.addOption(Option.builder("r").longOpt("region").desc("AWS Region the AWS IoT endpoint is using").hasArg().required().build());
+        cliOptions.addOption(Option.builder("r").longOpt("region").desc("AWS Region the AWS IoT endpoint is using").hasArg().build());
         cliOptions.addOption(Option.builder("h").longOpt("help").desc("Prints command line help").build());
 
         CommandLineParser parser = new DefaultParser();
@@ -116,21 +114,11 @@ public class JobsSandbox {
         }
 
         if (region == null) {
-            System.out.println("No region supplied on the command line, attempting to extract from standard IoT Core endpoint pattern");
+            System.out.println("No region supplied on the command line, attempting to extract from endpoint");
 
-            //  Try the standard account-specific endpoint
-            Pattern standardRegionPattern = Pattern.compile(".+-ats\\.iot.*\\.(.+)\\.amazonaws\\.com");
+            Pattern standardRegionPattern = Pattern.compile(".*\\.iot.*\\.(.+)\\.amazonaws\\.com");
             Matcher standardMatch = standardRegionPattern.matcher(endpoint);
-            region = standardMatch.group(1);
-        }
-
-        if (region == null) {
-            System.out.println("No region supplied on the command line, attempting to extract from jobs IoT Core endpoint pattern");
-
-            // Try the jobs specific endpoint
-            // account-specific-prefix.jobs.iot.aws-region.amazonaws.com
-            Pattern jobsRegionPattern = Pattern.compile(".*\\.jobs\\.iot.*\\.(.+)\\.amazonaws\\.com");
-            Matcher standardMatch = jobsRegionPattern.matcher(endpoint);
+            standardMatch.find();
             region = standardMatch.group(1);
         }
 
@@ -153,10 +141,10 @@ public class JobsSandbox {
         context.thingName = commandLine.getOptionValue("thing");
 
         try {
-            DescribeThingResponse describeResponse = context.controlPlaneClient.describeThing(DescribeThingRequest.builder().thingName(context.thingName).build());
-        } catch (Exception ex) {
+            context.controlPlaneClient.describeThing(DescribeThingRequest.builder().thingName(context.thingName).build());
+        } catch (ResourceNotFoundException ex) {
             System.out.println(String.format("Thing '%s' does not exist.  Creating it...", context.thingName));
-            CreateThingResponse createResponse = context.controlPlaneClient.createThing(CreateThingRequest.builder().thingName(context.thingName).build());
+            context.controlPlaneClient.createThing(CreateThingRequest.builder().thingName(context.thingName).build());
         }
 
         DescribeThingResponse describeResponse = context.controlPlaneClient.describeThing(DescribeThingRequest.builder().thingName(context.thingName).build());
@@ -219,7 +207,7 @@ public class JobsSandbox {
 
         V2ClientStreamOptions<JobExecutionsChangedEvent> jobExecutionsChangedOptions = V2ClientStreamOptions.<JobExecutionsChangedEvent>builder()
             .withStreamEventHandler((event) -> {
-                System.out.println("JobExecutionsChanged event: \n  " + context.gson.toJson(event));
+                System.out.println(String.format("Received JobExecutionsChanged event: \n  %s\n", context.gson.toJson(event)));
             })
             .build();
 
@@ -232,7 +220,7 @@ public class JobsSandbox {
 
         V2ClientStreamOptions<NextJobExecutionChangedEvent> nextJobExecutionChangedOptions = V2ClientStreamOptions.<NextJobExecutionChangedEvent>builder()
             .withStreamEventHandler((event) -> {
-                System.out.println("NextJobExecutionChanged event: \n  " + context.gson.toJson(event));
+                System.out.println(String.format("Received NextJobExecutionChanged event: \n  %s\n", context.gson.toJson(event)));
             })
             .build();
 
@@ -282,8 +270,14 @@ public class JobsSandbox {
         }
 
         try {
-            CreateJobResponse response = context.controlPlaneClient.createJob(CreateJobRequest.builder().jobId(argumentSplit[0]).document(argumentSplit[1]).targets(context.thingArn).build());
-            System.out.println("CreateJobResponse: \n  " + context.gson.toJson(response));
+            CreateJobRequest request = CreateJobRequest.builder()
+                    .jobId(argumentSplit[0])
+                    .document(argumentSplit[1])
+                    .targets(context.thingArn)
+                    .targetSelection(TargetSelection.SNAPSHOT)
+                    .build();
+            CreateJobResponse response = context.controlPlaneClient.createJob(request);
+            System.out.println(String.format("CreateJobResponse: \n  %s\n", response.toString()));
         } catch (Exception ex) {
             handleOperationException("create-job", ex, context);
         }
@@ -294,7 +288,7 @@ public class JobsSandbox {
 
         try {
             DeleteJobResponse response = context.controlPlaneClient.deleteJob(DeleteJobRequest.builder().jobId(jobId).build());
-            System.out.println("DeleteJobResponse: \n  " + context.gson.toJson(response));
+            System.out.println(String.format("DeleteJobResponse: \n  %s\n", response.toString()));
         } catch (Exception ex) {
             handleOperationException("delete-job", ex, context);
         }
@@ -309,7 +303,7 @@ public class JobsSandbox {
             request.thingName = context.thingName;
 
             DescribeJobExecutionResponse response = context.jobsClient.describeJobExecution(request).get();
-            System.out.println("DescribeJobExecutionResponse: \n  " + context.gson.toJson(response));
+            System.out.println(String.format("DescribeJobExecutionResponse: \n  %s\n", context.gson.toJson(response)));
         } catch (Exception ex) {
             handleOperationException("describe-job-execution", ex, context);
         }
@@ -321,7 +315,7 @@ public class JobsSandbox {
             request.thingName = context.thingName;
 
             GetPendingJobExecutionsResponse response = context.jobsClient.getPendingJobExecutions(request).get();
-            System.out.println("GetPendingJobExecutionsResponse: \n  " + context.gson.toJson(response));
+            System.out.println(String.format("GetPendingJobExecutionsResponse: \n  %s\n", context.gson.toJson(response)));
         } catch (Exception ex) {
             handleOperationException("get-pending-job-executions", ex, context);
         }
@@ -333,7 +327,7 @@ public class JobsSandbox {
             request.thingName = context.thingName;
 
             StartNextJobExecutionResponse response = context.jobsClient.startNextPendingJobExecution(request).get();
-            System.out.println("StartNextJobExecutionResponse: \n  " + context.gson.toJson(response));
+            System.out.println(String.format("StartNextJobExecutionResponse: \n  %s\n", context.gson.toJson(response)));
         } catch (Exception ex) {
             handleOperationException("start-next-pending-job-execution", ex, context);
         }
@@ -353,7 +347,7 @@ public class JobsSandbox {
             request.status = JobStatus.valueOf(argumentSplit[1]);
 
             UpdateJobExecutionResponse response = context.jobsClient.updateJobExecution(request).get();
-            System.out.println("UpdateJobExecutionResponse: \n  " + context.gson.toJson(response));
+            System.out.println(String.format("UpdateJobExecutionResponse: \n  %s\n", context.gson.toJson(response)));
         } catch (Exception ex) {
             handleOperationException("update-job-execution", ex, context);
         }
