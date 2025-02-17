@@ -297,7 +297,7 @@ jobs:
         python3 ./deviceadvisor/script/DATestRun.py
 
   java-compat:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -484,7 +484,7 @@ jobs:
         run: |
           python3 -m pip install boto3
           sudo apt-get update -y
-          sudo apt-get install softhsm -y
+          sudo apt-get install softhsm2 -y
           softhsm2-util --version
       - name: configure AWS credentials (Fleet provisioning)
         uses: aws-actions/configure-aws-credentials@v2
