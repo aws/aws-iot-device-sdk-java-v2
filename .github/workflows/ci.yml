@@ -297,7 +297,7 @@ jobs:
         python3 ./deviceadvisor/script/DATestRun.py
 
   java-compat:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
       matrix:
