@@ -178,6 +178,7 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
     }
 
     /**
+     * @deprecated Use alternate newDirectMqttBuilderWithMtlsFromPkcs12().
      * Create a new builder with mTLS, using a PKCS12 library for private key operations.
      *
      * NOTE: MacOS only
@@ -187,7 +188,23 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
      * @param pkcs12Password The password of the PKCS12 file to use with the builder.
      * @return - A new AwsIotMqtt5ClientBuilder
      */
+    @Deprecated
     public static AwsIotMqtt5ClientBuilder newDirectMqttBuilderWithMtlsFromPkcs11(String hostName, String pkcs12Path, String pkcs12Password) {
+        return newDirectMqttBuilderWithMtlsFromPkcs12(hostName, pkcs12Path, pkcs12Password);
+    }
+
+
+    /**
+     * Create a new builder with mTLS, using a PKCS12 library for private key operations.
+     *
+     * NOTE: MacOS only
+     *
+     * @param hostName - AWS IoT endpoint to connect to
+     * @param pkcs12Path Path to the PKCS12 file to use with the builder.
+     * @param pkcs12Password The password of the PKCS12 file to use with the builder.
+     * @return - A new AwsIotMqtt5ClientBuilder
+     */
+    public static AwsIotMqtt5ClientBuilder newDirectMqttBuilderWithMtlsFromPkcs12(String hostName, String pkcs12Path, String pkcs12Password) {
         TlsContextOptions options = TlsContextOptions.createWithMtlsPkcs12(pkcs12Path, pkcs12Password);
         AwsIotMqtt5ClientBuilder builder = new AwsIotMqtt5ClientBuilder(hostName, DEFAULT_DIRECT_MQTT_PORT, options);
         options.close();
