@@ -329,12 +329,12 @@ jobs:
       - name: MQTT311 tests
         run: |
           source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt us-east-1
-          mvn test -Dtest=MqttBuilderTest -DfailIfNoTests=false
+          mvn test -Dtest=MqttBuilderTest -Dsurefire.failIfNoSpecifiedTests=false
           source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt cleanup
       - name: MQTT5 tests
         run: |
           source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt us-east-1
-          mvn test -Dtest=Mqtt5BuilderTest -DfailIfNoTests=false
+          mvn test -Dtest=Mqtt5BuilderTest -Dsurefire.failIfNoSpecifiedTests=false
           source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt cleanup
       - name: Running samples in CI setup
         run: |
@@ -484,7 +484,7 @@ jobs:
         run: |
           python3 -m pip install boto3
           sudo apt-get update -y
-          sudo apt-get install softhsm -y
+          sudo apt-get install softhsm2 -y
           softhsm2-util --version
       - name: configure AWS credentials (Fleet provisioning)
         uses: aws-actions/configure-aws-credentials@v2
