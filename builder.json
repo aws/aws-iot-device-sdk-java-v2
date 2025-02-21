@@ -6,9 +6,7 @@
     "build_steps": [
         "mvn -B compile"
     ],
-    "test_steps": [
-        "v2-sdk-test"
-    ],
+    "test_steps": [],
     "imports": [
         "JDK8"
     ],

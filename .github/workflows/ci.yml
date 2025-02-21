@@ -170,15 +170,15 @@ jobs:
     - name: MQTT311 tests
       shell: bash
       run: |
-        source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt us-east-1
+        source utils/test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt us-east-1
         mvn test -Dtest=MqttBuilderTest -Dsurefire.failIfNoSpecifiedTests=false
-        source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt cleanup
+        source utils/test_cleanup.sh
     - name: MQTT5 tests
       shell: bash
       run: |
-        source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt us-east-1
+        source utils/test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt us-east-1
         mvn test -Dtest=Mqtt5BuilderTest -Dsurefire.failIfNoSpecifiedTests=false
-        source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt cleanup
+        source utils/test_cleanup.sh
     - name: Running samples in CI setup
       run: |
         python -m pip install boto3
@@ -246,14 +246,14 @@ jobs:
         aws-region: ${{ env.AWS_DEFAULT_REGION }}
     - name: MQTT311 tests
       run: |
-        source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt us-east-1
+        source utils/test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt us-east-1
         mvn test -Dtest=MqttBuilderTest -DfailIfNoTests=false -Dsurefire.failIfNoSpecifiedTests=false
-        source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt cleanup
+        source utils/test_cleanup.sh
     - name: MQTT5 tests
       run: |
-        source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt us-east-1
+        source utils/test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt us-east-1
         mvn test -Dtest=Mqtt5BuilderTest -DfailIfNoTests=false -Dsurefire.failIfNoSpecifiedTests=false
-        source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt cleanup
+        source utils/test_cleanup.sh
     - name: Running samples in CI setup
       run: |
         python3 -m venv .venv
@@ -326,16 +326,21 @@ jobs:
         with:
           role-to-assume: ${{ env.CI_MQTT5_ROLE }}
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
+      - name: Shadow tests
+        run: |
+          source utils/test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt us-east-1
+          mvn test -Dtest=ShadowTests -Dsurefire.failIfNoSpecifiedTests=false
+          source utils/test_cleanup.sh
       - name: MQTT311 tests
         run: |
-          source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt us-east-1
+          source utils/test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt us-east-1
           mvn test -Dtest=MqttBuilderTest -Dsurefire.failIfNoSpecifiedTests=false
-          source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt cleanup
+          source utils/test_cleanup.sh
       - name: MQTT5 tests
         run: |
-          source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt us-east-1
+          source utils/test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt us-east-1
           mvn test -Dtest=Mqtt5BuilderTest -Dsurefire.failIfNoSpecifiedTests=false
-          source utils/mqtt5_test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt cleanup
+          source utils/test_cleanup.sh
       - name: Running samples in CI setup
         run: |
           python3 -m pip install boto3

@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import software.amazon.awssdk.crt.iot.MqttRequestResponseClientOptions;
 import software.amazon.awssdk.crt.iot.StreamingOperation;
 import software.amazon.awssdk.crt.iot.SubscriptionStatusEventType;
-import software.amazon.awssdk.eventstreamrpc.EventStreamRPCConnection;
 import software.amazon.awssdk.iot.V2ClientStreamOptions;
 import software.amazon.awssdk.iot.iotjobs.IotJobsV2Client;
 import software.amazon.awssdk.iot.iotjobs.model.*;

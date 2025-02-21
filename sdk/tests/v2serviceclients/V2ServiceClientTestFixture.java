@@ -32,8 +32,8 @@ public class V2ServiceClientTestFixture {
 
     void populateTestingEnvironmentVariables() {
         baseHost = System.getenv("AWS_TEST_MQTT5_IOT_CORE_HOST");
-        baseCertificatePath = System.getenv("AWS_TEST_MQTT5_IOT_CORE_RSA_CERT");
-        baseKeyPath = System.getenv("AWS_TEST_MQTT5_IOT_CORE_RSA_KEY");
+        baseCertificatePath = System.getenv("AWS_TEST_MQTT5_IOT_CERTIFICATE_PATH");
+        baseKeyPath = System.getenv("AWS_TEST_MQTT5_IOT_KEY_PATH");
 
         provisioningHost = System.getenv("AWS_TEST_IOT_CORE_PROVISIONING_HOST");
         provisioningCertificatePath = System.getenv("AWS_TEST_IOT_CORE_PROVISIONING_CERTIFICATE_PATH");
