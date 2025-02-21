@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import software.amazon.awssdk.crt.iot.MqttRequestResponseClientOptions;
 import software.amazon.awssdk.crt.iot.StreamingOperation;
 import software.amazon.awssdk.crt.iot.SubscriptionStatusEventType;
+import software.amazon.awssdk.eventstreamrpc.EventStreamRPCConnection;
 import software.amazon.awssdk.iot.V2ClientStreamOptions;
 import software.amazon.awssdk.iot.iotjobs.IotJobsV2Client;
 import software.amazon.awssdk.iot.iotjobs.model.*;
@@ -31,6 +32,7 @@ import software.amazon.awssdk.services.sts.StsClient;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -41,6 +43,8 @@ import java.util.concurrent.locks.ReentrantLock;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 public class JobsTests extends V2ServiceClientTestFixture {
+
+    private static final Logger LOGGER = Logger.getLogger(JobsTests.class.getName());
 
     private static class TestContext {
         private String thingName = null;
@@ -143,6 +147,10 @@ public class JobsTests extends V2ServiceClientTestFixture {
 
     @AfterEach
     public void tearDown() {
+        if (!hasTestEnvironment()) {
+            return;
+        }
+
         if (jobsClient != null) {
             jobsClient.close();
             jobsClient = null;
@@ -169,12 +177,16 @@ public class JobsTests extends V2ServiceClientTestFixture {
 
     @BeforeEach
     public void setup() {
+        if (!hasTestEnvironment()) {
+            return;
+        }
+
         testContext = new TestContext();
 
         String thingGroupName = "tgn-" + UUID.randomUUID().toString();
 
         CreateThingGroupResponse createThingGroupResponse = iotClient.createThingGroup(CreateThingGroupRequest.builder().
-                thingGroupName(thingGroupName).build());
+                    thingGroupName(thingGroupName).build());
 
         testContext.thingGroupName = thingGroupName;
         testContext.thingGroupArn = createThingGroupResponse.thingGroupArn();
