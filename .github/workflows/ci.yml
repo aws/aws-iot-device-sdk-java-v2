@@ -319,7 +319,7 @@ jobs:
       - name: Build ${{ env.PACKAGE_NAME }} + consumers
         run: |
           java -version
-          mvn -B test -Daws.crt.debugnative=true
+          mvn compile
           mvn install -Dmaven.test.skip
       - name: configure AWS credentials (MQTT5)
         uses: aws-actions/configure-aws-credentials@v2
