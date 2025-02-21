@@ -91,7 +91,7 @@ public class IotShadowV2Client implements AutoCloseable {
      *
      * @param request modeled request to perform
      *
-     * @returns a future that will complete with the corresponding response
+     * @return a future that will complete with the corresponding response
      */
     public CompletableFuture<DeleteShadowResponse> deleteNamedShadow(DeleteNamedShadowRequest request) {
         V2ClientFuture<DeleteShadowResponse> responseFuture = new V2ClientFuture<>();
@@ -158,7 +158,7 @@ public class IotShadowV2Client implements AutoCloseable {
      *
      * @param request modeled request to perform
      *
-     * @returns a future that will complete with the corresponding response
+     * @return a future that will complete with the corresponding response
      */
     public CompletableFuture<DeleteShadowResponse> deleteShadow(DeleteShadowRequest request) {
         V2ClientFuture<DeleteShadowResponse> responseFuture = new V2ClientFuture<>();
@@ -219,7 +219,7 @@ public class IotShadowV2Client implements AutoCloseable {
      *
      * @param request modeled request to perform
      *
-     * @returns a future that will complete with the corresponding response
+     * @return a future that will complete with the corresponding response
      */
     public CompletableFuture<GetShadowResponse> getNamedShadow(GetNamedShadowRequest request) {
         V2ClientFuture<GetShadowResponse> responseFuture = new V2ClientFuture<>();
@@ -286,7 +286,7 @@ public class IotShadowV2Client implements AutoCloseable {
      *
      * @param request modeled request to perform
      *
-     * @returns a future that will complete with the corresponding response
+     * @return a future that will complete with the corresponding response
      */
     public CompletableFuture<GetShadowResponse> getShadow(GetShadowRequest request) {
         V2ClientFuture<GetShadowResponse> responseFuture = new V2ClientFuture<>();
@@ -347,7 +347,7 @@ public class IotShadowV2Client implements AutoCloseable {
      *
      * @param request modeled request to perform
      *
-     * @returns a future that will complete with the corresponding response
+     * @return a future that will complete with the corresponding response
      */
     public CompletableFuture<UpdateShadowResponse> updateNamedShadow(UpdateNamedShadowRequest request) {
         V2ClientFuture<UpdateShadowResponse> responseFuture = new V2ClientFuture<>();
@@ -418,7 +418,7 @@ public class IotShadowV2Client implements AutoCloseable {
      *
      * @param request modeled request to perform
      *
-     * @returns a future that will complete with the corresponding response
+     * @return a future that will complete with the corresponding response
      */
     public CompletableFuture<UpdateShadowResponse> updateShadow(UpdateShadowRequest request) {
         V2ClientFuture<UpdateShadowResponse> responseFuture = new V2ClientFuture<>();
@@ -483,7 +483,7 @@ public class IotShadowV2Client implements AutoCloseable {
      * @param request modeled streaming operation subscription configuration
      * @param options set of callbacks that the operation should invoke in response to related events
      *
-     * @returns a streaming operation which will invoke a callback every time a message is received on the
+     * @return a streaming operation which will invoke a callback every time a message is received on the
      *    associated MQTT topic
      */
     public StreamingOperation createNamedShadowDeltaUpdatedStream(NamedShadowDeltaUpdatedSubscriptionRequest request, V2ClientStreamOptions<ShadowDeltaUpdatedEvent> options) {
@@ -529,7 +529,7 @@ public class IotShadowV2Client implements AutoCloseable {
      * @param request modeled streaming operation subscription configuration
      * @param options set of callbacks that the operation should invoke in response to related events
      *
-     * @returns a streaming operation which will invoke a callback every time a message is received on the
+     * @return a streaming operation which will invoke a callback every time a message is received on the
      *    associated MQTT topic
      */
     public StreamingOperation createNamedShadowUpdatedStream(NamedShadowUpdatedSubscriptionRequest request, V2ClientStreamOptions<ShadowUpdatedEvent> options) {
@@ -575,7 +575,7 @@ public class IotShadowV2Client implements AutoCloseable {
      * @param request modeled streaming operation subscription configuration
      * @param options set of callbacks that the operation should invoke in response to related events
      *
-     * @returns a streaming operation which will invoke a callback every time a message is received on the
+     * @return a streaming operation which will invoke a callback every time a message is received on the
      *    associated MQTT topic
      */
     public StreamingOperation createShadowDeltaUpdatedStream(ShadowDeltaUpdatedSubscriptionRequest request, V2ClientStreamOptions<ShadowDeltaUpdatedEvent> options) {
@@ -616,7 +616,7 @@ public class IotShadowV2Client implements AutoCloseable {
      * @param request modeled streaming operation subscription configuration
      * @param options set of callbacks that the operation should invoke in response to related events
      *
-     * @returns a streaming operation which will invoke a callback every time a message is received on the
+     * @return a streaming operation which will invoke a callback every time a message is received on the
      *    associated MQTT topic
      */
     public StreamingOperation createShadowUpdatedStream(ShadowUpdatedSubscriptionRequest request, V2ClientStreamOptions<ShadowUpdatedEvent> options) {

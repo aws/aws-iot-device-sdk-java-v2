@@ -89,7 +89,7 @@ public class IotIdentityV2Client implements AutoCloseable {
      *
      * @param request modeled request to perform
      *
-     * @returns a future that will complete with the corresponding response
+     * @return a future that will complete with the corresponding response
      */
     public CompletableFuture<CreateCertificateFromCsrResponse> createCertificateFromCsr(CreateCertificateFromCsrRequest request) {
         V2ClientFuture<CreateCertificateFromCsrResponse> responseFuture = new V2ClientFuture<>();
@@ -140,7 +140,7 @@ public class IotIdentityV2Client implements AutoCloseable {
      *
      * @param request modeled request to perform
      *
-     * @returns a future that will complete with the corresponding response
+     * @return a future that will complete with the corresponding response
      */
     public CompletableFuture<CreateKeysAndCertificateResponse> createKeysAndCertificate(CreateKeysAndCertificateRequest request) {
         V2ClientFuture<CreateKeysAndCertificateResponse> responseFuture = new V2ClientFuture<>();
@@ -191,7 +191,7 @@ public class IotIdentityV2Client implements AutoCloseable {
      *
      * @param request modeled request to perform
      *
-     * @returns a future that will complete with the corresponding response
+     * @return a future that will complete with the corresponding response
      */
     public CompletableFuture<RegisterThingResponse> registerThing(RegisterThingRequest request) {
         V2ClientFuture<RegisterThingResponse> responseFuture = new V2ClientFuture<>();
