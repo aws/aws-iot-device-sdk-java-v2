@@ -57,7 +57,7 @@ if [ "${provision_cert_file}" = "" ] || [ "${provision_key_file}" = "" ] || [ "$
     valid_setup=false
 fi
 
-if [ "$valid_setup" = false];
+if [ "$valid_setup" = false]; then
     # Clean up...
     unset $(grep -v '^#' environment_files.txt | xargs | cut -d "=" -f 1)
     rm "${PWD}/environment_files.txt"
