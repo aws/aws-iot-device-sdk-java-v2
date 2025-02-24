@@ -168,12 +168,13 @@ jobs:
         role-to-assume: ${{ env.CI_MQTT5_ROLE }}
         aws-region: ${{ env.AWS_DEFAULT_REGION }}
     - name: Service tests
+      shell: bash
       run: |
         source utils/test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt us-east-1
         mvn test -Dtest=ShadowTests -Dsurefire.failIfNoSpecifiedTests=false
         mvn test -Dtest=JobsTests -Dsurefire.failIfNoSpecifiedTests=false
         mvn test -Dtest=IdentityTests -Dsurefire.failIfNoSpecifiedTests=false
-        source utils/test_cleanup.sh 
+        source utils/test_cleanup.sh
     - name: MQTT311 tests
       shell: bash
       run: |
