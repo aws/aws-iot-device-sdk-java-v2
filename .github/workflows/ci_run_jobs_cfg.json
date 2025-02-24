@@ -1,6 +1,6 @@
 {
     "language": "Java",
-    "runnable_file": "samples/Jobs",
+    "runnable_file": "samples/deprecated/Jobs",
     "runnable_region": "us-east-1",
     "runnable_main_class": "jobs.JobsSample",
     "arguments": [

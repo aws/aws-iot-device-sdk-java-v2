@@ -1,6 +1,6 @@
 {
     "language": "Java",
-    "runnable_file": "samples/Shadow",
+    "runnable_file": "samples/deprecated/Shadow",
     "runnable_region": "us-east-1",
     "runnable_main_class": "shadow.Mqtt5ShadowSample",
     "arguments": [
