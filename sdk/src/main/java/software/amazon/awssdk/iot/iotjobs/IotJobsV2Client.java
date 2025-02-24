@@ -91,7 +91,7 @@ public class IotJobsV2Client implements AutoCloseable {
      *
      * @param request modeled request to perform
      *
-     * @returns a future that will complete with the corresponding response
+     * @return a future that will complete with the corresponding response
      */
     public CompletableFuture<DescribeJobExecutionResponse> describeJobExecution(DescribeJobExecutionRequest request) {
         V2ClientFuture<DescribeJobExecutionResponse> responseFuture = new V2ClientFuture<>();
@@ -158,7 +158,7 @@ public class IotJobsV2Client implements AutoCloseable {
      *
      * @param request modeled request to perform
      *
-     * @returns a future that will complete with the corresponding response
+     * @return a future that will complete with the corresponding response
      */
     public CompletableFuture<GetPendingJobExecutionsResponse> getPendingJobExecutions(GetPendingJobExecutionsRequest request) {
         V2ClientFuture<GetPendingJobExecutionsResponse> responseFuture = new V2ClientFuture<>();
@@ -219,7 +219,7 @@ public class IotJobsV2Client implements AutoCloseable {
      *
      * @param request modeled request to perform
      *
-     * @returns a future that will complete with the corresponding response
+     * @return a future that will complete with the corresponding response
      */
     public CompletableFuture<StartNextJobExecutionResponse> startNextPendingJobExecution(StartNextPendingJobExecutionRequest request) {
         V2ClientFuture<StartNextJobExecutionResponse> responseFuture = new V2ClientFuture<>();
@@ -280,7 +280,7 @@ public class IotJobsV2Client implements AutoCloseable {
      *
      * @param request modeled request to perform
      *
-     * @returns a future that will complete with the corresponding response
+     * @return a future that will complete with the corresponding response
      */
     public CompletableFuture<UpdateJobExecutionResponse> updateJobExecution(UpdateJobExecutionRequest request) {
         V2ClientFuture<UpdateJobExecutionResponse> responseFuture = new V2ClientFuture<>();
@@ -348,7 +348,7 @@ public class IotJobsV2Client implements AutoCloseable {
      * @param request modeled streaming operation subscription configuration
      * @param options set of callbacks that the operation should invoke in response to related events
      *
-     * @returns a streaming operation which will invoke a callback every time a message is received on the
+     * @return a streaming operation which will invoke a callback every time a message is received on the
      *    associated MQTT topic
      */
     public StreamingOperation createJobExecutionsChangedStream(JobExecutionsChangedSubscriptionRequest request, V2ClientStreamOptions<JobExecutionsChangedEvent> options) {
@@ -389,7 +389,7 @@ public class IotJobsV2Client implements AutoCloseable {
      * @param request modeled streaming operation subscription configuration
      * @param options set of callbacks that the operation should invoke in response to related events
      *
-     * @returns a streaming operation which will invoke a callback every time a message is received on the
+     * @return a streaming operation which will invoke a callback every time a message is received on the
      *    associated MQTT topic
      */
     public StreamingOperation createNextJobExecutionChangedStream(NextJobExecutionChangedSubscriptionRequest request, V2ClientStreamOptions<NextJobExecutionChangedEvent> options) {

@@ -109,6 +109,10 @@ public class IdentityTests extends V2ServiceClientTestFixture {
 
     @AfterEach
     public void tearDown() {
+        if (!hasTestEnvironment()) {
+            return;
+        }
+
         if (identityClient != null) {
             identityClient.close();
             identityClient = null;
