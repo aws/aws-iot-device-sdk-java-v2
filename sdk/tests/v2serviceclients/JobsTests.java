@@ -16,17 +16,11 @@ import software.amazon.awssdk.iot.iotjobs.model.*;
 
 import software.amazon.awssdk.iot.iotjobs.model.DescribeJobExecutionRequest;
 import software.amazon.awssdk.iot.iotjobs.model.DescribeJobExecutionResponse;
+import software.amazon.awssdk.iot.iotjobs.model.JobExecutionSummary;
+import software.amazon.awssdk.iot.iotjobs.model.JobStatus;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.iot.IotClient;
-import software.amazon.awssdk.services.iot.model.AddThingToThingGroupRequest;
-import software.amazon.awssdk.services.iot.model.CreateJobRequest;
-import software.amazon.awssdk.services.iot.model.CreateThingRequest;
-import software.amazon.awssdk.services.iot.model.CreateThingGroupRequest;
-import software.amazon.awssdk.services.iot.model.CreateThingGroupResponse;
-import software.amazon.awssdk.services.iot.model.DeleteJobRequest;
-import software.amazon.awssdk.services.iot.model.DeleteThingRequest;
-import software.amazon.awssdk.services.iot.model.DeleteThingGroupRequest;
-import software.amazon.awssdk.services.iot.model.TargetSelection;
+import software.amazon.awssdk.services.iot.model.*;
 import software.amazon.awssdk.services.sts.StsClient;
 
 import java.util.ArrayList;
@@ -141,7 +135,15 @@ public class JobsTests extends V2ServiceClientTestFixture {
     }
 
     void deleteJob(String jobId) {
-        iotClient.deleteJob(DeleteJobRequest.builder().jobId(jobId).force(true).build());
+        boolean done = false;
+        while (!done) {
+            try {
+                iotClient.deleteJob(DeleteJobRequest.builder().jobId(jobId).force(true).build());
+                done = true;
+            } catch (LimitExceededException ex) {
+                ;
+            }
+        }
     }
 
     @AfterEach
