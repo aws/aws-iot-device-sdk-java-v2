@@ -131,13 +131,13 @@ def main():
         is_success = False
 
     # Clean up
-#    print('Deleting ' + upload_file_name + ' Device Farm project')
-#    client.delete_upload(
-#        arn=device_farm_upload_arn
-#    )
-#    client.delete_upload(
-#        arn=device_farm_instrumentation_upload_arn
-#    )
+    print('Deleting ' + upload_file_name + ' Device Farm project')
+    client.delete_upload(
+        arn=device_farm_upload_arn
+    )
+    client.delete_upload(
+        arn=device_farm_instrumentation_upload_arn
+    )
 
     if is_success == False:
         print('Exiting with fail')
