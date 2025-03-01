@@ -105,7 +105,7 @@ static String readFile(String path, Charset encoding)
 String clientEndpoint = "<prefix>-ats.iot.<region>.amazonaws.com";
 String certificateData = readFile("<certificate file path>", StandardCharsets.UTF_8);
 String keyData = readFile("<private key file path>", StandardCharsets.UTF_8);
-AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newMtlsBuilder(clientEndpoint, certificateData, keyData);
+AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newDirectMqttBuilderWithMtlsFromMemory(clientEndpoint, certificateData, keyData);
 ~~~
 
 ### **Direct MQTT with Custom Authorizer Method**
