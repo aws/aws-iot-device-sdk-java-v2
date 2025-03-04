@@ -1,6 +1,6 @@
 {
     "language": "Java",
-    "runnable_file": "samples/FleetProvisioning",
+    "runnable_file": "samples/deprecated/FleetProvisioning",
     "runnable_region": "us-east-1",
     "runnable_main_class": "fleetprovisioning.Mqtt5FleetProvisioningSample",
     "arguments": [
