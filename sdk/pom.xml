@@ -40,9 +40,21 @@
 
   <dependencies>
     <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>iot</artifactId>
+      <version>2.30.9</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>sts</artifactId>
+      <version>2.30.9</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>software.amazon.awssdk.crt</groupId>
       <artifactId>aws-crt</artifactId>
-      <version>0.33.5</version>
+      <version>0.35.0</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -119,6 +131,7 @@
                 <source>tests/mqtt</source>
                 <!-- MQTT5 tests -->
                 <source>tests/mqtt5</source>
+                <source>tests/v2serviceclients</source>
               </sources>
             </configuration>
           </execution>

@@ -29,6 +29,7 @@ import software.amazon.awssdk.iot.iotjobs.model.StartNextPendingJobExecutionSubs
 import software.amazon.awssdk.iot.iotjobs.model.UpdateJobExecutionRequest;
 import software.amazon.awssdk.iot.iotjobs.model.UpdateJobExecutionResponse;
 import software.amazon.awssdk.iot.iotjobs.model.UpdateJobExecutionSubscriptionRequest;
+import software.amazon.awssdk.iot.iotjobs.model.V2ErrorResponse;
 
 import java.nio.charset.StandardCharsets;
 
@@ -76,8 +77,8 @@ public class IotJobsClient {
     }
 
     private void addTypeAdapters(GsonBuilder gson) {
-        gson.registerTypeAdapter(RejectedErrorCode.class, new EnumSerializer<RejectedErrorCode>());
         gson.registerTypeAdapter(JobStatus.class, new EnumSerializer<JobStatus>());
+        gson.registerTypeAdapter(RejectedErrorCode.class, new EnumSerializer<RejectedErrorCode>());
     }
 
     /**
