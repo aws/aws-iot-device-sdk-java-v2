@@ -26,8 +26,6 @@ env:
   CI_SHADOW_ROLE: arn:aws:iam::180635532705:role/CI_Shadow_Role
   CI_JOBS_ROLE: arn:aws:iam::180635532705:role/CI_Jobs_Role
   CI_FLEET_PROVISIONING_ROLE: arn:aws:iam::180635532705:role/service-role/CI_FleetProvisioning_Role
-  CI_GREENGRASS_ROLE: arn:aws:iam::180635532705:role/CI_Greengrass_Role
-  CI_GREENGRASS_INSTALLER_ROLE: arn:aws:iam::180635532705:role/CI_GreengrassInstaller_Role
   CI_DEVICE_ADVISOR: arn:aws:iam::180635532705:role/CI_DeviceAdvisor_Role
   CI_X509_ROLE: arn:aws:iam::180635532705:role/CI_X509_Role
   CI_MQTT5_ROLE: arn:aws:iam::180635532705:role/CI_MQTT5_Role
@@ -94,7 +92,7 @@ jobs:
   # At run time we have to force armv7 (via environment variable) in order to achieve proper resource path
   # resolution.
   linux-musl-armv7:
-    runs-on: ubuntu-20.04 # latest
+    runs-on: ubuntu-22.04 # latest
     permissions:
       id-token: write # This is required for requesting the JWT
     steps:
@@ -116,7 +114,7 @@ jobs:
           ./linux-container-ci.sh ${{ env.BUILDER_VERSION }} aws-crt-alpine-3.16-armv7 build -p ${{ env.PACKAGE_NAME }}
 
   raspberry:
-    runs-on: ubuntu-20.04 # latest
+    runs-on: ubuntu-22.04 # latest
     strategy:
       fail-fast: false
       matrix:
@@ -388,7 +386,7 @@ jobs:
 
   android-device-farm:
     name: Android Device Farm
-    runs-on: ubuntu-20.04 # latest
+    runs-on: ubuntu-22.04 # latest
     permissions:
       # These permissions needed to interact with GitHub's OIDC Token endpoint
       id-token: write # This is required for requesting the JWT
@@ -452,7 +450,7 @@ jobs:
 
   # check that docs can still build
   check-docs:
-    runs-on: ubuntu-20.04 # latest
+    runs-on: ubuntu-22.04 # latest
     steps:
       - uses: actions/checkout@v2
       - name: Check docs
@@ -462,7 +460,7 @@ jobs:
 
   # ensure that aws-crt version is consistent among different files
   consistent-crt-version:
-    runs-on: ubuntu-20.04 # latest
+    runs-on: ubuntu-22.04 # latest
     steps:
       - uses: actions/checkout@v2
       - name: Consistent aws-crt version
@@ -470,7 +468,7 @@ jobs:
           ./update-crt.py --check_consistency
 
   check-codegen-edits:
-    runs-on: ubuntu-20.04 # latest
+    runs-on: ubuntu-22.04 # latest
     steps:
       - uses: actions/checkout@v2
         with:
@@ -672,66 +670,3 @@ jobs:
       - name: run MQTT5 Shared Subscription sample
         run: |
           python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_mqtt5_shared_subscription_cfg.json
-
-  # Runs the Greengrass samples
-  linux-greengrass-tests:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        version:
-          - 17
-    permissions:
-      id-token: write # This is required for requesting the JWT
-    steps:
-      - name: Checkout Sources
-        uses: actions/checkout@v2
-      - name: Setup Java
-        uses: actions/setup-java@v2
-        with:
-          distribution: temurin
-          java-version: ${{ matrix.version }}
-          cache: maven
-      - name: Build ${{ env.PACKAGE_NAME }} + consumers
-        run: |
-          java -version
-          mvn install -Dmaven.test.skip
-      - name: Install Greengrass Development Kit
-        run: |
-          python3 -m pip install awsiotsdk
-          python3 -m pip install -U git+https://github.com/aws-greengrass/aws-greengrass-gdk-cli.git@v1.6.2
-      - name: configure AWS credentials (Greengrass)
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          role-to-assume: ${{ env.CI_GREENGRASS_INSTALLER_ROLE }}
-          aws-region: ${{ env.AWS_DEFAULT_REGION }}
-      - name: Build and run Greengrass basic discovery sample
-        working-directory: ./tests/greengrass/basic_discovery
-        run: |
-          gdk component build
-          gdk test-e2e build
-          gdk test-e2e run
-      - name: Show logs
-        working-directory: ./tests/greengrass/basic_discovery
-        # Print logs unconditionally to provide more details on Greengrass run even if the test failed.
-        if: always()
-        run: |
-          echo "=== greengrass.log"
-          cat testResults/gg*/greengrass.log
-          echo "=== software.amazon.awssdk.sdk-gg-test-discovery.log"
-          cat testResults/gg*/software.amazon.awssdk.sdk-gg-test-discovery.log
-      - name: Build and run Greengrass IPC sample
-        working-directory: ./tests/greengrass/ipc
-        run: |
-          gdk component build
-          gdk test-e2e build
-          gdk test-e2e run
-      - name: Show logs
-        working-directory: ./tests/greengrass/ipc
-        # Print logs unconditionally to provide more details on Greengrass run even if the test failed.
-        if: always()
-        run: |
-          echo "=== greengrass.log"
-          cat testResults/gg*/greengrass.log
-          echo "=== software.amazon.awssdk.sdk-gg-ipc.log"
-          cat testResults/gg*/software.amazon.awssdk.sdk-gg-ipc.log
