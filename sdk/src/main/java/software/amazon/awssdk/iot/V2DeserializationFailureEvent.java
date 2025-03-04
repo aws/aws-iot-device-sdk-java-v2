@@ -13,7 +13,7 @@ package software.amazon.awssdk.iot;
 public class V2DeserializationFailureEvent {
     private Throwable cause;
     private byte[] payload;
-    // when topic is available, add it
+    private String topic;
 
     /**
      * Builder class for V2DeserializationFailureEvent instances
@@ -48,6 +48,20 @@ public class V2DeserializationFailureEvent {
         }
 
         /**
+         * Sets the topic of the message that triggered the failure
+         *
+         * @param topic the topic of the message that triggered the failure
+         * @return this builder instance
+         */
+        public V2DeserializationFailureEventBuilder withTopic(String topic) {
+            this.event.topic = topic;
+
+            return this;
+        }
+
+
+
+        /**
          * Creates a new V2DeserializationFailureEvent instance from the existing configuration
          *
          * @return a new V2DeserializationFailureEvent instance
@@ -62,6 +76,7 @@ public class V2DeserializationFailureEvent {
     private V2DeserializationFailureEvent(V2DeserializationFailureEvent event) {
         this.cause = event.cause;
         this.payload = event.payload;
+        this.topic = event.topic;
     }
 
     /**
@@ -85,5 +100,12 @@ public class V2DeserializationFailureEvent {
      */
     public byte[] getPayload() {
         return this.payload;
+    }
+
+    /**
+     * @return the topic of the message that triggered the failure
+     */
+    public String getTopic() {
+        return this.topic;
     }
 }

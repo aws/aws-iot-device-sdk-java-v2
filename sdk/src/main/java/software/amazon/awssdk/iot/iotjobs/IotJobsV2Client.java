@@ -371,6 +371,7 @@ public class IotJobsV2Client implements AutoCloseable {
                     V2DeserializationFailureEvent failureEvent = V2DeserializationFailureEvent.builder()
                         .withCause(e)
                         .withPayload(event.getPayload())
+                        .withTopic(event.getTopic())
                         .build();
                     options.deserializationFailureHandler().accept(failureEvent);
                 }
@@ -412,6 +413,7 @@ public class IotJobsV2Client implements AutoCloseable {
                     V2DeserializationFailureEvent failureEvent = V2DeserializationFailureEvent.builder()
                         .withCause(e)
                         .withPayload(event.getPayload())
+                        .withTopic(event.getTopic())
                         .build();
                     options.deserializationFailureHandler().accept(failureEvent);
                 }
