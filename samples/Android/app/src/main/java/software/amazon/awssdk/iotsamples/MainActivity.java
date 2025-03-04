@@ -38,8 +38,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         put("MQTT3 Publish/Subscribe", "pubsub.PubSub");
         put("KeyChain Publish/Subscribe", "androidkeychainpubsub.AndroidKeyChainPubSub");
         put("KeyChain Alias Permission", "load.privateKey");
-        put("Jobs Client", "jobs.JobsSample");
-        put("Shadow Client", "shadow.ShadowSample");
         put("Cognito Client", "cognitoconnect.CognitoConnect");
     }};
 
@@ -237,15 +235,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 argSetOptional("--topic", "topic.txt", args);
                 argSetOptional("--message", "message.txt", args);
                 argSetOptional("--count", "count.txt", args);
-                break;
-
-            case "jobs.JobsSample":
-            case "shadow.ShadowSample":
-                if (!argSetRequired("--cert", "certificate.pem", args) ||
-                    !argSetRequired("--key", "privatekey.pem", args) ||
-                    !argSetRequired("--thing_name", "thingName.txt", args)) {
-                    return null;
-                }
                 break;
 
             case "cognitoconnect.CognitoConnect":

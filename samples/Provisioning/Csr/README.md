@@ -229,7 +229,7 @@ To run the provisioning sample, you'll need a certificate and key set with permi
 
 You can also use any certificate set you've already created if it has sufficient IoT permissions. If you wish to do this, you can skip the step that calls `create-provisioning-claim` below and move right to the next step: [Running the sample using a certificate-key set](#running-the-sample-using-a-certificate-key-set)
 
-We've included a script in the utils folder that creates certificate and key files from the response of calling
+We've included a [script](../../../utils/parse_cert_set_result.py) in the utils folder that creates certificate and key files from the response of calling
 `create-provisioning-claim`. These dynamically sourced certificates are **only valid for five minutes**. When running the command,
 you'll need to substitute the name of the template you previously created. If on Windows, replace the paths with something appropriate.
 
