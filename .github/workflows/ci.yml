@@ -34,7 +34,7 @@ env:
   CI_JOBS_SERVICE_CLIENT_ROLE: arn:aws:iam::180635532705:role/CI_JobsServiceClient_Role
 
 jobs:
-  windows:
+  windows-java-compat:
     runs-on: windows-latest
     strategy:
       fail-fast: false
@@ -115,7 +115,7 @@ jobs:
       run: |
         python ./deviceadvisor/script/DATestRun.py
 
-  osx:
+  osx-java-compat:
     runs-on: macos-latest
     strategy:
       fail-fast: false
@@ -204,7 +204,7 @@ jobs:
         source .venv/bin/activate
         python3 ./deviceadvisor/script/DATestRun.py
 
-  linux:
+  linux-java-compat:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
