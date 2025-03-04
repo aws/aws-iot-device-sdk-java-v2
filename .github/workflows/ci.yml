@@ -92,7 +92,7 @@ jobs:
   # At run time we have to force armv7 (via environment variable) in order to achieve proper resource path
   # resolution.
   linux-musl-armv7:
-    runs-on: ubuntu-20.04 # latest
+    runs-on: ubuntu-22.04 # latest
     permissions:
       id-token: write # This is required for requesting the JWT
     steps:
@@ -114,7 +114,7 @@ jobs:
           ./linux-container-ci.sh ${{ env.BUILDER_VERSION }} aws-crt-alpine-3.16-armv7 build -p ${{ env.PACKAGE_NAME }}
 
   raspberry:
-    runs-on: ubuntu-20.04 # latest
+    runs-on: ubuntu-22.04 # latest
     strategy:
       fail-fast: false
       matrix:
@@ -386,7 +386,7 @@ jobs:
 
   android-device-farm:
     name: Android Device Farm
-    runs-on: ubuntu-20.04 # latest
+    runs-on: ubuntu-22.04 # latest
     permissions:
       # These permissions needed to interact with GitHub's OIDC Token endpoint
       id-token: write # This is required for requesting the JWT
@@ -450,7 +450,7 @@ jobs:
 
   # check that docs can still build
   check-docs:
-    runs-on: ubuntu-20.04 # latest
+    runs-on: ubuntu-22.04 # latest
     steps:
       - uses: actions/checkout@v2
       - name: Check docs
@@ -460,7 +460,7 @@ jobs:
 
   # ensure that aws-crt version is consistent among different files
   consistent-crt-version:
-    runs-on: ubuntu-20.04 # latest
+    runs-on: ubuntu-22.04 # latest
     steps:
       - uses: actions/checkout@v2
       - name: Consistent aws-crt version
@@ -468,7 +468,7 @@ jobs:
           ./update-crt.py --check_consistency
 
   check-codegen-edits:
-    runs-on: ubuntu-20.04 # latest
+    runs-on: ubuntu-22.04 # latest
     steps:
       - uses: actions/checkout@v2
         with:
