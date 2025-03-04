@@ -25,6 +25,7 @@ import software.amazon.awssdk.services.sts.StsClient;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.logging.Logger;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -134,14 +135,27 @@ public class JobsTests extends V2ServiceClientTestFixture {
         return jobId;
     }
 
+    void sleepOnThrottle() {
+        long seed = System.nanoTime();
+        Random generator = new Random(seed);
+        try {
+            // 1 - 10 seconds
+            long sleepMillis = (long)(generator.nextDouble() * 9000 + 1000);
+            Thread.sleep(sleepMillis);
+        } catch (Exception e) {
+            ;
+        }
+    }
+
     void deleteJob(String jobId) {
         boolean done = false;
         while (!done) {
             try {
                 iotClient.deleteJob(DeleteJobRequest.builder().jobId(jobId).force(true).build());
                 done = true;
-            } catch (LimitExceededException ex) {
-                ;
+            } catch (ThrottlingException | LimitExceededException ex) {
+                // We run more than 10 CI jobs concurrently, causing us to hit a variety of annoying limits.
+                sleepOnThrottle();
             }
         }
     }
