@@ -54,7 +54,7 @@
     <dependency>
       <groupId>software.amazon.awssdk.crt</groupId>
       <artifactId>aws-crt</artifactId>
-      <version>0.35.0</version>
+      <version>0.36.1</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
