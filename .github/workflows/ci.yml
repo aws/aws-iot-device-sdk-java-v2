@@ -132,7 +132,7 @@ jobs:
     - name: Setup Java
       uses: actions/setup-java@v3.14.1
       with:
-        distribution: temurin
+        distribution: ${{ matrix.version == 8 && 'corretto' || 'temurin' }}
         java-version: ${{ matrix.version }}
         cache: maven
     - name: Build ${{ env.PACKAGE_NAME }} + consumers
