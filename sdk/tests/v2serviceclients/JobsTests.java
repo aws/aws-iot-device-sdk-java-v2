@@ -394,6 +394,7 @@ public class JobsTests extends V2ServiceClientTestFixture {
             verifyNothingInProgress();
 
         } catch (Exception ex) {
+            ex.printStackTrace();
             Assertions.fail("doJobControlTest triggered exception");
         }
     }
