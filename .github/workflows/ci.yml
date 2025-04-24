@@ -410,22 +410,22 @@ jobs:
         working-directory: ./servicetests
         run: |
           export PYTHONPATH=${{ github.workspace }}/utils
-          python3 ./test_cases/test_fleet_provisioning.py --thing-name-prefix Fleet_Thing_ --mqtt-version 3
+          python3 ./test_cases/test_fleet_provisioning.py --thing-name-prefix TEST_Fleet_Thing_ --mqtt-version 3
       - name: run Fleet Provisioning service client test for MQTT5
         working-directory: ./servicetests
         run: |
           export PYTHONPATH=${{ github.workspace }}/utils
-          python3 ./test_cases/test_fleet_provisioning.py --thing-name-prefix Fleet_Thing_ --mqtt-version 5
+          python3 ./test_cases/test_fleet_provisioning.py --thing-name-prefix TEST_Fleet_Thing_ --mqtt-version 5
       - name: run Fleet Provisioning with CSR service client test for MQTT311
         working-directory: ./servicetests
         run: |
           export PYTHONPATH=${{ github.workspace }}/utils
-          python3 ./test_cases/test_fleet_provisioning.py --thing-name-prefix Fleet_Thing_ --mqtt-version 3 --use-csr
+          python3 ./test_cases/test_fleet_provisioning.py --thing-name-prefix TEST_Fleet_Thing_ --mqtt-version 3 --use-csr
       - name: run Fleet Provisioning with CSR service client test for MQTT5
         working-directory: ./servicetests
         run: |
           export PYTHONPATH=${{ github.workspace }}/utils
-          python3 ./test_cases/test_fleet_provisioning.py --thing-name-prefix Fleet_Thing_ --mqtt-version 5 --use-csr
+          python3 ./test_cases/test_fleet_provisioning.py --thing-name-prefix TEST_Fleet_Thing_ --mqtt-version 5 --use-csr
       - name: configure AWS credentials (Shadow)
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -542,10 +542,10 @@ jobs:
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
       - name: run Fleet Provisioning sample
         run: |
-          python3 ./utils/run_fleet_provisioning_sample.py --file ./.github/workflows/ci_run_fleet_provisioning_cfg.json --thing-name-prefix "Fleet_Thing_"
+          python3 ./utils/run_fleet_provisioning_sample.py --file ./.github/workflows/ci_run_fleet_provisioning_cfg.json --thing-name-prefix "TEST_Fleet_Thing_"
       - name: run Mqtt5 Fleet Provisioning sample
         run: |
-          python3 ./utils/run_fleet_provisioning_sample.py --file ./.github/workflows/ci_run_fleet_provisioning_mqtt5_cfg.json --thing-name-prefix "Fleet_Thing_"
+          python3 ./utils/run_fleet_provisioning_sample.py --file ./.github/workflows/ci_run_fleet_provisioning_mqtt5_cfg.json --thing-name-prefix "TEST_Fleet_Thing_"
       - name: configure AWS credentials (X509)
         uses: aws-actions/configure-aws-credentials@v2
         with:
