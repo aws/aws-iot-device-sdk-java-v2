@@ -102,15 +102,23 @@ def delete_iot_thing(thing_name, region):
         for principal in thing_principals["principals"]:
             certificate_id = principal.split("/")[1]
             iot_client.detach_thing_principal(thingName=thing_name, principal=principal)
-            iot_client.update_certificate(certificateId=certificate_id, newStatus='INACTIVE')
-            iot_client.delete_certificate(certificateId=certificate_id, forceDelete=True)
+
     except Exception:
-        print("ERROR: Could not delete certificate for IoT thing {thing_name}, probably thing does not exist",
+        print("ERROR: Could not detatch principals from IoT thing {thing_name}, probably thing does not exist",
               file=sys.stderr)
         raise
 
     # Wait for thing to be free of principals
     ThingDetachedWaiter(iot_client, timeout=10).wait(thing_name)
+
+    # Set the certificate to INACTIVE and then delete the certificate.
+    try:
+        iot_client.update_certificate(certificateId=certificate_id, newStatus='INACTIVE')
+        iot_client.delete_certificate(certificateId=certificate_id, forceDelete=True)
+    except Exception:
+        print("ERROR: Could not delete certificate for IoT thing {thing_name}.",
+              file=sys.stderr)
+        raise
 
     # Delete thing.
     try:
