@@ -1,10 +1,15 @@
 # AWS IoT Device SDK for Java v2
 
-This document provides information about the AWS IoT device SDK for Java V2. This SDK is built on the [AWS Common Runtime](https://docs.aws.amazon.com/sdkref/latest/guide/common-runtime.html)
+The **AWS IoT Device SDK for Java v2** is a rewrite of SDK v1 with some great new features. It includes many updates,
+such as support for new [AWS IoT Core services](#supported-aws-iot-core-services), more detailed information about client
+status, and an offline operation queue control. You can use this SDK using Maven or any build system that supports
+MavenCentral as an artifact source.
 
 *__Jump To:__*
 
-* [Installation](#installation)
+* [Using SDK](#using-sdk)
+* [Features](#features-in-v2)
+* [Building from source](#building-from-source)
 * [Android](./documents/ANDROID.md)
 * [Samples](samples)
 * [Mac-Only TLS Behavior](#mac-only-tls-behavior)
@@ -14,20 +19,13 @@ This document provides information about the AWS IoT device SDK for Java V2. Thi
 * [MQTT5 User Guide](./documents/MQTT5_Userguide.md)
 * [Migration Guide from the AWS IoT SDK for Java v1](./documents/MIGRATION_GUIDE.md)
 
-## Installation
+## Using SDK
 
 ### Minimum Requirements
 
 * Java 8+ ([Download and Install Java](https://www.java.com/en/download/help/download_options.html))
 * Java JDK 8+ ([Download and Install JDK](https://docs.oracle.com/en/java/javase/18/install/overview-jdk-installation.html#GUID-8677A77F-231A-40F7-98B9-1FD0B48C346A))
   * [Set JAVA_HOME](./documents/PREREQUISITES.md#set-java_home)
-
-[Step-by-step instructions](./documents/PREREQUISITES.md)
-
-### Requirements to build the AWS CRT locally
-* C++ 11 or higher
-   * Clang 3.9+ or GCC 4.4+ or MSVC 2015+
-* CMake 3.1+
 
 [Step-by-step instructions](./documents/PREREQUISITES.md)
 
@@ -43,12 +41,33 @@ Consuming this SDK via Maven is the preferred method of consuming it and using i
 </dependency>
 ```
 
-Replace `1.25.0` in `<version>1.25.0</version>` with the latest release version for the SDK.
-Look up the latest SDK version here: https://github.com/aws/aws-iot-device-sdk-java-v2/releases
+## Features in v2
 
-### Build IoT Device SDK from source
+* All operations are non-blocking.
+* MQTT5 protocol.
+* First-class support for AWS IoT Core services.
+
+#### Supported AWS IoT Core services
+
+* The [AWS IoT Device Shadow](https://docs.aws.amazon.com/iot/latest/developerguide/iot-device-shadows.html) service adds
+shadows to AWS IoT thing objects.
+* The [AWS IoT Jobs](https://docs.aws.amazon.com/iot/latest/developerguide/iot-jobs.html) allows to define a set of remote
+operations that can be sent to and run on one or more devices connected to AWS IoT.
+* [Fleet Provisioning](https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html) (also known as Identity
+Service) is another AWS IoT service that the v2 SDK provides access to. By using AWS IoT fleet provisioning, AWS IoT can
+generate and securely deliver device certificates and private keys to your devices when they connect to AWS IoT for the
+first time.
+
+## Building from source
+
+Requirements to build the AWS CRT locally
+* C++ 11 or higher
+  * Clang 3.9+ or GCC 4.4+ or MSVC 2015+
+* CMake 3.1+
 
 [Install Maven and Set PATH](https://maven.apache.org/install.html)
+
+See [step-by-step instructions](./documents/PREREQUISITES.md) for more details on configuring required tools.
 
 ``` sh
 # Create a workspace directory to hold all the SDK files
