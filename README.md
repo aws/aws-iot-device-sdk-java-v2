@@ -39,6 +39,9 @@ Consuming this SDK via Maven is the preferred method of consuming it and using i
 </dependency>
 ```
 
+Replace `1.25.0` in `<version>1.25.0</version>` with the latest release version for the SDK.
+Look up the latest SDK version here: https://github.com/aws/aws-iot-device-sdk-java-v2/releases
+
 ## Features
 
 The primary purpose of the **AWS IoT Device SDK for Java v2** is to simplify the process of connecting devices to AWS IoT
