@@ -1,14 +1,12 @@
 # AWS IoT Device SDK for Java v2
 
-The **AWS IoT Device SDK for Java v2** is a rewrite of SDK v1 with some great new features. It includes many updates,
-such as support for new [AWS IoT Core services](#supported-aws-iot-core-services), more detailed information about client
-status, and an offline operation queue control. You can use this SDK using Maven or any build system that supports
-MavenCentral as an artifact source.
+The **AWS IoT Device SDK for Java v2** enables you to connect IoT devices to AWS IoT Core, publish messages to topics,
+subscribe to topics, and use various AWS IoT services such as Device Shadow, Jobs, and fleet provisioning.
 
 *__Jump To:__*
 
 * [Using SDK](#using-sdk)
-* [Features](#features-in-v2)
+* [Features](#features)
 * [Building from source](#building-from-source)
 * [Android](./documents/ANDROID.md)
 * [Samples](samples)
@@ -41,10 +39,14 @@ Consuming this SDK via Maven is the preferred method of consuming it and using i
 </dependency>
 ```
 
-## Features in v2
+## Features
 
-* All operations are non-blocking.
-* MQTT5 protocol.
+The primary purpose of the **AWS IoT Device SDK for Java v2** is to simplify the process of connecting devices to AWS IoT
+Core and interacting with AWS IoT services on various platforms. The SDK provides:
+
+* Secure device connections to AWS IoT Core using MQTT protocol (MQTT 3.1.1 and MQTT 5.0)
+* Support for [multiple authentication methods and connection types](./documents/MQTT5_Userguide.md#how-to-setup-mqtt5-builder-based-on-desired-connection-method)
+* [Android support](./documents/ANDROID.md)
 * First-class support for AWS IoT Core services.
 
 #### Supported AWS IoT Core services
@@ -53,9 +55,8 @@ Consuming this SDK via Maven is the preferred method of consuming it and using i
 shadows to AWS IoT thing objects.
 * The [AWS IoT Jobs](https://docs.aws.amazon.com/iot/latest/developerguide/iot-jobs.html) allows to define a set of remote
 operations that can be sent to and run on one or more devices connected to AWS IoT.
-* [Fleet Provisioning](https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html) (also known as Identity
-Service) is another AWS IoT service that the v2 SDK provides access to. By using AWS IoT fleet provisioning, AWS IoT can
-generate and securely deliver device certificates and private keys to your devices when they connect to AWS IoT for the
+* The [AWS IoT fleet provisioning](https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html) can
+generate and securely deliver device certificates and private keys to IoT devices when they connect to AWS IoT for the
 first time.
 
 ## Building from source
