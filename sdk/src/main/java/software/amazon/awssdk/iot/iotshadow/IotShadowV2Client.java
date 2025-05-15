@@ -83,6 +83,16 @@ public class IotShadowV2Client implements AutoCloseable {
         this.rrClient = null;
     }
 
+    private ShadowUpdatedEvent createShadowUpdatedEvent(IncomingPublishEvent publishEvent) {
+        String payload = new String(publishEvent.getPayload(), StandardCharsets.UTF_8);
+        return this.gson.fromJson(payload, ShadowUpdatedEvent.class);
+    }
+
+    private ShadowDeltaUpdatedEvent createShadowDeltaUpdatedEvent(IncomingPublishEvent publishEvent) {
+        String payload = new String(publishEvent.getPayload(), StandardCharsets.UTF_8);
+        return this.gson.fromJson(payload, ShadowDeltaUpdatedEvent.class);
+    }
+
     /**
      * Deletes a named shadow for an AWS IoT thing.
      *
@@ -504,8 +514,7 @@ public class IotShadowV2Client implements AutoCloseable {
             .withSubscriptionStatusEventCallback(options.subscriptionEventHandler())
             .withIncomingPublishEventCallback((event) -> {
                 try {
-                    String payload = new String(event.getPayload(), StandardCharsets.UTF_8);
-                    ShadowDeltaUpdatedEvent response = this.gson.fromJson(payload, ShadowDeltaUpdatedEvent.class);
+                    ShadowDeltaUpdatedEvent response = createShadowDeltaUpdatedEvent(event);
                     options.streamEventHandler().accept(response);
                 } catch (Exception e) {
                     V2DeserializationFailureEvent failureEvent = V2DeserializationFailureEvent.builder()
@@ -551,8 +560,7 @@ public class IotShadowV2Client implements AutoCloseable {
             .withSubscriptionStatusEventCallback(options.subscriptionEventHandler())
             .withIncomingPublishEventCallback((event) -> {
                 try {
-                    String payload = new String(event.getPayload(), StandardCharsets.UTF_8);
-                    ShadowUpdatedEvent response = this.gson.fromJson(payload, ShadowUpdatedEvent.class);
+                    ShadowUpdatedEvent response = createShadowUpdatedEvent(event);
                     options.streamEventHandler().accept(response);
                 } catch (Exception e) {
                     V2DeserializationFailureEvent failureEvent = V2DeserializationFailureEvent.builder()
@@ -593,8 +601,7 @@ public class IotShadowV2Client implements AutoCloseable {
             .withSubscriptionStatusEventCallback(options.subscriptionEventHandler())
             .withIncomingPublishEventCallback((event) -> {
                 try {
-                    String payload = new String(event.getPayload(), StandardCharsets.UTF_8);
-                    ShadowDeltaUpdatedEvent response = this.gson.fromJson(payload, ShadowDeltaUpdatedEvent.class);
+                    ShadowDeltaUpdatedEvent response = createShadowDeltaUpdatedEvent(event);
                     options.streamEventHandler().accept(response);
                 } catch (Exception e) {
                     V2DeserializationFailureEvent failureEvent = V2DeserializationFailureEvent.builder()
@@ -635,8 +642,7 @@ public class IotShadowV2Client implements AutoCloseable {
             .withSubscriptionStatusEventCallback(options.subscriptionEventHandler())
             .withIncomingPublishEventCallback((event) -> {
                 try {
-                    String payload = new String(event.getPayload(), StandardCharsets.UTF_8);
-                    ShadowUpdatedEvent response = this.gson.fromJson(payload, ShadowUpdatedEvent.class);
+                    ShadowUpdatedEvent response = createShadowUpdatedEvent(event);
                     options.streamEventHandler().accept(response);
                 } catch (Exception e) {
                     V2DeserializationFailureEvent failureEvent = V2DeserializationFailureEvent.builder()
