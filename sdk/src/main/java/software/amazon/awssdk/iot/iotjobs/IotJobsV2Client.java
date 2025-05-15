@@ -83,6 +83,16 @@ public class IotJobsV2Client implements AutoCloseable {
         this.rrClient = null;
     }
 
+    private NextJobExecutionChangedEvent createNextJobExecutionChangedEvent(IncomingPublishEvent publishEvent) {
+        String payload = new String(publishEvent.getPayload(), StandardCharsets.UTF_8);
+        return this.gson.fromJson(payload, NextJobExecutionChangedEvent.class);
+    }
+
+    private JobExecutionsChangedEvent createJobExecutionsChangedEvent(IncomingPublishEvent publishEvent) {
+        String payload = new String(publishEvent.getPayload(), StandardCharsets.UTF_8);
+        return this.gson.fromJson(payload, JobExecutionsChangedEvent.class);
+    }
+
     /**
      * Gets detailed information about a job execution.
      *
@@ -364,8 +374,7 @@ public class IotJobsV2Client implements AutoCloseable {
             .withSubscriptionStatusEventCallback(options.subscriptionEventHandler())
             .withIncomingPublishEventCallback((event) -> {
                 try {
-                    String payload = new String(event.getPayload(), StandardCharsets.UTF_8);
-                    JobExecutionsChangedEvent response = this.gson.fromJson(payload, JobExecutionsChangedEvent.class);
+                    JobExecutionsChangedEvent response = createJobExecutionsChangedEvent(event);
                     options.streamEventHandler().accept(response);
                 } catch (Exception e) {
                     V2DeserializationFailureEvent failureEvent = V2DeserializationFailureEvent.builder()
@@ -406,8 +415,7 @@ public class IotJobsV2Client implements AutoCloseable {
             .withSubscriptionStatusEventCallback(options.subscriptionEventHandler())
             .withIncomingPublishEventCallback((event) -> {
                 try {
-                    String payload = new String(event.getPayload(), StandardCharsets.UTF_8);
-                    NextJobExecutionChangedEvent response = this.gson.fromJson(payload, NextJobExecutionChangedEvent.class);
+                    NextJobExecutionChangedEvent response = createNextJobExecutionChangedEvent(event);
                     options.streamEventHandler().accept(response);
                 } catch (Exception e) {
                     V2DeserializationFailureEvent failureEvent = V2DeserializationFailureEvent.builder()
