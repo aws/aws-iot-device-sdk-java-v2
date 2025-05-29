@@ -18,14 +18,13 @@ import software.amazon.awssdk.services.iotjobsdataplane.IotJobsDataPlaneClient;
 import software.amazon.awssdk.services.iot.model.*;
 import software.amazon.awssdk.services.iotjobsdataplane.model.StartCommandExecutionRequest;
 import software.amazon.awssdk.services.iotjobsdataplane.model.StartCommandExecutionResponse;
-import software.amazon.awssdk.services.sts.StsClient;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -76,8 +75,14 @@ public class CommandsTests extends V2ServiceClientTestFixture {
             iotClient = IotClient.builder()
                     .region(Region.of(testRegion))
                     .build();
+
+            DescribeEndpointRequest describeEndpointRequest =
+                    DescribeEndpointRequest.builder().endpointType("iot:Jobs").build();
+            DescribeEndpointResponse describeEndpointResponse = iotClient.describeEndpoint(describeEndpointRequest);
+
             iotJobsDataPlaneClient = IotJobsDataPlaneClient.builder()
                     .region(Region.of(testRegion))
+                    .endpointOverride(URI.create("https://" + describeEndpointResponse.endpointAddress()))
                     .build();
         }
     }
@@ -260,13 +265,15 @@ public class CommandsTests extends V2ServiceClientTestFixture {
         // open both streams
         try (StreamingOperation commandExecutionsJsonStream = createCommandExecutionsJsonStream(testContext.thingName)) {
 
-            StartCommandExecutionRequest request = StartCommandExecutionRequest.builder()
-                    .commandArn(testContext.commandInfo.commandArn())
-                    .executionTimeoutSeconds(10L)
-                    .targetArn(testContext.thingArn)
-                    .build();
+            {
+                StartCommandExecutionRequest request = StartCommandExecutionRequest.builder()
+                        .commandArn(testContext.commandInfo.commandArn())
+                        .executionTimeoutSeconds(10L)
+                        .targetArn(testContext.thingArn)
+                        .build();
 
-            testContext.commandExecutionInfo = iotJobsDataPlaneClient.startCommandExecution(request);
+                testContext.commandExecutionInfo = iotJobsDataPlaneClient.startCommandExecution(request);
+            }
 
             // wait for initial stream events to trigger
             waitForStreamEvents();
@@ -284,8 +291,17 @@ public class CommandsTests extends V2ServiceClientTestFixture {
                 commandsClient.updateCommandExecution(updateCommandExecutionRequest).get();
             }
 
-            // verify it's in progress
-            // TODO Use regular SDK.
+            // verify it's in-progress
+            {
+                GetCommandExecutionRequest request = GetCommandExecutionRequest.builder()
+                        .executionId(testContext.commandExecutionInfo.executionId())
+                        .targetArn(testContext.thingArn)
+                        .build();
+                GetCommandExecutionResponse response = iotClient.getCommandExecution(request);
+                Assertions.assertEquals(
+                        software.amazon.awssdk.services.iot.model.CommandExecutionStatus.IN_PROGRESS,
+                        response.status());
+            }
 
             // notify command complete
             {
@@ -298,7 +314,17 @@ public class CommandsTests extends V2ServiceClientTestFixture {
             }
 
             // verify it's done
-            // TODO Use regular SDK.
+            {
+                GetCommandExecutionRequest request = GetCommandExecutionRequest.builder()
+                        .executionId(testContext.commandExecutionInfo.executionId())
+                        .targetArn(testContext.thingArn)
+                        .build();
+                GetCommandExecutionResponse response = iotClient.getCommandExecution(request);
+                Assertions.assertEquals(
+                        software.amazon.awssdk.services.iot.model.CommandExecutionStatus.SUCCEEDED,
+                        response.status());
+            }
+
         } catch (Exception ex) {
             ex.printStackTrace();
             Assertions.fail("doCommandsControlTest triggered exception");
