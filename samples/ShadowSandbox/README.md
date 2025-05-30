@@ -1,6 +1,6 @@
 # ShadowSandbox
 
-[**Return to main sample list**](../../README.md)
+[**Return to main sample list**](../README.md)
 
 This is an interactive sample that supports a set of commands that allow you to interact with "classic" (unnamed) shadows of the AWS IoT [Device Shadow](https://docs.aws.amazon.com/iot/latest/developerguide/iot-device-shadows.html) Service.
 
