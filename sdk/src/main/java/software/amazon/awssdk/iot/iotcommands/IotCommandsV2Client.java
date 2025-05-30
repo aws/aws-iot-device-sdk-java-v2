@@ -151,13 +151,19 @@ public class IotCommandsV2Client implements AutoCloseable {
 
             // Response paths
             ResponsePath.ResponsePathBuilder pathBuilder1 = ResponsePath.builder();
-            String responseTopic1 = publishTopic + "/accepted";
-            pathBuilder1.withResponseTopic(publishTopic + "/accepted");
+            String responseTopic1 = "$aws/commands/{deviceType}/{deviceId}/executions/{executionId}/response/accepted/json";
+            responseTopic1 = responseTopic1.replace("{deviceType}", request.deviceType.toString());
+            responseTopic1 = responseTopic1.replace("{deviceId}", request.deviceId);
+            responseTopic1 = responseTopic1.replace("{executionId}", request.executionId);
+            pathBuilder1.withResponseTopic(responseTopic1);
             builder.withResponsePath(pathBuilder1.build());
 
             ResponsePath.ResponsePathBuilder pathBuilder2 = ResponsePath.builder();
-            String responseTopic2 = publishTopic + "/rejected";
-            pathBuilder2.withResponseTopic(publishTopic + "/rejected");
+            String responseTopic2 = "$aws/commands/{deviceType}/{deviceId}/executions/{executionId}/response/rejected/json";
+            responseTopic2 = responseTopic2.replace("{deviceType}", request.deviceType.toString());
+            responseTopic2 = responseTopic2.replace("{deviceId}", request.deviceId);
+            responseTopic2 = responseTopic2.replace("{executionId}", request.executionId);
+            pathBuilder2.withResponseTopic(responseTopic2);
             builder.withResponsePath(pathBuilder2.build());
 
             // Submit
