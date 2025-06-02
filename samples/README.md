@@ -28,6 +28,7 @@
 ## Other Samples
 * [Shadow](./ShadowSandbox/README.md)
 * [Jobs](./JobsSandbox/README.md)
+* [Commands](./CommandsSandbox/README.md)
 * [Fleet Provisioning](./Provisioning/Basic/README.md)
 * [Fleet Provisioning with CSR](./Provisioning/Csr/README.md)
 * [Android Sample](./Android/README.md)
