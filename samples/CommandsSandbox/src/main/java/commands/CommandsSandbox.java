@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
@@ -241,7 +242,7 @@ public class CommandsSandbox {
         context.nextStreamId = 1;
         context.commandExecutionsStreams = new HashMap<Integer, StreamingOperationContext>();
 
-        context.activeCommandExecutions = new HashMap<String, CommandExecutionContext>();
+        context.activeCommandExecutions = new ConcurrentHashMap<String, CommandExecutionContext>();
 
         context.commandsClient = IotCommandsV2Client.newFromMqtt5(context.protocolClient, rrClientOptions);
 
@@ -353,7 +354,6 @@ public class CommandsSandbox {
 
         try {
             CommandExecutionContext commandExecutionContext = context.activeCommandExecutions.get(executionId);
-
             UpdateCommandExecutionRequest request = new UpdateCommandExecutionRequest();
             request.executionId = executionId;
             request.deviceType = commandExecutionContext.deviceType;
