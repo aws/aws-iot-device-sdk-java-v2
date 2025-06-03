@@ -5,6 +5,7 @@
 
 import org.junit.jupiter.api.*;
 import software.amazon.awssdk.core.SdkBytes;
+import software.amazon.awssdk.crt.CrtRuntimeException;
 import software.amazon.awssdk.crt.iot.MqttRequestResponseClientOptions;
 import software.amazon.awssdk.crt.iot.StreamingOperation;
 import software.amazon.awssdk.crt.iot.SubscriptionStatusEventType;
@@ -341,7 +342,6 @@ public class CommandsTests extends V2ServiceClientTestFixture {
             }
 
             // Try to update command execution to FAILED.
-            // This should fail.
             {
                 UpdateCommandExecutionRequest updateCommandExecutionRequest = new UpdateCommandExecutionRequest();
                 updateCommandExecutionRequest.executionId = testContext.commandExecutionInfo.executionId();
@@ -468,4 +468,104 @@ public class CommandsTests extends V2ServiceClientTestFixture {
         setupCommandsClient311(null);
         doClientCommandTest();
     }
+
+    void doCommandTest_FailIncompleteRequests() {
+        CommandExecutionsSubscriptionRequest commandExecutionsSubscriptionRequest = new CommandExecutionsSubscriptionRequest();
+
+        Assertions.assertThrows(CrtRuntimeException.class, () -> createCommandExecutionsJsonStream(commandExecutionsSubscriptionRequest));
+
+        commandExecutionsSubscriptionRequest.deviceType = DeviceType.THING;
+        commandExecutionsSubscriptionRequest.deviceId = testContext.thingName;
+        try (StreamingOperation commandExecutionsJsonStream = createCommandExecutionsJsonStream(commandExecutionsSubscriptionRequest)) {
+
+            {
+                StartCommandExecutionRequest request = StartCommandExecutionRequest.builder()
+                        .commandArn(testContext.commandInfo.commandArn())
+                        .executionTimeoutSeconds(10L)
+                        .targetArn(testContext.thingArn)
+                        .build();
+                testContext.commandExecutionInfo = iotJobsDataPlaneClient.startCommandExecution(request);
+            }
+
+            // wait for initial stream events to trigger
+            waitForStreamEvents();
+
+            {
+                UpdateCommandExecutionRequest updateCommandExecutionRequest = new UpdateCommandExecutionRequest();
+                Assertions.assertThrows(ExecutionException.class, () -> commandsClient.updateCommandExecution(updateCommandExecutionRequest).get());
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            Assertions.fail("doCommandsControlTest triggered exception");
+        }
+    }
+
+    @Test
+    public void handleCommandExecutionIncompleteRequestsFailures5() {
+        assumeTrue(hasTestEnvironment());
+        setupCommandsClient5(null);
+        doCommandTest_FailIncompleteRequests();
+    }
+
+    @Test
+    public void handleCommandExecutionIncompleteRequestsFailures311() {
+        assumeTrue(hasTestEnvironment());
+        setupCommandsClient311(null);
+        doCommandTest_FailIncompleteRequests();
+    }
+
+    void doCommandTest_FailInvalidRequests() {
+        CommandExecutionsSubscriptionRequest commandExecutionsSubscriptionRequest = new CommandExecutionsSubscriptionRequest();
+        commandExecutionsSubscriptionRequest.deviceType = DeviceType.CLIENT;
+        commandExecutionsSubscriptionRequest.deviceId = testContext.mqttClientId;
+
+        try (StreamingOperation commandExecutionsJsonStream = createCommandExecutionsJsonStream(commandExecutionsSubscriptionRequest)) {
+
+            {
+                StartCommandExecutionRequest request = StartCommandExecutionRequest.builder()
+                        .commandArn(testContext.commandInfo.commandArn())
+                        .executionTimeoutSeconds(10L)
+                        .targetArn(testContext.mqttClientArn)
+                        .build();
+
+                testContext.commandExecutionInfo = iotJobsDataPlaneClient.startCommandExecution(request);
+            }
+
+            // wait for initial stream events to trigger
+            waitForStreamEvents();
+
+            {
+                UpdateCommandExecutionRequest request = new UpdateCommandExecutionRequest();
+                request.executionId = testContext.commandExecutionInfo.executionId();
+                request.deviceType = DeviceType.THING;
+                request.deviceId = "inexistent-thing";
+                request.status = CommandExecutionStatus.FAILED;
+                Assertions.assertThrows(ExecutionException.class, () -> commandsClient.updateCommandExecution(request).get());
+            }
+
+            {
+                UpdateCommandExecutionRequest request = new UpdateCommandExecutionRequest();
+                request.executionId = "inexistent-execution";
+                request.deviceType = DeviceType.THING;
+                request.deviceId = testContext.thingName;
+                request.status = CommandExecutionStatus.FAILED;
+                Assertions.assertThrows(ExecutionException.class, () -> commandsClient.updateCommandExecution(request).get());
+            }
+        }
+    }
+
+    @Test
+    public void handleCommandExecutionInvalidRequestsFailures5() {
+        assumeTrue(hasTestEnvironment());
+        setupCommandsClient5(null);
+        doCommandTest_FailInvalidRequests();
+    }
+
+    @Test
+    public void handleCommandExecutionInvalidRequestsFailures311() {
+        assumeTrue(hasTestEnvironment());
+        setupCommandsClient311(null);
+        doCommandTest_FailInvalidRequests();
+    }
+
 }
