@@ -174,36 +174,18 @@ The second AWS IoT command will be a plain text:
 create-command sample-text-command plain/text hello
 ```
 
-You can examine the newly created AWS IoT commands in AWS Console or using the following AWS CLI command:
+You can examine the newly created AWS IoT commands in AWS Console or using the following sample command:
 
-```shell
-aws iot list-commands --namespace "AWS-IoT"
+```
+list-commands
 ```
 
 yields output like the following:
-```json
-{
-    "commands": [
-        {
-            "commandArn": "arn:aws:iot:...:command/sample-json-command",
-            "commandId": "sample-json-command",
-            "displayName": "sample-json-command",
-            "deprecated": false,
-            "createdAt": "...",
-            "lastUpdatedAt": "...",
-            "pendingDeletion": false
-        },
-        {
-            "commandArn": "arn:aws:iot:...:command/sample-text-command",
-            "commandId": "sample-text-command",
-            "displayName": "sample-text-command",
-            "deprecated": false,
-            "createdAt": "...",
-            "lastUpdatedAt": "...",
-            "pendingDeletion": false
-        }
-    ]
-}
+```
+Command:
+  CommandSummary(CommandArn=arn:aws:iot:...:command/sample-text-command, CommandId=sample-text-command, Deprecated=false, CreatedAt=..., LastUpdatedAt=..., PendingDeletion=false)
+Command:
+  CommandSummary(CommandArn=arn:aws:iot:...:command/sample-json-command, CommandId=sample-json-command, Deprecated=false, CreatedAt=..., LastUpdatedAt=..., PendingDeletion=false)
 ```
 
 ### Subscribing to AWS IoT Command Executions
@@ -277,8 +259,8 @@ Received new command execution
 ```
 
 > [!IMPORTANT]
-> IoT Java SDK v2 does not parse the payload of the incoming AWS IoT commands. User code gets a structure containing byte
-> buffer for payload and additionally payload format if it was specified for the AWS IoT command. User code is supposed
+> IoT Java SDK v2 does not parse the payload of the incoming AWS IoT commands. User code gets an object containing byte
+> buffer for payload and additionally a payload format if it was specified for the AWS IoT command. User code is supposed
 > to parse payload itself.
 
 Your device has only 9-10 seconds to report back the execution status, which is not enough for an interactive application.
@@ -294,6 +276,8 @@ will yield something like this:
 
 ```
 Status of command execution '11111111-1111-1111-1111-111111111111' is TIMED_OUT
+  Reason code: $NO_RESPONSE_FROM_DEVICE
+  Reason description: null
 ```
 
 Let's send another AWS IoT command execution, this time with a timeout more suitable for our sample. Notice that we use
@@ -336,7 +320,7 @@ Take an AWS IoT command execution ID your sample received at the end of the prev
 update-command-execution 33333333-3333-3333-3333-333333333333 IN_PROGRESS
 ```
 
-Then this sample command
+Then checking once again for the AWS IoT command execution status with
 ```
 get-command-execution 33333333-3333-3333-3333-333333333333
 ```
@@ -366,7 +350,7 @@ update-command-execution 33333333-3333-3333-3333-333333333333 FAILED SHORT_FAILU
 
 If you try to update the status of the same AWS IoT command execution to something else, it'll fail:
 ```
-update-command-execution <execution-id> REJECTED
+update-command-execution 33333333-3333-3333-3333-333333333333 REJECTED
 ```
 
 will yield
@@ -384,6 +368,12 @@ can delete the AWS IoT command itself with the following sample command:
 ```
 delete-command sample-json-command
 ```
+and
+```
+delete-command sample-text-command
+```
+
+Now the `list-commands` sample command will show that these two AWS IoT commands are pending deletion.
 
 ### Misc Topics
 

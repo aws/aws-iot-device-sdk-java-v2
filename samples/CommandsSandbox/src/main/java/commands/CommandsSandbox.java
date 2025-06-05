@@ -257,7 +257,7 @@ public class CommandsSandbox {
                 .withOperationTimeoutSeconds(30)
                 .build();
 
-        context.streamId = 0;
+        context.streamId = 1;
         context.commandExecutionsStreams = new HashMap<Integer, StreamingOperationContext>();
 
         context.activeCommandExecutions = new ConcurrentHashMap<String, CommandExecutionContext>();
@@ -288,8 +288,10 @@ public class CommandsSandbox {
     private static void printCommandHelp() {
         System.out.println("Usage\n");
         System.out.println("  IoT control plane commands:");
+        System.out.println("    list-commands");
+        System.out.println("                     lists all commands available in the AWS account");
         System.out.println("    create-command <command-id> <content-type> <command-document>");
-        System.out.println("                     create a new command with the specified command ID and document;");
+        System.out.println("                     creates a new command with the specified command ID and document;");
         System.out.println("                     <command-id> is a unique AWS IoT Command identifier");
         System.out.println("                     <content-type> a content type of the payload");
         System.out.println("                         JSON and CBOR are handled specifically, see README for more information");
@@ -330,6 +332,17 @@ public class CommandsSandbox {
         System.out.println("                      close a specified stream;");
         System.out.println("                      <stream-id> is internal ID that can be found with 'list-streams' command");
         System.out.println("    quit              exit the application\n");
+    }
+
+    private static void handleListCommands(ApplicationContext context) {
+        try {
+            ListCommandsResponse response = context.controlPlaneClient.listCommands(ListCommandsRequest.builder().build());
+            response.commands().forEach(command -> {
+                System.out.printf("Command:\n  %s\n", command.toString());
+            });
+        } catch (Exception ex) {
+            handleOperationException("list-commands", ex, context);
+        }
     }
 
     private static void handleCreateCommand(ApplicationContext context, String arguments) {
@@ -525,7 +538,7 @@ public class CommandsSandbox {
             }
 
             streamingOperationContext.operation.open();
-            System.out.printf("Opened streaming operation with ID %d\n", context.streamId);
+            System.out.printf("Opened streaming operation with ID %d\n", streamId);
 
 
         } catch (Exception ex) {
@@ -562,6 +575,9 @@ public class CommandsSandbox {
 
         String command = commandLineSplit[0];
         switch (command) {
+            case "list-commands":
+                handleListCommands(context);
+                return false;
             case "create-command":
                 if (commandLineSplit.length == 2) {
                     handleCreateCommand(context, commandLineSplit[1]);
