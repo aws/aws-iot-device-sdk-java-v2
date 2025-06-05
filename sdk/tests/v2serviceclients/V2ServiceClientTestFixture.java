@@ -50,7 +50,7 @@ public class V2ServiceClientTestFixture {
         return provisioningHost != null && provisioningCertificatePath != null && provisioningKeyPath != null;
     }
 
-    private void setupMqtt5Client(String host, String certificatePath, String keyPath) {
+    private void setupMqtt5Client(String host, String certificatePath, String keyPath, String clientId) {
         try (AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newDirectMqttBuilderWithMtlsFromPath(
                 host, certificatePath, keyPath)) {
 
@@ -80,7 +80,11 @@ public class V2ServiceClientTestFixture {
             builder.withLifeCycleEvents(eventHandler);
 
             ConnectPacket.ConnectPacketBuilder connectBuilder = new ConnectPacket.ConnectPacketBuilder();
-            connectBuilder.withClientId("test-" + UUID.randomUUID().toString());
+            if (clientId != null) {
+                connectBuilder.withClientId(clientId);
+            } else {
+                connectBuilder.withClientId("test-" + UUID.randomUUID().toString());
+            }
             builder.withConnectProperties(connectBuilder);
 
             this.mqtt5Client = builder.build();
@@ -95,18 +99,25 @@ public class V2ServiceClientTestFixture {
     }
 
     void setupBaseMqtt5Client() {
-        setupMqtt5Client(baseHost, baseCertificatePath, baseKeyPath);
+        setupMqtt5Client(baseHost, baseCertificatePath, baseKeyPath, null);
+    }
+
+    void setupBaseMqtt5Client(String clientId) {
+        setupMqtt5Client(baseHost, baseCertificatePath, baseKeyPath, clientId);
     }
 
     void setupProvisioningMqtt5Client() {
-        setupMqtt5Client(provisioningHost, provisioningCertificatePath, provisioningKeyPath);
+        setupMqtt5Client(provisioningHost, provisioningCertificatePath, provisioningKeyPath, null);
     }
 
-    private void setupMqtt311Client(String host, String certificatePath, String keyPath) {
+    private void setupMqtt311Client(String host, String certificatePath, String keyPath, String clientId) {
         try (AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(certificatePath, keyPath)) {
             builder.withEndpoint(host);
-            String clientId = "test-" + UUID.randomUUID().toString();
-            builder.withClientId(clientId);
+            if (clientId != null) {
+                builder.withClientId(clientId);
+            } else {
+                builder.withClientId("test-" + UUID.randomUUID().toString());
+            }
 
             this.mqtt311Client = builder.build();
 
@@ -119,11 +130,15 @@ public class V2ServiceClientTestFixture {
     }
 
     void setupBaseMqtt311Client() {
-        setupMqtt311Client(baseHost, baseCertificatePath, baseKeyPath);
+        setupMqtt311Client(baseHost, baseCertificatePath, baseKeyPath, null);
+    }
+
+    void setupBaseMqtt311Client(String clientId) {
+        setupMqtt311Client(baseHost, baseCertificatePath, baseKeyPath, clientId);
     }
 
     void setupProvisioningMqtt311Client() {
-        setupMqtt311Client(provisioningHost, provisioningCertificatePath, provisioningKeyPath);
+        setupMqtt311Client(provisioningHost, provisioningCertificatePath, provisioningKeyPath, null);
     }
 
     @AfterEach
