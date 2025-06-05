@@ -18,6 +18,7 @@ import software.amazon.awssdk.iot.AwsIotMqtt5ClientBuilder;
 import software.amazon.awssdk.iot.iotcommands.IotCommandsV2Client;
 import software.amazon.awssdk.iot.iotcommands.model.*;
 import software.amazon.awssdk.iot.V2ClientStreamOptions;
+import software.amazon.awssdk.iot.iotcommands.model.StatusReason;
 import software.amazon.awssdk.services.iotjobsdataplane.IotJobsDataPlaneClient;
 import software.amazon.awssdk.services.iotjobsdataplane.model.StartCommandExecutionRequest;
 import software.amazon.awssdk.services.iotjobsdataplane.model.StartCommandExecutionResponse;
@@ -394,6 +395,7 @@ public class CommandsSandbox {
                     .build();
 
             context.iotJobsDataPlaneClient.startCommandExecution(request);
+            Thread.sleep(1000);
         } catch (Exception ex) {
             handleOperationException("send-command", ex, context);
         }
@@ -412,6 +414,10 @@ public class CommandsSandbox {
                         .build();
                 GetCommandExecutionResponse getCommandExecutionResponse = context.controlPlaneClient.getCommandExecution(getCommandExecutionRequest);
                 System.out.printf("Status of command execution '%s' is %s\n", commandExecutionId, getCommandExecutionResponse.status());
+                if (getCommandExecutionResponse.statusReason() != null) {
+                    System.out.printf("  Reason code: %s\n", getCommandExecutionResponse.statusReason().reasonCode());
+                    System.out.printf("  Reason description: %s\n", getCommandExecutionResponse.statusReason().reasonDescription());
+                }
             }
         } catch (Exception ex) {
             handleOperationException("get-command-execution", ex, context);
@@ -419,7 +425,7 @@ public class CommandsSandbox {
     }
 
     private static void handleUpdateCommandExecution(ApplicationContext context, String arguments) {
-        String[] argumentSplit = arguments.trim().split(" ", 2);
+        String[] argumentSplit = arguments.trim().split(" ", 4);
         if (argumentSplit.length < 2) {
             printCommandHelp();
             return;
@@ -428,6 +434,13 @@ public class CommandsSandbox {
         String executionId = argumentSplit[0];
         String statusStr = argumentSplit[1];
 
+        String reasonCode = null;
+        String reasonDescription = null;
+        if (argumentSplit.length > 3) {
+            reasonCode = argumentSplit[2];
+            reasonDescription = argumentSplit[3];
+        }
+
         try {
             CommandExecutionContext commandExecutionContext = context.activeCommandExecutions.get(executionId);
             UpdateCommandExecutionRequest request = new UpdateCommandExecutionRequest();
@@ -435,9 +448,14 @@ public class CommandsSandbox {
             request.deviceType = commandExecutionContext.deviceType;
             request.deviceId = commandExecutionContext.deviceId;
             request.status = CommandExecutionStatus.valueOf(statusStr);
+            if (reasonCode != null && reasonDescription != null) {
+                request.statusReason = new StatusReason();
+                request.statusReason.reasonCode = reasonCode;
+                request.statusReason.reasonDescription = reasonDescription;
+            }
 
             UpdateCommandExecutionResponse response = context.commandsClient.updateCommandExecution(request).get();
-            System.out.printf("UpdateCommandExecutionResponse: \n  %s\n\n", context.gson.toJson(response));
+            System.out.printf("Successfully updated command execution '%s'\n", response.executionId);
         } catch (Exception ex) {
             handleOperationException("update-command-execution", ex, context);
         }
