@@ -40,11 +40,12 @@ it has to subscribe to the generic MQTT topic and distinguish received IoT comma
 Once connected, the sample supports the following commands:
 
 Control Plane
-* `create-command` - 
-* `delete-command` - 
-* `send-command-to-thing` - 
-* `send-command-to-client` - 
-* `get-command-execution`- 
+* `list-commands` - list all commands available in the AWS account
+* `create-command` - create a new AWS IoT command
+* `delete-command` - delete an AWS IoT command
+* `send-command-to-thing` - create an AWS IoT command execution targeted for the IoT thing
+* `send-command-to-client` - create an AWS IoT command execution targeted for the MQTT client
+* `get-command-execution`- get status of the AWS IoT command execution
 
 Data Plane
 * `open-thing-stream <payload-format>` - subscribe to a stream of AWS IoT command executions with a specified payload format
