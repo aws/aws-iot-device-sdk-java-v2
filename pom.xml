@@ -24,6 +24,7 @@
         <module>samples/Provisioning/Basic</module>
         <module>samples/Provisioning/Csr</module>
         <module>samples/JobsSandbox</module>
+        <module>samples/CommandsSandbox</module>
         <module>samples/ShadowSandbox</module>
         <module>samples/Mqtt5/PubSub</module>
         <module>samples/Mqtt5/SharedSubscription</module>
