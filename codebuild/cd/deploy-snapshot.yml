@@ -59,7 +59,8 @@ phases:
       - mvn -B versions:use-latest-versions -Dincludes=software.amazon.awssdk.crt*
 
       # update the version to match the git tag, make a snapshot version we can test
-      - mvn -B versions:set -DnewVersion=${PKG_VERSION}-SNAPSHOT
+      - export DEPLOY_VERSION=${PKG_VERSION}-SNAPSHOT
+      - mvn -B versions:set -DnewVersion=${DEPLOY_VERSION}
       - mvn -B deploy -Prelease -Dmaven.test.skip=true
 
       # Deploy test snapshot android. Gradle will detect the SNAPSHOT version and deploy it to the snapshot repository
@@ -70,7 +71,7 @@ phases:
   post_build:
     commands:
       # --- TEST SNAPSHOT ---
-      - mvn -B dependency:get -DrepoUrl=https://central.sonatype.com/repository/maven-snapshots/ -Dartifact=software.amazon.awssdk.iotdevicesdk:aws-iot-device-sdk:${PKG_VERSION}-SNAPSHOT -Dtransitive=false
+      - mvn -B dependency:get -DrepoUrl=https://central.sonatype.com/repository/maven-snapshots/ -Dartifact=software.amazon.awssdk.iotdevicesdk:aws-iot-device-sdk:${DEPLOY_VERSION} -Dtransitive=false
 
 cache:
   paths:

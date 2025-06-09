@@ -20,5 +20,5 @@ if [ "$PROMOTE_RELEASE" = "true" ]; then
     ./gradlew -PsigningKey=$"$GPG_KEY" -PsigningPassword=$MAVEN_GPG_PASSPHRASE -PsonatypeUsername=$ST_USERNAME -PsonatypePassword=$ST_PASSWORD publishToSonatype closeAndReleaseSonatypeStagingRepository
 else
     # close the staging repository without promoting release. NOTES: you need to manually clean up the staging repository in Maven Central.
-    ./gradlew -PsigningKey=$"$GPG_KEY" -PsigningPassword=$MAVEN_GPG_PASSPHRASE -PsonatypeUsername=$ST_USERNAME -PsonatypePassword=$ST_PASSWORD publishToSonatype closeSonatypeStagingRepository
+    ./gradlew -PnewVersion=$DEPLOY_VERSION -PsigningKey=$"$GPG_KEY" -PsigningPassword=$MAVEN_GPG_PASSPHRASE -PsonatypeUsername=$ST_USERNAME -PsonatypePassword=$ST_PASSWORD publishToSonatype
 fi
