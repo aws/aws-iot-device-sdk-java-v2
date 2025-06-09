@@ -5,7 +5,7 @@
 This is an interactive sample that allows you to use the AWS IoT [Commands](https://docs.aws.amazon.com/iot/latest/developerguide/iot-remote-command.html)
 service to receive and process remote instructions.
 
-In a real use case, control plane commands (the actions performed by aws-sdk-java-v2) would be issued by another applications
+In a real use case, control plane commands (the actions performed by aws-sdk-java-v2) would be issued by another application
 under control of the customer, while data plane operations (the actions performed by the IoT SDK Java v2) would be issued
 by software running on the IoT device itself.
 
@@ -40,7 +40,7 @@ it has to subscribe to the generic MQTT topic and distinguish received IoT comma
 Once connected, the sample supports the following commands:
 
 Control Plane
-* `list-commands` - list all commands available in the AWS account
+* `list-commands` - list all AWS IoT commands available in the AWS account
 * `create-command` - create a new AWS IoT command
 * `delete-command` - delete an AWS IoT command
 * `send-command-to-thing` - create an AWS IoT command execution targeted for the IoT thing
@@ -59,7 +59,7 @@ Data Plane
 
 Miscellaneous
 * `list-streams` - list all open streaming operations
-* `close-stream <stream-id>` - close a specified stream; <stream-id> is internal ID that can be found with 'list-streams'
+* `close-stream <stream-id>` - close a specified stream; <stream-id> is an internal ID that can be found with 'list-streams'
 * `quit` - quit the sample application
 
 ### Prerequisites
@@ -77,31 +77,31 @@ policy that can be used on your IoT Core Thing that will allow this sample to ru
       "Effect": "Allow",
       "Action": "iot:Publish",
       "Resource": [
-        "arn:aws:iot:&lt;region&gt;:&lt;account&gt;:topic/$aws/commands/&lt;device_type&gt;/&lt;device_id&gt;/executions/*/response/json"
+        "arn:aws:iot:<b>&lt;region&gt;</b>:<b>&lt;account&gt;</b>:topic/$aws/commands/<b>&lt;device_type&gt;</b>/<b>&lt;device_id&gt;</b>/executions/*/response/json",
       ]
     },
     {
       "Effect": "Allow",
       "Action": "iot:Receive",
       "Resource": [
-        "arn:aws:iot:&lt;region&gt;:&lt;account&gt;:topic/$aws/commands/&lt;device_type&gt;/&lt;device_id&gt;/executions/*/request/*",
-        "arn:aws:iot:&lt;region&gt;:&lt;account&gt;:topic/$aws/commands/&lt;device_type&gt;/&lt;device_id&gt;/executions/*/response/accepted/json",
-        "arn:aws:iot:&lt;region&gt;:&lt;account&gt;:topic/$aws/commands/&lt;device_type&gt;/&lt;device_id&gt;/executions/*/response/rejected/json"
+        "arn:aws:iot:<b>&lt;region&gt;</b>:<b>&lt;account&gt;</b>:topic/$aws/commands/<b>&lt;device_type&gt;</b>/<b>&lt;device_id&gt;</b>/executions/*/request/*",
+        "arn:aws:iot:<b>&lt;region&gt;</b>:<b>&lt;account&gt;</b>:topic/$aws/commands/<b>&lt;device_type&gt;</b>/<b>&lt;device_id&gt;</b>/executions/*/response/accepted/json",
+        "arn:aws:iot:<b>&lt;region&gt;</b>:<b>&lt;account&gt;</b>:topic/$aws/commands/<b>&lt;device_type&gt;</b>/<b>&lt;device_id&gt;</b>/executions/*/response/rejected/json"
       ]
     },
     {
       "Effect": "Allow",
       "Action": "iot:Subscribe",
       "Resource": [
-        "arn:aws:iot:&lt;region&gt;:&lt;account&gt;:topicfilter/$aws/commands/&lt;device_type&gt;/&lt;device_id&gt;/executions/*/request/*",
-        "arn:aws:iot:&lt;region&gt;:&lt;account&gt;:topicfilter/$aws/commands/&lt;device_type&gt;/&lt;device_id&gt;/executions/*/response/accepted/json",
-        "arn:aws:iot:&lt;region&gt;:&lt;account&gt;:topicfilter/$aws/commands/&lt;device_type&gt;/&lt;device_id&gt;/executions/*/response/rejected/json"
+        "arn:aws:iot:<b>&lt;region&gt;</b>:<b>&lt;account&gt;</b>:topicfilter/$aws/commands/<b>&lt;device_type&gt;</b>/<b>&lt;device_id&gt;</b>/executions/*/request/*",
+        "arn:aws:iot:<b>&lt;region&gt;</b>:<b>&lt;account&gt;</b>:topicfilter/$aws/commands/<b>&lt;device_type&gt;</b>/<b>&lt;device_id&gt;</b>/executions/*/response/accepted/json",
+        "arn:aws:iot:<b>&lt;region&gt;</b>:<b>&lt;account&gt;</b>:topicfilter/$aws/commands/<b>&lt;device_type&gt;</b>/<b>&lt;device_id&gt;</b>/executions/*/response/rejected/json"
       ]
     },
     {
       "Effect": "Allow",
       "Action": "iot:Connect",
-      "Resource": "arn:aws:iot:&lt;region&gt;:&lt;account&gt;:client/test-*"
+      "Resource": "arn:aws:iot:<b>&lt;region&gt;</b>:<b>&lt;account&gt;</b>:client/<b>&lt;mqtt_client_id&gt;</b>"
     }
   ]
 }
@@ -111,7 +111,9 @@ Replace with the following with the data from your AWS account:
 * `<region>`: The AWS IoT Core region where you created your AWS IoT Core thing you wish to use with this sample. For example `us-east-1`.
 * `<account>`: Your AWS IoT Core account ID. This is the set of numbers in the top right next to your AWS account name when using the AWS IoT Core website.
 * `<device_type>`: Can be either `things` or `clients`.
-* `<device_id>`: Depending on `<device_type>` value, this is either IoT Thing name or MQTT client ID.
+* `<device_id>`: Depending on `<device_type>` value, this is either IoT Thing name or MQTT client ID. Note that for a case
+  when `<device_type>` is set to `clients`, `<device_id>` will be the same as `<mqtt_client_id>`.
+* `<mqtt_client_id>`: MQTT client ID used for connection.
 
 Note that in a real application, you may want to avoid the use of wildcards in your ClientID or use them selectively.
 Please follow best practices when working with AWS on production applications using the SDK. Also, for the purposes of
@@ -120,19 +122,43 @@ to send the client ID your policy supports.
 
 </details>
 
-The AWS CLI triggered control plane operations in the walkthrough require AWS credentials with appropriate permissions
-be sourceable. The following permissions must be granted:
+The triggered control plane operations in the walkthrough require AWS credentials with appropriate permissions to be
+sourceable. The following permissions must be granted:
 <details>
 <summary>Sample Policy</summary>
 <pre>
 {
     "Version": "2012-10-17",
-    "Statement":
-    {
-        "Action": "iot:CreateCommand",
-        "Effect": "Allow",
-        "Resource": "arn:aws:iot:&lt;region&gt;:&lt;account&gt;:command/&lt;command_name&gt;"
-    }
+    "Statement": [
+        {
+            "Action": "iot:ListCommands",
+            "Effect": "Allow",
+            "Resource": "arn:aws:iot:<b>&lt;region&gt;</b>:<b>&lt;account&gt;</b>:command/*"
+        },
+        {
+            "Action": "iot:CreateCommand",
+            "Effect": "Allow",
+            "Resource": "arn:aws:iot:<b>&lt;region&gt;</b>:<b>&lt;account&gt;</b>:command/<b>&lt;command_name&gt;</b>"
+        },
+        {
+            "Action": "iot:GetCommand",
+            "Effect": "Allow",
+            "Resource": "arn:aws:iot:<b>&lt;region&gt;</b>:<b>&lt;account&gt;</b>:command/<b>&lt;command_name&gt;</b>"
+        },
+        {
+            "Action": "iot:DeleteCommand",
+            "Effect": "Allow",
+            "Resource": "arn:aws:iot:<b>&lt;region&gt;</b>:<b>&lt;account&gt;</b>:command/<b>&lt;command_name&gt;</b>"
+        },
+        {
+            "Action": "iot:StartCommandExecution",
+            "Effect": "Allow",
+            "Resource": [
+                "arn:aws:iot:<b>&lt;region&gt;</b>:<b>&lt;account&gt;</b>:command/<b>&lt;command_name&gt;</b>",
+                "arn:aws:iot:<b>&lt;region&gt;</b>:<b>&lt;account&gt;</b>:<b>&lt;devices&gt;</b>/<b>&lt;device_id&gt;</b>"
+            ]
+        }
+    ]
 }
 </pre>
 
@@ -142,7 +168,10 @@ Replace with the following with the data from your AWS account:
 * `<account>`: Your AWS IoT Core account ID. This is the set of numbers in the top right next to your AWS account name
   when using the AWS IoT Core website.
 * `<command_name>`: The unique identifier for your AWS IoT command, such as `LockDoor`. If you want to use more than
-  one command, you can use `*` or specify multiple commands under the Resource section in the IAM policy.
+  one command, you can use `*` (e.g. `test-*`) or specify multiple commands under the Resource section in the IAM policy.
+* `<devices>`: Must be either `thing` or `client` depending on whether your devices have been registered as AWS IoT things,
+  or are specified as MQTT clients.
+* `<device_id>`: Depending on `<device_type>` value, this is either IoT Thing name or MQTT client ID.
 
 </details>
 
@@ -227,7 +256,7 @@ close-stream 2
 
 ### Sending AWS IoT Command Executions
 
-AWS IoT command just defines a set of instructions. It cannot target any device. For sending AWS IoT command to a device,
+AWS IoT command just defines a set of instructions. It cannot target any device. For sending an AWS IoT command to a device,
 you need to create AWS IoT command execution.
 
 This can be done with the following sample commands:
@@ -235,10 +264,13 @@ This can be done with the following sample commands:
 ```
 send-command-to-thing sample-json-command
 ```
-amd
+and
 ```
 send-command-to-client sample-text-command
 ```
+
+When no timeout for an AWS IoT commands execution is specified, AWS IoT Core sets the timeout to 10 seconds. This means
+your IoT device will have about 10 seconds to provide an update for the AWS IoT command execution back to AWS IoT Core.
 
 The sample should receive these newly created AWS IoT command executions and output something similar to:
 
@@ -260,11 +292,13 @@ Received new command execution
 ```
 
 > [!IMPORTANT]
-> IoT Java SDK v2 does not parse the payload of the incoming AWS IoT commands. User code gets an object containing byte
-> buffer for payload and additionally a payload format if it was specified for the AWS IoT command. User code is supposed
+> IoT Java SDK v2 does not parse the payload of the incoming AWS IoT commands. User code gets an object containing binary
+> data for payload and additionally a payload format if it was specified for the AWS IoT command. User code is supposed
 > to parse payload itself.
+> This sample parses JSON data only, to demonstrate how it can be achieved. All other formats are left out for simplicity.
 
-Your device has only 9-10 seconds to report back the execution status, which is not enough for an interactive application.
+Since we didn't specify a timeout for a newly created AWS IoT command execution, your device has only 9-10 seconds to
+report back the execution status, which is not enough for an interactive application.
 The AWS IoT command execution you sent will probably time out before you manage to send the status update.
 
 You can check the AWS IoT command execution status using the following sample command (remember to change execution ID to the one you actually received):
@@ -302,7 +336,7 @@ Let's proceed to the next section where we're going to update the status of an A
 
 ### Updating and monitoring AWS IoT command execution status
 
-The sample didn't yet update the status of the AWS IoT command execution, so the following AWS CLI command
+The sample didn't yet update the status of the AWS IoT command execution, so the following sample command
 
 ```
 get-command-execution 33333333-3333-3333-3333-333333333333
