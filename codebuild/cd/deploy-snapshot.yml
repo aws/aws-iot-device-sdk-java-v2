@@ -64,6 +64,7 @@ phases:
 
       # Deploy test snapshot android. Gradle will detect the SNAPSHOT version and deploy it to the snapshot repository
       - export PROMOTE_RELEASE=false
+      - cd $CODEBUILD_SRC_DIR/aws-iot-device-sdk-java-v2
       - ./codebuild/cd/deploy-snapshot-android.sh
 
   post_build:

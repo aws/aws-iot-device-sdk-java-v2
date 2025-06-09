@@ -62,6 +62,7 @@ phases:
       
       # Deploy android
       - export PROMOTE_RELEASE=true
+      - cd $CODEBUILD_SRC_DIR/aws-iot-device-sdk-java-v2
       - ./codebuild/cd/deploy-snapshot-android.sh
 
 cache:
