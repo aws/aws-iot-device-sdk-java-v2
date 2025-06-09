@@ -42,7 +42,7 @@ phases:
       - export GPG_TTY=$(tty)
       - gpg --batch --import /tmp/aws-sdk-common-runtime.key.asc
       # refer to https://maven.apache.org/plugins/maven-gpg-plugin/usage.html
-      - export GPG_PASSPHRASE=$(aws --query "SecretString" secretsmanager get-secret-value --secret-id cd/aws-crt-java-key/password | cut -f2 -d":" | sed -e 's/[\\\"\}]//g')
+      - export MAVEN_GPG_PASSPHRASE=$(aws --query "SecretString" secretsmanager get-secret-value --secret-id cd/aws-crt-java-key/password | cut -f2 -d":" | sed -e 's/[\\\"\}]//g')
   build:
     commands:
       - cd $CODEBUILD_SRC_DIR/aws-iot-device-sdk-java-v2/sdk
