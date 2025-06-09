@@ -14,6 +14,15 @@ phases:
       - sudo apt-get update -y
       # Android requires 11 for gradle
       - sudo apt-get install openjdk-11-jdk-headless maven wget unzip -y -f
+      # install android sdk
+      - wget --quiet https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip
+      - export ANDROID_SDK_ROOT=$CODEBUILD_SRC_DIR/android-sdk
+      - mkdir -p $ANDROID_SDK_ROOT/cmdline-tools
+      - unzip commandlinetools-linux-7583922_latest.zip -d $ANDROID_SDK_ROOT/cmdline-tools
+      # This weird path needed for cmd tool to work
+      - mv $ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools $ANDROID_SDK_ROOT/cmdline-tools/latest
+      # install android build tools
+      - echo y | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --install "build-tools;30.0.3" "platforms;android-30" "ndk;21.4.7075529"
       - echo "\nBuild version data:"
       - echo "\nJava Version:"; java -version
       - echo "\nMaven Version:"; mvn --version
@@ -52,6 +61,10 @@ phases:
       # update the version to match the git tag, make a snapshot version we can test
       - mvn -B versions:set -DnewVersion=${PKG_VERSION}-SNAPSHOT
       - mvn -B deploy -Prelease -Dmaven.test.skip=true
+
+      # Deploy test snapshot android. Gradle will detect the SNAPSHOT version and deploy it to the snapshot repository
+      - export PROMOTE_RELEASE=false
+      - ./codebuild/cd/deploy-snapshot-android.sh
 
   post_build:
     commands:

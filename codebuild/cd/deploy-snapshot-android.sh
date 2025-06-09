@@ -1,14 +1,24 @@
 #!/bin/bash
 
 set -ex
-set -o pipefail # Ensure if any part of a pipeline fails, it propogates the error through the pipeline
+set -o pipefail # Make sure one process in pipe fail gets bubble up
 
 git submodule update --init
 cd ./android
 
-GPG_KEY=$(cat /tmp/aws-sdk-common-runtime.key.asc)
+# Check if promote release mode is enabled
+PROMOTE_RELEASE="${PROMOTE_RELEASE:-false}"
 
-# Publish to nexus
-./gradlew -PnewVersion=$PKG_VERSION -PsigningKey=$"$GPG_KEY" -PsigningPassword=$GPG_PASSPHRASE -PsonatypeUsername=$ST_USERNAME -PsonatypePassword=$ST_PASSWORD publishToAwsNexus closeAwsNexusStagingRepository | tee /tmp/android_deploy.log
-# Get the staging repository id and save it
-cat /tmp/android_deploy.log | grep "Created staging repository" | cut -d\' -f2 | tee /tmp/android_repositoryId.txt
+GPG_KEY=$(cat /tmp/aws-sdk-common-runtime.key.asc)
+# Publish and release
+# As May30th, 2025, the Sonatype OSSRH has been deprecated and replaced with Central Publisher and the new API does't support `findSonatypeStagingRepository`.
+# the release will need to be invoked within the same call.
+# https://github.com/gradle-nexus/publish-plugin/issues/379
+
+if [ "$PROMOTE_RELEASE" = "true" ]; then
+    # close and release the staging repository to promote release
+    ../gradlew -PsigningKey=$"$GPG_KEY" -PsigningPassword=$MAVEN_GPG_PASSPHRASE -PsonatypeUsername=$ST_USERNAME -PsonatypePassword=$ST_PASSWORD publishToSonatype closeAndReleaseSonatypeStagingRepository
+else
+    # close the staging repository without promoting release. NOTES: you need to manually clean up the staging repository in Maven Central.
+    ../gradlew -PsigningKey=$"$GPG_KEY" -PsigningPassword=$MAVEN_GPG_PASSPHRASE -PsonatypeUsername=$ST_USERNAME -PsonatypePassword=$ST_PASSWORD publishToSonatype closeSonatypeStagingRepository
+fi
