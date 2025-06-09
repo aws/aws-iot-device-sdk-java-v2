@@ -268,10 +268,8 @@ and
 send-command-to-client sample-text-command
 ```
 
-When no timeout for an AWS IoT commands execution is specified, AWS IoT Core sets the timeout to 10 seconds. This means
-your IoT device will have about 10 seconds to provide an update for the AWS IoT command execution back to AWS IoT Core.
-
-The sample should receive these newly created AWS IoT command executions and output something similar to:
+When no timeout for an AWS IoT commands execution is specified, AWS IoT Core sets the timeout to a default value of 10 seconds.
+So, the sample should receive these newly created AWS IoT command executions and output something similar to:
 
 ```
 Received new command execution
