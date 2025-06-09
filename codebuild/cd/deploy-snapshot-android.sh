@@ -1,7 +1,7 @@
 #!/bin/bash
 
 set -ex
-set -o pipefail # Make sure one process in pipe fail gets bubble up
+set -o pipefail # Ensure if any part of a pipeline fails, it propogates the error through the pipeline
 
 git submodule update --init
 cd ./android
@@ -17,8 +17,8 @@ GPG_KEY=$(cat /tmp/aws-sdk-common-runtime.key.asc)
 
 if [ "$PROMOTE_RELEASE" = "true" ]; then
     # close and release the staging repository to promote release
-    ../gradlew -PsigningKey=$"$GPG_KEY" -PsigningPassword=$MAVEN_GPG_PASSPHRASE -PsonatypeUsername=$ST_USERNAME -PsonatypePassword=$ST_PASSWORD publishToSonatype closeAndReleaseSonatypeStagingRepository
+    ./gradlew -PsigningKey=$"$GPG_KEY" -PsigningPassword=$MAVEN_GPG_PASSPHRASE -PsonatypeUsername=$ST_USERNAME -PsonatypePassword=$ST_PASSWORD publishToSonatype closeAndReleaseSonatypeStagingRepository
 else
     # close the staging repository without promoting release. NOTES: you need to manually clean up the staging repository in Maven Central.
-    ../gradlew -PsigningKey=$"$GPG_KEY" -PsigningPassword=$MAVEN_GPG_PASSPHRASE -PsonatypeUsername=$ST_USERNAME -PsonatypePassword=$ST_PASSWORD publishToSonatype closeSonatypeStagingRepository
+    ./gradlew -PsigningKey=$"$GPG_KEY" -PsigningPassword=$MAVEN_GPG_PASSPHRASE -PsonatypeUsername=$ST_USERNAME -PsonatypePassword=$ST_PASSWORD publishToSonatype closeSonatypeStagingRepository
 fi
