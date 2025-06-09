@@ -26,18 +26,17 @@ If your device wants to receive both JSON and CBOR payloads, it will need to sub
 API calls. On the other hand, if your device needs to receive, for example, "plain/text" and "my-custom-format" payloads,
 it has to subscribe to the generic MQTT topic and distinguish received IoT commands by the payload-type field.
 
-> [!NOTE]
-> In this sample, the term command is used with multiple different meanings. To keep them straight, we qualify the word
-> with a prefix:
-> - AWS IoT command - a description of a task defined in the AWS IoT Commands service.
-> - AWS IoT command execution - an event with instructions sent from the IoT Core to a device.
-> - sample command - an action that this sample application can perform, such as `open-thing-stream`.
->
-> To avoid confusion, the `command` word will always be used with a context.
-
 ### Interaction with sample application
 
-Once connected, the sample supports the following commands:
+> [!NOTE]
+> In this sample, the term command can have two different meanings:
+> - AWS IoT command - a description of a task defined in the AWS IoT Commands service.
+> - sample command - an action that this sample application can perform, such as `open-thing-stream`.
+>
+> To avoid confusion, `sample command` is replaced with `sample instruction`. While this phrase might not be conventional,
+> it helps maintain clarity throughout this document.
+
+Once connected, the sample supports the following instructions:
 
 Control Plane
 * `list-commands` - list all AWS IoT commands available in the AWS account
@@ -184,8 +183,8 @@ mvn compile exec:java -pl samples/CommandsSandbox -Dexec.mainClass=commands.Comm
     -Dexec.args="--endpoint <endpoint> --cert <path to certificate> --key <path to private key> --thing <thing-name> --client-id <mqtt-client-id>"
 ```
 
-If an AWS IoT Thing resource with the given name does not exist, the sample will first create it.  Once the thing exists,
-the sample connects via MQTT, and you can issue commands to the Command service and inspect the results.
+If an AWS IoT Thing resource with the given name does not exist, the sample will first create it. Once the thing exists,
+the sample connects via MQTT, and you can issue instructions to the Command service and inspect the results.
 
 ## Walkthrough
 
@@ -204,7 +203,7 @@ The second AWS IoT command will be a plain text:
 create-command sample-text-command plain/text hello
 ```
 
-You can examine the newly created AWS IoT commands in AWS Console or using the following sample command:
+You can examine the newly created AWS IoT commands in AWS Console or using the following sample instruction:
 
 ```
 list-commands
@@ -220,7 +219,7 @@ Command:
 
 ### Subscribing to AWS IoT Command Executions
 
-Now, let's subscribe to AWS IoT commands with JSON payloads using the following sample command:
+Now, let's subscribe to AWS IoT commands with JSON payloads using the following sample instruction:
 ```
 open-thing-stream application/json
 ```
@@ -230,7 +229,7 @@ Let's open another stream, this time for generic payloads and MQTT client:
 open-client-stream generic
 ```
 
-To examine the open streaming operations use the `list-streams` sample command:
+To examine the open streaming operations use the `list-streams` sample instruction:
 ```
 list-streams
 ```
@@ -242,14 +241,14 @@ Streams:
   2: device type 'clients', device ID 'MyIotThing', payload type 'generic'
 ```
 
-You can close a streaming operation using the `close-stream` sample command:
+You can close a streaming operation using the `close-stream` sample instruction:
 ```
 close-stream <stream-id>
 ```
 , where `<stream-id>` is a sequence number of the operation. For our example, JSON operation has stream ID 1 and generic
 operation has stream ID 2.
 
-For example, to close `generic` stream, execute this sample command:
+For example, to close `generic` stream, execute this sample instruction:
 ```
 close-stream 2
 ```
@@ -259,7 +258,7 @@ close-stream 2
 AWS IoT command just defines a set of instructions. It cannot target any device. For sending an AWS IoT command to a device,
 you need to create AWS IoT command execution.
 
-This can be done with the following sample commands:
+This can be done with the following sample instructions:
 
 ```
 send-command-to-thing sample-json-command
@@ -301,7 +300,8 @@ Since we didn't specify a timeout for a newly created AWS IoT command execution,
 report back the execution status, which is not enough for an interactive application.
 The AWS IoT command execution you sent will probably time out before you manage to send the status update.
 
-You can check the AWS IoT command execution status using the following sample command (remember to change execution ID to the one you actually received):
+You can check the AWS IoT command execution status using the following sample instruction (remember to change execution ID
+to the one you actually received):
 
 ```
 get-command-execution 11111111-1111-1111-1111-111111111111
@@ -336,7 +336,7 @@ Let's proceed to the next section where we're going to update the status of an A
 
 ### Updating and monitoring AWS IoT command execution status
 
-The sample didn't yet update the status of the AWS IoT command execution, so the following sample command
+The sample didn't yet update the status of the AWS IoT command execution, so the following sample instruction
 
 ```
 get-command-execution 33333333-3333-3333-3333-333333333333
@@ -348,7 +348,7 @@ should return `CREATED` status:
 Status of command execution '33333333-3333-3333-3333-333333333333' is CREATED
 ```
 
-To update the status of a received AWS IoT command execution, we should use the `update-command-execution` sample command.
+To update the status of a received AWS IoT command execution, we should use the `update-command-execution` sample instruction.
 Take an AWS IoT command execution ID your sample received at the end of the previous section and pass it to
 `update-command-execution` along with the `IN_PROGRESS` status:
 ```
@@ -374,7 +374,7 @@ There is also the `TIMED_OUT` status. Though it's supposed to be set by the serv
 the device in `timeout` time, your application may provide additional info by setting the `statusReason` field in the update
 event.
 
-Let's set the AWS IoT command execution status to one of the terminal states with sample command:
+Let's set the AWS IoT command execution status to one of the terminal states with sample instruction:
 ```
 update-command-execution 33333333-3333-3333-3333-333333333333 SUCCEEDED
 ```
@@ -398,7 +398,7 @@ update-command-execution ExecutionException!
 ### Cleaning up
 
 When all executions for a given AWS IoT command have reached a terminal state (`SUCCEEDED`, `FAILED`, `REJECTED`), you
-can delete the AWS IoT command itself with the following sample command:
+can delete the AWS IoT command itself with the following sample instruction:
 
 ```
 delete-command sample-json-command
@@ -408,14 +408,14 @@ and
 delete-command sample-text-command
 ```
 
-Now the `list-commands` sample command will show that these two AWS IoT commands are pending deletion.
+Now the `list-commands` sample instruction will show that these two AWS IoT commands are pending deletion.
 
 ### Misc Topics
 
 ### What happens if I open the same stream twice?
 
 The Java AWS IoT Commands client **does** allow you to subscribe multiple times to the same stream of events. You can even
-do this using this sample, just execute the same opening stream sample command few times. The client will receive event
+do this using this sample, just execute the same opening stream sample instruction few times. The client will receive event
 for each opened subscription.
 
 A real-world application may prevent such situations by tracking which streams are open. The uniqueness of the AWS IoT
