@@ -58,7 +58,7 @@ phases:
       # update the CRT dependency to the latest released version
       - mvn -B versions:use-latest-versions -Dincludes=software.amazon.awssdk.crt*
 
-      # update the version to match the git tag, make a snapshot version we can test
+      # make a snapshot version we can test
       - export DEPLOY_VERSION=${PKG_VERSION}-SNAPSHOT
       - mvn -B versions:set -DnewVersion=${DEPLOY_VERSION}
       - mvn -B deploy -Prelease -Dmaven.test.skip=true
