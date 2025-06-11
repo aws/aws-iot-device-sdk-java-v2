@@ -427,8 +427,8 @@ distinguishes only JSON and CBOR, all other payload formats will be routed to th
    `IotCommandsV2Client.createCommandExecutionsJsonPayloadStream`, `IotCommandsV2Client.CreateCommandExecutionsCborPayloadStream`,
    and/or `IotCommandsV2Client.CreateCommandExecutionsGenericPayloadStream` functions.
 2. **DO NOT** process received AWS IoT commands right in the callback passed to `CreateCommandExecutions*PayloadStream`.
-   As a general rule, **DO NOT** perform any time-consuming or blocking operations in the callback. One of possible
-   approaches is to put incoming IoT commands into a shared queue. Then the designated executor(s) should process them in
-   separate thread(s).
+   As a general rule, **DO NOT** perform any time-consuming or blocking operations in the callback. One possible approache
+   is to put incoming IoT commands into a shared queue. Then the designated executor(s) should process them in separate
+   thread(s).
 3. If your application is expected to receive a lot of AWS IoT commands, monitor the number of them enqueued for processing.
    Consider introducing priorities based on AWS IoT command timeouts or another internal value.
