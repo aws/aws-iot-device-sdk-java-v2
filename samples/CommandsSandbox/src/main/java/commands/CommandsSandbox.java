@@ -416,21 +416,23 @@ public class CommandsSandbox {
 
     private static void handleGetCommandExecution(ApplicationContext context, String arguments) {
         String commandExecutionId = arguments.trim();
+        if (!context.activeCommandExecutions.containsKey(commandExecutionId)) {
+            System.out.printf("Failed to get command execution status: unknown command execution ID '%s'\n", commandExecutionId);
+            return;
+        }
 
         try {
-            if (context.activeCommandExecutions.containsKey(commandExecutionId)) {
-                CommandExecutionContext commandExecutionContext = context.activeCommandExecutions.get(commandExecutionId);
+            CommandExecutionContext commandExecutionContext = context.activeCommandExecutions.get(commandExecutionId);
 
-                GetCommandExecutionRequest getCommandExecutionRequest = GetCommandExecutionRequest.builder()
-                        .executionId(commandExecutionId)
-                        .targetArn(commandExecutionContext.deviceArn)
-                        .build();
-                GetCommandExecutionResponse getCommandExecutionResponse = context.controlPlaneClient.getCommandExecution(getCommandExecutionRequest);
-                System.out.printf("Status of command execution '%s' is %s\n", commandExecutionId, getCommandExecutionResponse.status());
-                if (getCommandExecutionResponse.statusReason() != null) {
-                    System.out.printf("  Reason code: %s\n", getCommandExecutionResponse.statusReason().reasonCode());
-                    System.out.printf("  Reason description: %s\n", getCommandExecutionResponse.statusReason().reasonDescription());
-                }
+            GetCommandExecutionRequest getCommandExecutionRequest = GetCommandExecutionRequest.builder()
+                    .executionId(commandExecutionId)
+                    .targetArn(commandExecutionContext.deviceArn)
+                    .build();
+            GetCommandExecutionResponse getCommandExecutionResponse = context.controlPlaneClient.getCommandExecution(getCommandExecutionRequest);
+            System.out.printf("Status of command execution '%s' is %s\n", commandExecutionId, getCommandExecutionResponse.status());
+            if (getCommandExecutionResponse.statusReason() != null) {
+                System.out.printf("  Reason code: %s\n", getCommandExecutionResponse.statusReason().reasonCode());
+                System.out.printf("  Reason description: %s\n", getCommandExecutionResponse.statusReason().reasonDescription());
             }
         } catch (Exception ex) {
             handleOperationException("get-command-execution", ex, context);
@@ -444,7 +446,12 @@ public class CommandsSandbox {
             return;
         }
 
-        String executionId = argumentSplit[0];
+        String commandExecutionId = argumentSplit[0];
+        if (!context.activeCommandExecutions.containsKey(commandExecutionId)) {
+            System.out.printf("Failed to update command execution status: unknown command execution ID '%s'\n", commandExecutionId);
+            return;
+        }
+
         String statusStr = argumentSplit[1];
 
         String reasonCode = null;
@@ -455,9 +462,9 @@ public class CommandsSandbox {
         }
 
         try {
-            CommandExecutionContext commandExecutionContext = context.activeCommandExecutions.get(executionId);
+            CommandExecutionContext commandExecutionContext = context.activeCommandExecutions.get(commandExecutionId);
             UpdateCommandExecutionRequest request = new UpdateCommandExecutionRequest();
-            request.executionId = executionId;
+            request.executionId = commandExecutionId;
             request.deviceType = commandExecutionContext.deviceType;
             request.deviceId = commandExecutionContext.deviceId;
             request.status = CommandExecutionStatus.valueOf(statusStr);
