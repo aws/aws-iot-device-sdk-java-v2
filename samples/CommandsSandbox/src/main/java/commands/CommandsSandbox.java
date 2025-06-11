@@ -165,13 +165,12 @@ public class CommandsSandbox {
 
             Pattern standardRegionPattern = Pattern.compile(".*\\.iot.*\\.([^.]+)\\.amazonaws\\.com");
             Matcher standardMatch = standardRegionPattern.matcher(endpoint);
-            standardMatch.find();
-            region = standardMatch.group(1);
-        }
-
-        if (region == null) {
-            System.out.println("ERROR: could not determine region from endpoint");
-            return null;
+            if (standardMatch.find()) {
+                region = standardMatch.group(1);
+            } else {
+                System.out.println("ERROR: could not determine region from endpoint");
+                return null;
+            }
         }
 
         System.out.println(String.format("Using region '%s'", region));
