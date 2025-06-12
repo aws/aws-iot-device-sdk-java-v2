@@ -42,7 +42,7 @@
                 <dependency>
                     <groupId>software.amazon.awssdk.iotdevicesdk</groupId>
                     <artifactId>aws-iot-device-sdk</artifactId>
-                    <version>1.26.0</version>
+                    <version>1.26.1</version>
                 </dependency>
             </dependencies>
         </profile>
