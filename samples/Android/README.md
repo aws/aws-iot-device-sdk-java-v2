@@ -19,9 +19,9 @@ to run the following [samples](#links-to-individual-sample-readme-files) from aw
 
 
 # Prerequisites
-The individual samples within the app require specific files to operate. The files must be placed in the
-`app/src/main/assets` directory prior to building for the sample app to connect to IoT Core and complete
-succesfully. The names of the files must be exactly as provided. Explanations for what each file and
+The individual samples within the app require specific files to operate. The files **MUST** be placed in the
+**`app/src/main/assets`** directory prior to building for the sample app to connect to IoT Core and complete
+successfully. The names of the files must be exactly as provided. Explanations for what each file and
 associated argument are doing can be found in the individual [Sample README](#links-to-individual-sample-readme-files)
 files linked below.
 
@@ -87,3 +87,8 @@ Android sample app.
 [**CognitoConnect**](../CognitoConnect/README.md)
 
 ##### NOTE: The shadow sample does not currently complete on android due to its dependence on stdin keyboard input.
+
+
+# Trouble Shooting
+### Error: The file name must end with .xml
+This error typically occurs when non-XML files are placed in the `app/src/main/res/` directory. Android enforces strict rules on what can be included in the `res/` folder. If you're working with test or data files (e.g., .txt in our sample), you **MUST** place them in the `app/src/main/assets/` directory instead.
