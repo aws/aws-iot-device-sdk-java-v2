@@ -47,6 +47,7 @@ import software.amazon.awssdk.crt.mqtt.WebsocketHandshakeTransformArgs;
  * A central class for building Mqtt connections without manually managing a large variety of native objects (some
  * still need to be created though).
  */
+@Deprecated
 public final class AwsIotMqttConnectionBuilder extends CrtResource {
 
     private static String IOT_SIGNING_SERVICE = "iotdevicegateway";
