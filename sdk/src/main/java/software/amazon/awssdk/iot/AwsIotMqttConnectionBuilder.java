@@ -38,9 +38,16 @@ import software.amazon.awssdk.crt.mqtt.QualityOfService;
 import software.amazon.awssdk.crt.mqtt.WebsocketHandshakeTransformArgs;
 
 /**
+ * <p><b>Deprecated.</b> We strongly recommend using {@link software.amazon.awssdk.iot.AwsIotMqtt5ClientBuilder}.</p>
+ *
+ * <p>There are no current plans to fully deprecate the MQTT 3.1.1 client but it is highly recommended
+ * customers migrate to the MQTT5 client to access a more robust feature set, clearer error handling,
+ * and lifetime management. More details can be found in the GitHub Repo FAQ</p>
+ * 
  * A central class for building Mqtt connections without manually managing a large variety of native objects (some
  * still need to be created though).
  */
+@Deprecated
 public final class AwsIotMqttConnectionBuilder extends CrtResource {
 
     private static String IOT_SIGNING_SERVICE = "iotdevicegateway";
@@ -98,6 +105,12 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
 
 
     /**
+     * <p><b>Deprecated.</b> We strongly recommend using {@link software.amazon.awssdk.iot.AwsIotMqtt5ClientBuilder}.</p>
+     *
+     * <p>There are no current plans to fully deprecate the MQTT 3.1.1 client but it is highly recommended
+     * customers migrate to the MQTT5 client to access a more robust feature set, clearer error handling,
+     * and lifetime management. More details can be found in the GitHub Repo FAQ</p>
+     * 
      * Create a new builder with mTLS file paths
      *
      * @param certPath       - Path to certificate, in PEM format
@@ -111,6 +124,12 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     }
 
     /**
+     * <p><b>Deprecated.</b> We strongly recommend using {@link software.amazon.awssdk.iot.AwsIotMqtt5ClientBuilder}.</p>
+     *
+     * <p>There are no current plans to fully deprecate the MQTT 3.1.1 client but it is highly recommended
+     * customers migrate to the MQTT5 client to access a more robust feature set, clearer error handling,
+     * and lifetime management. More details can be found in the GitHub Repo FAQ</p>
+     * 
      * Create a new builder with mTLS cert pair in memory
      *
      * @param certificate - Certificate, in PEM format
@@ -124,6 +143,12 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     }
 
     /**
+     * <p><b>Deprecated.</b> We strongly recommend using {@link software.amazon.awssdk.iot.AwsIotMqtt5ClientBuilder}.</p>
+     *
+     * <p>There are no current plans to fully deprecate the MQTT 3.1.1 client but it is highly recommended
+     * customers migrate to the MQTT5 client to access a more robust feature set, clearer error handling,
+     * and lifetime management. More details can be found in the GitHub Repo FAQ</p>
+     * 
      * Create a new builder with mTLS cert pair in memory
      *
      * @param certificate - Certificate, in PEM format
@@ -137,6 +162,12 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     }
 
     /**
+     * <p><b>Deprecated.</b> We strongly recommend using {@link software.amazon.awssdk.iot.AwsIotMqtt5ClientBuilder}.</p>
+     *
+     * <p>There are no current plans to fully deprecate the MQTT 3.1.1 client but it is highly recommended
+     * customers migrate to the MQTT5 client to access a more robust feature set, clearer error handling,
+     * and lifetime management. More details can be found in the GitHub Repo FAQ</p>
+     * 
      * Create a new builder with mTLS, using a PKCS#11 library for private key operations.
      *
      * NOTE: Unix only
@@ -151,6 +182,12 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     }
 
     /**
+     * <p><b>Deprecated.</b> We strongly recommend using {@link software.amazon.awssdk.iot.AwsIotMqtt5ClientBuilder}.</p>
+     *
+     * <p>There are no current plans to fully deprecate the MQTT 3.1.1 client but it is highly recommended
+     * customers migrate to the MQTT5 client to access a more robust feature set, clearer error handling,
+     * and lifetime management. More details can be found in the GitHub Repo FAQ</p>
+     * 
      * Create a new builder with mTLS, using a custom handler for private key operations.
      *
      * @param operationOptions options for using a custom handler
@@ -163,6 +200,12 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     }
 
     /**
+     * <p><b>Deprecated.</b> We strongly recommend using {@link software.amazon.awssdk.iot.AwsIotMqtt5ClientBuilder}.</p>
+     *
+     * <p>There are no current plans to fully deprecate the MQTT 3.1.1 client but it is highly recommended
+     * customers migrate to the MQTT5 client to access a more robust feature set, clearer error handling,
+     * and lifetime management. More details can be found in the GitHub Repo FAQ</p>
+     * 
      * Create a new builder with mTLS, using a certificate in a Windows certificate store.
      *
      * NOTE: Windows only
@@ -181,6 +224,12 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     }
 
     /**
+     * <p><b>Deprecated.</b> We strongly recommend using {@link software.amazon.awssdk.iot.AwsIotMqtt5ClientBuilder}.</p>
+     *
+     * <p>There are no current plans to fully deprecate the MQTT 3.1.1 client but it is highly recommended
+     * customers migrate to the MQTT5 client to access a more robust feature set, clearer error handling,
+     * and lifetime management. More details can be found in the GitHub Repo FAQ</p>
+     * 
      * Create a new builder with mTLS, using a certificate and key stored in the passed-in Java keystore.
      *
      * Note: function assumes the passed keystore has already been loaded from a file by calling "keystore.load(file, password)"
@@ -200,6 +249,12 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     }
 
     /**
+     * <p><b>Deprecated.</b> We strongly recommend using {@link software.amazon.awssdk.iot.AwsIotMqtt5ClientBuilder}.</p>
+     *
+     * <p>There are no current plans to fully deprecate the MQTT 3.1.1 client but it is highly recommended
+     * customers migrate to the MQTT5 client to access a more robust feature set, clearer error handling,
+     * and lifetime management. More details can be found in the GitHub Repo FAQ</p>
+     * 
      * Create a new builder with mTLS, using a PKCS12 library for private key operations.
      *
      * NOTE: MacOS only
@@ -216,6 +271,12 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     }
 
     /**
+     * <p><b>Deprecated.</b> We strongly recommend using {@link software.amazon.awssdk.iot.AwsIotMqtt5ClientBuilder}.</p>
+     *
+     * <p>There are no current plans to fully deprecate the MQTT 3.1.1 client but it is highly recommended
+     * customers migrate to the MQTT5 client to access a more robust feature set, clearer error handling,
+     * and lifetime management. More details can be found in the GitHub Repo FAQ</p>
+     * 
      * Create a new builder with no default Tls options
      *
      * @return a new builder with default Tls options
