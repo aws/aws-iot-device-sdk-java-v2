@@ -56,6 +56,11 @@ android {
         consumerProguardFiles 'consumer-rules.pro'
     }
 
+    aarMetadata {
+        // Keeps from referencing newer resources/manifest attributes introduced after 30
+        minCompileSdk = 30
+    }
+
     buildFeatures { 
         // AGP 8 disables buildConfig generation by default. We set this to true
         // to resstore BuildConfig.VERSION_NAME for both debug and release build types.
