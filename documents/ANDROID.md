@@ -34,9 +34,9 @@ a dependency of the aws-iot-device-sdk-android library.
 ## Installation
 
 ### Minimum requirements
-* Java 11+ ([Download and Install Java](https://www.java.com/en/download/help/download_options.html))
+* Java 17+ ([Download and Install Java](https://www.java.com/en/download/help/download_options.html))
   * [Set JAVA_HOME](./PREREQUISITES.md#set-java_home)
-* Gradle 7.4.2 ([Download and Install Gradle](https://gradle.org/install/))
+* Gradle 8.5.1+ ([Download and Install Gradle](https://gradle.org/install/))
 * Android SDK 24 ([Download SDK Manager](https://developer.android.com/tools/releases/platform-tools#downloads))
   * [Set ANDROID_HOME](./PREREQUISITES.md#set-android_home)
 

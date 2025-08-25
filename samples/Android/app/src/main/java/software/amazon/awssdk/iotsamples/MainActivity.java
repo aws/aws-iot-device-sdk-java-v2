@@ -105,10 +105,15 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
         sampleSelect = findViewById(R.id.sampleSelect);
         ArrayAdapter<String> samplesAdapter = new ArrayAdapter<>(
-                this, R.layout.support_simple_spinner_dropdown_item, SAMPLES.keySet().toArray(new String[0])
+            this,
+            android.R.layout.simple_spinner_dropdown_item,
+            SAMPLES.keySet().toArray(new String[0])
         );
+        samplesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sampleSelect.setAdapter(samplesAdapter);
         sampleSelect.setOnItemSelectedListener(this);
+
+        
 
         loadAssets();
         context = this;
