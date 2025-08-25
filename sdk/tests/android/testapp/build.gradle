@@ -62,6 +62,10 @@ android {
         targetCompatibility = 1.8
         coreLibraryDesugaringEnabled true
     }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }
 
 dependencies {
