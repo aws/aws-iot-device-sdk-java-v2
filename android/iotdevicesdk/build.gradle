@@ -54,11 +54,11 @@ android {
         versionName = gitVersionName()
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'consumer-rules.pro'
-    }
 
-    aarMetadata {
+        aarMetadata {
         // Keeps from referencing newer resources/manifest attributes introduced after 30
         minCompileSdk = 30
+        }
     }
 
     buildFeatures { 
