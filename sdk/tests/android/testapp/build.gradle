@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.5.0'
+    ext.kotlin_version = '1.9.24'
     repositories {
         google()
         mavenCentral()
@@ -56,7 +56,7 @@ android {
     }
 
     packagingOptions { jniLibs { useLegacyPackaging false } }
-    
+
     compileOptions {
         sourceCompatibility = 1.8
         targetCompatibility = 1.8
