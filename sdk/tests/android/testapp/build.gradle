@@ -22,8 +22,8 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 30
-    buildToolsVersion "30.0.3"
+    namespace "software.amazon.awssdk.iottest"   // required on AGP 8+
+    compileSdkVersion 35
 
     defaultConfig {
         applicationId "software.amazon.awssdk.iottest"
@@ -54,6 +54,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    packagingOptions { jniLibs { useLegacyPackaging false } }
+    
     compileOptions {
         sourceCompatibility = 1.8
         targetCompatibility = 1.8
