@@ -43,16 +43,28 @@ ext {
 }
 
 android {
-    compileSdkVersion 30
-    buildToolsVersion "30.0.3"
+    namespace "software.amazon.awssdk.iotdevicesdk"   // REQUIRED on AGP 8+
+
+    compileSdkVersion 35
 
     defaultConfig {
         minSdkVersion 24
-        targetSdkVersion 30
+        targetSdkVersion 33
         versionCode = gitVersionCode()
         versionName = gitVersionName()
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'consumer-rules.pro'
+    }
+
+    buildFeatures { 
+        // AGP 8 disables buildConfig generation by default. We set this to true
+        // to resstore BuildConfig.VERSION_NAME for both debug and release build types.
+        buildConfig true 
+    }
+
+    // Make the 'release' SoftwareComponent available for publishing on AGP 8
+    publishing {
+        singleVariant("release") { withSourcesJar() }
     }
 
     sourceSets {
@@ -145,7 +157,10 @@ afterEvaluate {
 
         publications {
             release(MavenPublication) {
-                from components.release
+                def comp = components.findByName("release")
+                if (comp != null) {
+                    from comp
+                }
 
                 groupId = 'software.amazon.awssdk.iotdevicesdk'
                 artifactId = 'aws-iot-device-sdk-android'
