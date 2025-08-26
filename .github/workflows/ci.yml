@@ -290,13 +290,18 @@ jobs:
         uses: actions/checkout@v2
         with:
             submodules: true
-      # Setup JDK 11
-      - name: set up JDK 11
-        uses: actions/setup-java@v3.14.1
+      # Setup JDK 17
+      - name: set up JDK 17
+        uses: actions/setup-java@v4
         with:
-          java-version: '11'
+          java-version: '17'
           distribution: 'temurin'
           cache: 'gradle'
+      # Ensure Gradle uses this JDK (important when toolchains are present)
+      - name: Point Gradle at JDK 17
+        run: echo "ORG_GRADLE_JAVA_HOME=$JAVA_HOME" >> $GITHUB_ENV
+      - name: Mirror ANDROID_HOME → ANDROID_SDK_ROOT
+        run: echo "ANDROID_SDK_ROOT=$ANDROID_HOME" >> "$GITHUB_ENV"
       - name: Configure AWS credentials for Device Farm
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -314,6 +319,21 @@ jobs:
           cd sdk/tests/android/testapp/src/main/assets
           python3 -m pip install boto3
           python3 ./android_file_creation.py
+      
+      - name: Set Android keystore home
+        run: |
+          echo "ANDROID_SDK_HOME=$GITHUB_WORKSPACE/.android-home" >> "$GITHUB_ENV"
+          echo "ANDROID_PREFS_ROOT=$GITHUB_WORKSPACE/.android-home" >> "$GITHUB_ENV"
+          mkdir -p "$GITHUB_WORKSPACE/.android-home/.android"
+      - name: Create debug keystore
+        run: |
+          keytool -genkeypair \
+            -keystore "$ANDROID_SDK_HOME/.android/debug.keystore" \
+            -storepass android -keypass android \
+            -alias androiddebugkey \
+            -dname "CN=Android Debug,O=Android,C=US" \
+            -keyalg RSA -keysize 2048 -validity 14000
+
       - name: Build Test App
         run: |
           cd sdk/tests/android/testapp

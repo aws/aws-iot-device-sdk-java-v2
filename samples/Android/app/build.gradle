@@ -4,7 +4,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:7.1.2"
+        classpath "com.android.tools.build:gradle:8.5.1"
     }
 }
 
@@ -17,17 +17,36 @@ repositories {
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 30
-    buildToolsVersion "30.0.3"
+    namespace "software.amazon.awssdk.iotsamples"
+    compileSdk 35
 
     defaultConfig {
         applicationId "software.amazon.awssdk.iotsamples"
         minSdkVersion 24
-        targetSdkVersion 30
+        targetSdkVersion 33
         versionCode 1
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    // Make sure JNI libs are packaged UNCOMPRESSED (so AGP can align them)
+    packagingOptions {
+        jniLibs {
+            useLegacyPackaging false
+        }
+    }
+
+    buildFeatures {
+        buildConfig true
+    }
+
+    publishing {
+        // Creates the 'release' SoftwareComponent used by maven-publish
+        singleVariant("release") {
+            withSourcesJar()
+        }
+        // If you also need debug: singleVariant("debug")
     }
 
     sourceSets {
