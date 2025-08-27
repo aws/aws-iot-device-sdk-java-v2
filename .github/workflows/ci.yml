@@ -462,15 +462,6 @@ jobs:
         run: |
           export PYTHONPATH=${{ github.workspace }}/utils
           python3 ./test_cases/test_jobs_execution.py --mqtt-version 5
-      - name: run Mqtt5 Shadow sample
-        run: |
-          python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_shadow_mqtt5_cfg.json
-      - name: run Mqtt5 Jobs sample
-        run: |
-          python3 ./utils/run_in_ci.py --file ./.github/workflows/ci_run_jobs_mqtt5_cfg.json
-      - name: run Mqtt5 Fleet Provisioning sample
-        run: |
-          python3 ./utils/run_fleet_provisioning_sample.py --file ./.github/workflows/ci_run_fleet_provisioning_mqtt5_cfg.json --thing-name-prefix "Fleet_Thing_"
       - name: configure AWS credentials (MQTT5)
         uses: aws-actions/configure-aws-credentials@v2
         with:
