@@ -4,11 +4,7 @@
 The Android sample builds an app that can be installed and run on an Android Device. The app builds and allows you
 to run the following [samples](#links-to-individual-sample-readme-files) from aws-iot-device-sdk-java-v2:
 * [Mqtt5PubSub](../Mqtt5/PubSub/README.md)
-* [Mqtt3PubSub](../BasicPubSub/README.md)
 * [KeyChainPubSub](./AndroidKeyChainPubSub/README.md)
-* [Jobs](../Jobs/README.md)
-* [Shadow](../Shadow/README.md)
-* [CognitoConnect](../CognitoConnect/README.md)
 
 *__Jump To:__*
 
@@ -30,7 +26,7 @@ files linked below.
 ### Files required by all samples:
 * `endpoint.txt` - IoT ATS Endpoint
 
-### Required to run Mqtt5PubSub and Mqtt3PubSub samples
+### Required to run Mqtt5PubSub sample
 * `certificate.pem` - IoT Thing Certificate
 * `privatekey.pem` - IoT Thing Private Key
 
@@ -42,15 +38,6 @@ files linked below.
 * `topic.txt` - specifies --topic CLI argument
 * `message.txt` - specifies --message CLI argument
 * `count.txt` - specifies --count CLI argument
-
-### Required to run Jobs and Shadow sample
-* `certificate.pem` - IoT Thing Certificate
-* `privatekey.pem` - IoT Thing Private Key
-* `thingName.txt` - IoT Thing Name used by sample
-
-### Required to run Cognito Client sample:
-* `cognitoIdentity.txt` - Cognito identity ID
-* `signingRegion.txt` - Signing region
 
 ### Optional files for all Samples:
 * `rootca.pem` - override the default system trust store
@@ -76,17 +63,7 @@ Android sample app.
 
 [**Mqtt5PubSub**](../Mqtt5/PubSub/README.md)
 
-[**Mqtt3PubSub**](../BasicPubSub/README.md)
-
 [**KeyChainPubSub**](AndroidKeyChainPubSub/README.md)
-
-[**Jobs**](../Jobs/README.md)
-
-[**Shadow**](../Shadow/README.md)
-
-[**CognitoConnect**](../CognitoConnect/README.md)
-
-##### NOTE: The shadow sample does not currently complete on android due to its dependence on stdin keyboard input.
 
 
 # Trouble Shooting
