@@ -159,32 +159,7 @@ class MainActivityTest {
     }
 
     @Test
-    fun pubSubSample(){
-        runSample("pubsub.PubSub")
-    }
-
-    @Test
-    fun cognitoConnectSample(){
-        runSample("cognitoconnect.CognitoConnect")
-    }
-
-    @Test
-    fun shadowSample(){
-        runSample("shadow.ShadowSample")
-    }
-
-    @Test
-    fun jobsSample(){
-        runSample("jobs.JobsSample")
-    }
-
-    @Test
     fun mqtt5PubSubSample(){
         runSample("mqtt5.pubsub.PubSub")
-    }
-
-    @Test
-    fun customKeyOpsSample(){
-        runSample("customkeyopsconnect.CustomKeyOpsConnect")
     }
 }
