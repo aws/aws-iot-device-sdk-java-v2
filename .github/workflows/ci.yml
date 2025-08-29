@@ -314,6 +314,7 @@ jobs:
           ./gradlew assembledebug
           ./gradlew publishToMavenLocal -PnewVersion="1.0.0-SNAPSHOT"
           echo "Build status report=${{ job.status }}."
+          
       - name: Setup Android Test Files New
         run: |
           cd sdk/tests/android/testapp/src/main/assets
