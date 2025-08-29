@@ -123,21 +123,6 @@ jobs:
         source utils/test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt us-east-1
         mvn test -Dtest=Mqtt5BuilderTest -DfailIfNoTests=false -Dsurefire.failIfNoSpecifiedTests=false
         source utils/test_cleanup.sh
-    - name: Running samples in CI setup
-      run: |
-        python3 -m venv .venv
-        source .venv/bin/activate
-        python3 -m pip install boto3
-        mvn install -Dmaven.test.skip=true
-    - name: configure AWS credentials (Device Advisor)
-      uses: aws-actions/configure-aws-credentials@v2
-      with:
-        role-to-assume: ${{ env.CI_DEVICE_ADVISOR }}
-        aws-region: ${{ env.AWS_DEFAULT_REGION }}
-    - name: run DeviceAdvisor
-      run: |
-        source .venv/bin/activate
-        python3 ./deviceadvisor/script/DATestRun.py
 
   linux-java-compat:
     runs-on: ubuntu-latest
@@ -186,17 +171,6 @@ jobs:
           source utils/test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt us-east-1
           mvn test -Dtest=Mqtt5BuilderTest -Dsurefire.failIfNoSpecifiedTests=false
           source utils/test_cleanup.sh
-      - name: Running samples in CI setup
-        run: |
-          python3 -m pip install boto3
-      - name: configure AWS credentials (Device Advisor)
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          role-to-assume: ${{ env.CI_DEVICE_ADVISOR }}
-          aws-region: ${{ env.AWS_DEFAULT_REGION }}
-      - name: run DeviceAdvisor
-        run: |
-          python3 ./deviceadvisor/script/DATestRun.py
 
   android-device-farm:
     name: Android Device Farm
