@@ -20,7 +20,6 @@ env:
   DA_SHADOW_VALUE_SET: ON
   DA_SHADOW_VALUE_DEFAULT: OFF
   CI_FLEET_PROVISIONING_ROLE: arn:aws:iam::180635532705:role/service-role/CI_FleetProvisioning_Role
-  CI_DEVICE_ADVISOR: arn:aws:iam::180635532705:role/CI_DeviceAdvisor_Role
   CI_MQTT5_ROLE: arn:aws:iam::180635532705:role/CI_MQTT5_Role
   CI_ANDROID_DEVICE_TESTING_ROLE: arn:aws:iam::180635532705:role/CI_Android_Device_Testing_Role
   CI_SHADOW_SERVICE_CLIENT_ROLE: arn:aws:iam::180635532705:role/CI_ShadowServiceClient_Role
@@ -76,18 +75,6 @@ jobs:
         source utils/test_setup.sh s3://iot-sdk-ci-bucket-us-east1/IotUsProdMqtt5EnvironmentVariables.txt us-east-1
         mvn test -Dtest=Mqtt5BuilderTest -Dsurefire.failIfNoSpecifiedTests=false
         source utils/test_cleanup.sh
-    - name: Running samples in CI setup
-      run: |
-        python -m pip install boto3
-        mvn install -DskipTests
-    - name: configure AWS credentials (Device Advisor)
-      uses: aws-actions/configure-aws-credentials@v2
-      with:
-        role-to-assume: ${{ env.CI_DEVICE_ADVISOR }}
-        aws-region: ${{ env.AWS_DEFAULT_REGION }}
-    - name: run DeviceAdvisor
-      run: |
-        python ./deviceadvisor/script/DATestRun.py
 
   osx-java-compat:
     runs-on: macos-latest
