@@ -39,11 +39,6 @@ android {
         main {
             java.srcDir '../../../../samples/Utils/CommandLineUtils'
             java.srcDir '../../../../samples/Mqtt5/PubSub/src/main/java'
-            java.srcDir '../../../../samples/BasicPubSub/src/main/java'
-            java.srcDir '../../../../samples/deprecated/Jobs/src/main/java'
-            java.srcDir '../../../../samples/deprecated/Shadow/src/main/java'
-            java.srcDir '../../../../samples/CognitoConnect/src/main/java'
-            java.srcDir '../../../../samples/CustomKeyOpsConnect/src/main/java'
             java.srcDir 'src/main/java'
         }
     }
