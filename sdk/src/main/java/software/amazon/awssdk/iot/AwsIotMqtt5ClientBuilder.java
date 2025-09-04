@@ -21,6 +21,7 @@ import software.amazon.awssdk.crt.auth.signing.AwsSigningConfig.AwsSigningAlgori
 import software.amazon.awssdk.crt.http.HttpProxyOptions;
 import software.amazon.awssdk.crt.io.ClientBootstrap;
 import software.amazon.awssdk.crt.io.SocketOptions;
+import software.amazon.awssdk.crt.io.TlsCipherPreference;
 import software.amazon.awssdk.crt.io.TlsContext;
 import software.amazon.awssdk.crt.io.TlsContextCustomKeyOperationOptions;
 import software.amazon.awssdk.crt.io.TlsContextOptions;
@@ -646,6 +647,20 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
      */
     public AwsIotMqtt5ClientBuilder withMinimumTlsVersion(TlsContextOptions.TlsVersions minimumTlsVersion) {
         this.configTls.minTlsVersion = minimumTlsVersion;
+        return this;
+    }
+
+    /**
+     * Sets the TLS cipher preference.
+     * <p>
+     * Note: Setting a custom TLS cipher preference is supported only on Unix-like platforms (e.g., Linux, Android) when
+     * using the s2n library. Other platforms currently support only `TLS_CIPHER_SYSTEM_DEFAULT`.
+     *
+     * @param tlsCipherPreference - The TLS cipher preference to use.
+     * @return - The AwsIotMqtt5ClientBuilder
+     */
+    public AwsIotMqtt5ClientBuilder withTlsCipherPreference(TlsCipherPreference tlsCipherPreference) {
+        this.configTls.tlsCipherPreference = tlsCipherPreference;
         return this;
     }
 
