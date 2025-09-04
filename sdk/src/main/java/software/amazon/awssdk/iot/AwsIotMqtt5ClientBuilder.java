@@ -639,6 +639,17 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
     }
 
     /**
+     * Sets the minimum TLS version that is acceptable for connection establishment.
+     *
+     * @param minimumTlsVersion - Minimum TLS version allowed in client connections.
+     * @return - The AwsIotMqtt5ClientBuilder
+     */
+    public AwsIotMqtt5ClientBuilder withMinimumTlsVersion(TlsContextOptions.TlsVersions minimumTlsVersion) {
+        this.configTls.minTlsVersion = minimumTlsVersion;
+        return this;
+    }
+
+    /**
      * Constructs an MQTT5 client object configured with the options set.
      * @return A MQTT5ClientOptions
      */
