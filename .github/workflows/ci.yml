@@ -51,7 +51,7 @@ jobs:
         python -c "from urllib.request import urlretrieve; urlretrieve('${{ env.BUILDER_HOST }}/${{ env.BUILDER_SOURCE }}/${{ env.BUILDER_VERSION }}/builder.pyz?run=${{ env.RUN }}', 'builder.pyz')"
         python builder.pyz build -p ${{ env.PACKAGE_NAME }} --spec=downstream
     - name: configure AWS credentials (MQTT5)
-      uses: aws-actions/configure-aws-credentials@v2
+      uses: aws-actions/configure-aws-credentials@v4
       with:
         role-to-assume: ${{ env.CI_MQTT5_ROLE }}
         aws-region: ${{ env.AWS_DEFAULT_REGION }}
@@ -102,7 +102,7 @@ jobs:
         chmod a+x builder
         ./builder build -p ${{ env.PACKAGE_NAME }} --spec=downstream
     - name: configure AWS credentials (MQTT5)
-      uses: aws-actions/configure-aws-credentials@v2
+      uses: aws-actions/configure-aws-credentials@v4
       with:
         role-to-assume: ${{ env.CI_MQTT5_ROLE }}
         aws-region: ${{ env.AWS_DEFAULT_REGION }}
@@ -150,7 +150,7 @@ jobs:
           mvn compile
           mvn install -Dmaven.test.skip
       - name: configure AWS credentials (MQTT5)
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ env.CI_MQTT5_ROLE }}
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
@@ -196,7 +196,7 @@ jobs:
       - name: Mirror ANDROID_HOME → ANDROID_SDK_ROOT
         run: echo "ANDROID_SDK_ROOT=$ANDROID_HOME" >> "$GITHUB_ENV"
       - name: Configure AWS credentials for Device Farm
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ env.CI_ANDROID_DEVICE_TESTING_ROLE }}
           aws-region: ${{ env.AWS_DEVICE_FARM_REGION }}
@@ -315,7 +315,7 @@ jobs:
           sudo apt-get install softhsm2 -y
           softhsm2-util --version
       - name: configure AWS credentials (Fleet provisioning)
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ env.CI_FLEET_PROVISIONING_ROLE }}
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
@@ -340,7 +340,7 @@ jobs:
           export PYTHONPATH=${{ github.workspace }}/utils
           python3 ./test_cases/test_fleet_provisioning.py --thing-name-prefix Fleet_Thing_ --mqtt-version 5 --use-csr
       - name: configure AWS credentials (Shadow)
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ env.CI_SHADOW_SERVICE_CLIENT_ROLE }}
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
@@ -365,7 +365,7 @@ jobs:
           export PYTHONPATH=${{ github.workspace }}/utils
           python3 ./test_cases/test_shadow_update.py --mqtt-version 5 --use-named-shadow
       - name: configure AWS credentials (Jobs)
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ env.CI_JOBS_SERVICE_CLIENT_ROLE }}
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
