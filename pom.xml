@@ -8,14 +8,14 @@
 
     <modules>
         <module>sdk</module>
-        <module>samples/Greengrass</module>
-        <module>samples/GreengrassIPC</module>
-        <module>samples/Provisioning/Basic</module>
-        <module>samples/Provisioning/Csr</module>
-        <module>samples/JobsSandbox</module>
-        <module>samples/CommandsSandbox</module>
-        <module>samples/ShadowSandbox</module>
-        <module>samples/Mqtt5/PubSub</module>
+        <module>samples/Greengrass/Discovery</module>
+        <module>samples/Greengrass/GreengrassIPC</module>
+        <module>samples/ServiceClients/Provisioning/Basic</module>
+        <module>samples/ServiceClients/Provisioning/Csr</module>
+        <module>samples/ServiceClients/JobsSandbox</module>
+        <module>samples/ServiceClients/CommandsSandbox</module>
+        <module>samples/ServiceClients/ShadowSandbox</module>
+        <module>samples/Mqtt/PubSub</module>
     </modules>
 
     <build>
