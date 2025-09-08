@@ -16,7 +16,6 @@
         <module>samples/CommandsSandbox</module>
         <module>samples/ShadowSandbox</module>
         <module>samples/Mqtt5/PubSub</module>
-        <module>samples/Mqtt5/SharedSubscription</module>
     </modules>
 
     <build>
