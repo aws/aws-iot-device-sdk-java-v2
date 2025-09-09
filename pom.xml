@@ -15,7 +15,7 @@
         <module>samples/ServiceClients/JobsSandbox</module>
         <module>samples/ServiceClients/CommandsSandbox</module>
         <module>samples/ServiceClients/ShadowSandbox</module>
-        <module>samples/Mqtt/PubSub</module>
+        <module>samples/Mqtt/X509PubSub</module>
     </modules>
 
     <build>
