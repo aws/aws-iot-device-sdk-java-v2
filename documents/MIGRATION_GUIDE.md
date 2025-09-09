@@ -966,8 +966,6 @@ method in the `PublishPacketBuilder` class.
 **Shared Subscriptions**\
 Shared Subscriptions allow multiple clients to share a subscription to a topic and only one client will receive messages
 published to that topic using a random distribution.
-For more information, see a [shared subscription sample](https://github.com/aws/aws-iot-device-sdk-java-v2/tree/main/samples/Mqtt5/SharedSubscription)
-in the v2 SDK.
 
 > [!NOTE]  
 > AWS IoT Core supports Shared Subscriptions for both MQTT3 and MQTT5. For more information, see [Shared Subscriptions](https://docs.aws.amazon.com/iot/latest/developerguide/mqtt.html#mqtt5-shared-subscription) from the AWS IoT Core developer guide.
