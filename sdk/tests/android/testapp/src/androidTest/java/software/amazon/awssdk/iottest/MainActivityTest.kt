@@ -126,7 +126,7 @@ class MainActivityTest {
                     "--cognito_identity", assetContents("cognitoIdentity.txt")))
             }
 
-            "mqtt5.pubsub.PubSub" -> {
+            "mqtt.x509pubsub.X509PubSub" -> {
                 args.addAll(arrayOf(
                     "--cert", resourceMap["mqtt5PubSubCertificate.pem"],
                     "--key", resourceMap["mqtt5PubSubPrivatekey.pem"],
@@ -160,6 +160,6 @@ class MainActivityTest {
 
     @Test
     fun mqtt5PubSubSample(){
-        runSample("mqtt5.pubsub.PubSub")
+        runSample("mqtt.x509pubsub.X509PubSub")
     }
 }
