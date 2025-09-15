@@ -50,11 +50,17 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 /**
+ * <p><b>Deprecated.</b> We strongly recommend using {@link software.amazon.awssdk.iot.iotjobs.IotJobsV2Client }. </p>
+ *
+ * <p>There are no current plans to ully deprecate IotJobsClient but it is highly recommended customers
+ * migrate to IotJobsV2Client. More details can be found in the GitHub Repo FAQ.</p>
+ *
  * The AWS IoT jobs service can be used to define a set of remote operations that are sent to and executed on one or more devices connected to AWS IoT.
  *
  * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/jobs-api.html#jobs-mqtt-api
  *
 */
+@Deprecated
 public class IotJobsClient {
     private MqttClientConnection connection = null;
     private final Gson gson = getGson();
