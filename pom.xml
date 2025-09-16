@@ -8,28 +8,15 @@
 
     <modules>
         <module>sdk</module>
-        <module>samples/BasicPubSub</module>
-        <module>samples/BasicConnect</module>
-        <module>samples/WebsocketConnect</module>
-        <module>samples/X509CredentialsProviderConnect</module>
-        <module>samples/Pkcs11Connect</module>
-        <module>samples/Pkcs12Connect</module>
-        <module>samples/CustomAuthorizerConnect</module>
-        <module>samples/JavaKeystoreConnect</module>
-        <module>samples/CognitoConnect</module>
         <module>samples/Greengrass</module>
         <module>samples/GreengrassIPC</module>
-        <module>samples/CustomKeyOpsConnect</module>
-        <module>samples/WindowsCertConnect</module>
         <module>samples/Provisioning/Basic</module>
         <module>samples/Provisioning/Csr</module>
         <module>samples/JobsSandbox</module>
+        <module>samples/CommandsSandbox</module>
         <module>samples/ShadowSandbox</module>
         <module>samples/Mqtt5/PubSub</module>
         <module>samples/Mqtt5/SharedSubscription</module>
-        <module>samples/deprecated/FleetProvisioning</module>
-        <module>samples/deprecated/Jobs</module>
-        <module>samples/deprecated/Shadow</module>
     </modules>
 
     <build>

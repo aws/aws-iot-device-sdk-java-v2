@@ -12,7 +12,8 @@ phases:
     commands:
       - sudo add-apt-repository ppa:openjdk-r/ppa
       - sudo apt-get update -y
-      - sudo apt-get install openjdk-8-jdk-headless maven -y -f
+      # Android requires 11 for gradle
+      - sudo apt-get install openjdk-11-jdk-headless maven wget unzip -y -f
       - echo "\nBuild version data:"
       - echo "\nJava Version:"; java -version
       - echo "\nMaven Version:"; mvn --version
@@ -28,32 +29,28 @@ phases:
       - mkdir -p $HOME/.m2
       - export CD_SETTINGS=$(aws secretsmanager get-secret-value --secret-id cd/aws-crt-java-settings/token --query "SecretString" | cut -f2 -d\")
       - echo $CD_SETTINGS > $HOME/.m2/settings.xml
-
-      # Use the password and username from secret manager to update the settings
-      - export ST_USERNAME=$(aws --query "SecretString" secretsmanager get-secret-value --secret-id Sonatype/JIRA/token | cut -f2 -d":" | cut -f1 -d"," | sed -e 's/[\\\"\}]//g')
-      - export ST_PASSWORD=$(aws --query "SecretString" secretsmanager get-secret-value --secret-id Sonatype/JIRA/token | cut -f3 -d":" | sed -e 's/[\\\"\}]//g')
+      - export ST_USERNAME=$(aws --query "SecretString" secretsmanager get-secret-value --secret-id Sonatype/JIRA/token --region us-east-1 | cut -f2 -d":" | cut -f1 -d"," | sed -e 's/[\\\"\}]//g')
+      - export ST_PASSWORD=$(aws --query "SecretString" secretsmanager get-secret-value --secret-id Sonatype/JIRA/token --region us-east-1 | cut -f3 -d":" | sed -e 's/[\\\"\}]//g')
+      # Use the username and password from secret manager to update the settings
       - sed -i 's|token-username|'"$ST_USERNAME"'|g' $HOME/.m2/settings.xml
       - sed -i 's|token-password|'"$ST_PASSWORD"'|g' $HOME/.m2/settings.xml
 
       # import gpg key
       - export CD_KEY=$(aws secretsmanager get-secret-value --secret-id cd/aws-crt-java-key --query "SecretString" | cut -f2 -d\")
       - echo $CD_KEY > /tmp/aws-sdk-common-runtime.key.asc
+      # for https://github.com/keybase/keybase-issues/issues/2798
+      - export GPG_TTY=$(tty)
 
       - gpg --batch --import /tmp/aws-sdk-common-runtime.key.asc
-      - export GPG_PASSPHRASE=$(aws --query "SecretString" secretsmanager get-secret-value --secret-id cd/aws-crt-java-key/password | cut -f2 -d":" | sed -e 's/[\\\"\}]//g')
-      - export REPOSITORY_ID=$(aws --query "SecretString" secretsmanager get-secret-value --secret-id cd/aws-iot-device-sdk-java-v2/repository-id --region us-east-1 | sed -e 's/[\\\"\}]//g')
-      - export ANDROID_REPOSITORY_ID=$(aws --query "SecretString" secretsmanager get-secret-value --secret-id cd/aws-iot-device-sdk-java-v2/repository-id-android --region us-east-1 | sed -e 's/[\\\"\}]//g')
-
-      # Java 17 needs special JDK options apparently. It is a known Sonatype issue.
-      # Issue link: https://issues.sonatype.org/browse/NEXUS-27902
-      - export JDK_JAVA_OPTIONS='--add-opens java.base/java.util=ALL-UNNAMED'
+      # refer to https://maven.apache.org/plugins/maven-gpg-plugin/usage.html
+      - export MAVEN_GPG_PASSPHRASE=$(aws --query "SecretString" secretsmanager get-secret-value --secret-id cd/aws-crt-java-key/password | cut -f2 -d":" | sed -e 's/[\\\"\}]//g')
 
   build:
     commands:
       - cd $CODEBUILD_SRC_DIR/aws-iot-device-sdk-java-v2/sdk
       # Trigger the release of the last staged package in the staging repository
-      - mvn -B nexus-staging:release -Prelease -DstagingRepositoryId=$REPOSITORY_ID
-      - mvn -B nexus-staging:release -PnewVersion="$PKG_VERSION" -Prelease -DstagingRepositoryId=$ANDROID_REPOSITORY_ID
+      - mvn -B versions:set -DnewVersion=${PKG_VERSION}
+      - mvn -B deploy -Prelease -Dmaven.test.skip=true
 
 cache:
   paths:

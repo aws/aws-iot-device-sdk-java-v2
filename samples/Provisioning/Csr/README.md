@@ -66,7 +66,7 @@ Note that in a real application, you may want to avoid the use of wildcards in y
 There are many different ways to run the Fleet Provisioning sample because of how many different ways there are to setup a Fleet Provisioning template in AWS IoT Core. **The easiest and most common way is to run the sample with the following**:
 
 ``` sh
-mvn compile exec:java -pl samples/Provisioning/Csr -Dexec.mainClass=identity.CsrProvisioning -Dexec.args="--endpoint <endpoint> --cert <path to certificate> --key <path to private key> --template <provisioning template name> --csr <csr file>"
+mvn compile exec:java -pl samples/Provisioning/Csr -Dexec.mainClass=identity.CsrProvisioning -Dexec.args="--endpoint <endpoint> --cert <path to certificate> --key <path to private key> --template <provisioning template name> --params '{"SerialNumber":"<serial number>","DeviceLocation":"<location>"}' --csr <csr file>"
 ```
 
 ### Fleet Provisioning Detailed Instructions

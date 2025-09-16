@@ -1,0 +1,66 @@
+# Assumes are running using the Ubuntu Codebuild standard image
+# Makes the full release deployment.
+# This job is responsible for artifacting the JAR which will have all of the other shared libs stuffed
+# into it once all platforms are built and artifacted
+#
+# NOTE: This script assumes that the AWS CLI-V2 is pre-installed!
+# - AWS CLI-V2 is a requirement to run this script.
+
+version: 0.2
+phases:
+  install:
+    commands:
+      - sudo add-apt-repository ppa:openjdk-r/ppa
+      - sudo apt-get update -y
+      # Android requires 11 for gradle
+      - sudo apt-get install openjdk-11-jdk-headless maven wget unzip -y -f
+      # install android sdk
+      - wget --quiet https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip
+      - export ANDROID_SDK_ROOT=$CODEBUILD_SRC_DIR/android-sdk
+      - mkdir -p $ANDROID_SDK_ROOT/cmdline-tools
+      - unzip commandlinetools-linux-7583922_latest.zip -d $ANDROID_SDK_ROOT/cmdline-tools
+      # This weird path needed for cmd tool to work
+      - mv $ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools $ANDROID_SDK_ROOT/cmdline-tools/latest
+      # install android build tools
+      - echo y | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --install "build-tools;30.0.3" "platforms;android-30" "ndk;21.4.7075529"
+      - echo "\nBuild version data:"
+      - echo "\nJava Version:"; java -version
+      - echo "\nMaven Version:"; mvn --version
+      - echo "\n"
+
+  pre_build:
+    commands:
+      - cd $CODEBUILD_SRC_DIR/aws-iot-device-sdk-java-v2
+      - export PKG_VERSION=$(cat $CODEBUILD_SRC_DIR/VERSION)
+      - echo PKG_VERSION=$PKG_VERSION
+
+      # install settings.xml to ~/.m2/settings.xml
+      - mkdir -p $HOME/.m2
+      - export CD_SETTINGS=$(aws secretsmanager get-secret-value --secret-id cd/aws-crt-java-settings/token --query "SecretString" | cut -f2 -d\")
+      - echo $CD_SETTINGS > $HOME/.m2/settings.xml
+      - export ST_USERNAME=$(aws --query "SecretString" secretsmanager get-secret-value --secret-id Sonatype/JIRA/token --region us-east-1 | cut -f2 -d":" | cut -f1 -d"," | sed -e 's/[\\\"\}]//g')
+      - export ST_PASSWORD=$(aws --query "SecretString" secretsmanager get-secret-value --secret-id Sonatype/JIRA/token --region us-east-1 | cut -f3 -d":" | sed -e 's/[\\\"\}]//g')
+      # Use the username and password from secret manager to update the settings
+      - sed -i 's|token-username|'"$ST_USERNAME"'|g' $HOME/.m2/settings.xml
+      - sed -i 's|token-password|'"$ST_PASSWORD"'|g' $HOME/.m2/settings.xml
+
+      # import gpg key
+      - export CD_KEY=$(aws secretsmanager get-secret-value --secret-id cd/aws-crt-java-key --query "SecretString" | cut -f2 -d\")
+      - echo $CD_KEY > /tmp/aws-sdk-common-runtime.key.asc
+      # for https://github.com/keybase/keybase-issues/issues/2798
+      - export GPG_TTY=$(tty)
+
+      - gpg --batch --import /tmp/aws-sdk-common-runtime.key.asc
+      # refer to https://maven.apache.org/plugins/maven-gpg-plugin/usage.html
+      - export MAVEN_GPG_PASSPHRASE=$(aws --query "SecretString" secretsmanager get-secret-value --secret-id cd/aws-crt-java-key/password | cut -f2 -d":" | sed -e 's/[\\\"\}]//g')
+
+  build:
+    commands:
+      # Deploy android
+      - export PROMOTE_RELEASE=true
+      - cd $CODEBUILD_SRC_DIR/aws-iot-device-sdk-java-v2
+      - ./codebuild/cd/deploy-android.sh
+
+cache:
+  paths:
+    - "/root/.m2/**/*"

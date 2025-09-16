@@ -8,6 +8,7 @@
 * [How do debug in VSCode?](#how-do-debug-in-vscode)
 * [What certificates do I need?](#what-certificates-do-i-need)
 * [How do I build and use the Android SDK?](#how-do-i-build-and-use-the-android-sdk)
+* [Where can I find MQTT 311 Samples?](#where-can-i-find-mqtt-311-samples)
 * [I still have more questions about this sdk?](#i-still-have-more-questions-about-this-sdk)
 
 ### Where should I start?
@@ -104,6 +105,10 @@ Here is an example launch.json file to run the pubsub sample
 
 ### How do I build and use the Android SDK?
 Instructions for building, installing, and use of the Android SDK can be found [here](../documents/ANDROID.md)
+
+### Where can I find MQTT 311 Samples?
+The MQTT 311 Samples can be found in the v1.27.2 samples folder [here](https://github.com/aws/aws-iot-device-sdk-java-v2/tree/v1.27.2/samples)
+
 ### I still have more questions about this sdk?
 
 * [Here](https://docs.aws.amazon.com/iot/latest/developerguide/what-is-aws-iot.html) are the AWS IoT Core docs for more details about IoT Core

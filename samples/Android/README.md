@@ -4,11 +4,7 @@
 The Android sample builds an app that can be installed and run on an Android Device. The app builds and allows you
 to run the following [samples](#links-to-individual-sample-readme-files) from aws-iot-device-sdk-java-v2:
 * [Mqtt5PubSub](../Mqtt5/PubSub/README.md)
-* [Mqtt3PubSub](../BasicPubSub/README.md)
 * [KeyChainPubSub](./AndroidKeyChainPubSub/README.md)
-* [Jobs](../Jobs/README.md)
-* [Shadow](../Shadow/README.md)
-* [CognitoConnect](../CognitoConnect/README.md)
 
 *__Jump To:__*
 
@@ -19,9 +15,9 @@ to run the following [samples](#links-to-individual-sample-readme-files) from aw
 
 
 # Prerequisites
-The individual samples within the app require specific files to operate. The files must be placed in the
-`app/src/main/assets` directory prior to building for the sample app to connect to IoT Core and complete
-succesfully. The names of the files must be exactly as provided. Explanations for what each file and
+The individual samples within the app require specific files to operate. The files **MUST** be placed in the
+**`app/src/main/assets`** directory prior to building for the sample app to connect to IoT Core and complete
+successfully. The names of the files must be exactly as provided. Explanations for what each file and
 associated argument are doing can be found in the individual [Sample README](#links-to-individual-sample-readme-files)
 files linked below.
 
@@ -30,7 +26,7 @@ files linked below.
 ### Files required by all samples:
 * `endpoint.txt` - IoT ATS Endpoint
 
-### Required to run Mqtt5PubSub and Mqtt3PubSub samples
+### Required to run Mqtt5PubSub sample
 * `certificate.pem` - IoT Thing Certificate
 * `privatekey.pem` - IoT Thing Private Key
 
@@ -42,15 +38,6 @@ files linked below.
 * `topic.txt` - specifies --topic CLI argument
 * `message.txt` - specifies --message CLI argument
 * `count.txt` - specifies --count CLI argument
-
-### Required to run Jobs and Shadow sample
-* `certificate.pem` - IoT Thing Certificate
-* `privatekey.pem` - IoT Thing Private Key
-* `thingName.txt` - IoT Thing Name used by sample
-
-### Required to run Cognito Client sample:
-* `cognitoIdentity.txt` - Cognito identity ID
-* `signingRegion.txt` - Signing region
 
 ### Optional files for all Samples:
 * `rootca.pem` - override the default system trust store
@@ -76,14 +63,9 @@ Android sample app.
 
 [**Mqtt5PubSub**](../Mqtt5/PubSub/README.md)
 
-[**Mqtt3PubSub**](../BasicPubSub/README.md)
-
 [**KeyChainPubSub**](AndroidKeyChainPubSub/README.md)
 
-[**Jobs**](../Jobs/README.md)
 
-[**Shadow**](../Shadow/README.md)
-
-[**CognitoConnect**](../CognitoConnect/README.md)
-
-##### NOTE: The shadow sample does not currently complete on android due to its dependence on stdin keyboard input.
+# Trouble Shooting
+### Error: The file name must end with .xml
+This error typically occurs when non-XML files are placed in the `app/src/main/res/` directory. Android enforces strict rules on what can be included in the `res/` folder. If you're working with test or data files (e.g., .txt in our sample), you **MUST** place them in the `app/src/main/assets/` directory instead.

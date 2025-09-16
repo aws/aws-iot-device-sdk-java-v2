@@ -23,24 +23,10 @@ import utils.commandlineutils.CommandLineUtils;
 
 public class PubSub {
 
-    // When run normally, we want to exit nicely even if something goes wrong
-    // When run from CI, we want to let an exception escape which in turn causes the
-    // exec:java task to return a non-zero exit code
-    static String ciPropValue = System.getProperty("aws.crt.ci");
-    static boolean isCI = ciPropValue != null && Boolean.valueOf(ciPropValue);
-
     static CommandLineUtils cmdUtils;
 
-    /*
-     * When called during a CI run, throw an exception that will escape and fail the exec:java task
-     * When called otherwise, print what went wrong (if anything) and just continue (return from main)
-     */
     static void onApplicationFailure(Throwable cause) {
-        if (isCI) {
-            throw new RuntimeException("Mqtt5 PubSub: execution failure", cause);
-        } else if (cause != null) {
-            System.out.println("Exception encountered: " + cause.toString());
-        }
+        throw new RuntimeException("Mqtt5 PubSub: execution failure", cause);
     }
 
     static final class SampleLifecycleEvents implements Mqtt5ClientOptions.LifecycleEvents {

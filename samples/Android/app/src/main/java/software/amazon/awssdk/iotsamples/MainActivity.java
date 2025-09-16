@@ -35,10 +35,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private static final Map<String, String> SAMPLES = new LinkedHashMap<String, String>() {{
         put("Select a Sample",""); // empty default
         put("MQTT5 Publish/Subscribe", "mqtt5.pubsub.PubSub");
-        put("MQTT3 Publish/Subscribe", "pubsub.PubSub");
         put("KeyChain Publish/Subscribe", "androidkeychainpubsub.AndroidKeyChainPubSub");
         put("KeyChain Alias Permission", "load.privateKey");
-        put("Cognito Client", "cognitoconnect.CognitoConnect");
     }};
 
     private static final Logger logger = Logger.getLogger(MainActivity.class.getName());
@@ -105,10 +103,15 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
         sampleSelect = findViewById(R.id.sampleSelect);
         ArrayAdapter<String> samplesAdapter = new ArrayAdapter<>(
-                this, R.layout.support_simple_spinner_dropdown_item, SAMPLES.keySet().toArray(new String[0])
+            this,
+            android.R.layout.simple_spinner_dropdown_item,
+            SAMPLES.keySet().toArray(new String[0])
         );
+        samplesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sampleSelect.setAdapter(samplesAdapter);
         sampleSelect.setOnItemSelectedListener(this);
+
+        
 
         loadAssets();
         context = this;
@@ -227,7 +230,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         // Missing required arguments will return null
         switch(sampleClassName){
             case "mqtt5.pubsub.PubSub":
-            case "pubsub.PubSub":
                 if (!argSetRequired("--cert", "certificate.pem", args) ||
                     !argSetRequired("--key", "privatekey.pem", args)) {
                     return null;
@@ -237,12 +239,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 argSetOptional("--count", "count.txt", args);
                 break;
 
-            case "cognitoconnect.CognitoConnect":
-                if (!argSetRequired("--cognito_identity", "cognitoIdentity.txt", args) ||
-                    !argSetRequired("--signing_region", "signingRegion.txt", args)) {
-                    return null;
-                }
-                break;
             case "androidkeychainpubsub.AndroidKeyChainPubSub":
                 if (!argSetRequired("--keychain_alias", "keychainAlias.txt", args)) {
                     return null;
