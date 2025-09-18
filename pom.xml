@@ -15,7 +15,11 @@
         <module>samples/ServiceClients/JobsSandbox</module>
         <module>samples/ServiceClients/CommandsSandbox</module>
         <module>samples/ServiceClients/ShadowSandbox</module>
-        <module>samples/Mqtt/X509PubSub</module>
+        <module>samples/mqtt/Mqtt5X509</module>
+        <module>samples/mqtt/Mqtt5AwsWebsocket</module>
+        <module>samples/mqtt/Mqtt5CustomAuthSigned</module>
+        <module>samples/mqtt/Mqtt5CustomAuthUnsigned</module>
+        <module>samples/mqtt/Mqtt5Pkcs11</module>
     </modules>
 
     <build>

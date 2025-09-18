@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0.
  */
 
-package mqtt.x509pubsub;
+package mqtt5customauthunsigned;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
@@ -12,23 +12,23 @@ import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.crt.CrtResource;
-import software.amazon.awssdk.crt.CrtRuntimeException;
 import software.amazon.awssdk.crt.mqtt5.*;
 import software.amazon.awssdk.crt.mqtt5.packets.*;
 import software.amazon.awssdk.iot.AwsIotMqtt5ClientBuilder;
 
 /**
- * MQTT5 X509 Sample (mTLS)
+ * MQTT5 Custom Authorizer Unigned Sample
  */
-public class X509PubSub {
+public class Mqtt5CustomAuthUnsigned {
 
     // ------------------------- ARGUMENT PARSING -------------------------
     static class Args {
         String endpoint;
-        String certPath;
-        String keyPath;
-        String caPath = null;
+        String authorizerName;
+        String authUsername;
+        String authPassword;
         String clientId = "mqtt5-sample-" + UUID.randomUUID().toString().replace("-", "").substring(0, 8);
         String topic = "test/topic";
         String message = "Hello from mqtt5 sample";
@@ -36,14 +36,14 @@ public class X509PubSub {
     }
 
     private static void printHelpAndExit(int code) {
-        System.out.println("MQTT5 X509 Sample (mTLS)\n");
+        System.out.println("MQTT5 Custom Authorizer Unsigned Sample\n");
         System.out.println("Required:");
-        System.out.println("  --endpoint <ENDPOINT>     IoT endpoint hostname");
-        System.out.println("  --cert <CERTIFICATE>      Path to certificate file (PEM)");
-        System.out.println("  --key <PRIVATE_KEY>       Path to private key file (PEM)");
+        System.out.println("  --endpoint <ENDPOINT>               IoT endpoint hostname");
+        System.out.println("  --authorizer_name <AUTHORIZER_NAME> The name of the custom authorizer to connect to invoke");
+        System.out.println("  --auth_username <AUTH_USERNAME>     The name to send when connecting through the custom authorizer");
+        System.out.println("  --auth_password <AUTH_PASSWORD>     The password to send when connecting through a custom authorizer");
         System.out.println("\nOptional:");
-        System.out.println("  --ca_file <CA_PEM>        Path to CA bundle (PEM)");
-        System.out.println("  --client-id <CLIENT_ID>   MQTT client ID (default: generated)");
+        System.out.println("  --client_id <CLIENT_ID>   MQTT client ID (default: generated)");
         System.out.println("  --topic <TOPIC>           Topic to use (default: test/topic)");
         System.out.println("  --message <MESSAGE>       Message payload (default: \"Hello from mqtt5 sample\")");
         System.out.println("  --count <N>               Messages to publish (0 = infinite, default: 5)");
@@ -61,20 +61,22 @@ public class X509PubSub {
 
             switch (k) {
                 case "--endpoint": a.endpoint = v; i++; break;
-                case "--cert":     a.certPath = v; i++; break;
-                case "--key":      a.keyPath  = v; i++; break;
-                case "--ca_file":  a.caPath   = v; i++; break;
-                case "--client-id": a.clientId = v; i++; break;
-                case "--topic":     a.topic = v; i++; break;
-                case "--message":   a.message = v; i++; break;
-                case "--count":
-                    a.count = Integer.parseInt(v); i++; break;
+                case "--authorizer_name": a.authorizerName = v; i++; break;
+                case "--auth_username": a.authUsername = v; i++; break;
+                case "--auth_password": a.authPassword = v; i++; break;
+                case "--client_id": a.clientId = v; i++; break;
+                case "--topic": a.topic = v; i++; break;
+                case "--message": a.message = v; i++; break;
+                case "--count": a.count = Integer.parseInt(v); i++; break;
                 default:
                     System.err.println("Unknown arg: " + k);
                     printHelpAndExit(2);
             }
         }
-        if (a.endpoint == null || a.certPath == null || a.keyPath == null) {
+        if (a.endpoint == null ||
+            a.authorizerName == null ||
+            a.authUsername == null ||
+            a.authPassword == null) {
             System.err.println("Missing required arguments.");
             printHelpAndExit(2);
         }
@@ -83,13 +85,13 @@ public class X509PubSub {
     // ------------------------- ARGUMENT PARSING END ---------------------
 
     static void onApplicationFailure(Throwable cause) {
-        throw new RuntimeException("Mqtt5 PubSub: execution failure", cause);
+        throw new RuntimeException("Mqtt5 Custom Authorizer Unsigned: execution failure", cause);
     }
 
     public static void main(String[] argv) {
         Args args = parseArgs(argv);
 
-        System.out.println("\nStarting MQTT5 X509 PubSub Sample\n");
+        System.out.println("\nStarting MQTT5 Custom Authorizer Unsigned Sample\n");
         final int TIMEOUT_SECONDS = 100;
 
         /*
@@ -111,15 +113,17 @@ public class X509PubSub {
 
             @Override
             public void onConnectionSuccess(Mqtt5Client client, OnConnectionSuccessReturn onConnectionSuccessReturn) {
-                System.out.println("Lifecycle Connection Success with reason_code: " + 
+                System.out.println("Lifecycle Connection Success with reason code: " + 
                     onConnectionSuccessReturn.getConnAckPacket().getReasonCode() + "\n");
                 connected.countDown();
             }
 
             @Override
             public void onConnectionFailure(Mqtt5Client client, OnConnectionFailureReturn onConnectionFailureReturn) {
-                System.out.println("Lifecycle Connection Failure with exception: " + 
-                    onConnectionFailureReturn.getErrorCode());
+                System.out.println("Lifecycle Connection Failure with error code: " + 
+                    onConnectionFailureReturn.getErrorCode() + " : " +
+                    CRT.awsErrorName(onConnectionFailureReturn.getErrorCode()) + " : " + 
+                    CRT.awsErrorString(onConnectionFailureReturn.getErrorCode()) + "\n");
             }
 
             @Override
@@ -127,8 +131,8 @@ public class X509PubSub {
                 System.out.println("Mqtt5 Client: Disconnected");
                 DisconnectPacket disconnectPacket = onDisconnectionReturn.getDisconnectPacket();
                 if (disconnectPacket != null) {
-                    System.out.println("\tDisconnection packet code: " + disconnectPacket.getReasonCode());
-                    System.out.println("\tDisconnection packet reason: " + disconnectPacket.getReasonString());
+                    System.out.println("\nDisconnection packet code: " + disconnectPacket.getReasonCode() + 
+                        "\nDisconnection packet reason: " + disconnectPacket.getReasonString());
                 }
             }
 
@@ -163,14 +167,22 @@ public class X509PubSub {
          * Create MQTT5 client using mutual TLS via X509 Certificate and Private Key
          */
         System.out.println("==== Creating MQTT5 Client ====\n");
-        AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newDirectMqttBuilderWithMtlsFromPath(
-            args.endpoint,args.certPath, args.keyPath);
+
+        AwsIotMqtt5ClientBuilder.MqttConnectCustomAuthConfig customAuthConfig = new AwsIotMqtt5ClientBuilder.MqttConnectCustomAuthConfig();
+        customAuthConfig.authorizerName = args.authorizerName;
+        customAuthConfig.username = args.authUsername;
+        customAuthConfig.password = args.authPassword.getBytes();
+        
+        AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newWebsocketMqttBuilderWithCustomAuth(
+            args.endpoint, customAuthConfig);
+
         ConnectPacket.ConnectPacketBuilder connectProperties = new ConnectPacket.ConnectPacketBuilder();
         connectProperties.withClientId(args.clientId);
         builder.withConnectProperties(connectProperties);
         builder.withLifeCycleEvents(lifecycleEvents);
         builder.withPublishEvents(publishEvents);
         client = builder.build();
+        // You must call `close()` on AwsIotMqtt5ClientBuilder or it will leak memory!
         builder.close();
 
         System.out.println("==== Starting client ====");
