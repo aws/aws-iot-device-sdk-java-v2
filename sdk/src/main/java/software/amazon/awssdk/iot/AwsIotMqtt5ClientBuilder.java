@@ -715,7 +715,7 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
      */
     public AwsIotMqtt5ClientBuilder withUsername(String username)
     {
-        this.configConnect.withUsername(username)
+        this.configConnect.withUsername(username);
         return this;
     }
 
@@ -849,7 +849,7 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
         this.configConnect.withWill(will);
         return this;
     }
-    
+
     /**
      * Sets the list of MQTT5 user properties included with the packet.
      *
