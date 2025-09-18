@@ -17,8 +17,6 @@ The AWS IoT Device SDK for Java v2 connects your Java applications and devices t
 
 The primary purpose of the AWS IoT Device SDK for Java v2 is to simplify the process of connecting devices to AWS IoT Core and interacting with AWS IoT services on various platforms. The SDK provides:
 
-This SDK is built on the [AWS Common Runtime](https://docs.aws.amazon.com/sdkref/latest/guide/common-runtime.html).
-
 * Secure device connections to AWS IoT Core using MQTT protocol (MQTT 3.1.1 and MQTT 5.0)
 * Support for [multiple authentication methods and connection types](./documents/MQTT5_Userguide.md#how-to-setup-mqtt5-builder-based-on-desired-connection-method)
 * [Android support](./documents/ANDROID.md)
