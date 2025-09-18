@@ -1,6 +1,6 @@
 # AWS IoT Device SDK for Java v2
 
-The AWS IoT Device SDK for Java v2 connects your Java applications and devices to the AWS IoT platform. Built on the AWS Common Runtime, it handles the complexities of secure communication, authentication, and device management so you can focus on your IoT solution.
+The AWS IoT Device SDK for Java v2 connects your Java applications and devices to the AWS IoT platform. Built on the AWS Common Runtime, it handles the complexities of secure communication, authentication, and device management so you can focus on your IoT solution. The SDK makes it easy to use AWS IoT services like Device Shadows, Jobs, Fleet Provisioning, and Commands.
 
 **Supported Platforms**: Linux, Windows, macOS, [Android](./documents/ANDROID.md)
 
@@ -17,10 +17,10 @@ The AWS IoT Device SDK for Java v2 connects your Java applications and devices t
 
 The primary purpose of the AWS IoT Device SDK for Java v2 is to simplify the process of connecting devices to AWS IoT Core and interacting with AWS IoT services on various platforms. The SDK provides:
 
-* Secure device connections to AWS IoT Core using MQTT protocol (MQTT 3.1.1 and MQTT 5.0)
-* Support for [multiple authentication methods and connection types](./documents/MQTT5_Userguide.md#how-to-setup-mqtt5-builder-based-on-desired-connection-method)
-* [Android support](./documents/ANDROID.md)
 * Built on the [AWS Common Runtime](https://docs.aws.amazon.com/sdkref/latest/guide/common-runtime.html) for high performance and minimal footprint
+* Secure device connections to AWS IoT Core using MQTT protocol including MQTT 5.0
+* Support for [multiple authentication methods and connection types](./documents/MQTT5_Userguide.md#how-to-setup-mqtt5-builder-based-on-desired-connection-method)
+* Android [support](./documents/ANDROID.md)
 * First-class support for AWS IoT Core services.
 
 #### Supported AWS IoT Core services
@@ -36,11 +36,13 @@ The recommended way to use the AWS IoT Device SDK for Java v2 in your project is
 
 ### Minimum Requirements
 
+To develop applications that use AWS IoT Device SDK for Java v2, you need:
 * Java 8+ ([Download and Install Java](https://www.java.com/en/download/help/download_options.html))
 * Java JDK 8+ ([Download and Install JDK](https://docs.oracle.com/en/java/javase/18/install/overview-jdk-installation.html))
   * [Set JAVA_HOME](./documents/PREREQUISITES.md#set-java_home)
+* A build tool such as [Maven](https://maven.apache.org/install.html)
 
-See [step-by-step instructions](./documents/PREREQUISITES.md) for more detailed instructions.
+See [detailed setup instructions](./documents/PREREQUISITES.md) for more information.
 
 ### Consuming IoT Device SDK from Maven in your application
 
@@ -58,10 +60,6 @@ Replace `1.27.4` in `<version>1.27.4</version>` with the latest release version 
 Look up the latest SDK version here: https://github.com/aws/aws-iot-device-sdk-java-v2/releases
 
 ### Building AWS IoT SDK from source
-
-To build this SDK from source, you need to [install and configure Maven](https://maven.apache.org/install.html).
-
-See [step-by-step instructions](./documents/PREREQUISITES.md) for more details on configuring required tools.
 
 ``` sh
 # Create a workspace directory to hold all the SDK files
