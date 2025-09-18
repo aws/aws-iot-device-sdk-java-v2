@@ -1,8 +1,6 @@
 # AWS IoT Device SDK for Java v2
 
-The AWS IoT Device SDK for Java v2 connects your Java applications and devices to the AWS IoT platform. Whether you're building industrial sensors, smart home devices, or enterprise IoT solutions, this SDK handles the complexities of secure communication, data exchange, and device management with AWS IoT Core.
-
-This SDK is built on the [AWS Common Runtime](https://docs.aws.amazon.com/sdkref/latest/guide/common-runtime.html).
+The AWS IoT Device SDK for Java v2 connects your Java applications and devices to the AWS IoT platform. Built on the AWS Common Runtime, it handles the complexities of secure communication, authentication, and device management so you can focus on your IoT solution.
 
 **Supported Platforms**: Linux, Windows, macOS, [Android](./documents/ANDROID.md)
 
@@ -19,9 +17,12 @@ This SDK is built on the [AWS Common Runtime](https://docs.aws.amazon.com/sdkref
 
 The primary purpose of the AWS IoT Device SDK for Java v2 is to simplify the process of connecting devices to AWS IoT Core and interacting with AWS IoT services on various platforms. The SDK provides:
 
+This SDK is built on the [AWS Common Runtime](https://docs.aws.amazon.com/sdkref/latest/guide/common-runtime.html).
+
 * Secure device connections to AWS IoT Core using MQTT protocol (MQTT 3.1.1 and MQTT 5.0)
 * Support for [multiple authentication methods and connection types](./documents/MQTT5_Userguide.md#how-to-setup-mqtt5-builder-based-on-desired-connection-method)
 * [Android support](./documents/ANDROID.md)
+* Built on the [AWS Common Runtime](https://docs.aws.amazon.com/sdkref/latest/guide/common-runtime.html) for high performance and minimal footprint
 * First-class support for AWS IoT Core services.
 
 #### Supported AWS IoT Core services
