@@ -33,8 +33,10 @@ import software.amazon.awssdk.crt.mqtt5.Mqtt5ClientOptions;
 import software.amazon.awssdk.crt.mqtt5.Mqtt5WebsocketHandshakeTransformArgs;
 import software.amazon.awssdk.crt.mqtt5.Mqtt5ClientOptions.Mqtt5ClientOptionsBuilder;
 import software.amazon.awssdk.crt.mqtt5.packets.ConnectPacket.ConnectPacketBuilder;
+import software.amazon.awssdk.crt.mqtt5.packets.PublishPacket;
 import software.amazon.awssdk.crt.mqtt5.TopicAliasingOptions;
 import software.amazon.awssdk.crt.utils.PackageInfo;
+import software.amazon.awssdk.crt.mqtt5.packets.UserProperty;
 
 /**
  * Builders for making MQTT5 clients with different connection methods for AWS IoT Core.
@@ -663,6 +665,204 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
         this.configTls.tlsCipherPreference = tlsCipherPreference;
         return this;
     }
+
+    /**
+     * Sets the maximum time interval, in seconds, that is permitted to elapse between the point at which the client
+     * finishes transmitting one MQTT packet and the point it starts sending the next.  The client will use
+     * PINGREQ packets to maintain this property.
+     *
+     * If the responding ConnAckPacket contains a keep alive property value, then that is the negotiated keep alive value.
+     * Otherwise, the keep alive sent by the client is the negotiated value.
+     *
+     * See <a href="https://docs.oasis-open.org/mqtt/mqtt/v5.0/os/mqtt-v5.0-os.html#_Toc3901045">MQTT5 Keep Alive</a>
+     *
+     * NOTE: The keepAliveIntervalSeconds HAS to be larger than the pingTimeoutMs time set in the Mqtt5ClientOptions.
+     *
+     * @param keepAliveInteralSeconds the maximum time interval, in seconds, that is permitted to elapse between the point
+     * at which the client finishes transmitting one MQTT packet and the point it starts sending the next.
+     * @return The ConnectPacketBuilder after setting the keep alive interval.
+     */
+    public AwsIotMqtt5ClientBuilder withKeepAliveIntervalSeconds(Long keepAliveInteralSeconds)
+    {
+        this.configConnect.withKeepAliveIntervalSeconds(keepAliveInteralSeconds);
+        return this;
+    }
+
+    /**
+     * Sets the unique string identifying the client to the server.  Used to restore session state between connections.
+     *
+     * If left empty, the broker will auto-assign a unique client id.  When reconnecting, the Mqtt5Client will
+     * always use the auto-assigned client id.
+     *
+     * See <a href="https://docs.oasis-open.org/mqtt/mqtt/v5.0/os/mqtt-v5.0-os.html#_Toc3901059">MQTT5 Client Identifier</a>
+     *
+     * @param clientId A unique string identifying the client to the server.
+     * @return The ConnectPacketBuilder after setting the client ID.
+     */
+    public AwsIotMqtt5ClientBuilder withClientId(String clientId)
+    {
+        this.configConnect.withClientId(clientId);
+        return this;
+    }
+    
+    /**
+     * Sets the string value that the server may use for client authentication and authorization.
+     *
+     * See <a href="https://docs.oasis-open.org/mqtt/mqtt/v5.0/os/mqtt-v5.0-os.html#_Toc3901071">MQTT5 User Name</a>
+     *
+     * @param username The string value that the server may use for client authentication and authorization.
+     * @return The ConnectPacketBuilder after setting the username.
+     */
+    public AwsIotMqtt5ClientBuilder withUsername(String username)
+    {
+        this.configConnect.withUsername(username)
+        return this;
+    }
+
+    /**
+     * Sets the opaque binary data that the server may use for client authentication and authorization.
+     *
+     * See <a href="https://docs.oasis-open.org/mqtt/mqtt/v5.0/os/mqtt-v5.0-os.html#_Toc3901072">MQTT5 Password</a>
+     *
+     * @param password Opaque binary data that the server may use for client authentication and authorization.
+     * @return The ConnectPacketBuilder after setting the password.
+     */
+    public AwsIotMqtt5ClientBuilder withPassword(byte[] password)
+    {
+        this.configConnect.withPassword(password);
+        return this;
+    }
+
+    /**
+     * Sets the time interval, in seconds, that the client requests the server to persist this connection's MQTT session state
+     * for.  Has no meaning if the client has not been configured to rejoin sessions.  Must be non-zero in order to
+     * successfully rejoin a session.
+     *
+     * If the responding ConnAckPacket contains a session expiry property value, then that is the negotiated session expiry
+     * value.  Otherwise, the session expiry sent by the client is the negotiated value.
+     *
+     * See <a href="https://docs.oasis-open.org/mqtt/mqtt/v5.0/os/mqtt-v5.0-os.html#_Toc3901048">MQTT5 Session Expiry Interval</a>
+     *
+     * @param sessionExpiryIntervalSeconds A time interval, in seconds, that the client requests the server to persist this
+     * connection's MQTT session state for.
+     * @return The ConnectPacketBuilder after setting the session expiry interval.
+     */
+
+    public AwsIotMqtt5ClientBuilder withSessionExpiryIntervalSeconds(Long sessionExpiryIntervalSeconds)
+    {
+        this.configConnect.withSessionExpiryIntervalSeconds(sessionExpiryIntervalSeconds);
+        return this;
+    }
+
+    /**
+     * Sets whether requests that the server send response information in the subsequent ConnAckPacket.  This response
+     * information may be used to set up request-response implementations over MQTT, but doing so is outside
+     * the scope of the MQTT5 spec and client.
+     *
+     * See <a href="https://docs.oasis-open.org/mqtt/mqtt/v5.0/os/mqtt-v5.0-os.html#_Toc3901052">MQTT5 Request Response Information</a>
+     *
+     * @param requestResponseInformation If true, requests that the server send response information in the subsequent ConnAckPacket.
+     * @return The ConnectPacketBuilder after setting the request response information.
+     */
+    public AwsIotMqtt5ClientBuilder withRequestResponseInformation(Boolean requestResponseInformation)
+    {
+        this.configConnect.withRequestResponseInformation(requestResponseInformation);
+        return this;
+    }
+
+    /**
+     * Sets whether requests that the server send additional diagnostic information (via response string or
+     * user properties) in DisconnectPacket or ConnAckPacket from the server.
+     *
+     * See <a href="https://docs.oasis-open.org/mqtt/mqtt/v5.0/os/mqtt-v5.0-os.html#_Toc3901053">MQTT5 Request Problem Information</a>
+     *
+     * @param requestProblemInformation If true, requests that the server send additional diagnostic information
+     * (via response string or user properties) in DisconnectPacket or ConnAckPacket from the server.
+     * @return The ConnectPacketBuilder after setting the request problem information.
+     */
+    public AwsIotMqtt5ClientBuilder withRequestProblemInformation(Boolean requestProblemInformation)
+    {
+        this.configConnect.withRequestProblemInformation(requestProblemInformation);
+        return this;
+    }
+
+    /**
+     * Sets the maximum number of in-flight QoS 1 and 2 messages the client is willing to handle.  If
+     * omitted or null, then no limit is requested.
+     *
+     * See <a href="https://docs.oasis-open.org/mqtt/mqtt/v5.0/os/mqtt-v5.0-os.html#_Toc3901049">MQTT5 Receive Maximum</a>
+     *
+     * @param receiveMaximum The maximum number of in-flight QoS 1 and 2 messages the client is willing to handle.
+     * @return The ConnectPacketBuilder after setting the receive maximum.
+     */
+    public AwsIotMqtt5ClientBuilder withReceiveMaximum(Long receiveMaximum)
+    {
+        this.configConnect.withReceiveMaximum(receiveMaximum);
+        return this;
+    }
+
+    /**
+     * Sets the maximum packet size the client is willing to handle.  If
+     * omitted or null, then no limit beyond the natural limits of MQTT packet size is requested.
+     *
+     * See <a href="https://docs.oasis-open.org/mqtt/mqtt/v5.0/os/mqtt-v5.0-os.html#_Toc3901050">MQTT5 Maximum Packet Size</a>
+     *
+     * @param maximumPacketSizeBytes The maximum packet size the client is willing to handle
+     * @return The ConnectPacketBuilder after setting the maximum packet size.
+     */
+    public AwsIotMqtt5ClientBuilder withMaximumPacketSizeBytes(Long maximumPacketSizeBytes)
+    {
+        this.configConnect.withMaximumPacketSizeBytes(maximumPacketSizeBytes);
+        return this;
+    }
+
+    /**
+     * Sets the time interval, in seconds, that the server should wait (for a session reconnection) before sending the
+     * will message associated with the connection's session.  If omitted or null, the server will send the will when the
+     * associated session is destroyed.  If the session is destroyed before a will delay interval has elapsed, then
+     * the will must be sent at the time of session destruction.
+     *
+     * See <a href="https://docs.oasis-open.org/mqtt/mqtt/v5.0/os/mqtt-v5.0-os.html#_Toc3901062">MQTT5 Will Delay Interval</a>
+     *
+     * @param willDelayIntervalSeconds A time interval, in seconds, that the server should wait (for a session reconnection)
+     * before sending the will message associated with the connection's session.
+     * @return The ConnectPacketBuilder after setting the will message delay interval.
+     */
+    public AwsIotMqtt5ClientBuilder withWillDelayIntervalSeconds(Long willDelayIntervalSeconds)
+    {
+        this.configConnect.withWillDelayIntervalSeconds(willDelayIntervalSeconds);
+        return this;
+    }
+
+    /**
+     * Sets the definition of a message to be published when the connection's session is destroyed by the server or when
+     * the will delay interval has elapsed, whichever comes first.  If null, then nothing will be sent.
+     *
+     * See <a href="https://docs.oasis-open.org/mqtt/mqtt/v5.0/os/mqtt-v5.0-os.html#_Toc3901040">MQTT5 Will</a>
+     *
+     * @param will The message to be published when the connection's session is destroyed by the server or when
+     * the will delay interval has elapsed, whichever comes first.
+     * @return The ConnectPacketBuilder after setting the will message.
+     */
+    public AwsIotMqtt5ClientBuilder withWill(PublishPacket will)
+    {
+        this.configConnect.withWill(will);
+        return this;
+    }
+    
+    /**
+     * Sets the list of MQTT5 user properties included with the packet.
+     *
+     * See <a href="https://docs.oasis-open.org/mqtt/mqtt/v5.0/os/mqtt-v5.0-os.html#_Toc3901054">MQTT5 User Property</a>
+     *
+     * @param userProperties List of MQTT5 user properties included with the packet.
+     * @return The ConnectPacketBuilder after setting the user properties.
+     */
+    public AwsIotMqtt5ClientBuilder withUserProperties(List<UserProperty> userProperties)
+    {
+        this.configConnect.withUserProperties(userProperties);
+        return this;
+    } 
 
     /**
      * Constructs an MQTT5 client object configured with the options set.
