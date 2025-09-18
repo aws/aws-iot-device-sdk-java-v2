@@ -678,13 +678,13 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
      *
      * NOTE: The keepAliveIntervalSeconds HAS to be larger than the pingTimeoutMs time set in the Mqtt5ClientOptions.
      *
-     * @param keepAliveInteralSeconds the maximum time interval, in seconds, that is permitted to elapse between the point
+     * @param keepAliveIntervalSeconds the maximum time interval, in seconds, that is permitted to elapse between the point
      * at which the client finishes transmitting one MQTT packet and the point it starts sending the next.
-     * @return The ConnectPacketBuilder after setting the keep alive interval.
+     * @return The AwsIotMqtt5ClientBuilder after setting the keep alive interval.
      */
-    public AwsIotMqtt5ClientBuilder withKeepAliveIntervalSeconds(Long keepAliveInteralSeconds)
+    public AwsIotMqtt5ClientBuilder withKeepAliveIntervalSeconds(Long keepAliveIntervalSeconds)
     {
-        this.configConnect.withKeepAliveIntervalSeconds(keepAliveInteralSeconds);
+        this.configConnect.withKeepAliveIntervalSeconds(keepAliveIntervalSeconds);
         return this;
     }
 
@@ -697,39 +697,11 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
      * See <a href="https://docs.oasis-open.org/mqtt/mqtt/v5.0/os/mqtt-v5.0-os.html#_Toc3901059">MQTT5 Client Identifier</a>
      *
      * @param clientId A unique string identifying the client to the server.
-     * @return The ConnectPacketBuilder after setting the client ID.
+     * @return The AwsIotMqtt5ClientBuilder after setting the client ID.
      */
     public AwsIotMqtt5ClientBuilder withClientId(String clientId)
     {
         this.configConnect.withClientId(clientId);
-        return this;
-    }
-    
-    /**
-     * Sets the string value that the server may use for client authentication and authorization.
-     *
-     * See <a href="https://docs.oasis-open.org/mqtt/mqtt/v5.0/os/mqtt-v5.0-os.html#_Toc3901071">MQTT5 User Name</a>
-     *
-     * @param username The string value that the server may use for client authentication and authorization.
-     * @return The ConnectPacketBuilder after setting the username.
-     */
-    public AwsIotMqtt5ClientBuilder withUsername(String username)
-    {
-        this.configConnect.withUsername(username);
-        return this;
-    }
-
-    /**
-     * Sets the opaque binary data that the server may use for client authentication and authorization.
-     *
-     * See <a href="https://docs.oasis-open.org/mqtt/mqtt/v5.0/os/mqtt-v5.0-os.html#_Toc3901072">MQTT5 Password</a>
-     *
-     * @param password Opaque binary data that the server may use for client authentication and authorization.
-     * @return The ConnectPacketBuilder after setting the password.
-     */
-    public AwsIotMqtt5ClientBuilder withPassword(byte[] password)
-    {
-        this.configConnect.withPassword(password);
         return this;
     }
 
@@ -745,7 +717,7 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
      *
      * @param sessionExpiryIntervalSeconds A time interval, in seconds, that the client requests the server to persist this
      * connection's MQTT session state for.
-     * @return The ConnectPacketBuilder after setting the session expiry interval.
+     * @return The AwsIotMqtt5ClientBuilder after setting the session expiry interval.
      */
 
     public AwsIotMqtt5ClientBuilder withSessionExpiryIntervalSeconds(Long sessionExpiryIntervalSeconds)
@@ -762,7 +734,7 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
      * See <a href="https://docs.oasis-open.org/mqtt/mqtt/v5.0/os/mqtt-v5.0-os.html#_Toc3901052">MQTT5 Request Response Information</a>
      *
      * @param requestResponseInformation If true, requests that the server send response information in the subsequent ConnAckPacket.
-     * @return The ConnectPacketBuilder after setting the request response information.
+     * @return The AwsIotMqtt5ClientBuilder after setting the request response information.
      */
     public AwsIotMqtt5ClientBuilder withRequestResponseInformation(Boolean requestResponseInformation)
     {
@@ -778,7 +750,7 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
      *
      * @param requestProblemInformation If true, requests that the server send additional diagnostic information
      * (via response string or user properties) in DisconnectPacket or ConnAckPacket from the server.
-     * @return The ConnectPacketBuilder after setting the request problem information.
+     * @return The AwsIotMqtt5ClientBuilder after setting the request problem information.
      */
     public AwsIotMqtt5ClientBuilder withRequestProblemInformation(Boolean requestProblemInformation)
     {
@@ -793,7 +765,7 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
      * See <a href="https://docs.oasis-open.org/mqtt/mqtt/v5.0/os/mqtt-v5.0-os.html#_Toc3901049">MQTT5 Receive Maximum</a>
      *
      * @param receiveMaximum The maximum number of in-flight QoS 1 and 2 messages the client is willing to handle.
-     * @return The ConnectPacketBuilder after setting the receive maximum.
+     * @return The AwsIotMqtt5ClientBuilder after setting the receive maximum.
      */
     public AwsIotMqtt5ClientBuilder withReceiveMaximum(Long receiveMaximum)
     {
@@ -808,7 +780,7 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
      * See <a href="https://docs.oasis-open.org/mqtt/mqtt/v5.0/os/mqtt-v5.0-os.html#_Toc3901050">MQTT5 Maximum Packet Size</a>
      *
      * @param maximumPacketSizeBytes The maximum packet size the client is willing to handle
-     * @return The ConnectPacketBuilder after setting the maximum packet size.
+     * @return The AwsIotMqtt5ClientBuilder after setting the maximum packet size.
      */
     public AwsIotMqtt5ClientBuilder withMaximumPacketSizeBytes(Long maximumPacketSizeBytes)
     {
@@ -826,7 +798,7 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
      *
      * @param willDelayIntervalSeconds A time interval, in seconds, that the server should wait (for a session reconnection)
      * before sending the will message associated with the connection's session.
-     * @return The ConnectPacketBuilder after setting the will message delay interval.
+     * @return The AwsIotMqtt5ClientBuilder after setting the will message delay interval.
      */
     public AwsIotMqtt5ClientBuilder withWillDelayIntervalSeconds(Long willDelayIntervalSeconds)
     {
@@ -842,7 +814,7 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
      *
      * @param will The message to be published when the connection's session is destroyed by the server or when
      * the will delay interval has elapsed, whichever comes first.
-     * @return The ConnectPacketBuilder after setting the will message.
+     * @return The AwsIotMqtt5ClientBuilder after setting the will message.
      */
     public AwsIotMqtt5ClientBuilder withWill(PublishPacket will)
     {
@@ -856,7 +828,7 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
      * See <a href="https://docs.oasis-open.org/mqtt/mqtt/v5.0/os/mqtt-v5.0-os.html#_Toc3901054">MQTT5 User Property</a>
      *
      * @param userProperties List of MQTT5 user properties included with the packet.
-     * @return The ConnectPacketBuilder after setting the user properties.
+     * @return The AwsIotMqtt5ClientBuilder after setting the user properties.
      */
     public AwsIotMqtt5ClientBuilder withUserProperties(List<UserProperty> userProperties)
     {
