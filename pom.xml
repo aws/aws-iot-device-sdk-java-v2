@@ -8,13 +8,13 @@
 
     <modules>
         <module>sdk</module>
-        <module>samples/Greengrass/Discovery</module>
-        <module>samples/Greengrass/GreengrassIPC</module>
-        <module>samples/ServiceClients/Provisioning/Basic</module>
-        <module>samples/ServiceClients/Provisioning/Csr</module>
-        <module>samples/ServiceClients/JobsSandbox</module>
-        <module>samples/ServiceClients/CommandsSandbox</module>
-        <module>samples/ServiceClients/ShadowSandbox</module>
+        <module>samples/greengrass/Discovery</module>
+        <module>samples/greengrass/GreengrassIPC</module>
+        <module>samples/serviceclients/Provisioning/basic</module>
+        <module>samples/serviceclients/Provisioning/csr</module>
+        <module>samples/serviceclients/JobsSandbox</module>
+        <module>samples/serviceclients/CommandsSandbox</module>
+        <module>samples/serviceclients/ShadowSandbox</module>
         <module>samples/mqtt/Mqtt5X509</module>
         <module>samples/mqtt/Mqtt5AwsWebsocket</module>
         <module>samples/mqtt/Mqtt5CustomAuthSigned</module>
