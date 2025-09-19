@@ -3,6 +3,7 @@
 *__Jump To:__*
 * [Where should I start](#where-should-i-start)
 * [How do I enable logging](#how-do-i-enable-logging)
+* [How do I get more information from an error code?](#how-do-i-get-more-information-from-an-error-code)
 * [I keep getting AWS_ERROR_MQTT_UNEXPECTED_HANGUP](#i-keep-getting-aws_error_mqtt_unexpected_hangup)
 * [I am experiencing deadlocks](#i-am-experiencing-deadlocks)
 * [How do debug in VSCode?](#how-do-debug-in-vscode)
@@ -38,6 +39,19 @@ mvn compile exec:java -pl samples/BasicPubSub -Daws.crt.debugnative=true -Daws.c
 ```
 
 You can also enable [CloudWatch logging](https://docs.aws.amazon.com/iot/latest/developerguide/cloud-watch-logs.html) for IoT which will provide you with additional information that is not available on the client side sdk.
+
+### How do I get more information from an error code?
+When error codes are returned from the aws-crt-java they can be translated into human readable errors using the following:
+
+```
+import software.amazon.awssdk.crt.CRT;
+
+// Print out the error code name
+System.out.println(CRT.awsErrorName(errorCode));
+
+// Print out a description of the error code
+System.out.println(CRT.awsErrorString(errorCode));
+```
 
 ### I keep getting AWS_ERROR_MQTT_UNEXPECTED_HANGUP
 
