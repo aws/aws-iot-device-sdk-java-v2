@@ -28,57 +28,6 @@ import java.util.concurrent.TimeoutException;
 
 import static software.amazon.awssdk.iot.discovery.DiscoveryClient.TLS_EXT_ALPN;
 
-import utils.commandlineutils.CommandLineUtils;
-/*
-
-# Required Arguments
-required.add_argument("--cert", required=True,  metavar="", dest="input_cert",
-                    help="Path to the certificate file to use during mTLS connection establishment")
-required.add_argument("--key", required=True,  metavar="", dest="input_key",
-                    help="Path to the private key file to use during mTLS connection establishment")
-required.add_argument("--region", required=True,  metavar="", dest="input_signing_region",
-                      help="The region to connect through.")
-required.add_argument("--thing_name", required=True,  metavar="", dest="input_thing_name",
-                      help="The name assigned to your IoT Thing.")
-
-# Optional Arguments
-optional.add_argument("--ca_file",  metavar="", dest="input_ca",
-                      help="Path to optional CA bundle (PEM)")
-optional.add_argument("--topic", default=f"test/topic/{uuid.uuid4().hex[:8]}",  metavar="", dest="input_topic",
-                      help="Topic")
-
-optional.add_argument("--print_discover_resp_only", type=bool, default=False,  metavar="", dest="input_print_discovery_resp_only",
-                    help="(optional, default='False').")
-optional.add_argument("--mode", default='both',  metavar="", dest="input_mode",
-                    help=f"The operation mode (optional, default='both').\nModes:{allowed_actions}")
-optional.add_argument("--proxy_host",  metavar="", dest="input_proxy_host",
-                      help="HTTP proxy host")
-optional.add_argument("--proxy_port", type=int, default=0,  metavar="", dest="input_proxy_port",
-                      help="HTTP proxy port")
-optional.add_argument("--client_id",  metavar="", dest="input_clientId", default=f"mqtt5-sample-{uuid.uuid4().hex[:8]}",
-                    help="Client ID")
-
-
-optional.add_argument("--message", default="Hello World!",  metavar="", dest="input_message",
-                      help="Message payload")
-optional.add_argument("--max_pub_ops", type=int, default=10,  metavar="", dest="input_max_pub_ops", 
-                    help="The maximum number of publish operations (optional, default='10').")
-
-
-input_thingName = cmdData.input_thingName;
-        input_certPath = cmdData.input_cert;
-        input_keyPath = cmdData.input_key;
-if (cmdData.input_ca != null) {
-                tlsCtxOptions.overrideDefaultTrustStoreFromPath(null, cmdData.input_ca);
-
-
-(cmdData.input_proxyHost != null && cmdData.input_proxyPort > 0) {
- cmdData.input_signingRegion
-
- cmdData.inputPrintDiscoverRespOnly
- cmdData.input_mode
- cmdData.input_topic
- */
     // ------------------------- ARGUMENT PARSING -------------------------
     static class Args {
         String certPath;
@@ -88,14 +37,14 @@ if (cmdData.input_ca != null) {
         Boolean printDiscoveryRespOnly = false;
         String mode;
         String proxyHost;
-        Boolean isProxyPortSet = false;
-        int proxyPort;
+        String caPath;
+        int proxyPort = 0;
         String clientId = "mqtt5-sample-" + UUID.randomUUID().toString().replace("-", "").substring(0, 8);
         String topic = "test/topic";
     }
 
     private static void printHelpAndExit(int code) {
-        System.out.println("MQTT5 X509 Sample (mTLS)\n");
+        System.out.println("Basic Discovery Sample\n");
         System.out.println("Required:");
         System.out.println("  --cert <CERTIFICATE>      Path to certificate file (PEM)");
         System.out.println("  --key <PRIVATE_KEY>       Path to private key file (PEM)");
@@ -103,7 +52,8 @@ if (cmdData.input_ca != null) {
         System.out.println("  --thing_name <THING_NAME> The name assigned to your IoT Thing");
         System.out.println("\nOptional:");
         System.out.println("  --print_discover_resp_only <PRINT_DISC_RESPONSE> (optional, default='False')");
-        System.out.println("  --mode <MODE>                                    The operation mode (optional, default='both').\nModes:{allowed_actions}");
+        System.out.println("  --mode <MODE>                                    The operation mode can be set to 'subscribe' 'publish' or 'both'(default)");
+        System.out.println("  --ca_file <CA_FILE>                              Path to optional CA bundle (PEM)");
         System.out.println("  --proxy_host <PROXY_HOST>                        HTTP proxy host");
         System.out.println("  --proxy_port <PROXY_PORT>                        HTTP proxy port");
         System.out.println("  --client_id <CLIENT_ID>                          MQTT client ID (default: generated)");
@@ -121,20 +71,24 @@ if (cmdData.input_ca != null) {
             String v = (i + 1 < argv.length) ? argv[i + 1] : null;
 
             switch (k) {
-                case "--endpoint": a.endpoint = v; i++; break;
-                case "--cert":     a.certPath = v; i++; break;
-                case "--key":      a.keyPath  = v; i++; break;
-                case "--client_id": a.clientId = v; i++; break;
-                case "--topic":     a.topic = v; i++; break;
-                case "--message":   a.message = v; i++; break;
-                case "--count":
-                    a.count = Integer.parseInt(v); i++; break;
+                case "--cert":                     a.certPath = v; i++; break;
+                case "--key":                      a.keyPath  = v; i++; break;
+                case "--region":                   a.region   = v; i++; break;
+                case "--thing_name":               a.thingName = v; i++ break;
+                case "--print_discover_resp_only": a.printDiscoveryRespOnly = Boolean.valueOf(v);
+                case "--mode":                     a.mode = v; i++; break;
+                case "--proxy_host":               a.proxyHost = v; i++; break;
+                case "--proxy_port":               a.proxyPort = Integer.parseInt(v); i++; break;
+                case "--ca_file":                  a.caPath = v; i++; break;
+                case "--client_id":                a.clientId = v; i++; break;
+                case "--topic":                    a.topic = v; i++; break;
+                case "--message":                  a.message = v; i++; break;
                 default:
                     System.err.println("Unknown arg: " + k);
                     printHelpAndExit(2);
             }
         }
-        if (a.endpoint == null || a.certPath == null || a.keyPath == null) {
+        if (a.certPath == null || a.keyPath == null || a.region == null || a.thingName == null) {
             System.err.println("Missing required arguments.");
             printHelpAndExit(2);
         }
@@ -144,50 +98,27 @@ if (cmdData.input_ca != null) {
 
 public class BasicDiscovery {
 
-    // When run normally, we want to exit nicely even if something goes wrong.
-    // When run from CI, we want to let an exception escape which in turn causes the
-    // exec:java task to return a non-zero exit code.
-    static String ciPropValue = System.getProperty("aws.crt.ci");
-    static boolean isCI = ciPropValue != null && Boolean.valueOf(ciPropValue);
-
-    // Needed to access command line input data in getClientFromDiscovery
-    static String input_thingName;
-    static String input_certPath;
-    static String input_keyPath;
-
-    static CommandLineUtils cmdUtils;
-
     public static void main(String[] args) {
+        Args args = parseArgs(argv);
 
-        /*
-         * cmdData is the arguments/input from the command line placed into a single struct for
-         * use in this sample. This handles all of the command line parsing, validating, etc.
-         * See the Utils/CommandLineUtils for more information.
-         */
-        CommandLineUtils.SampleCommandLineData cmdData = CommandLineUtils.getInputForIoTSample("BasicDiscovery", args);
-
-        input_thingName = cmdData.input_thingName;
-        input_certPath = cmdData.input_cert;
-        input_keyPath = cmdData.input_key;
-
-        try (final TlsContextOptions tlsCtxOptions = TlsContextOptions.createWithMtlsFromPath(cmdData.input_cert, cmdData.input_key)) {
+        try (final TlsContextOptions tlsCtxOptions = TlsContextOptions.createWithMtlsFromPath(args.certPath, args.keyPath)) {
             if (TlsContextOptions.isAlpnSupported()) {
                 tlsCtxOptions.withAlpnList(TLS_EXT_ALPN);
             }
-            if (cmdData.input_ca != null) {
-                tlsCtxOptions.overrideDefaultTrustStoreFromPath(null, cmdData.input_ca);
+            if (args.caFile != null) {
+                tlsCtxOptions.overrideDefaultTrustStoreFromPath(null, args.caPath);
             }
             HttpProxyOptions proxyOptions = null;
-            if (cmdData.input_proxyHost != null && cmdData.input_proxyPort > 0) {
+            if (args.proxyHost != null && args.proxyPort > 0) {
                 proxyOptions = new HttpProxyOptions();
-                proxyOptions.setHost(cmdData.input_proxyHost);
-                proxyOptions.setPort(cmdData.input_proxyPort);
+                proxyOptions.setHost(args.proxyHost);
+                proxyOptions.setPort(args.proxyPort);
             }
 
             try (
                     final SocketOptions socketOptions = new SocketOptions();
                     final DiscoveryClientConfig discoveryClientConfig =
-                            new DiscoveryClientConfig(tlsCtxOptions, socketOptions, cmdData.input_signingRegion, 1, proxyOptions);
+                            new DiscoveryClientConfig(tlsCtxOptions, socketOptions, args.region, 1, proxyOptions);
                     final DiscoveryClient discoveryClient = new DiscoveryClient(discoveryClientConfig)) {
 
                 DiscoverResponse response = discoveryClient.discover(input_thingName).get(60, TimeUnit.SECONDS);
@@ -197,10 +128,10 @@ public class BasicDiscovery {
                     printGreengrassGroupList(response.getGGGroups(), "");
                 }
 
-                if (cmdData.inputPrintDiscoverRespOnly == false) {
+                if (args.printDiscoveryRespOnly == false) {
                     try (final MqttClientConnection connection = getClientFromDiscovery(discoveryClient)) {
-                        if ("subscribe".equals(cmdData.input_mode) || "both".equals(cmdData.input_mode)) {
-                            final CompletableFuture<Integer> subFuture = connection.subscribe(cmdData.input_topic, QualityOfService.AT_MOST_ONCE, message -> {
+                        if ("subscribe".equals(args.mode) || "both".equals(args.mode)) {
+                            final CompletableFuture<Integer> subFuture = connection.subscribe(args.topic, QualityOfService.AT_MOST_ONCE, message -> {
                                 System.out.println(String.format("Message received on topic %s: %s",
                                         message.getTopic(), new String(message.getPayload(), StandardCharsets.UTF_8)));
                             });
@@ -210,8 +141,8 @@ public class BasicDiscovery {
                         final Scanner scanner = new Scanner(System.in);
                         while (true) {
                             String input = null;
-                            if ("publish".equals(cmdData.input_mode) || "both".equals(cmdData.input_mode)) {
-                                System.out.println("Enter the message you want to publish to topic " + cmdData.input_topic + " and press Enter. " +
+                            if ("publish".equals(args.mode) || "both".equals(args.mode)) {
+                                System.out.println("Enter the message you want to publish to topic " + args.topic + " and press Enter. " +
                                         "Type 'exit' or 'quit' to exit this program: ");
                                 input = scanner.nextLine();
                             }
@@ -221,8 +152,8 @@ public class BasicDiscovery {
                                 break;
                             }
 
-                            if ("publish".equals(cmdData.input_mode) || "both".equals(cmdData.input_mode)) {
-                                final CompletableFuture<Integer> publishResult = connection.publish(new MqttMessage(cmdData.input_topic,
+                            if ("publish".equals(args.mode) || "both".equals(args.mode)) {
+                                final CompletableFuture<Integer> publishResult = connection.publish(new MqttMessage(args.topic,
                                         input.getBytes(StandardCharsets.UTF_8), QualityOfService.AT_MOST_ONCE, false));
                                 Integer result = publishResult.get();
                             }
