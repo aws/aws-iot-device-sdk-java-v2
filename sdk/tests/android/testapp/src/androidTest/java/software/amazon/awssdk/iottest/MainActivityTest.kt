@@ -66,6 +66,11 @@ class MainActivityTest {
                 resourceNames.add("mqtt5PubSubPrivatekey.pem")
             }
 
+            "mqtt5x509.Mqtt5X509" -> {
+                resourceNames.add("mqtt5PubSubCertificate.pem")
+                resourceNames.add("mqtt5PubSubPrivatekey.pem")
+            }
+
             "customkeyopsconnect.CustomKeyOpsConnect" -> {
                 resourceNames.add("customKeyOpsKey.pem")
                 resourceNames.add("customKeyOpsCert.pem")
@@ -126,8 +131,6 @@ class MainActivityTest {
             }
 
             "mqtt5x509.Mqtt5X509" -> {
-                resourceNames.add("mqtt5PubSubCertificate.pem")
-                resourceNames.add("mqtt5PubSubPrivatekey.pem")
                 args.addAll(arrayOf(
                     "--cert", resourceMap["mqtt5PubSubCertificate.pem"],
                     "--key", resourceMap["mqtt5PubSubPrivatekey.pem"],
