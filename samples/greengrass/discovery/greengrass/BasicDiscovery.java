@@ -29,6 +29,118 @@ import java.util.concurrent.TimeoutException;
 import static software.amazon.awssdk.iot.discovery.DiscoveryClient.TLS_EXT_ALPN;
 
 import utils.commandlineutils.CommandLineUtils;
+/*
+
+# Required Arguments
+required.add_argument("--cert", required=True,  metavar="", dest="input_cert",
+                    help="Path to the certificate file to use during mTLS connection establishment")
+required.add_argument("--key", required=True,  metavar="", dest="input_key",
+                    help="Path to the private key file to use during mTLS connection establishment")
+required.add_argument("--region", required=True,  metavar="", dest="input_signing_region",
+                      help="The region to connect through.")
+required.add_argument("--thing_name", required=True,  metavar="", dest="input_thing_name",
+                      help="The name assigned to your IoT Thing.")
+
+# Optional Arguments
+optional.add_argument("--ca_file",  metavar="", dest="input_ca",
+                      help="Path to optional CA bundle (PEM)")
+optional.add_argument("--topic", default=f"test/topic/{uuid.uuid4().hex[:8]}",  metavar="", dest="input_topic",
+                      help="Topic")
+
+optional.add_argument("--print_discover_resp_only", type=bool, default=False,  metavar="", dest="input_print_discovery_resp_only",
+                    help="(optional, default='False').")
+optional.add_argument("--mode", default='both',  metavar="", dest="input_mode",
+                    help=f"The operation mode (optional, default='both').\nModes:{allowed_actions}")
+optional.add_argument("--proxy_host",  metavar="", dest="input_proxy_host",
+                      help="HTTP proxy host")
+optional.add_argument("--proxy_port", type=int, default=0,  metavar="", dest="input_proxy_port",
+                      help="HTTP proxy port")
+optional.add_argument("--client_id",  metavar="", dest="input_clientId", default=f"mqtt5-sample-{uuid.uuid4().hex[:8]}",
+                    help="Client ID")
+
+
+optional.add_argument("--message", default="Hello World!",  metavar="", dest="input_message",
+                      help="Message payload")
+optional.add_argument("--max_pub_ops", type=int, default=10,  metavar="", dest="input_max_pub_ops", 
+                    help="The maximum number of publish operations (optional, default='10').")
+
+
+input_thingName = cmdData.input_thingName;
+        input_certPath = cmdData.input_cert;
+        input_keyPath = cmdData.input_key;
+if (cmdData.input_ca != null) {
+                tlsCtxOptions.overrideDefaultTrustStoreFromPath(null, cmdData.input_ca);
+
+
+(cmdData.input_proxyHost != null && cmdData.input_proxyPort > 0) {
+ cmdData.input_signingRegion
+
+ cmdData.inputPrintDiscoverRespOnly
+ cmdData.input_mode
+ cmdData.input_topic
+ */
+    // ------------------------- ARGUMENT PARSING -------------------------
+    static class Args {
+        String certPath;
+        String keyPath;
+        String region;
+        String thingName;
+        Boolean printDiscoveryRespOnly = false;
+        String mode;
+        String proxyHost;
+        Boolean isProxyPortSet = false;
+        int proxyPort;
+        String clientId = "mqtt5-sample-" + UUID.randomUUID().toString().replace("-", "").substring(0, 8);
+        String topic = "test/topic";
+    }
+
+    private static void printHelpAndExit(int code) {
+        System.out.println("MQTT5 X509 Sample (mTLS)\n");
+        System.out.println("Required:");
+        System.out.println("  --cert <CERTIFICATE>      Path to certificate file (PEM)");
+        System.out.println("  --key <PRIVATE_KEY>       Path to private key file (PEM)");
+        System.out.println("  --region <REGION>         The region to connect through");
+        System.out.println("  --thing_name <THING_NAME> The name assigned to your IoT Thing");
+        System.out.println("\nOptional:");
+        System.out.println("  --print_discover_resp_only <PRINT_DISC_RESPONSE> (optional, default='False')");
+        System.out.println("  --mode <MODE>                                    The operation mode (optional, default='both').\nModes:{allowed_actions}");
+        System.out.println("  --proxy_host <PROXY_HOST>                        HTTP proxy host");
+        System.out.println("  --proxy_port <PROXY_PORT>                        HTTP proxy port");
+        System.out.println("  --client_id <CLIENT_ID>                          MQTT client ID (default: generated)");
+        System.out.println("  --topic <TOPIC>                                  Topic to use (default: test/topic)");
+        System.exit(code);
+    }
+
+    private static Args parseArgs(String[] argv) {
+        if (argv.length == 0 || Arrays.asList(argv).contains("--help")) {
+            printHelpAndExit(0);
+        }
+        Args a = new Args();
+        for (int i = 0; i < argv.length; i++) {
+            String k = argv[i];
+            String v = (i + 1 < argv.length) ? argv[i + 1] : null;
+
+            switch (k) {
+                case "--endpoint": a.endpoint = v; i++; break;
+                case "--cert":     a.certPath = v; i++; break;
+                case "--key":      a.keyPath  = v; i++; break;
+                case "--client_id": a.clientId = v; i++; break;
+                case "--topic":     a.topic = v; i++; break;
+                case "--message":   a.message = v; i++; break;
+                case "--count":
+                    a.count = Integer.parseInt(v); i++; break;
+                default:
+                    System.err.println("Unknown arg: " + k);
+                    printHelpAndExit(2);
+            }
+        }
+        if (a.endpoint == null || a.certPath == null || a.keyPath == null) {
+            System.err.println("Missing required arguments.");
+            printHelpAndExit(2);
+        }
+        return a;
+    }
+    // ------------------------- ARGUMENT PARSING END ---------------------
 
 public class BasicDiscovery {
 
