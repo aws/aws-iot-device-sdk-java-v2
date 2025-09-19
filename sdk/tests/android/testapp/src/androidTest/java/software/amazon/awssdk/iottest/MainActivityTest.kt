@@ -145,16 +145,29 @@ class MainActivityTest {
     }
 
     fun runSample(name: String) {
-        val classLoader = Thread.currentThread().contextClassLoader
-        val sampleClass = classLoader?.loadClass(name)
-        val sampleArgs = getArgsForSample(name)
-        val main = sampleClass?.getMethod("main", Array<String>::class.java)
-
         try {
+            val classLoader = Thread.currentThread().contextClassLoader
+            println("Loading class: $name")
+            val sampleClass = classLoader?.loadClass(name)
+            println("Class loaded successfully: ${sampleClass?.name}")
+            
+            val sampleArgs = getArgsForSample(name)
+            println("Args prepared: ${sampleArgs.joinToString(" ")}")
+            
+            val main = sampleClass?.getMethod("main", Array<String>::class.java)
+            println("Main method found: ${main != null}")
+            
             main?.invoke(null, sampleArgs)
+            println("Sample execution completed")
         }
-        catch (e:Exception) {
-            fail(e.cause.toString())
+        catch (e: ClassNotFoundException) {
+            fail("Class not found: $name - ${e.message}")
+        }
+        catch (e: NoSuchMethodException) {
+            fail("Main method not found in $name - ${e.message}")
+        }
+        catch (e: Exception) {
+            fail("Sample execution failed: ${e.javaClass.simpleName} - ${e.message} - Cause: ${e.cause}")
         }
     }
 
