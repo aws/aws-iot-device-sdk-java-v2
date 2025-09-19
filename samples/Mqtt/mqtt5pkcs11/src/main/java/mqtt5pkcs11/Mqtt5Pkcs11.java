@@ -200,12 +200,9 @@ public class Mqtt5Pkcs11 {
         }
         AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newDirectMqttBuilderWithMtlsFromPkcs11(
             args.endpoint, pkcs11Options);
-
-        ConnectPacket.ConnectPacketBuilder connectProperties = new ConnectPacket.ConnectPacketBuilder();
-        connectProperties.withClientId(args.clientId);
-        builder.withConnectProperties(connectProperties);
         builder.withLifeCycleEvents(lifecycleEvents);
         builder.withPublishEvents(publishEvents);
+        builder.withClientId(args.clientId);
         client = builder.build();
         // You must call `close()` on AwsIotMqtt5ClientBuilder or it will leak memory! Builder is `AutoClosable` and rely on
         // scope-based cleanup via try-with-resources.

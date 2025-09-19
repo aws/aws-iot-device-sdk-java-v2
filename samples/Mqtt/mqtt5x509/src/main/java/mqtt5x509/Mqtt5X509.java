@@ -164,11 +164,9 @@ public class Mqtt5X509 {
         System.out.println("==== Creating MQTT5 Client ====\n");
         AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newDirectMqttBuilderWithMtlsFromPath(
             args.endpoint, args.certPath, args.keyPath);
-        ConnectPacket.ConnectPacketBuilder connectProperties = new ConnectPacket.ConnectPacketBuilder();
-        connectProperties.withClientId(args.clientId);
-        builder.withConnectProperties(connectProperties);
         builder.withLifeCycleEvents(lifecycleEvents);
         builder.withPublishEvents(publishEvents);
+        builder.withClientId(args.clientId);
         client = builder.build();
         // You must call `close()` on AwsIotMqtt5ClientBuilder or it will leak memory! Builder is `AutoClosable` and rely on
         // scope-based cleanup via try-with-resources.
