@@ -91,8 +91,7 @@ class MainActivityTest {
 
         // Args for all samples
         args.addAll(arrayOf(
-            "--endpoint", assetContents("endpoint.txt"),
-            "--verbosity", "Debug"))
+            "--endpoint", assetContents("endpoint.txt")))
 
         // Set sample specific args
         when(name){
@@ -127,10 +126,12 @@ class MainActivityTest {
             }
 
             "mqtt5x509.Mqtt5X509" -> {
+                resourceNames.add("mqtt5PubSubCertificate.pem")
+                resourceNames.add("mqtt5PubSubPrivatekey.pem")
                 args.addAll(arrayOf(
                     "--cert", resourceMap["mqtt5PubSubCertificate.pem"],
                     "--key", resourceMap["mqtt5PubSubPrivatekey.pem"],
-                    "--message", "message.txt", "Hello World From Android"
+                    "--message", "Hello World From Android"
                 ))
             }
 
