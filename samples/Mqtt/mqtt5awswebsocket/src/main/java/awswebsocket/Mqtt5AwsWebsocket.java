@@ -77,10 +77,6 @@ public class Mqtt5AwsWebsocket {
     }
     // ------------------------- ARGUMENT PARSING END ---------------------
 
-    static void onApplicationFailure(Throwable cause) {
-        throw new RuntimeException("Mqtt5 Aws Websocket: execution failure", cause);
-    }
-
     public static void main(String[] argv) {
         Args args = parseArgs(argv);
 
@@ -176,7 +172,7 @@ public class Mqtt5AwsWebsocket {
                 throw new RuntimeException("Connection timeout");
             }
         } catch (InterruptedException ex) {
-            onApplicationFailure(ex);
+            throw new RuntimeException("Mqtt5 Aws Websocket: execution failure", ex);
         }
 
         /* Subscribe */
@@ -186,7 +182,7 @@ public class Mqtt5AwsWebsocket {
             SubAckPacket subAckPacket  = client.subscribe(subscribePacket).get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
             System.out.println("SubAck received with reason code:" + subAckPacket.getReasonCodes() + "\n");
         } catch (Exception ex) {
-            onApplicationFailure(ex);
+            throw new RuntimeException("Mqtt5 Aws Websocket: execution failure", ex);
         }
 
         /* Publish */
@@ -207,12 +203,12 @@ public class Mqtt5AwsWebsocket {
             PubAckPacket pubAck = client.publish(publishPacket).get(TIMEOUT_SECONDS, TimeUnit.SECONDS).getResultPubAck();
             System.out.println("PubAck received with reason: " + pubAck.getReasonCode() + "\n");
             } catch (Exception ex) {
-                onApplicationFailure(ex);
+                throw new RuntimeException("Mqtt5 Aws Websocket: execution failure", ex);
             }
             try {
                 Thread.sleep(Duration.ofMillis(1500).toMillis());
             } catch (InterruptedException ex) {
-                onApplicationFailure(ex);
+                throw new RuntimeException("Mqtt5 Aws Websocket: execution failure", ex);
             }
             publishCount++;
         }
@@ -222,7 +218,7 @@ public class Mqtt5AwsWebsocket {
                 try {
                     receivedAll.await(TIMEOUT_SECONDS, TimeUnit.SECONDS);
                 } catch (InterruptedException ex) {
-                    onApplicationFailure(ex);
+                    throw new RuntimeException("Mqtt5 Aws Websocket: execution failure", ex);
                 }
             }
             long received = (args.count - receivedAll.getCount());
@@ -236,7 +232,7 @@ public class Mqtt5AwsWebsocket {
             UnsubAckPacket unsubAckPacket = client.unsubscribe(unsubscribePacket).get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
             System.out.println("UnsubAck received with reason code:" + unsubAckPacket.getReasonCodes() + "\n");
         } catch (Exception ex) {
-            onApplicationFailure(ex);
+            throw new RuntimeException("Mqtt5 Aws Websocket: execution failure", ex);
         }
 
         System.out.println("==== Stopping Client ====");
@@ -246,7 +242,7 @@ public class Mqtt5AwsWebsocket {
                 throw new RuntimeException("Stop timeout");
             }
         } catch (InterruptedException ex) {
-            onApplicationFailure(ex);
+            throw new RuntimeException("Mqtt5 Aws Websocket: execution failure", ex);
         }
         System.out.println("==== Client Stopped! ====");
 
