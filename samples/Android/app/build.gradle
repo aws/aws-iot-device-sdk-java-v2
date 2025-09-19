@@ -51,8 +51,7 @@ android {
 
     sourceSets {
         main {
-            java.srcDir '../../Utils/CommandLineUtils'
-            java.srcDir '../../Mqtt/X509PubSub/src/main/java'
+            java.srcDir '../../mqtt/mqtt5x509/src/main/java'
             java.srcDir '../AndroidKeyChainPubSub/src/main/java'
             java.srcDir 'src/main/java'
         }
