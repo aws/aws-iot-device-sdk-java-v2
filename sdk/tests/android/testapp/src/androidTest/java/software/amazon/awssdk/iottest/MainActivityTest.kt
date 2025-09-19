@@ -31,7 +31,7 @@ class MainActivityTest {
     }
 
     fun getArgsForSample(name: String) : Array<String?> {
-        System.setProperty("aws.crt.ci", "True")
+        // System.setProperty("aws.crt.ci", "True")
         val testContext = InstrumentationRegistry.getInstrumentation().targetContext
         val testRes = testContext.getResources()
         var resourceNames = mutableListOf<String>()
@@ -160,6 +160,6 @@ class MainActivityTest {
 
     @Test
     fun mqtt5PubSubSample(){
-        runSample("mqtt.x509pubsub.X509PubSub")
+        runSample("mqtt.mqtt5x509.Mqtt5X509")
     }
 }
