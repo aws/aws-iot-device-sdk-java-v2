@@ -152,12 +152,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         resourceNames.add("endpoint.txt");
         resourceNames.add("privatekey.pem");
         resourceNames.add("certificate.pem");
-        resourceNames.add("cognitoIdentity.txt");
-        resourceNames.add("signingRegion.txt");
         resourceNames.add("keychainAlias.txt");
-        resourceNames.add("verbosity.txt");
         resourceNames.add("clientId.txt");
-        resourceNames.add("thingName.txt");
         resourceNames.add("topic.txt");
         resourceNames.add("message.txt");
         resourceNames.add("count.txt");
