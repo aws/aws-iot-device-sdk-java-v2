@@ -99,10 +99,10 @@ To get started with the AWS IoT Device SDK for Java v2:
 
 Check out the [samples](samples) directory for working code examples that demonstrate:
 - Basic MQTT connection and messaging
-- AWS IoT Device Shadow operations
-- AWS IoT Jobs
-- AWS IoT Fleet provisioning
-- AWS IoT Commands
+- [AWS IoT Device Shadow operations](./samples/ShadowSandbox/README.md)
+- [AWS IoT Jobs](./samples/JobsSandbox/README.md)
+- AWS IoT Fleet provisioning: [basic](./samples/Provisioning/Basic/README.md) and [with CSR](./samples/Provisioning/Csr/README.md)
+- [AWS IoT Commands](./samples/CommandsSandbox/README.md)
 
 The samples provide ready-to-run code with detailed setup instructions for each authentication method and use case.
 
