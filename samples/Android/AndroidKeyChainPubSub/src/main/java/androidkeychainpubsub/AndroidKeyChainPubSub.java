@@ -15,6 +15,10 @@ import software.amazon.awssdk.iot.AwsIotMqtt5ClientBuilder;
 import software.amazon.awssdk.iot.AndroidKeyChainHandlerBuilder;
 
 import java.util.List;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.util.Arrays;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -26,7 +30,8 @@ public class AndroidKeyChainPubSub {
     // ------------------------- ARGUMENT PARSING -------------------------
     static class Args {
         String endpoint;
-        String keychainAlias;
+        String keyChainAlias;
+        String keyPath;
         String clientId = "mqtt5-sample-" + UUID.randomUUID().toString().replace("-", "").substring(0, 8);
         String topic = "test/topic";
         String message = "Hello from mqtt5 sample";
@@ -57,7 +62,7 @@ public class AndroidKeyChainPubSub {
 
             switch (k) {
                 case "--endpoint":       a.endpoint = v; i++; break;
-                case "--keychain_alias": a.keychainAlias = v; i++; break;
+                case "--keychain_alias": a.keyChainAlias = v; i++; break;
                 case "--key":            a.keyPath  = v; i++; break;
                 case "--client_id":      a.clientId = v; i++; break;
                 case "--topic":          a.topic = v; i++; break;
@@ -68,7 +73,7 @@ public class AndroidKeyChainPubSub {
                     printHelpAndExit(2);
             }
         }
-        if (a.endpoint == null || a.keychainAlias == null) {
+        if (a.endpoint == null || a.keyChainAlias == null) {
             System.err.println("Missing required arguments.");
             printHelpAndExit(2);
         }
@@ -76,7 +81,7 @@ public class AndroidKeyChainPubSub {
     }
     // ------------------------- ARGUMENT PARSING END ---------------------
 
-    public static void main(String[] args, Context context) {
+    public static void main(String[] argv, Context context) {
         Args args = parseArgs(argv);
 
         System.out.println("\nStarting Android KeyChain Sample\n");
