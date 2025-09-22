@@ -28,6 +28,8 @@ import java.util.concurrent.TimeoutException;
 
 import static software.amazon.awssdk.iot.discovery.DiscoveryClient.TLS_EXT_ALPN;
 
+public class BasicDiscovery {
+
     // ------------------------- ARGUMENT PARSING -------------------------
     static class Args {
         String certPath;
@@ -39,7 +41,6 @@ import static software.amazon.awssdk.iot.discovery.DiscoveryClient.TLS_EXT_ALPN;
         String proxyHost;
         String caPath;
         int proxyPort = 0;
-        String clientId = "mqtt5-sample-" + UUID.randomUUID().toString().replace("-", "").substring(0, 8);
         String topic = "test/topic";
     }
 
@@ -56,7 +57,6 @@ import static software.amazon.awssdk.iot.discovery.DiscoveryClient.TLS_EXT_ALPN;
         System.out.println("  --ca_file <CA_FILE>                              Path to optional CA bundle (PEM)");
         System.out.println("  --proxy_host <PROXY_HOST>                        HTTP proxy host");
         System.out.println("  --proxy_port <PROXY_PORT>                        HTTP proxy port");
-        System.out.println("  --client_id <CLIENT_ID>                          MQTT client ID (default: generated)");
         System.out.println("  --topic <TOPIC>                                  Topic to use (default: test/topic)");
         System.exit(code);
     }
@@ -74,15 +74,13 @@ import static software.amazon.awssdk.iot.discovery.DiscoveryClient.TLS_EXT_ALPN;
                 case "--cert":                     a.certPath = v; i++; break;
                 case "--key":                      a.keyPath  = v; i++; break;
                 case "--region":                   a.region   = v; i++; break;
-                case "--thing_name":               a.thingName = v; i++ break;
+                case "--thing_name":               a.thingName = v; i++; break;
                 case "--print_discover_resp_only": a.printDiscoveryRespOnly = Boolean.valueOf(v);
                 case "--mode":                     a.mode = v; i++; break;
                 case "--proxy_host":               a.proxyHost = v; i++; break;
                 case "--proxy_port":               a.proxyPort = Integer.parseInt(v); i++; break;
                 case "--ca_file":                  a.caPath = v; i++; break;
-                case "--client_id":                a.clientId = v; i++; break;
                 case "--topic":                    a.topic = v; i++; break;
-                case "--message":                  a.message = v; i++; break;
                 default:
                     System.err.println("Unknown arg: " + k);
                     printHelpAndExit(2);
@@ -96,16 +94,16 @@ import static software.amazon.awssdk.iot.discovery.DiscoveryClient.TLS_EXT_ALPN;
     }
     // ------------------------- ARGUMENT PARSING END ---------------------
 
-public class BasicDiscovery {
+    static Args args;
 
-    public static void main(String[] args) {
-        Args args = parseArgs(argv);
+    public static void main(String[] argv) {
+        args = parseArgs(argv);
 
         try (final TlsContextOptions tlsCtxOptions = TlsContextOptions.createWithMtlsFromPath(args.certPath, args.keyPath)) {
             if (TlsContextOptions.isAlpnSupported()) {
                 tlsCtxOptions.withAlpnList(TLS_EXT_ALPN);
             }
-            if (args.caFile != null) {
+            if (args.caPath != null) {
                 tlsCtxOptions.overrideDefaultTrustStoreFromPath(null, args.caPath);
             }
             HttpProxyOptions proxyOptions = null;
@@ -121,12 +119,8 @@ public class BasicDiscovery {
                             new DiscoveryClientConfig(tlsCtxOptions, socketOptions, args.region, 1, proxyOptions);
                     final DiscoveryClient discoveryClient = new DiscoveryClient(discoveryClientConfig)) {
 
-                DiscoverResponse response = discoveryClient.discover(input_thingName).get(60, TimeUnit.SECONDS);
-                if (isCI) {
-                    System.out.println("Received a greengrass discovery result! Not showing result in CI for possible data sensitivity.");
-                } else {
-                    printGreengrassGroupList(response.getGGGroups(), "");
-                }
+                DiscoverResponse response = discoveryClient.discover(args.thingName).get(60, TimeUnit.SECONDS);
+                printGreengrassGroupList(response.getGGGroups(), "");
 
                 if (args.printDiscoveryRespOnly == false) {
                     try (final MqttClientConnection connection = getClientFromDiscovery(discoveryClient)) {
@@ -196,15 +190,15 @@ public class BasicDiscovery {
 
     private static MqttClientConnection getClientFromDiscovery(final DiscoveryClient discoveryClient
     ) throws ExecutionException, InterruptedException {
-        final CompletableFuture<DiscoverResponse> futureResponse = discoveryClient.discover(input_thingName);
+        final CompletableFuture<DiscoverResponse> futureResponse = discoveryClient.discover(args.thingName);
         final DiscoverResponse response = futureResponse.get();
 
         if (response.getGGGroups() == null) {
-            throw new RuntimeException("ThingName " + input_thingName + " does not have a Greengrass group/core configuration");
+            throw new RuntimeException("ThingName " + args.thingName + " does not have a Greengrass group/core configuration");
         }
         final Optional<GGGroup> groupOpt = response.getGGGroups().stream().findFirst();
         if (!groupOpt.isPresent()) {
-            throw new RuntimeException("ThingName " + input_thingName + " does not have a Greengrass group/core configuration");
+            throw new RuntimeException("ThingName " + args.thingName + " does not have a Greengrass group/core configuration");
         }
 
         final GGGroup group = groupOpt.get();
@@ -217,8 +211,8 @@ public class BasicDiscovery {
             System.out.printf("Connecting to group ID %s, with thing arn %s, using endpoint %s:%d%n",
                     group.getGGGroupId(), core.getThingArn(), dnsOrIp, port);
 
-            try (final AwsIotMqttConnectionBuilder connectionBuilder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(input_certPath, input_keyPath)
-                    .withClientId(input_thingName)
+            try (final AwsIotMqttConnectionBuilder connectionBuilder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(args.certPath, args.keyPath)
+                    .withClientId(args.thingName)
                     .withPort(port)
                     .withEndpoint(dnsOrIp)
                     .withConnectionEventCallbacks(new MqttClientConnectionEvents() {
@@ -252,6 +246,6 @@ public class BasicDiscovery {
             }
         }
 
-        throw new RuntimeException("ThingName " + input_thingName + " could not connect to the green grass core using any of the endpoint connectivity options");
+        throw new RuntimeException("ThingName " + args.thingName + " could not connect to the green grass core using any of the endpoint connectivity options");
     }
 }
