@@ -3,7 +3,7 @@
 
 The Android sample builds an app that can be installed and run on an Android Device. The app builds and allows you
 to run the following [samples](#links-to-individual-sample-readme-files) from aws-iot-device-sdk-java-v2:
-* [Mqtt5PubSub](../Mqtt5/PubSub/README.md)
+* [Mqtt5PubSub](../mqtt/mqtt5x509/README.md)
 * [KeyChainPubSub](./AndroidKeyChainPubSub/README.md)
 
 *__Jump To:__*
@@ -26,7 +26,7 @@ files linked below.
 ### Files required by all samples:
 * `endpoint.txt` - IoT ATS Endpoint
 
-### Required to run Mqtt5PubSub sample
+### Required to run Mqtt5X509 sample
 * `certificate.pem` - IoT Thing Certificate
 * `privatekey.pem` - IoT Thing Private Key
 
@@ -40,10 +40,7 @@ files linked below.
 * `count.txt` - specifies --count CLI argument
 
 ### Optional files for all Samples:
-* `rootca.pem` - override the default system trust store
 * `clientId.txt` - specifies --clientId CLI argument
-* `port.txt` - specifies --port CLI argument
-* `verbosity.txt` - specifies --verbosity CLI argument
 
 # Build and install sample app
 
@@ -61,9 +58,9 @@ cd samples/Android/app
 The following links will provide more details on the individual samples available in the
 Android sample app.
 
-[**Mqtt5PubSub**](../Mqtt5/PubSub/README.md)
+[**Mqtt5PubSub**](../mqtt/mqtt5x509/README.md)
 
-[**KeyChainPubSub**](AndroidKeyChainPubSub/README.md)
+[**KeyChainPubSub**](./AndroidKeyChainPubSub/README.md)
 
 
 # Trouble Shooting

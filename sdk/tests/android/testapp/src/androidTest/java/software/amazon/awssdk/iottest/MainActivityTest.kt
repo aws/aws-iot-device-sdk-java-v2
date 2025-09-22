@@ -31,7 +31,6 @@ class MainActivityTest {
     }
 
     fun getArgsForSample(name: String) : Array<String?> {
-        // System.setProperty("aws.crt.ci", "True")
         val testContext = InstrumentationRegistry.getInstrumentation().targetContext
         val testRes = testContext.getResources()
         var resourceNames = mutableListOf<String>()
