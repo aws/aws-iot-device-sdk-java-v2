@@ -18,7 +18,7 @@ If you are just getting started make sure you [install this sdk](https://github.
 
 ### How do I enable logging?
 
-To enable logging in the samples, you will need to set the following system properties when running the samples:
+<!-- To enable logging in the samples, you will need to set the following system properties when running the samples:
 
 ```sh
 -Daws.crt.debugnative=true
@@ -36,7 +36,7 @@ For example, to run `BasicPubSub` with logging you could use the following:
 
 ```sh
 mvn compile exec:java -pl samples/BasicPubSub -Daws.crt.debugnative=true -Daws.crt.log.level=Debug -Daws.crt.log.destionation=Stdout -Dexec.mainClass=pubsub.PubSub -Dexec.args='--endpoint <endpoint> --cert <path to cert> --key <path to key> --ca_file <path to ca file>'
-```
+``` -->
 
 You can also enable [CloudWatch logging](https://docs.aws.amazon.com/iot/latest/developerguide/cloud-watch-logs.html) for IoT which will provide you with additional information that is not available on the client side sdk.
 
@@ -90,11 +90,11 @@ Here is an example launch.json file to run the pubsub sample
     "configurations": [
         {
             "type": "java",
-            "name": "PubSub",
+            "name": "x509",
             "request": "launch",
-            "mainClass": "pubsub.PubSub",
-            "projectName": "BasicPubSub",
-            "args": "--endpoint <account-number>-ats.iot.<region>.amazonaws.com --ca_file <path to root-CA> --cert <path to cert> --key <path to key> --client-id test-client",
+            "mainClass": "mqtt5x509.Mqtt5X509",
+            "projectName": "Mqtt5X509",
+            "args": "--endpoint <account-number>-ats.iot.<region>.amazonaws.com --cert <path to cert> --key <path to key> --client-id test-client",
             "console": "externalTerminal"
         }
     ]

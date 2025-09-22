@@ -18,9 +18,11 @@
         * [Websocket Connection with Cognito Authentication Method](#websocket-connection-with-cognito-authentication-method)
     + [Adding an HTTP Proxy](#adding-an-http-proxy)
     + [How to create a MQTT5 client](#how-to-create-a-mqtt5-client)
+        * [Lifecycle Management](#lifecycle-management)
     + [How to Start and Stop](#how-to-start-and-stop)
-    + [How to Publish](#how-to-publish)
-    + [How to Subscribe and Unsubscribe](#how-to-subscribe-and-unsubscribe)
+    + [Client Operations](#client-operations)
+        + [How to Publish](#how-to-publish)
+        + [How to Subscribe and Unsubscribe](#how-to-subscribe-and-unsubscribe)
     + [MQTT5 Best Practices](#mqtt5-best-practices)
 
 # Introduction
@@ -351,6 +353,8 @@ SDK Proxy support also includes support for basic authentication and TLS-to-prox
 
 Once a MQTT5 client builder has been created, it is ready to make a [MQTT5 client](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5Client.html). Something important to note is that once a MQTT5 client is built and finalized, the resulting MQTT5 client cannot have its settings modified! Further, modifications to the MQTT5 client builder will not change the settings of already created the MQTT5 clients. Before building a MQTT5 client from a MQTT5 client builder, make sure to have everything fully setup.
 
+### Lifecycle Management
+
 For almost every MQTT5 client, it is extremely important to setup [LifecycleEvents](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5ClientOptions.LifecycleEvents.html) callbacks. [LifecycleEvents](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5ClientOptions.LifecycleEvents.html) are invoked when the MQTT5 client connects, fails to connect, disconnects, and is stopped. Without these callbacks setup, it will be incredibly hard to determine the state of the MQTT5 client. To setup [LifecycleEvents](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5ClientOptions.LifecycleEvents.html) callbacks, see the following code:
 
 ~~~ java
@@ -482,7 +486,9 @@ client.stop(disconnectBuilder.build());
 client.close();
 ~~~
 
-## How to Publish
+## Client Operations
+
+### Publish
 
 The [publish](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5Client.html#publish(software.amazon.awssdk.crt.mqtt5.packets.PublishPacket)) operation takes a description of the PUBLISH packet you wish to send and returns a promise containing a [PublishResult](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/PublishResult.html). The returned [PublishResult](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/PublishResult.html) will contain different data depending on the QoS used in the publish.
 
@@ -518,7 +524,7 @@ PublishResult result = published.get(60, TimeUnit.SECONDS);
 
 Note that publishes made while a MQTT5 client is disconnected and offline will be put into a queue. Once reconnected, the MQTT5 client will send any publishes made while disconnected and offline automatically.
 
-## How to Subscribe and Unsubscribe
+### Subscribe and Unsubscribe
 
 The [subscribe](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5Client.html#subscribe(software.amazon.awssdk.crt.mqtt5.packets.SubscribePacket)) operation takes a description of the [SubscribePacket](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/packets/SubscribePacket.html) you wish to send and returns a promise that resolves successfully with the corresponding [SubAckPacket](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/packets/SubAckPacket.html) returned by the broker; the promise is rejected with an error if anything goes wrong before the [SubAckPacket](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/packets/SubAckPacket.html) is received.
 You should always check the reason codes of a [SubAckPacket](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/packets/SubAckPacket.html) completion to determine if the subscribe operation actually succeeded.
