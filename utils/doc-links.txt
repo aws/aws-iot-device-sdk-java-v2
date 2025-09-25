@@ -1,0 +1,1 @@
+samples/Mqtt/mqtt5x509/pom.xml
