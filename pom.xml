@@ -7,7 +7,8 @@
     <version>1.0-SNAPSHOT</version>
 
     <modules>
-        <module>sdk</module>        
+        <module>sdk</module>
+        <module>samples/BasicPubSub</module>
         <module>samples/mqtt/mqtt5x509</module>
         <module>samples/mqtt/mqtt5awswebsocket</module>
         <module>samples/mqtt/mqtt5customauthsigned</module>
