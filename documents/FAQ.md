@@ -18,7 +18,7 @@ If you are just getting started make sure you [install this sdk](https://github.
 
 ### How do I enable logging?
 
-<!-- To enable logging in the samples, you will need to set the following system properties when running the samples:
+To enable logging in the samples, you will need to set the following system properties when running the samples:
 
 ```sh
 -Daws.crt.debugnative=true
@@ -35,8 +35,8 @@ If you are just getting started make sure you [install this sdk](https://github.
 For example, to run `BasicPubSub` with logging you could use the following:
 
 ```sh
-mvn compile exec:java -pl samples/BasicPubSub -Daws.crt.debugnative=true -Daws.crt.log.level=Debug -Daws.crt.log.destionation=Stdout -Dexec.mainClass=pubsub.PubSub -Dexec.args='--endpoint <endpoint> --cert <path to cert> --key <path to key> --ca_file <path to ca file>'
-``` -->
+mvn compile exec:java -pl samples/mqtt/mqtt5x509 -Daws.crt.debugnative=true -Daws.crt.log.level=Debug -Daws.crt.log.destionation=Stdout -Dexec.mainClass=pubsub.PubSub -Dexec.args='--endpoint <endpoint> --cert <path to cert> --key <path to key>'
+```
 
 You can also enable [CloudWatch logging](https://docs.aws.amazon.com/iot/latest/developerguide/cloud-watch-logs.html) for IoT which will provide you with additional information that is not available on the client side sdk.
 

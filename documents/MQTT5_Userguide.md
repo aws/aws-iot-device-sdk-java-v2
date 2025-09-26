@@ -21,8 +21,8 @@
         * [Lifecycle Management](#lifecycle-management)
     + [How to Start and Stop](#how-to-start-and-stop)
     + [Client Operations](#client-operations)
-        + [How to Publish](#how-to-publish)
-        + [How to Subscribe and Unsubscribe](#how-to-subscribe-and-unsubscribe)
+        + [Publish](#publish)
+        + [Subscribe and Unsubscribe](#subscribe-and-unsubscribe)
     + [MQTT5 Best Practices](#mqtt5-best-practices)
 
 # Introduction

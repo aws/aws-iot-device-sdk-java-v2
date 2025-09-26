@@ -1,6 +1,6 @@
 # Greengrass Discovery
 
-[**Return to main sample list**](../README.md)
+[**Return to main sample list**](../../README.md)
 
 This sample is intended for use with the following tutorials in the AWS IoT Greengrass documentation:
 
