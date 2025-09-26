@@ -267,3 +267,12 @@ Finally, you pass the certificate signing request while invoking the Fleet Provi
 mvn compile exec:java -pl samples/Provisioning/Csr -Dexec.mainClass=identity.CsrProvisioning -Dexec.args="--endpoint <endpoint> --cert <path to certificate> --key <path to private key> --template <provisioning template name> --params '{"SerialNumber":"1","DeviceLocation":"Seattle"}' --csr <path to csr file>"
 ```
 
+## ⚠️ Usage disclaimer
+
+These code examples interact with services that may incur charges to your AWS account. For more information, see [AWS Pricing](https://aws.amazon.com/pricing/).
+
+Additionally, example code might theoretically modify or delete existing AWS resources. As a matter of due diligence, do the following:
+
+- Be aware of the resources that these examples create or delete.
+- Be aware of the costs that might be charged to your account as a result.
+- Back up your important data.
