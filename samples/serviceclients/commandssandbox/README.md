@@ -432,3 +432,13 @@ distinguishes only JSON and CBOR, all other payload formats will be routed to th
    thread(s).
 3. If your application is expected to receive a lot of AWS IoT commands, monitor the number of them enqueued for processing.
    Consider introducing priorities based on AWS IoT command timeouts or another internal value.
+
+## ⚠️ Usage disclaimer
+
+These code examples interact with services that may incur charges to your AWS account. For more information, see [AWS Pricing](https://aws.amazon.com/pricing/).
+
+Additionally, example code might theoretically modify or delete existing AWS resources. As a matter of due diligence, do the following:
+
+- Be aware of the resources that these examples create or delete.
+- Be aware of the costs that might be charged to your account as a result.
+- Back up your important data.

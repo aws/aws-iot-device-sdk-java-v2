@@ -107,3 +107,13 @@ The sample will not run without the required arguments.
 
 ## Additional Information
 Additional help with the MQTT5 Client can be found in the [MQTT5 Userguide](../../../documents/MQTT5_Userguide.md). This guide will provide more details on MQTT5 [operations](../../../documents/MQTT5_Userguide.md#client-operations), [lifecycle events](../../../documents/MQTT5_Userguide.md#lifecycle-management), [connection methods](../../../documents/MQTT5_Userguide.md#how-to-setup-mqtt5-builder-based-on-desired-connection-method), and other useful information.
+
+## ⚠️ Usage disclaimer
+
+These code examples interact with services that may incur charges to your AWS account. For more information, see [AWS Pricing](https://aws.amazon.com/pricing/).
+
+Additionally, example code might theoretically modify or delete existing AWS resources. As a matter of due diligence, do the following:
+
+- Be aware of the resources that these examples create or delete.
+- Be aware of the costs that might be charged to your account as a result.
+- Back up your important data.

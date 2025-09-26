@@ -66,3 +66,13 @@ Android sample app.
 # Trouble Shooting
 ### Error: The file name must end with .xml
 This error typically occurs when non-XML files are placed in the `app/src/main/res/` directory. Android enforces strict rules on what can be included in the `res/` folder. If you're working with test or data files (e.g., .txt in our sample), you **MUST** place them in the `app/src/main/assets/` directory instead.
+
+## ⚠️ Usage disclaimer
+
+These code examples interact with services that may incur charges to your AWS account. For more information, see [AWS Pricing](https://aws.amazon.com/pricing/).
+
+Additionally, example code might theoretically modify or delete existing AWS resources. As a matter of due diligence, do the following:
+
+- Be aware of the resources that these examples create or delete.
+- Be aware of the costs that might be charged to your account as a result.
+- Back up your important data.
