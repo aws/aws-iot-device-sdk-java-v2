@@ -3,35 +3,31 @@
  * SPDX-License-Identifier: Apache-2.0.
  */
 
-package androidkeychainpubsub;
+package mqtt5awswebsocket;
 
-import software.amazon.awssdk.crt.CRT;
-import software.amazon.awssdk.crt.CrtResource;
-import software.amazon.awssdk.crt.io.*;
-import software.amazon.awssdk.crt.mqtt5.*;
-import software.amazon.awssdk.crt.mqtt5.Mqtt5ClientOptions.LifecycleEvents;
-import software.amazon.awssdk.crt.mqtt5.packets.*;
-import software.amazon.awssdk.iot.AwsIotMqtt5ClientBuilder;
-import software.amazon.awssdk.iot.AndroidKeyChainHandlerBuilder;
-
-import java.util.List;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import android.content.Context;
+import software.amazon.awssdk.crt.CRT;
+import software.amazon.awssdk.crt.CrtResource;
+import software.amazon.awssdk.crt.mqtt5.*;
+import software.amazon.awssdk.crt.mqtt5.packets.*;
+import software.amazon.awssdk.iot.AwsIotMqtt5ClientBuilder;
 
-public class AndroidKeyChainPubSub {
+/**
+ * MQTT5 AWS Websocket Sample
+ */
+public class Mqtt5AwsWebsocket {
 
     // ------------------------- ARGUMENT PARSING -------------------------
     static class Args {
         String endpoint;
-        String keyChainAlias;
-        String keyPath;
+        String signingRegion;
+        String caPath = null;
         String clientId = "mqtt5-sample-" + UUID.randomUUID().toString().replace("-", "").substring(0, 8);
         String topic = "test/topic";
         String message = "Hello from mqtt5 sample";
@@ -39,15 +35,15 @@ public class AndroidKeyChainPubSub {
     }
 
     private static void printHelpAndExit(int code) {
-        System.out.println("MQTT5 X509 Sample (mTLS)\n");
+        System.out.println("MQTT5 AWS Websocket Sample\n");
         System.out.println("Required:");
         System.out.println("  --endpoint <ENDPOINT>             IoT endpoint hostname");
-        System.out.println("  --keychain_alias <KEYCHAIN_ALIAS> Alias of Private Key and Certificate to access from Android KeyChain");
+        System.out.println("  --signing_region <SIGNING_REGION> Signing region for websocket connection");
         System.out.println("\nOptional:");
-        System.out.println("  --client_id <CLIENT_ID>           MQTT client ID (default: generated)");
-        System.out.println("  --topic <TOPIC>                   Topic to use (default: test/topic)");
-        System.out.println("  --message <MESSAGE>               Message payload (default: \"Hello from mqtt5 sample\")");
-        System.out.println("  --count <N>                       Messages to publish (0 = infinite, default: 5)");
+        System.out.println("  --client_id <CLIENT_ID>   MQTT client ID (default: generated)");
+        System.out.println("  --topic <TOPIC>           Topic to use (default: test/topic)");
+        System.out.println("  --message <MESSAGE>       Message payload (default: \"Hello from mqtt5 sample\")");
+        System.out.println("  --count <N>               Messages to publish (0 = infinite, default: 5)");
         System.exit(code);
     }
 
@@ -61,19 +57,19 @@ public class AndroidKeyChainPubSub {
             String v = (i + 1 < argv.length) ? argv[i + 1] : null;
 
             switch (k) {
-                case "--endpoint":       a.endpoint = v; i++; break;
-                case "--keychain_alias": a.keyChainAlias = v; i++; break;
-                case "--key":            a.keyPath  = v; i++; break;
-                case "--client_id":      a.clientId = v; i++; break;
-                case "--topic":          a.topic = v; i++; break;
-                case "--message":        a.message = v; i++; break;
-                case "--count":          a.count = Integer.parseInt(v); i++; break;
+                case "--endpoint": a.endpoint = v; i++; break;
+                case "--signing_region": a.signingRegion = v; i++; break;
+                case "--client_id": a.clientId = v; i++; break;
+                case "--topic":     a.topic = v; i++; break;
+                case "--message":   a.message = v; i++; break;
+                case "--count":
+                    a.count = Integer.parseInt(v); i++; break;
                 default:
                     System.err.println("Unknown arg: " + k);
                     printHelpAndExit(2);
             }
         }
-        if (a.endpoint == null || a.keyChainAlias == null) {
+        if (a.endpoint == null || a.signingRegion == null) {
             System.err.println("Missing required arguments.");
             printHelpAndExit(2);
         }
@@ -81,10 +77,10 @@ public class AndroidKeyChainPubSub {
     }
     // ------------------------- ARGUMENT PARSING END ---------------------
 
-    public static void main(String[] argv, Context context) {
+    public static void main(String[] argv) {
         Args args = parseArgs(argv);
 
-        System.out.println("\nStarting Android KeyChain Sample\n");
+        System.out.println("\nStarting MQTT5 AWS Websocket Sample\n");
         final int TIMEOUT_SECONDS = 100;
 
         /*
@@ -156,22 +152,17 @@ public class AndroidKeyChainPubSub {
 
         Mqtt5Client client;
 
-        /*
-         * AndroidKeyChainHandlerBuilder is used to handle PrivateKey extraction from Android KeyChain.
-         * If you have a PrivateKey, you may pass it directly into the builder instead of providing a
-         * context and alias.
+        /**
+         * Create MQTT5 client that uses a default AWS credentials provider to sign the websocket handshake
          */
-        AndroidKeyChainHandlerBuilder keyChainHandlerBuilder =
-            AndroidKeyChainHandlerBuilder.newKeyChainHandlerWithAlias(context, args.keyChainAlias);
-        
-        AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newDirectMtlsCustomKeyOperationsBuilder(
-            args.endpoint, keyChainHandlerBuilder.build());
+        System.out.println("==== Creating MQTT5 Client ====\n");
+        AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newWebsocketMqttBuilderWithSigv4Auth(args.endpoint, null);
         builder.withLifeCycleEvents(lifecycleEvents);
         builder.withPublishEvents(publishEvents);
         builder.withClientId(args.clientId);
+        /* Build the MQTT5 client with the configured builder */
         client = builder.build();
-        // You must call `close()` on AwsIotMqtt5ClientBuilder or it will leak memory! Builder is `AutoClosable` and rely on
-        // scope-based cleanup via try-with-resources.
+        // You must call `close()` on AwsIotMqtt5ClientBuilder or it will leak memory!
         builder.close();
 
         System.out.println("==== Starting client ====");
@@ -181,7 +172,7 @@ public class AndroidKeyChainPubSub {
                 throw new RuntimeException("Connection timeout");
             }
         } catch (InterruptedException ex) {
-            throw new RuntimeException("Mqtt5 X509: execution failure", ex);
+            throw new RuntimeException("Mqtt5 Aws Websocket: execution failure", ex);
         }
 
         /* Subscribe */
@@ -191,7 +182,7 @@ public class AndroidKeyChainPubSub {
             SubAckPacket subAckPacket  = client.subscribe(subscribePacket).get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
             System.out.println("SubAck received with reason code:" + subAckPacket.getReasonCodes() + "\n");
         } catch (Exception ex) {
-            throw new RuntimeException("Mqtt5 X509: execution failure", ex);
+            throw new RuntimeException("Mqtt5 Aws Websocket: execution failure", ex);
         }
 
         /* Publish */
@@ -212,12 +203,12 @@ public class AndroidKeyChainPubSub {
             PubAckPacket pubAck = client.publish(publishPacket).get(TIMEOUT_SECONDS, TimeUnit.SECONDS).getResultPubAck();
             System.out.println("PubAck received with reason: " + pubAck.getReasonCode() + "\n");
             } catch (Exception ex) {
-                throw new RuntimeException("Mqtt5 X509: execution failure", ex);
+                throw new RuntimeException("Mqtt5 Aws Websocket: execution failure", ex);
             }
             try {
                 Thread.sleep(Duration.ofMillis(1500).toMillis());
             } catch (InterruptedException ex) {
-                throw new RuntimeException("Mqtt5 X509: execution failure", ex);
+                throw new RuntimeException("Mqtt5 Aws Websocket: execution failure", ex);
             }
             publishCount++;
         }
@@ -227,7 +218,7 @@ public class AndroidKeyChainPubSub {
                 try {
                     receivedAll.await(TIMEOUT_SECONDS, TimeUnit.SECONDS);
                 } catch (InterruptedException ex) {
-                    throw new RuntimeException("Mqtt5 X509: execution failure", ex);
+                    throw new RuntimeException("Mqtt5 Aws Websocket: execution failure", ex);
                 }
             }
             long received = (args.count - receivedAll.getCount());
@@ -241,7 +232,7 @@ public class AndroidKeyChainPubSub {
             UnsubAckPacket unsubAckPacket = client.unsubscribe(unsubscribePacket).get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
             System.out.println("UnsubAck received with reason code:" + unsubAckPacket.getReasonCodes() + "\n");
         } catch (Exception ex) {
-            throw new RuntimeException("Mqtt5 X509: execution failure", ex);
+            throw new RuntimeException("Mqtt5 Aws Websocket: execution failure", ex);
         }
 
         System.out.println("==== Stopping Client ====");
@@ -251,7 +242,7 @@ public class AndroidKeyChainPubSub {
                 throw new RuntimeException("Stop timeout");
             }
         } catch (InterruptedException ex) {
-            throw new RuntimeException("Mqtt5 X509: execution failure", ex);
+            throw new RuntimeException("Mqtt5 Aws Websocket: execution failure", ex);
         }
         System.out.println("==== Client Stopped! ====");
 

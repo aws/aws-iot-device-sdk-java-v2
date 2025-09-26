@@ -9,15 +9,18 @@
     <modules>
         <module>sdk</module>
         <module>samples/BasicPubSub</module>
-        <module>samples/Greengrass</module>
-        <module>samples/GreengrassIPC</module>
-        <module>samples/Provisioning/Basic</module>
-        <module>samples/Provisioning/Csr</module>
-        <module>samples/JobsSandbox</module>
-        <module>samples/CommandsSandbox</module>
-        <module>samples/ShadowSandbox</module>
-        <module>samples/Mqtt5/PubSub</module>
-        <module>samples/Mqtt5/SharedSubscription</module>
+        <module>samples/mqtt/mqtt5x509</module>
+        <module>samples/mqtt/mqtt5awswebsocket</module>
+        <module>samples/mqtt/mqtt5customauthsigned</module>
+        <module>samples/mqtt/mqtt5customauthunsigned</module>
+        <module>samples/mqtt/mqtt5pkcs11</module>
+        <module>samples/greengrass/discovery</module>
+        <module>samples/greengrass/greengrassipc</module>
+        <module>samples/serviceclients/provisioning/basic</module>
+        <module>samples/serviceclients/provisioning/csr</module>
+        <module>samples/serviceclients/jobssandbox</module>
+        <module>samples/serviceclients/commandssandbox</module>
+        <module>samples/serviceclients/shadowsandbox</module>
     </modules>
 
     <build>
