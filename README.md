@@ -1,12 +1,13 @@
 # AWS IoT Device SDK for Java v2
 
-The AWS IoT Device SDK for Java v2 connects your Java applications and devices to the AWS IoT platform. Built on the AWS Common Runtime, it handles the complexities of secure communication, authentication, and device management so you can focus on your IoT solution. The SDK makes it easy to use AWS IoT services like Device Shadows, Jobs, Fleet Provisioning, and Commands.
+The AWS IoT Device SDK for Java v2 connects your Java applications and devices to the AWS IoT platform. It handles the complexities of secure communication, authentication, and device management so you can focus on your IoT solution. The SDK makes it easy to use AWS IoT services like Device Shadows, Jobs, Fleet Provisioning, and Commands.
 
-**Supported Platforms**: Linux, Windows, macOS, [Android](./documents/ANDROID.md)
+**Supported Platforms**: Linux, Windows 10+, macOS 10.15+, [Android](./documents/ANDROID.md)
 
 *__Topics:__*
 * [Features](#features)
-* [Using SDK](#using-sdk)
+* [Installation](#installation)
+  * [Minimum Requirements](#minimum-requirements)
 * [Getting Started](#getting-started)
 * [Samples](samples)
 * [MQTT5 User Guide](./documents/MQTT5_Userguide.md)
@@ -17,20 +18,19 @@ The AWS IoT Device SDK for Java v2 connects your Java applications and devices t
 
 The primary purpose of the AWS IoT Device SDK for Java v2 is to simplify the process of connecting devices to AWS IoT Core and interacting with AWS IoT services on various platforms. The SDK provides:
 
-* Built on the [AWS Common Runtime](https://docs.aws.amazon.com/sdkref/latest/guide/common-runtime.html) for high performance and minimal footprint
+* Integrated service clients for AWS IoT Core services
 * Secure device connections to AWS IoT Core using MQTT protocol including MQTT 5.0
 * Support for [multiple authentication methods and connection types](./documents/MQTT5_Userguide.md#how-to-setup-mqtt5-builder-based-on-desired-connection-method)
 * Android [support](./documents/ANDROID.md)
-* First-class support for AWS IoT Core services.
 
 #### Supported AWS IoT Core services
 
-* The [AWS IoT Device Shadow](https://docs.aws.amazon.com/iot/latest/developerguide/iot-device-shadows.html) service adds shadows to AWS IoT thing objects.
-* The [AWS IoT Jobs](https://docs.aws.amazon.com/iot/latest/developerguide/iot-jobs.html) allows to define a set of remote operations that can be sent to and run on one or more devices connected to AWS IoT.
-* The [AWS IoT fleet provisioning](https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html) can generate and securely deliver device certificates and private keys to IoT devices when they connect to AWS IoT for the first time.
-* The [AWS IoT Device Management commands](https://docs.aws.amazon.com/iot/latest/developerguide/iot-remote-command.html) allows to send an instruction from the cloud to a device that's connected to AWS IoT.
+* The [AWS IoT Device Shadow](https://docs.aws.amazon.com/iot/latest/developerguide/iot-device-shadows.html) service manages device state information in the cloud.
+* The [AWS IoT Jobs](https://docs.aws.amazon.com/iot/latest/developerguide/iot-jobs.html) service sends remote operations to connected devices.
+* The [AWS IoT fleet provisioning](https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html) service generates and delivers device certificates automatically.
+* The [AWS IoT Device Management commands](https://docs.aws.amazon.com/iot/latest/developerguide/iot-remote-command.html) service sends instructions from the cloud to connected devices.
 
-## Using SDK
+## Installation
 
 The recommended way to use the AWS IoT Device SDK for Java v2 in your project is to consume it from Maven Central.
 
@@ -61,27 +61,7 @@ Look up the latest SDK version here: https://github.com/aws/aws-iot-device-sdk-j
 
 ### Building AWS IoT SDK from source
 
-``` sh
-# Create a workspace directory to hold all the SDK files
-mkdir sdk-workspace
-cd sdk-workspace
-# Clone the repository
-git clone https://github.com/awslabs/aws-iot-device-sdk-java-v2.git
-cd aws-iot-device-sdk-java-v2
-# Compile and install
-mvn clean install
-```
-
-If you wish to use the latest CRT release, rather than the latest tested with the IoT SDK, you can run the following command before running `mvn clean install`:
-
-``` sh
-# Update the version of the CRT being used
-mvn versions:use-latest-versions -Dincludes="software.amazon.awssdk.crt*"
-```
-
-#### Building AWS CRT from source
-
-If you also need to build AWS CRT Java from source, visit [AWS CRT Java](https://github.com/awslabs/aws-crt-java?tab=readme-ov-file#platform) project for instructions.
+See the [Development Guide](./documents/DEVELOPING.md) for detailed instructions on building from source and using local builds.
 
 ## Getting Started
 
@@ -116,6 +96,9 @@ The best way to interact with our team is through GitHub.
 If you have a support plan with [AWS Support](https://aws.amazon.com/premiumsupport/), you can also create a new support case.
 
 #### Mac-Only TLS Behavior
+
+> [!NOTE]
+> This SDK does not support TLS 1.3 on macOS. Support for TLS 1.3 on macOS is planned for a future release.
 
 Please note that on Mac, once a private key is used with a certificate, that certificate-key pair is imported into the Mac Keychain.  All subsequent uses of that certificate will use the stored private key and ignore anything passed in programmatically.  Beginning in v1.7.3, when a stored private key from the Keychain is used, the following will be logged at the "info" log level:
 
