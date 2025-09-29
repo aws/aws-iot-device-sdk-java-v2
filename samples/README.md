@@ -26,7 +26,6 @@ This directory contains sample applications for [aws-iot-device-sdk-java-v2](../
 ##### AWS offers a number of IoT related services using MQTT. The samples below demonstrate how to use the service clients provided by the SDK to interact with those services.
 | Service Client Sample | Description |
 |--------|-------------|
-| [Shadow](./serviceclients/shadowv2/README.md) | Manage and sync device state using the IoT Device Shadow service. |
 | [Basic Fleet Provisioning](./serviceclients/provisioning/basic/README.md) | Provision a device using the Fleet Provisioning template. |
 | [CSR Fleet Provisioning](./serviceclients/provisioning/csr/README.md) | Demonstrates CSR-based device certificate provisioning. |
 | [Shadow Sandbox](./serviceclients/shadowsandbox/README.md) | Sandbox sample to manage and sync device state using the IoT Device Shadow service. |
