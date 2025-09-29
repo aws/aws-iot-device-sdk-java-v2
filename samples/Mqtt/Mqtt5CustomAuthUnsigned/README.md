@@ -72,7 +72,7 @@ To run this sample from the `aws-iot-device-sdk-java-v2` folder use the followin
 
 ```sh
 mvn compile exec:java \
-    -pl samples/mqtt/mqtt5customauthunsigned \
+    -pl samples/Mqtt/Mqtt5CustomAuthUnsigned \
     -Dexec.args=" \
     --endpoint <endpoint> \
     --authorizer_name <The name of the custom authroizer to invoke> \
@@ -83,7 +83,7 @@ mvn compile exec:java \
 If you would like to see what optional arguments are available, use the `--help` argument:
 ```sh
 mvn compile exec:java \
-    -pl samples/mqtt/mqtt5customauthunsigned \
+    -pl samples/Mqtt/Mqtt5CustomAuthUnsigned \
     -Dexec.args=" \
     --help"
 ```

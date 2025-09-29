@@ -264,7 +264,7 @@ openssl req -new -key /tmp/deviceCert.key -out /tmp/deviceCert.csr
 Finally, you pass the certificate signing request while invoking the Fleet Provisioning sample.
 
 ``` sh
-mvn compile exec:java -pl samples/Provisioning/Csr -Dexec.mainClass=identity.CsrProvisioning -Dexec.args="--endpoint <endpoint> --cert <path to certificate> --key <path to private key> --template <provisioning template name> --params '{"SerialNumber":"1","DeviceLocation":"Seattle"}' --csr <path to csr file>"
+mvn compile exec:java -pl samples/ServiceClients/Provisioning/Csr -Dexec.mainClass=identity.CsrProvisioning -Dexec.args="--endpoint <endpoint> --cert <path to certificate> --key <path to private key> --template <provisioning template name> --params '{"SerialNumber":"1","DeviceLocation":"Seattle"}' --csr <path to csr file>"
 ```
 
 ## ⚠️ Usage disclaimer

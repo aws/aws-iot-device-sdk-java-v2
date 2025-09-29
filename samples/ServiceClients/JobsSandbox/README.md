@@ -139,7 +139,7 @@ job permission so that you can name the jobs whatever you would like.
 To run the Jobs sample use the following command:
 
 ``` sh
-mvn compile exec:java -pl samples/JobsSandbox -Dexec.mainClass=jobs.JobsSandbox -Dexec.args="--endpoint <endpoint> --cert <path to certificate> --key <path to private key> --thing <thing name>"
+mvn compile exec:java -pl samples/ServiceClients/JobsSandbox -Dexec.mainClass=jobs.JobsSandbox -Dexec.args="--endpoint <endpoint> --cert <path to certificate> --key <path to private key> --thing <thing name>"
 ```
 
 If an AWS IoT Thing resource with the given name does not exist, the sample will first create it.  Once the thing

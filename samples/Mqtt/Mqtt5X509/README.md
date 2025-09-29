@@ -72,7 +72,7 @@ To run this sample from the `aws-iot-device-sdk-java-v2` folder use the followin
 
 ```sh
 mvn compile exec:java \
-    -pl samples/mqtt/mqtt5x509 \
+    -pl samples/Mqtt/Mqtt5X509 \
     -Dexec.args=" \
     --endpoint <endpoint> \
     --cert <Path to certificate file> \
@@ -82,7 +82,7 @@ mvn compile exec:java \
 If you would like to see what optional arguments are available, use the `--help` argument:
 ```sh
 mvn compile exec:java \
-    -pl samples/mqtt/mqtt5x509 \
+    -pl samples/Mqtt/Mqtt5X509 \
     -Dexec.args=" \
     --help"
 ```

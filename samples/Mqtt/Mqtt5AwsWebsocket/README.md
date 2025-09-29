@@ -73,7 +73,7 @@ To run this sample from the `aws-iot-device-sdk-java-v2` folder use the followin
 
 ```sh
 mvn compile exec:java \
-    -pl samples/mqtt/mqtt5awswebsocket \
+    -pl samples/Mqtt/Mqtt5AwsWebsocket \
     -Dexec.args="\
     --endpoint <endpoint> \
     --signing_region <Signing region for websocket connection>"
@@ -82,7 +82,7 @@ mvn compile exec:java \
 If you would like to see what optional arguments are available, use the `--help` argument:
 ```sh
 mvn compile exec:java \
-    -pl samples/mqtt/mqtt5awswebsocket \
+    -pl samples/Mqtt/Mqtt5AwsWebsocket \
     -Dexec.args="\
     --help"
 ```

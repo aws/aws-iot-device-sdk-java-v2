@@ -81,7 +81,7 @@ Note that in a real application, you may want to avoid the use of wildcards in y
 To run the Shadow sample use the following command:
 
 ``` sh
-mvn compile exec:java -pl samples/ShadowSandbox -Dexec.mainClass=shadow.ShadowSandbox -Dexec.args="--endpoint <endpoint> --cert <path to certificate> --key <path to private key> --thing <thing name>"
+mvn compile exec:java -pl samples/ServiceClients/ShadowSandbox -Dexec.mainClass=shadow.ShadowSandbox -Dexec.args="--endpoint <endpoint> --cert <path to certificate> --key <path to private key> --thing <thing name>"
 ```
 
 The sample also listens to a pair of event streams related to the classic (unnamed) shadow state of your thing, so in addition to responses, you will occasionally see output from these streaming operations as they receive events from the shadow service.

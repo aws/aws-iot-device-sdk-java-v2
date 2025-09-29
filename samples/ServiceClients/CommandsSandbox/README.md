@@ -179,7 +179,7 @@ Replace with the following with the data from your AWS account:
 To run the sample, use the following Shell command:
 
 ```shell
-mvn compile exec:java -pl samples/CommandsSandbox -Dexec.mainClass=commands.CommandsSandbox \
+mvn compile exec:java -pl samples/ServiceClients/CommandsSandbox -Dexec.mainClass=commands.CommandsSandbox \
     -Dexec.args="--endpoint <endpoint> --cert <path to certificate> --key <path to private key> --thing <thing-name> --client-id <mqtt-client-id>"
 ```
 

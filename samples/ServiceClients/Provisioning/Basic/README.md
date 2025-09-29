@@ -253,7 +253,7 @@ to perform the actual provisioning in the section below.
 To run the sample with your certificate and private key, use the following command:
 
 ``` sh
-mvn compile exec:java -pl samples/Provisioning/Basic -Dexec.mainClass=identity.BasicProvisioning -Dexec.args="--endpoint <endpoint> --cert <path to certificate> --key <path to private key> --template <provisioning template name> --params '{"SerialNumber":"1","DeviceLocation":"Seattle"}'"
+mvn compile exec:java -pl samples/ServiceClients/Provisioning/Basic -Dexec.mainClass=identity.BasicProvisioning -Dexec.args="--endpoint <endpoint> --cert <path to certificate> --key <path to private key> --template <provisioning template name> --params '{"SerialNumber":"1","DeviceLocation":"Seattle"}'"
 ```
 
 As per normal, replace the `<>` parameters with the proper values. Notice that we provided substitution values for the two parameters in the template body, `DeviceLocation` and `SerialNumber`.
