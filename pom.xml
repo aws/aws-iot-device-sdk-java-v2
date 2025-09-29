@@ -9,18 +9,18 @@
     <modules>
         <module>sdk</module>
         <module>samples/BasicPubSub</module>
-        <module>samples/mqtt/mqtt5x509</module>
-        <module>samples/mqtt/mqtt5awswebsocket</module>
-        <module>samples/mqtt/mqtt5customauthsigned</module>
-        <module>samples/mqtt/mqtt5customauthunsigned</module>
-        <module>samples/mqtt/mqtt5pkcs11</module>
-        <module>samples/greengrass/discovery</module>
-        <module>samples/greengrass/greengrassipc</module>
-        <module>samples/serviceclients/provisioning/basic</module>
-        <module>samples/serviceclients/provisioning/csr</module>
-        <module>samples/serviceclients/jobssandbox</module>
-        <module>samples/serviceclients/commandssandbox</module>
-        <module>samples/serviceclients/shadowsandbox</module>
+        <module>samples/Mqtt/Mqtt5X509</module>
+        <module>samples/Mqtt/Mqtt5AwsWebsocket</module>
+        <module>samples/Mqtt/Mqtt5CustomAuthSigned</module>
+        <module>samples/Mqtt/Mqtt5CustomAuthUnsigned</module>
+        <module>samples/Mqtt/Mqtt5Pkcs11</module>
+        <module>samples/Greengrass/Discovery</module>
+        <module>samples/Greengrass/GreengrassIPC</module>
+        <module>samples/ServiceClients/Provisioning/Basic</module>
+        <module>samples/ServiceClients/Provisioning/Csr</module>
+        <module>samples/ServiceClients/JobsSandbox</module>
+        <module>samples/ServiceClients/CommandsSandbox</module>
+        <module>samples/ServiceClients/ShadowSandbox</module>
     </modules>
 
     <build>
