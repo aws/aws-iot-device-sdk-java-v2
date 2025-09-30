@@ -37,8 +37,7 @@ android {
 
     sourceSets {
         main {
-            java.srcDir '../../../../samples/Utils/CommandLineUtils'
-            java.srcDir '../../../../samples/Mqtt5/PubSub/src/main/java'
+            java.srcDir '../../../../samples/Mqtt/Mqtt5X509/src/main/java'
             java.srcDir 'src/main/java'
         }
     }

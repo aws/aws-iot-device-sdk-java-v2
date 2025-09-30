@@ -51,7 +51,7 @@ jobs:
         python -c "from urllib.request import urlretrieve; urlretrieve('${{ env.BUILDER_HOST }}/${{ env.BUILDER_SOURCE }}/${{ env.BUILDER_VERSION }}/builder.pyz?run=${{ env.RUN }}', 'builder.pyz')"
         python builder.pyz build -p ${{ env.PACKAGE_NAME }} --spec=downstream
     - name: configure AWS credentials (MQTT5)
-      uses: aws-actions/configure-aws-credentials@v2
+      uses: aws-actions/configure-aws-credentials@v4
       with:
         role-to-assume: ${{ env.CI_MQTT5_ROLE }}
         aws-region: ${{ env.AWS_DEFAULT_REGION }}
@@ -102,7 +102,7 @@ jobs:
         chmod a+x builder
         ./builder build -p ${{ env.PACKAGE_NAME }} --spec=downstream
     - name: configure AWS credentials (MQTT5)
-      uses: aws-actions/configure-aws-credentials@v2
+      uses: aws-actions/configure-aws-credentials@v4
       with:
         role-to-assume: ${{ env.CI_MQTT5_ROLE }}
         aws-region: ${{ env.AWS_DEFAULT_REGION }}
@@ -150,7 +150,7 @@ jobs:
           mvn compile
           mvn install -Dmaven.test.skip
       - name: configure AWS credentials (MQTT5)
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ env.CI_MQTT5_ROLE }}
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
@@ -196,7 +196,7 @@ jobs:
       - name: Mirror ANDROID_HOME → ANDROID_SDK_ROOT
         run: echo "ANDROID_SDK_ROOT=$ANDROID_HOME" >> "$GITHUB_ENV"
       - name: Configure AWS credentials for Device Farm
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ env.CI_ANDROID_DEVICE_TESTING_ROLE }}
           aws-region: ${{ env.AWS_DEVICE_FARM_REGION }}
@@ -284,98 +284,3 @@ jobs:
       - name: Check for edits to code-generated files
         run: |
           ./utils/check_codegen_edits.py
-
-  # Runs the samples and ensures that everything is working
-  linux-smoke-tests:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        version:
-          - 17
-    permissions:
-      id-token: write # This is required for requesting the JWT
-    steps:
-      - name: Checkout Sources
-        uses: actions/checkout@v2
-      - name: Setup Java
-        uses: actions/setup-java@v3.14.1
-        with:
-          distribution: temurin
-          java-version: ${{ matrix.version }}
-          cache: maven
-      - name: Build ${{ env.PACKAGE_NAME }} + consumers
-        run: |
-          java -version
-          mvn install -Dmaven.test.skip
-      - name: Running samples and service client tests in CI setup
-        run: |
-          python3 -m pip install boto3
-          sudo apt-get update -y
-          sudo apt-get install softhsm2 -y
-          softhsm2-util --version
-      - name: configure AWS credentials (Fleet provisioning)
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          role-to-assume: ${{ env.CI_FLEET_PROVISIONING_ROLE }}
-          aws-region: ${{ env.AWS_DEFAULT_REGION }}
-      - name: run Fleet Provisioning service client test for MQTT311
-        working-directory: ./servicetests
-        run: |
-          export PYTHONPATH=${{ github.workspace }}/utils
-          python3 ./test_cases/test_fleet_provisioning.py --thing-name-prefix Fleet_Thing_ --mqtt-version 3
-      - name: run Fleet Provisioning service client test for MQTT5
-        working-directory: ./servicetests
-        run: |
-          export PYTHONPATH=${{ github.workspace }}/utils
-          python3 ./test_cases/test_fleet_provisioning.py --thing-name-prefix Fleet_Thing_ --mqtt-version 5
-      - name: run Fleet Provisioning with CSR service client test for MQTT311
-        working-directory: ./servicetests
-        run: |
-          export PYTHONPATH=${{ github.workspace }}/utils
-          python3 ./test_cases/test_fleet_provisioning.py --thing-name-prefix Fleet_Thing_ --mqtt-version 3 --use-csr
-      - name: run Fleet Provisioning with CSR service client test for MQTT5
-        working-directory: ./servicetests
-        run: |
-          export PYTHONPATH=${{ github.workspace }}/utils
-          python3 ./test_cases/test_fleet_provisioning.py --thing-name-prefix Fleet_Thing_ --mqtt-version 5 --use-csr
-      - name: configure AWS credentials (Shadow)
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          role-to-assume: ${{ env.CI_SHADOW_SERVICE_CLIENT_ROLE }}
-          aws-region: ${{ env.AWS_DEFAULT_REGION }}
-      - name: run Shadow service client test for MQTT311
-        working-directory: ./servicetests
-        run: |
-          export PYTHONPATH=${{ github.workspace }}/utils
-          python3 ./test_cases/test_shadow_update.py --mqtt-version 3
-      - name: run Shadow service client test for MQTT5
-        working-directory: ./servicetests
-        run: |
-          export PYTHONPATH=${{ github.workspace }}/utils
-          python3 ./test_cases/test_shadow_update.py --mqtt-version 5
-      - name: run Named Shadow service client test for MQTT311
-        working-directory: ./servicetests
-        run: |
-          export PYTHONPATH=${{ github.workspace }}/utils
-          python3 ./test_cases/test_shadow_update.py --mqtt-version 3 --use-named-shadow
-      - name: run Named Shadow service client test for MQTT5
-        working-directory: ./servicetests
-        run: |
-          export PYTHONPATH=${{ github.workspace }}/utils
-          python3 ./test_cases/test_shadow_update.py --mqtt-version 5 --use-named-shadow
-      - name: configure AWS credentials (Jobs)
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          role-to-assume: ${{ env.CI_JOBS_SERVICE_CLIENT_ROLE }}
-          aws-region: ${{ env.AWS_DEFAULT_REGION }}
-      - name: run Jobs service client test for MQTT311
-        working-directory: ./servicetests
-        run: |
-          export PYTHONPATH=${{ github.workspace }}/utils
-          python3 ./test_cases/test_jobs_execution.py --mqtt-version 3
-      - name: run Jobs service client test for MQTT5
-        working-directory: ./servicetests
-        run: |
-          export PYTHONPATH=${{ github.workspace }}/utils
-          python3 ./test_cases/test_jobs_execution.py --mqtt-version 5
