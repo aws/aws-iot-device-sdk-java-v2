@@ -8,7 +8,6 @@
 
     <modules>
         <module>sdk</module>
-        <module>samples/BasicPubSub</module>
         <module>samples/Mqtt/Mqtt5X509</module>
         <module>samples/Mqtt/Mqtt5AwsWebsocket</module>
         <module>samples/Mqtt/Mqtt5CustomAuthSigned</module>
