@@ -3,7 +3,7 @@
 
 The Android sample builds an app that can be installed and run on an Android Device. The app builds and allows you
 to run the following [samples](#links-to-individual-sample-readme-files) from aws-iot-device-sdk-java-v2:
-* [Mqtt5PubSub](../mqtt/mqtt5x509/README.md)
+* [Mqtt5PubSub](../Mqtt/Mqtt5X509/README.md)
 * [KeyChainPubSub](./AndroidKeyChainPubSub/README.md)
 
 *__Jump To:__*
@@ -58,7 +58,7 @@ cd samples/Android/app
 The following links will provide more details on the individual samples available in the
 Android sample app.
 
-[**Mqtt5PubSub**](../mqtt/mqtt5x509/README.md)
+[**Mqtt5PubSub**](../Mqtt/Mqtt5X509/README.md)
 
 [**KeyChainPubSub**](./AndroidKeyChainPubSub/README.md)
 
