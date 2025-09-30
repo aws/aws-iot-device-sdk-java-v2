@@ -1,66 +1,57 @@
 # Sample Applications for the AWS IoT Device SDK for Java v2
+This directory contains sample applications for [aws-iot-device-sdk-java-v2](../README.md)
 
-## MQTT5 Samples
-#### MQTT5 is the recommended MQTT Client. It has many benefits over MQTT311 outlined in the [MQTT5 User Guide](../documents/MQTT5_Userguide.md)
-* [MQTT5 PubSub](./Mqtt5/PubSub/README.md)
-    * [Direct MQTT with X509-based Mutual TLS Method](./Mqtt5/PubSub/README.md#direct-mqtt-with-x509-based-mutual-tls-method)
-    * [Direct MQTT with Custom Authorizer Method](./Mqtt5/PubSub/README.md#direct-mqtt-with-custom-authorizer-method)
-    * [Direct MQTT with PKCS11 Method](./Mqtt5/PubSub/README.md#direct-mqtt-with-pkcs11-method)
-    * [Direct MQTT with PKCS12 Method](./Mqtt5/PubSub/README.md#direct-mqtt-with-pkcs12-method)
-    * [Direct MQTT with Custom Key Operations Method](./Mqtt5/PubSub/README.md#direct-mqtt-with-custom-key-operation-method)
-    * [Direct MQTT with Windows Certificate Store Method](./Mqtt5/PubSub/README.md#direct-mqtt-with-windows-certificate-store-method)
-    * [Direct MQTT with Java Keystore Method](./Mqtt5/PubSub/README.md#direct-mqtt-with-java-keystore-method)
-    * [Websocket Connection with Sigv4 Authentication Method](./Mqtt5/PubSub/README.md#websocket-connection-with-sigv4-authentication-method)
-    * [Websocket Connection with Cognito Authentication Method](./Mqtt5/PubSub/README.md#websocket-connection-with-cognito-authentication-method)
-* [MQTT5 Shared Subscription](./Mqtt5/SharedSubscription/README.md)
-## MQTT311 Samples
-* [BasicPubSub](./BasicPubSub/README.md)
-* [Basic Connect](./BasicConnect/README.md)
-* [Websocket Connect](./WebsocketConnect/README.md)
-* [Pkcs11 Connect](./Pkcs11Connect/README.md)
-* [Pkcs12 Connect](./Pkcs12Connect/README.md)
-* [WindowsCert Connect](./WindowsCertConnect/README.md)
-* [X509 Connect](./X509CredentialsProviderConnect/README.md)
-* [CustomAuthorizer Connect](./CustomAuthorizerConnect/README.md)
-* [JavaKeystore Connect](./JavaKeystoreConnect/README.md)
-* [Cognito Connect](./CognitoConnect/README.md)
-* [CustomKeyOperation Connect](./CustomKeyOpsConnect/README.md)
-## Other Samples
-* [Shadow](./ShadowSandbox/README.md)
-* [Jobs](./JobsSandbox/README.md)
-* [Commands](./CommandsSandbox/README.md)
-* [Fleet Provisioning](./Provisioning/Basic/README.md)
-* [Fleet Provisioning with CSR](./Provisioning/Csr/README.md)
-* [Android Sample](./Android/README.md)
-* [Greengrass Discovery](./Greengrass/README.md)
-* [Greengrass IPC](./GreengrassIPC/README.md)
+### Table of Contents
+* [Samples](#samples)
+    * [MQTT5 Client Samples](#mqtt5-client-samples)
+    * [Service Client Samples](#service-client-samples)
+    * [Greengrass Samples](#greengrass-samples)
+* [Instructions](#instructions)
+* [Sample Help](#sample-help)
+* [Enable Logging](#enable-logging)
 
-### Note
+## Samples
+### MQTT5 Client Samples
+##### MQTT5 is the recommended MQTT Client. Additional infomration and usage instructions can be found in the [MQTT5 User Guide](../documents/Mqtt5_Userguide.md). The samples below will create an MQTT5 client, connect using the selected method, subscribe to a topic, publish to the topic, and then disconnect.
+| MQTT5 Client Sample | Description |
+|--------|-------------|
+| [X509-based mutual TLS](./Mqtt/Mqtt5X509/README.md) | Demonstrates connecting to AWS IoT Core using X.509 certificates and private keys.
+| [Websockets with Sigv4 authentication](./Mqtt/Mqtt5AwsWebsocket/README.md) | Shows how to authenticate over websockets using AWS Signature Version 4 credentials. |
+| [AWS Signed Custom Authorizer Lambda Function](./Mqtt/Mqtt5CustomAuthSigned/README.md) | Connecting with a signed Lambda-backed custom authorizer.
+| [AWS Unsigned Custom Authorizer Lambda Function](./Mqtt/Mqtt5CustomAuthUnsigned/README.md) | Connecting with an unsigned Lambda-backed custom authorizer.
+| [PKCS11](./Mqtt/Mqtt5Pkcs11/README.md) | Demonstrates connecting using a hardware security module (HSM) or smartcard with PKCS#11. |
+| [Other Connection Methods](../documents/MQTT5_Userguide.md#how-to-create-an-mqtt5-client-based-on-desired-connection-method) | More connection methods are available for review in the MQTT5 Userguide
 
-Note that **all samples will show their options by passing in `--help`**. For example:
+### Service Client Samples
+##### AWS offers a number of IoT related services using MQTT. The samples below demonstrate how to use the service clients provided by the SDK to interact with those services.
+| Service Client Sample | Description |
+|--------|-------------|
+| [Basic Fleet Provisioning](./ServiceClients/Provisioning/Basic/README.md) | Provision a device using the Fleet Provisioning template. |
+| [CSR Fleet Provisioning](./ServiceClients/Provisioning/Csr/README.md) | Demonstrates CSR-based device certificate provisioning. |
+| [Shadow Sandbox](./ServiceClients/ShadowSandbox/README.md) | Sandbox sample to manage and sync device state using the IoT Device Shadow service. |
+| [Jobs Sandbox](./ServiceClients/JobsSandbox/README.md) | Sandbox sample to receive and execute remote operations sent from the Jobs service. |
+| [Commands Sandbox](./ServiceClients/CommandsSandbox/README.md) | Sandbox sample to demonstrante Commands service. |
 
-```sh
-mvn compile exec:java -pl samples/BasicPubSub -Dexec.mainClass=pubsub.PubSub -Dexec.args='--help'
-```
+### Greengrass Samples
+##### Samples that interact with [AWS Greengrass](https://aws.amazon.com/greengrass/).
+| Greengrass Sample | Description |
+|--------|-------------|
+| [Greengrass Discovery](./Greengrass/Discovery/README.md) | Discover and connect to a local Greengrass core. |
+| [Greengrass IPC](./Greengrass/GreengrassIPC/README.md) | Demonstrates Inter-Process Communication (IPC) with Greengrass components. |
 
-Additionally, you can enable logging in all samples. To enable logging in the samples, you will need to set the following system properties when running the samples:
+### Instructions
 
-```sh
--Daws.crt.debugnative=true
--Daws.crt.log.destination=File
--Daws.crt.log.level=Trace
--Daws.crt.log.filename=<path and filename>
-```
+First, install `aws-iot-device-sdk-java-v2`. Installation instructions for the SDK are [Provided Here](../README.md#installation).
 
-* `aws.crt.debugnative`: Whether to debug native (C/C++) code. Can be either `true` or `false`.
-* `aws.crt.log.destination`: Where the logs are outputted to. Can be `File`, `Stdout` or `Stderr`. Defaults to `Stderr`.
-* `aws.crt.log.level`: The level of logging shown. Can be `Trace`, `Debug`, `Info`, `Warn`, `Error`, `Fatal`, or `None`. Defaults to `Warn`.
-* `aws.crt.log.filename`: The path to save the log file. Only needed if `aws.crt.log.destination` is set to `File`.
-
-For example, to run `PubSub` with logging you could use the following:
+Each sample's README contains prerequisites, arguments, and detailed instructions. For example, the [MQTT X509  Sample README](./Mqtt/Mqtt5x509/README.md) instructs to run the sample with the following command:
 
 ```sh
-mvn compile exec:java -pl samples/Mqtt5/PubSub -Daws.crt.debugnative=true -Daws.crt.log.level=Debug -Daws.crt.log.destionation=Stdout -Dexec.mainClass=pubsub.PubSub -Dexec.args='--endpoint <endpoint> --cert <path to cert> --key <path to key> --ca_file <path to ca file>'
+mvn compile exec:java \
+    -pl samples/Mqtt/Mqtt5x509 \
+    -Dexec.args=" \
+    --endpoint <ENDPOINT> \
+    --cert <PATH TO CERTIFICATE FILE> \
+    --key <PATH TO PRIVATE KEY FILE>"
 ```
 
 ### Running Samples with latest SDK release
@@ -68,7 +59,54 @@ mvn compile exec:java -pl samples/Mqtt5/PubSub -Daws.crt.debugnative=true -Daws.
 If you want to run a sample using the latest release of the SDK, instead of compiled from source, you need to use the `latest-release` profile. For example:
 
 ```sh
-mvn -P latest-release compile exec:java -pl samples/Mqtt5/PubSub -Dexec.mainClass=mqtt5.pubsub.PubSub -Dexec.args='--endpoint <endpoint> --cert <path to certificate> --key <path to private key> --ca_file <path to root CA>'
+mvn -P latest-release compile exec:java \
+    -pl samples/Mqtt/Mqtt5X509 \
+    -Dexec.args=" \
+    --endpoint <ENDPOINT> \
+    --cert <PATH TO CERTIFICATE FILE> \
+    --key <PATH TO PRIVATE KEY FILE>"
 ```
 
 This will run the sample using the latest released version of the SDK rather than the version compiled from source. If you are wanting to try the samples without first compiling the SDK, then make sure to add `-P latest-release` and to have Maven download the Java V2 SDK. **This works for all samples in the Java V2 SDK.**
+
+### Sample Help
+
+All samples will show their options and arguments by passing in `--help`. For example:
+``` sh
+mvn compile exec:java \
+    -pl samples/Mqtt/Mqtt5X509 \
+    -Dexec.args=" \
+    --help"
+```
+
+Will result in the following print output:
+```
+MQTT5 X509 Sample (mTLS)
+
+Required:
+  --endpoint <ENDPOINT>     IoT endpoint hostname
+  --cert <CERTIFICATE>      Path to certificate file (PEM)
+  --key <PRIVATE_KEY>       Path to private key file (PEM)
+
+Optional:
+  --client_id <CLIENT_ID>   MQTT client ID (default: generated)
+  --topic <TOPIC>           Topic to use (default: test/topic)
+  --message <MESSAGE>       Message payload (default: "Hello from mqtt5 sample")
+  --count <N>               Messages to publish (0 = infinite, default: 5)
+```
+
+The sample will not run without the required arguments.
+
+### Enable Logging
+
+Instructions to enable logging are available in the [FAQ](../documents/FAQ.md) under [How do I enable logging](../documents/FAQ.md#how-do-i-enable-logging).
+
+## ⚠️ Usage disclaimer
+
+These code examples interact with services that may incur charges to your AWS account. For more information, see [AWS Pricing](https://aws.amazon.com/pricing/).
+
+Additionally, example code might theoretically modify or delete existing AWS resources. As a matter of due diligence, do the following:
+
+- Be aware of the resources that these examples create or delete.
+- Be aware of the costs that might be charged to your account as a result.
+- Back up your important data.

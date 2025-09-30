@@ -34,9 +34,9 @@ a dependency of the aws-iot-device-sdk-android library.
 ## Installation
 
 ### Minimum requirements
-* Java 11+ ([Download and Install Java](https://www.java.com/en/download/help/download_options.html))
+* Java 17+ ([Download and Install Java](https://www.java.com/en/download/help/download_options.html))
   * [Set JAVA_HOME](./PREREQUISITES.md#set-java_home)
-* Gradle 7.4.2 ([Download and Install Gradle](https://gradle.org/install/))
+* Gradle 8.5.1+ ([Download and Install Gradle](https://gradle.org/install/))
 * Android SDK 24 ([Download SDK Manager](https://developer.android.com/tools/releases/platform-tools#downloads))
   * [Set ANDROID_HOME](./PREREQUISITES.md#set-android_home)
 
@@ -52,8 +52,8 @@ a dependency of the aws-iot-device-sdk-android library.
 mkdir sdk-workspace
 cd sdk-workspace
 # Clone the SDK repository
-# (Use the latest version of the SDK here instead of `v1.27.0`)
-git clone --branch v1.27.0 --recurse-submodules https://github.com/aws/aws-iot-device-sdk-java-v2.git
+# (Use the latest version of the SDK here instead of `v1.27.4`)
+git clone --branch v1.27.4 --recurse-submodules https://github.com/aws/aws-iot-device-sdk-java-v2.git
 # Compile and install the SDK for Android
 cd aws-iot-device-sdk-java-v2/android
 ./gradlew build
@@ -74,10 +74,10 @@ repositories {
 }
 
 dependencies {
-    api 'software.amazon.awssdk.iotdevicesdk:aws-iot-device-sdk-android:1.27.0'
+    api 'software.amazon.awssdk.iotdevicesdk:aws-iot-device-sdk-android:1.27.4'
 }
 ```
-Replace `1.27.0` in `software.amazon.awssdk.iotdevicesdk:aws-iot-device-sdk-android:1.27.0` with the latest release version for the SDK.
+Replace `1.27.4` in `software.amazon.awssdk.iotdevicesdk:aws-iot-device-sdk-android:1.27.4` with the latest release version for the SDK.
 Look up the latest SDK version here: https://github.com/aws/aws-iot-device-sdk-java-v2/releases
 
 ### Consuming from locally installed
@@ -89,10 +89,10 @@ repositories {
 }
 
 dependencies {
-    api 'software.amazon.awssdk.iotdevicesdk:aws-iot-device-sdk-android:1.27.0'
+    api 'software.amazon.awssdk.iotdevicesdk:aws-iot-device-sdk-android:1.27.4'
 }
 ```
-Replace `1.27.0` in `software.amazon.awssdk.iotdevicesdk:aws-iot-device-sdk-android:1.27.0` with the latest release version for the SDK
+Replace `1.27.4` in `software.amazon.awssdk.iotdevicesdk:aws-iot-device-sdk-android:1.27.4` with the latest release version for the SDK
 or replace with `1.0.0-SNAPSHOT` to use the SDK built and installed from source.
 Look up the latest SDK version here: https://github.com/aws/aws-iot-device-sdk-java-v2/releases
 

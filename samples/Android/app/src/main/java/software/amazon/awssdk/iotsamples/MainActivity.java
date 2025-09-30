@@ -34,11 +34,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     // Samples to load for the Android App
     private static final Map<String, String> SAMPLES = new LinkedHashMap<String, String>() {{
         put("Select a Sample",""); // empty default
-        put("MQTT5 Publish/Subscribe", "mqtt5.pubsub.PubSub");
-        put("MQTT3 Publish/Subscribe", "pubsub.PubSub");
+        put("MQTT5 X509 Publish/Subscribe", "mqtt5x509.Mqtt5X509");
         put("KeyChain Publish/Subscribe", "androidkeychainpubsub.AndroidKeyChainPubSub");
         put("KeyChain Alias Permission", "load.privateKey");
-        put("Cognito Client", "cognitoconnect.CognitoConnect");
     }};
 
     private static final Logger logger = Logger.getLogger(MainActivity.class.getName());
@@ -105,10 +103,15 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
         sampleSelect = findViewById(R.id.sampleSelect);
         ArrayAdapter<String> samplesAdapter = new ArrayAdapter<>(
-                this, R.layout.support_simple_spinner_dropdown_item, SAMPLES.keySet().toArray(new String[0])
+            this,
+            android.R.layout.simple_spinner_dropdown_item,
+            SAMPLES.keySet().toArray(new String[0])
         );
+        samplesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sampleSelect.setAdapter(samplesAdapter);
         sampleSelect.setOnItemSelectedListener(this);
+
+        
 
         loadAssets();
         context = this;
@@ -149,17 +152,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         resourceNames.add("endpoint.txt");
         resourceNames.add("privatekey.pem");
         resourceNames.add("certificate.pem");
-        resourceNames.add("cognitoIdentity.txt");
-        resourceNames.add("signingRegion.txt");
         resourceNames.add("keychainAlias.txt");
-        resourceNames.add("verbosity.txt");
         resourceNames.add("clientId.txt");
-        resourceNames.add("thingName.txt");
-        resourceNames.add("port.txt");
         resourceNames.add("topic.txt");
         resourceNames.add("message.txt");
         resourceNames.add("count.txt");
-        resourceNames.add("rootca.pem");
 
         // Copy to cache and store file locations for file assets and contents for .txt assets
         for (String resourceName : resourceNames) {
@@ -219,15 +216,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         }
 
         // Shared optional arguments
-        argSetOptional("--verbosity", "verbosity.txt", args);
-        argSetOptional("--ca_file", "rootca.pem", args);
-        argSetOptional("--port", "port.txt", args);
         argSetOptional("--client_id", "clientId.txt", args);
 
         // Missing required arguments will return null
         switch(sampleClassName){
-            case "mqtt5.pubsub.PubSub":
-            case "pubsub.PubSub":
+            case "mqtt5x509.Mqtt5X509":
                 if (!argSetRequired("--cert", "certificate.pem", args) ||
                     !argSetRequired("--key", "privatekey.pem", args)) {
                     return null;
@@ -237,12 +230,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 argSetOptional("--count", "count.txt", args);
                 break;
 
-            case "cognitoconnect.CognitoConnect":
-                if (!argSetRequired("--cognito_identity", "cognitoIdentity.txt", args) ||
-                    !argSetRequired("--signing_region", "signingRegion.txt", args)) {
-                    return null;
-                }
-                break;
             case "androidkeychainpubsub.AndroidKeyChainPubSub":
                 if (!argSetRequired("--keychain_alias", "keychainAlias.txt", args)) {
                     return null;

@@ -31,7 +31,6 @@ class MainActivityTest {
     }
 
     fun getArgsForSample(name: String) : Array<String?> {
-        System.setProperty("aws.crt.ci", "True")
         val testContext = InstrumentationRegistry.getInstrumentation().targetContext
         val testRes = testContext.getResources()
         var resourceNames = mutableListOf<String>()
@@ -66,6 +65,11 @@ class MainActivityTest {
                 resourceNames.add("mqtt5PubSubPrivatekey.pem")
             }
 
+            "mqtt5x509.Mqtt5X509" -> {
+                resourceNames.add("mqtt5PubSubCertificate.pem")
+                resourceNames.add("mqtt5PubSubPrivatekey.pem")
+            }
+
             "customkeyopsconnect.CustomKeyOpsConnect" -> {
                 resourceNames.add("customKeyOpsKey.pem")
                 resourceNames.add("customKeyOpsCert.pem")
@@ -91,8 +95,7 @@ class MainActivityTest {
 
         // Args for all samples
         args.addAll(arrayOf(
-            "--endpoint", assetContents("endpoint.txt"),
-            "--verbosity", "Debug"))
+            "--endpoint", assetContents("endpoint.txt")))
 
         // Set sample specific args
         when(name){
@@ -126,11 +129,11 @@ class MainActivityTest {
                     "--cognito_identity", assetContents("cognitoIdentity.txt")))
             }
 
-            "mqtt5.pubsub.PubSub" -> {
+            "mqtt5x509.Mqtt5X509" -> {
                 args.addAll(arrayOf(
                     "--cert", resourceMap["mqtt5PubSubCertificate.pem"],
                     "--key", resourceMap["mqtt5PubSubPrivatekey.pem"],
-                    "--message", "message.txt", "Hello World From Android"
+                    "--message", "Hello World From Android"
                 ))
             }
 
@@ -145,46 +148,34 @@ class MainActivityTest {
     }
 
     fun runSample(name: String) {
-        val classLoader = Thread.currentThread().contextClassLoader
-        val sampleClass = classLoader?.loadClass(name)
-        val sampleArgs = getArgsForSample(name)
-        val main = sampleClass?.getMethod("main", Array<String>::class.java)
-
         try {
+            val classLoader = Thread.currentThread().contextClassLoader
+            println("Loading class: $name")
+            val sampleClass = classLoader?.loadClass(name)
+            println("Class loaded successfully: ${sampleClass?.name}")
+            
+            val sampleArgs = getArgsForSample(name)
+            println("Args prepared: ${sampleArgs.joinToString(" ")}")
+            
+            val main = sampleClass?.getMethod("main", Array<String>::class.java)
+            println("Main method found: ${main != null}")
+            
             main?.invoke(null, sampleArgs)
+            println("Sample execution completed")
         }
-        catch (e:Exception) {
-            fail(e.cause.toString())
+        catch (e: ClassNotFoundException) {
+            fail("Class not found: $name - ${e.message}")
         }
-    }
-
-    @Test
-    fun pubSubSample(){
-        runSample("pubsub.PubSub")
-    }
-
-    @Test
-    fun cognitoConnectSample(){
-        runSample("cognitoconnect.CognitoConnect")
-    }
-
-    @Test
-    fun shadowSample(){
-        runSample("shadow.ShadowSample")
-    }
-
-    @Test
-    fun jobsSample(){
-        runSample("jobs.JobsSample")
+        catch (e: NoSuchMethodException) {
+            fail("Main method not found in $name - ${e.message}")
+        }
+        catch (e: Exception) {
+            fail("Sample execution failed: ${e.javaClass.simpleName} - ${e.message} - Cause: ${e.cause}")
+        }
     }
 
     @Test
     fun mqtt5PubSubSample(){
-        runSample("mqtt5.pubsub.PubSub")
-    }
-
-    @Test
-    fun customKeyOpsSample(){
-        runSample("customkeyopsconnect.CustomKeyOpsConnect")
+        runSample("mqtt5x509.Mqtt5X509")
     }
 }

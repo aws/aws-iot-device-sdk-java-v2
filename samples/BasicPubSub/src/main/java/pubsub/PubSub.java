@@ -2,134 +2,303 @@
  * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  * SPDX-License-Identifier: Apache-2.0.
  */
-
 package pubsub;
 
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
 import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.crt.CrtResource;
 import software.amazon.awssdk.crt.CrtRuntimeException;
-import software.amazon.awssdk.crt.http.HttpProxyOptions;
-import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
-import software.amazon.awssdk.crt.mqtt.MqttClientConnectionEvents;
-import software.amazon.awssdk.crt.mqtt.MqttMessage;
-import software.amazon.awssdk.crt.mqtt.QualityOfService;
-import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
-
-import java.nio.charset.StandardCharsets;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
-
-import utils.commandlineutils.CommandLineUtils;
+import software.amazon.awssdk.crt.io.ClientBootstrap;
+import software.amazon.awssdk.crt.mqtt5.*;
+import software.amazon.awssdk.crt.mqtt5.Mqtt5ClientOptions.LifecycleEvents;
+import software.amazon.awssdk.crt.mqtt5.packets.*;
+import software.amazon.awssdk.iot.AwsIotMqtt5ClientBuilder;
 
 public class PubSub {
 
-    // When run normally, we want to exit nicely even if something goes wrong
-    // When run from CI, we want to let an exception escape which in turn causes the
-    // exec:java task to return a non-zero exit code
-    static String ciPropValue = System.getProperty("aws.crt.ci");
-    static boolean isCI = ciPropValue != null && Boolean.valueOf(ciPropValue);
+  static void onApplicationFailure(Throwable cause) {
+    throw new RuntimeException("Mqtt5 PubSub: execution failure", cause);
+  }
 
-    static CommandLineUtils cmdUtils;
+  static final class SampleLifecycleEvents
+      implements Mqtt5ClientOptions.LifecycleEvents {
+    CompletableFuture<Void> connectedFuture = new CompletableFuture<>();
+    CompletableFuture<Void> stoppedFuture = new CompletableFuture<>();
 
-    /*
-     * When called during a CI run, throw an exception that will escape and fail the exec:java task
-     * When called otherwise, print what went wrong (if anything) and just continue (return from main)
-     */
-    static void onApplicationFailure(Throwable cause) {
-        if (isCI) {
-            throw new RuntimeException("BasicPubSub execution failure", cause);
-        } else if (cause != null) {
-            System.out.println("Exception encountered: " + cause.toString());
-        }
+    @Override
+    public void
+    onAttemptingConnect(Mqtt5Client client,
+                        OnAttemptingConnectReturn onAttemptingConnectReturn) {
+      System.out.println("Mqtt5 Client: Attempting connection...");
     }
 
-    public static void main(String[] args) {
+    @Override
+    public void
+    onConnectionSuccess(Mqtt5Client client,
+                        OnConnectionSuccessReturn onConnectionSuccessReturn) {
+      System.out.println("Mqtt5 Client: Connection success, client ID: " +
+                         onConnectionSuccessReturn.getNegotiatedSettings()
+                             .getAssignedClientID());
+      connectedFuture.complete(null);
+    }
 
-        /**
-         * cmdData is the arguments/input from the command line placed into a single struct for
-         * use in this sample. This handles all of the command line parsing, validating, etc.
-         * See the Utils/CommandLineUtils for more information.
-         */
-        CommandLineUtils.SampleCommandLineData cmdData = CommandLineUtils.getInputForIoTSample("PubSub", args);
+    @Override
+    public void
+    onConnectionFailure(Mqtt5Client client,
+                        OnConnectionFailureReturn onConnectionFailureReturn) {
+      String errorString =
+          CRT.awsErrorString(onConnectionFailureReturn.getErrorCode());
+      System.out.println("Mqtt5 Client: Connection failed with error: " +
+                         errorString);
+      connectedFuture.completeExceptionally(
+          new Exception("Could not connect: " + errorString));
+    }
 
-        MqttClientConnectionEvents callbacks = new MqttClientConnectionEvents() {
-            @Override
-            public void onConnectionInterrupted(int errorCode) {
-                if (errorCode != 0) {
-                    System.out.println("Connection interrupted: " + errorCode + ": " + CRT.awsErrorString(errorCode));
-                }
-            }
+    @Override
+    public void onDisconnection(Mqtt5Client client,
+                                OnDisconnectionReturn onDisconnectionReturn) {
+      System.out.println("Mqtt5 Client: Disconnected");
+      DisconnectPacket disconnectPacket =
+          onDisconnectionReturn.getDisconnectPacket();
+      if (disconnectPacket != null) {
+        System.out.println("\tDisconnection packet code: " +
+                           disconnectPacket.getReasonCode());
+        System.out.println("\tDisconnection packet reason: " +
+                           disconnectPacket.getReasonString());
+      }
+    }
 
-            @Override
-            public void onConnectionResumed(boolean sessionPresent) {
-                System.out.println("Connection resumed: " + (sessionPresent ? "existing session" : "clean session"));
-            }
-        };
+    @Override
+    public void onStopped(Mqtt5Client client, OnStoppedReturn onStoppedReturn) {
+      System.out.println("Mqtt5 Client: Stopped");
+      stoppedFuture.complete(null);
+    }
+  }
 
-        try {
+  static final class SamplePublishEvents
+      implements Mqtt5ClientOptions.PublishEvents {
+    CountDownLatch messagesReceived;
 
-            /**
-             * Create the MQTT connection from the builder
-             */
-            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(cmdData.input_cert, cmdData.input_key);
-            if (cmdData.input_ca != "") {
-                builder.withCertificateAuthorityFromPath(null, cmdData.input_ca);
-            }
-            builder.withConnectionEventCallbacks(callbacks)
-                .withClientId(cmdData.input_clientId)
-                .withEndpoint(cmdData.input_endpoint)
-                .withPort(cmdData.input_port)
-                .withCleanSession(true)
-                .withProtocolOperationTimeoutMs(60000);
-            if (cmdData.input_proxyHost != "" && cmdData.input_proxyPort > 0) {
-                HttpProxyOptions proxyOptions = new HttpProxyOptions();
-                proxyOptions.setHost(cmdData.input_proxyHost);
-                proxyOptions.setPort(cmdData.input_proxyPort);
-                builder.withHttpProxyOptions(proxyOptions);
-            }
-            MqttClientConnection connection = builder.build();
-            builder.close();
+    SamplePublishEvents(int messageCount) {
+      messagesReceived = new CountDownLatch(messageCount);
+    }
 
-            // Connect the MQTT client
-            CompletableFuture<Boolean> connected = connection.connect();
-            try {
-                boolean sessionPresent = connected.get();
-                System.out.println("Connected to " + (!sessionPresent ? "new" : "existing") + " session!");
-            } catch (Exception ex) {
-                throw new RuntimeException("Exception occurred during connect", ex);
-            }
+    @Override
+    public void onMessageReceived(Mqtt5Client client,
+                                  PublishReturn publishReturn) {
+      PublishPacket publishPacket = publishReturn.getPublishPacket();
 
-            // Subscribe to the topic
-            CountDownLatch countDownLatch = new CountDownLatch(cmdData.input_count);
-            CompletableFuture<Integer> subscribed = connection.subscribe(cmdData.input_topic, QualityOfService.AT_LEAST_ONCE, (message) -> {
-                String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
-                System.out.println("MESSAGE: " + payload);
-                countDownLatch.countDown();
-            });
-            subscribed.get();
+      System.out.println("Publish received on topic: " +
+                         publishPacket.getTopic());
+      System.out.println("Message: " + new String(publishPacket.getPayload()));
 
-            // Publish to the topic
-            int count = 0;
-            while (count++ < cmdData.input_count) {
-                CompletableFuture<Integer> published = connection.publish(new MqttMessage(cmdData.input_topic, cmdData.input_message.getBytes(), QualityOfService.AT_LEAST_ONCE, false));
-                published.get();
-                Thread.sleep(1000);
-            }
-            countDownLatch.await();
+      List<UserProperty> packetProperties = publishPacket.getUserProperties();
+      if (packetProperties != null) {
+        for (int i = 0; i < packetProperties.size(); i++) {
+          UserProperty property = packetProperties.get(i);
+          System.out.println("\twith UserProperty: (" + property.key + ", " +
+                             property.value + ")");
+        }
+      }
 
-            // Disconnect
-            CompletableFuture<Void> disconnected = connection.disconnect();
-            disconnected.get();
+      messagesReceived.countDown();
+    }
+  }
 
-            // Close the connection now that we are completely done with it.
-            connection.close();
+  public static void main(String[] args) {
+    Options cliOptions = new Options();
+    cliOptions.addOption(Option.builder("e")
+                             .longOpt("endpoint")
+                             .desc("AWS IoT endpoint to connect to")
+                             .hasArg()
+                             .required()
+                             .build());
+    cliOptions.addOption(Option.builder("c")
+                             .longOpt("cert")
+                             .desc("file path to X509 certificate")
+                             .hasArg()
+                             .build());
+    cliOptions.addOption(Option.builder("k")
+                             .longOpt("key")
+                             .desc("file path to X509 private key")
+                             .hasArg()
+                             .build());
+    cliOptions.addOption(Option.builder()
+                             .longOpt("ca_file")
+                             .desc("file path to root CA certificate")
+                             .hasArg()
+                             .build());
+    cliOptions.addOption(Option.builder("i")
+                             .longOpt("client_id")
+                             .desc("MQTT client ID")
+                             .hasArg()
+                             .build());
+    cliOptions.addOption(Option.builder("t")
+                             .longOpt("topic")
+                             .desc("MQTT topic")
+                             .hasArg()
+                             .build());
+    cliOptions.addOption(Option.builder("m")
+                             .longOpt("message")
+                             .desc("message to publish")
+                             .hasArg()
+                             .build());
+    cliOptions.addOption(Option.builder("n")
+                             .longOpt("count")
+                             .desc("number of messages to send")
+                             .hasArg()
+                             .build());
+    cliOptions.addOption(Option.builder("r")
+                             .longOpt("region")
+                             .desc("AWS region for WebSocket")
+                             .hasArg()
+                             .build());
+    cliOptions.addOption(
+        Option.builder("h").longOpt("help").desc("prints help").build());
 
-        } catch (CrtRuntimeException | InterruptedException | ExecutionException ex) {
-            onApplicationFailure(ex);
+    CommandLineParser parser = new DefaultParser();
+    CommandLine commandLine;
+    try {
+      commandLine = parser.parse(cliOptions, args);
+    } catch (Exception e) {
+      System.err.println("Error parsing arguments: " + e.getMessage());
+      HelpFormatter formatter = new HelpFormatter();
+      formatter.printHelp("PubSub", cliOptions);
+      return;
+    }
+
+    if (commandLine.hasOption("help")) {
+      HelpFormatter formatter = new HelpFormatter();
+      formatter.printHelp("PubSub", cliOptions);
+      return;
+    }
+
+    String endpoint = commandLine.getOptionValue("endpoint");
+    String certPath = commandLine.getOptionValue("cert", "");
+    String keyPath = commandLine.getOptionValue("key", "");
+    String caFile = commandLine.getOptionValue("ca_file", "");
+    String clientId = commandLine.getOptionValue("client_id", "test-client");
+    String topic = commandLine.getOptionValue("topic", "test/topic");
+    String message = commandLine.getOptionValue("message", "Hello World");
+    int messageCount =
+        Integer.parseInt(commandLine.getOptionValue("count", "10"));
+    String signingRegion = commandLine.getOptionValue("region", "us-east-1");
+
+    try {
+      SampleLifecycleEvents lifecycleEvents = new SampleLifecycleEvents();
+      SamplePublishEvents publishEvents = new SamplePublishEvents(messageCount);
+      Mqtt5Client client;
+
+      /**
+       * Create the MQTT connection from the builder
+       */
+      if (!certPath.isEmpty() || !keyPath.isEmpty()) {
+        AwsIotMqtt5ClientBuilder builder =
+            AwsIotMqtt5ClientBuilder.newDirectMqttBuilderWithMtlsFromPath(
+                endpoint, certPath, keyPath);
+
+        if (!caFile.isEmpty()) {
+          builder.withCertificateAuthorityFromPath(null, caFile);
         }
 
-        CrtResource.waitForNoResources();
-        System.out.println("Complete!");
+        ConnectPacket.ConnectPacketBuilder connectProperties =
+            new ConnectPacket.ConnectPacketBuilder();
+        connectProperties.withClientId(clientId);
+        builder.withConnectProperties(connectProperties);
+        builder.withLifeCycleEvents(lifecycleEvents);
+        builder.withPublishEvents(publishEvents);
+        client = builder.build();
+        builder.close();
+      } else {
+        AwsIotMqtt5ClientBuilder.WebsocketSigv4Config websocketConfig =
+            new AwsIotMqtt5ClientBuilder.WebsocketSigv4Config();
+        websocketConfig.region = signingRegion;
+        AwsIotMqtt5ClientBuilder builder =
+            AwsIotMqtt5ClientBuilder.newWebsocketMqttBuilderWithSigv4Auth(
+                endpoint, websocketConfig);
+        ConnectPacket.ConnectPacketBuilder connectProperties =
+            new ConnectPacket.ConnectPacketBuilder();
+
+        if (!caFile.isEmpty()) {
+          builder.withCertificateAuthorityFromPath(null, caFile);
+        }
+        connectProperties.withClientId(clientId);
+        builder.withConnectProperties(connectProperties);
+        builder.withLifeCycleEvents(lifecycleEvents);
+        builder.withPublishEvents(publishEvents);
+        client = builder.build();
+        builder.close();
+      }
+
+      /* Connect */
+      client.start();
+      try {
+        lifecycleEvents.connectedFuture.get(60, TimeUnit.SECONDS);
+      } catch (Exception ex) {
+        throw new RuntimeException("Exception occurred during connect", ex);
+      }
+
+      /* Subscribe */
+      SubscribePacket.SubscribePacketBuilder subscribeBuilder =
+          new SubscribePacket.SubscribePacketBuilder();
+      subscribeBuilder.withSubscription(
+          topic, QOS.AT_LEAST_ONCE, false, false,
+          SubscribePacket.RetainHandlingType.DONT_SEND);
+      try {
+        client.subscribe(subscribeBuilder.build()).get(60, TimeUnit.SECONDS);
+      } catch (Exception ex) {
+        onApplicationFailure(ex);
+      }
+
+      /* Publish */
+      PublishPacket.PublishPacketBuilder publishBuilder =
+          new PublishPacket.PublishPacketBuilder();
+      publishBuilder.withTopic(topic).withQOS(QOS.AT_LEAST_ONCE);
+      int count = 0;
+      try {
+        while (count++ < messageCount) {
+          publishBuilder.withPayload(
+              ("\"" + message + ": " + String.valueOf(count) + "\"")
+                  .getBytes());
+          CompletableFuture<PublishResult> published =
+              client.publish(publishBuilder.build());
+          published.get(60, TimeUnit.SECONDS);
+          Thread.sleep(1000);
+        }
+      } catch (Exception ex) {
+        onApplicationFailure(ex);
+      }
+      publishEvents.messagesReceived.await(120, TimeUnit.SECONDS);
+
+      /* Disconnect */
+      DisconnectPacket.DisconnectPacketBuilder disconnectBuilder =
+          new DisconnectPacket.DisconnectPacketBuilder();
+      disconnectBuilder.withReasonCode(
+          DisconnectPacket.DisconnectReasonCode.NORMAL_DISCONNECTION);
+      client.stop(disconnectBuilder.build());
+      try {
+        lifecycleEvents.stoppedFuture.get(60, TimeUnit.SECONDS);
+      } catch (Exception ex) {
+        onApplicationFailure(ex);
+      }
+
+      /* Close the client to free memory */
+      client.close();
+
+    } catch (CrtRuntimeException | InterruptedException ex) {
+      onApplicationFailure(ex);
     }
+
+    CrtResource.waitForNoResources();
+    System.out.println("Complete!");
+  }
 }
