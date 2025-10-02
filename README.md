@@ -80,7 +80,7 @@ To get started with the AWS IoT Device SDK for Java v2:
 ## Samples
 
 Check out the [samples](samples) directory for working code examples that demonstrate:
-- Basic MQTT connection and messaging
+- [Basic MQTT connection and messaging](./samples/README.md#mqtt5-client-samples)
 - [AWS IoT Device Shadow operations](./samples/ServiceClients/ShadowSandbox/README.md)
 - [AWS IoT Jobs](./samples/ServiceClients/JobsSandbox/README.md)
 - AWS IoT Fleet provisioning: [basic](./samples/ServiceClients/Provisioning/Basic/README.md) and [with CSR](./samples/ServiceClients/Provisioning/Csr/README.md)
