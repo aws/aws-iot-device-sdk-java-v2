@@ -10,6 +10,7 @@ The AWS IoT Device SDK for Java v2 connects your Java applications and devices t
 * [Features](#features)
 * [Installation](#installation)
   * [Minimum Requirements](#minimum-requirements)
+  * [Consuming IoT Device SDK from Maven in your application](#consuming-iot-device-sdk-from-maven-in-your-application)
 * [Getting Started](#getting-started)
 * [Samples](samples)
 * [MQTT5 User Guide](./documents/MQTT5_Userguide.md)
@@ -41,7 +42,6 @@ The recommended way to use the AWS IoT Device SDK for Java v2 in your project is
 To develop applications that use AWS IoT Device SDK for Java v2, you need:
 * Java 8+ ([Download and Install Java](https://www.java.com/en/download/help/download_options.html))
 * Java JDK 8+ ([Download and Install JDK](https://docs.oracle.com/en/java/javase/18/install/overview-jdk-installation.html))
-  * [Set JAVA_HOME](./documents/PREREQUISITES.md#set-java_home)
 * A build tool such as [Maven](https://maven.apache.org/install.html)
 
 See [detailed setup instructions](./documents/PREREQUISITES.md) for more information.
@@ -69,9 +69,9 @@ See the [Development Guide](./documents/DEVELOPING.md) for detailed instructions
 
 To get started with the AWS IoT Device SDK for Java v2:
 
-1. Add the SDK to your project - See the [Using SDK](#using-sdk) section for Maven dependency details
+1. Add the SDK to your project - See the [Installation](#installation) section for Maven dependency details
 
-2. Choose your connection method - The SDK supports multiple authentication methods including X.509 certificates, AWS credentials, and custom authentication. [MQTT5 User Guide connection section](./documents/MQTT5_Userguide.md#how-to-setup-mqtt5-builder-based-on-desired-connection-method) and [MQTT5 PubSub sample](./samples/Mqtt5/PubSub/README.md) provide more guidance
+2. Choose your connection method - The SDK supports multiple authentication methods including X.509 certificates, AWS credentials, and custom authentication. [MQTT5 User Guide connection section](./documents/MQTT5_Userguide.md#how-to-setup-mqtt5-builder-based-on-desired-connection-method) and [MQTT5 X509 sample](./samples/Mqtt/Mqtt5X509/README.md) provide more guidance
 
 3. Follow a complete example - Check out the [samples](samples) directory
 
@@ -81,10 +81,10 @@ To get started with the AWS IoT Device SDK for Java v2:
 
 Check out the [samples](samples) directory for working code examples that demonstrate:
 - Basic MQTT connection and messaging
-- [AWS IoT Device Shadow operations](./samples/ShadowSandbox/README.md)
-- [AWS IoT Jobs](./samples/JobsSandbox/README.md)
-- AWS IoT Fleet provisioning: [basic](./samples/Provisioning/Basic/README.md) and [with CSR](./samples/Provisioning/Csr/README.md)
-- [AWS IoT Commands](./samples/CommandsSandbox/README.md)
+- [AWS IoT Device Shadow operations](./samples/ServiceClients/ShadowSandbox/README.md)
+- [AWS IoT Jobs](./samples/ServiceClients/JobsSandbox/README.md)
+- AWS IoT Fleet provisioning: [basic](./samples/ServiceClients/Provisioning/Basic/README.md) and [with CSR](./samples/ServiceClients/Provisioning/Csr/README.md)
+- [AWS IoT Commands](./samples/ServiceClients/CommandsSandbox/README.md)
 
 The samples provide ready-to-run code with detailed setup instructions for each authentication method and use case.
 
