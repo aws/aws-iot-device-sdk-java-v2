@@ -10,7 +10,7 @@ The AWS IoT Device SDK for Java v2 connects your Java applications and devices t
 * [Features](#features)
 * [Installation](#installation)
   * [Minimum Requirements](#minimum-requirements)
-  * [Consuming IoT Device SDK from Maven in your application](#consuming-iot-device-sdk-from-maven-in-your-application)
+  * [Consuming IoT Device SDK](#consuming-iot-device-sdk-from-maven-in-your-application)
 * [Getting Started](#getting-started)
 * [Samples](samples)
 * [MQTT5 User Guide](./documents/MQTT5_Userguide.md)
