@@ -2,7 +2,9 @@
 
 The AWS IoT Device SDK for Java v2 connects your Java applications and devices to the AWS IoT platform. It handles the complexities of secure communication, authentication, and device management so you can focus on your IoT solution. The SDK makes it easy to use AWS IoT services like Device Shadows, Jobs, Fleet Provisioning, and Commands.
 
-**Supported Platforms**: Linux, Windows 10+, macOS 10.15+, Android API level 24+ (Android 7.0+)
+**Supported Platforms**: Linux, Windows 11+, macOS 14+, Android API level 24+ (Android 7.0+)
+
+> **Note**: The SDK is known to work on older platform versions, but we only guarantee compatibility for the platforms listed above.
 
 *__Topics:__*
 * [Features](#features)
