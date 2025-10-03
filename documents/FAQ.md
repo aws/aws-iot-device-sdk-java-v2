@@ -35,7 +35,7 @@ To enable logging in the samples, you will need to set the following system prop
 For example, to run `Mqtt X509` with logging you could use the following:
 
 ```sh
-mvn compile exec:java -pl samples/Mqtt/Mqtt5X509 -Daws.crt.debugnative=true -Daws.crt.log.level=Debug -Daws.crt.log.destionation=Stdout -Dexec.mainClass=mqtt5x509.Mqtt5X509 -Dexec.args='--endpoint <endpoint> --cert <path to cert> --key <path to key>'
+mvn compile exec:java -pl samples/Mqtt/Mqtt5X509 -Daws.crt.debugnative=true -Daws.crt.log.level=Debug -Daws.crt.log.destionation=Stdout -Dexec.args='--endpoint <endpoint> --cert <path to cert> --key <path to key>'
 ```
 
 You can also enable [CloudWatch logging](https://docs.aws.amazon.com/iot/latest/developerguide/cloud-watch-logs.html) for IoT which will provide you with additional information that is not available on the client side sdk.
