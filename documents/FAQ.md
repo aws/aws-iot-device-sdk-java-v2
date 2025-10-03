@@ -123,6 +123,39 @@ Instructions for building, installing, and use of the Android SDK can be found [
 ### Where can I find MQTT 311 Samples?
 The MQTT 311 Samples can be found in the v1.27.2 samples folder [here](https://github.com/aws/aws-iot-device-sdk-java-v2/tree/v1.27.2/samples)
 
+### The library size is large, can I improve it?
+The SDK depends on aws-crt-java(CRT) library, which deploys native binaries for multiple platforms and results in a huge size. You can try the following options to reduce the package size.
+1. Use platform-specific dependencies
+Instead of including all platform binaries, specify only the platforms you need. 
+Sample to use classifier from aws-crt:
+    ```
+    <dependency>
+        <groupId>software.amazon.awssdk.crt</groupId>
+        <artifactId>aws-crt</artifactId>
+        <version>0.39.0</version>
+        <classifier>linux-x86_64</classifier> <!-- Only Linux 64-bit -->
+    </dependency>
+    ```
+    Checkout aws-crt-java [available classifier](https://github.com/awslabs/aws-crt-java/tree/main?tab=readme-ov-file#available-classifiers)
+
+2. Build CRT and SDK from source
+You can also build the CRT library and SDK from source
+    
+    a. [Build aws-crt library from source](https://github.com/awslabs/aws-crt-java/tree/main?tab=readme-ov-file#platform)
+    
+    b. Update SDK to use local CRT build. 
+        Update the `sdk/pom.xml` dependencies:
+
+            <dependency>
+                <groupId>software.amazon.awssdk.crt</groupId>
+                <artifactId>aws-crt</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
+            </dependency>
+
+            
+    c. [Build the SDK from source](https://github.com/aws/aws-iot-device-sdk-java-v2/blob/main/documents/DEVELOPING.md#building-from-source)
+
+
 ### I still have more questions about this sdk?
 
 * [Here](https://docs.aws.amazon.com/iot/latest/developerguide/what-is-aws-iot.html) are the AWS IoT Core docs for more details about IoT Core
