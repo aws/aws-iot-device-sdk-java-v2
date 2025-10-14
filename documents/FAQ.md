@@ -29,14 +29,14 @@ To enable logging in the samples, you will need to set the following system prop
 ```
 
 * `aws.crt.debugnative`: Whether to debug native (C/C++) code. Can be either `true` or `false`.
-* `aws.crt.log.destination`: Where the logs are outputted to. Can be `File`, `Stdout` or `Stderr`. Defaults to `Stderr`.
+* `aws.crt.log.destination`: Where the logs are output to. Can be `File`, `Stdout`, or `Stderr`. Defaults to `Stderr`.
 * `aws.crt.log.level`: The level of logging shown. Can be `Trace`, `Debug`, `Info`, `Warn`, `Error`, `Fatal`, or `None`. Defaults to `Warn`.
 * `aws.crt.log.filename`: The path to save the log file. Only needed if `aws.crt.log.destination` is set to `File`.
 
 For example, to run `BasicPubSub` with logging you could use the following:
 
 ```sh
-mvn compile exec:java -pl samples/Mqtt/Mqtt5X509 -Daws.crt.debugnative=true -Daws.crt.log.level=Debug -Daws.crt.log.destionation=Stdout -Dexec.mainClass=pubsub.PubSub -Dexec.args='--endpoint <endpoint> --cert <path to cert> --key <path to key>'
+mvn compile exec:java -pl samples/Mqtt/Mqtt5X509 -Daws.crt.debugnative=true -Daws.crt.log.level=Debug -Daws.crt.log.destination=Stdout -Dexec.mainClass=pubsub.PubSub -Dexec.args='--endpoint <endpoint> --cert <path to cert> --key <path to key>'
 ```
 
 You can also enable [CloudWatch logging](https://docs.aws.amazon.com/iot/latest/developerguide/cloud-watch-logs.html) for IoT which will provide you with additional information that is not available on the client side sdk.
@@ -56,7 +56,7 @@ System.out.println(CRT.awsErrorString(errorCode));
 
 ### I keep getting AWS_ERROR_MQTT_UNEXPECTED_HANGUP
 
-This could be many different things but it most likely is a policy issue. Start with using a super permissive IAM policy called AWSIOTFullAccess which looks like this:
+This could be many different things, but it is most likely a policy issue. Start by using a super permissive IAM policy called AWSIOTFullAccess which looks like this:
 
 ``` json
 {
