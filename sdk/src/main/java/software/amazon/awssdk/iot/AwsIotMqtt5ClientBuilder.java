@@ -41,7 +41,7 @@ import software.amazon.awssdk.crt.mqtt5.packets.UserProperty;
 /**
  * Builders for making MQTT5 clients with different connection methods for AWS IoT Core.
  */
-public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtResource {
+public class AwsIotMqtt5ClientBuilder implements AutoCloseable {
     private static Long DEFAULT_WEBSOCKET_MQTT_PORT = 443L;
     private static Long DEFAULT_DIRECT_MQTT_PORT = 8883L;
     private static Long DEFAULT_KEEP_ALIVE = 1200L;
@@ -51,19 +51,13 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
     private TlsContextOptions configTls;
     private MqttConnectCustomAuthConfig configCustomAuth;
 
-    private AwsIotMqtt5ClientBuilder(String hostName, Long port, TlsContextOptions tlsContext) {
+    private AwsIotMqtt5ClientBuilder(String hostName, Long port, TlsContextOptions tlsContextOptions) {
         config = new Mqtt5ClientOptionsBuilder(hostName, port);
-        configTls = tlsContext;
+        configTls = tlsContextOptions;
         configConnect = new ConnectPacketBuilder();
         configConnect.withKeepAliveIntervalSeconds(DEFAULT_KEEP_ALIVE);
         config.withExtendedValidationAndFlowControlOptions(Mqtt5ClientOptions.ExtendedValidationAndFlowControlOptions.AWS_IOT_CORE_DEFAULTS);
-        addReferenceTo(configTls);
     }
-
-    protected boolean canReleaseReferencesImmediately() {
-        return true;
-    }
-    protected void releaseNativeHandle() {}
 
     /**
      * Creates a new MQTT5 client builder with mTLS file paths.
@@ -76,7 +70,6 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
     public static AwsIotMqtt5ClientBuilder newDirectMqttBuilderWithMtlsFromPath(String hostName, String certificatePath, String privateKeyPath) {
         TlsContextOptions options = TlsContextOptions.createWithMtlsFromPath(certificatePath, privateKeyPath);
         AwsIotMqtt5ClientBuilder builder = new AwsIotMqtt5ClientBuilder(hostName, DEFAULT_DIRECT_MQTT_PORT, options);
-        options.close();
         if (TlsContextOptions.isAlpnSupported()) {
             builder.configTls.withAlpnList("x-amzn-mqtt-ca");
         }
@@ -94,7 +87,6 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
     public static AwsIotMqtt5ClientBuilder newDirectMqttBuilderWithMtlsFromMemory(String hostName, String certificate, String privateKey) {
         TlsContextOptions options = TlsContextOptions.createWithMtls(certificate, privateKey);
         AwsIotMqtt5ClientBuilder builder = new AwsIotMqtt5ClientBuilder(hostName, DEFAULT_DIRECT_MQTT_PORT, options);
-        options.close();
         if (TlsContextOptions.isAlpnSupported()) {
             builder.configTls.withAlpnList("x-amzn-mqtt-ca");
         }
@@ -113,7 +105,6 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
     public static AwsIotMqtt5ClientBuilder newDirectMqttBuilderWithMtlsFromPkcs11(String hostName, TlsContextPkcs11Options pkcs11Options) {
         TlsContextOptions options = TlsContextOptions.createWithMtlsPkcs11(pkcs11Options);
         AwsIotMqtt5ClientBuilder builder = new AwsIotMqtt5ClientBuilder(hostName, DEFAULT_DIRECT_MQTT_PORT, options);
-        options.close();
         if (TlsContextOptions.isAlpnSupported()) {
             builder.configTls.withAlpnList("x-amzn-mqtt-ca");
         }
@@ -132,7 +123,6 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
     public static AwsIotMqtt5ClientBuilder newDirectMtlsCustomKeyOperationsBuilder(String hostName, TlsContextCustomKeyOperationOptions operationOptions) {
         TlsContextOptions options = TlsContextOptions.createWithMtlsCustomKeyOperations(operationOptions);
         AwsIotMqtt5ClientBuilder builder = new AwsIotMqtt5ClientBuilder(hostName, DEFAULT_DIRECT_MQTT_PORT, options);
-        options.close();
         if (TlsContextOptions.isAlpnSupported()) {
             builder.configTls.withAlpnList("x-amzn-mqtt-ca");
         }
@@ -153,7 +143,6 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
     public static AwsIotMqtt5ClientBuilder newDirectMqttBuilderWithMtlsFromWindowsCertStorePath(String hostName, String certificatePath) {
         TlsContextOptions options = TlsContextOptions.createWithMtlsWindowsCertStorePath(certificatePath);
         AwsIotMqtt5ClientBuilder builder = new AwsIotMqtt5ClientBuilder(hostName, DEFAULT_DIRECT_MQTT_PORT, options);
-        options.close();
         if (TlsContextOptions.isAlpnSupported()) {
             builder.configTls.withAlpnList("x-amzn-mqtt-ca");
         }
@@ -175,7 +164,6 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
 
         AwsIotMqtt5ClientBuilder builder = new AwsIotMqtt5ClientBuilder(hostName, DEFAULT_WEBSOCKET_MQTT_PORT, options);
         builder.configCustomAuth = customAuthConfig;
-        options.close();
 
         return builder;
     }
@@ -210,7 +198,6 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
     public static AwsIotMqtt5ClientBuilder newDirectMqttBuilderWithMtlsFromPkcs12(String hostName, String pkcs12Path, String pkcs12Password) {
         TlsContextOptions options = TlsContextOptions.createWithMtlsPkcs12(pkcs12Path, pkcs12Password);
         AwsIotMqtt5ClientBuilder builder = new AwsIotMqtt5ClientBuilder(hostName, DEFAULT_DIRECT_MQTT_PORT, options);
-        options.close();
         if (TlsContextOptions.isAlpnSupported()) {
             builder.configTls.withAlpnList("x-amzn-mqtt-ca");
         }
@@ -230,7 +217,6 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
         options.alpnList.clear();
 
         AwsIotMqtt5ClientBuilder builder = new AwsIotMqtt5ClientBuilder(hostName, DEFAULT_WEBSOCKET_MQTT_PORT, options);
-        options.close();
 
         CredentialsProvider provider = null;
         if (config != null) {
@@ -295,7 +281,6 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
 
         AwsIotMqtt5ClientBuilder builder = new AwsIotMqtt5ClientBuilder(hostName, DEFAULT_WEBSOCKET_MQTT_PORT, options);
         builder.configCustomAuth = customAuthConfig;
-        options.close();
 
         Consumer<Mqtt5WebsocketHandshakeTransformArgs> websocketTransform = new Consumer<Mqtt5WebsocketHandshakeTransformArgs>() {
             @Override
@@ -324,7 +309,6 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
         String hostName, java.security.KeyStore keyStore, String certificateAlias, String certificatePassword) {
         TlsContextOptions options = TlsContextOptions.createWithMtlsJavaKeystore(keyStore, certificateAlias, certificatePassword);
         AwsIotMqtt5ClientBuilder builder = new AwsIotMqtt5ClientBuilder(hostName, DEFAULT_DIRECT_MQTT_PORT, options);
-        options.close();
         if (TlsContextOptions.isAlpnSupported()) {
             builder.configTls.withAlpnList("x-amzn-mqtt-ca");
         }
@@ -341,7 +325,6 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
     public static AwsIotMqtt5ClientBuilder newMqttBuilder(String hostName) {
         TlsContextOptions options = TlsContextOptions.createDefaultClient();
         AwsIotMqtt5ClientBuilder builder = new AwsIotMqtt5ClientBuilder(hostName, DEFAULT_DIRECT_MQTT_PORT, options);
-        options.close();
         if (TlsContextOptions.isAlpnSupported()) {
             builder.configTls.withAlpnList("x-amzn-mqtt-ca");
         }
@@ -843,13 +826,9 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
     public Mqtt5Client build() {
         if (this.configTls == null) {
             this.configTls = TlsContextOptions.createDefaultClient();
-            addReferenceTo(this.configTls);
-            this.configTls.close();
         }
         TlsContext tlsContext = new TlsContext(this.configTls);
         this.config.withTlsContext(tlsContext);
-        addReferenceTo(tlsContext);
-        tlsContext.close();
 
         try {
             this.configConnect.withUsername(buildMqtt5FinalUsername(this.configCustomAuth));
@@ -868,8 +847,14 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
 
         Mqtt5Client returnClient = new Mqtt5Client(this.config.build());
 
-        // Keep a reference to the TLS configuration so any possible Websockets-related CrtResources are kept alive
+        // Have the Mqtt5 Client hold a reference to the TlsContextOptions so any possible 
+        // Websockets-related CrtResources are kept alive. 
         returnClient.addReferenceTo(this.configTls);
+        
+        // remove the ref of TlsContext that was added upon creation within the builder
+        // Their lifetime will be under control of the Mqtt5Client outside of the builder.
+        tlsContext.close();
+
         return returnClient;
     }
 
@@ -1126,5 +1111,17 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
         addToUsernameParam(paramList, "Version", new PackageInfo().version.toString());
 
         return formUsernameFromParam(paramList);
+    }
+
+    /**
+     * Clear the ref held by the builder on the TlsContextOptions. We don't clear it on build()
+     * as it may be reused to create multiple Clients, each of which will retain its own ref on
+     * the TlsContextOptions.
+     */
+    @Override
+    public void close(){
+         if (this.configTls != null) {
+            this.configTls.close();
+         }
     }
 }
