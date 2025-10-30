@@ -905,8 +905,8 @@ samples.
 ### Example
 
 It's always helpful to look at a working example to see how new functionality works, to be able to tweak different options,
-to compare with existing code. For that reason, we implemented a [Publish/Subscribe example](https://github.com/aws/aws-iot-device-sdk-java-v2/tree/main/samples/Mqtt5/PubSub)
-([source code](https://github.com/aws/aws-iot-device-sdk-java-v2/blob/main/samples/Mqtt5/PubSub/src/main/java/pubsub/PubSub.java))
+to compare with existing code. For that reason, we implemented a [Publish/Subscribe example](https://github.com/aws/aws-iot-device-sdk-java-v2/tree/main/samples/Mqtt/Mqtt5X509)
+([source code](https://github.com/aws/aws-iot-device-sdk-java-v2/blob/main/samples/Mqtt/Mqtt5X509/src/main/java/mqtt5x509/Mqtt5X509.java))
 in the V2 SDK similar to a sample provided by V1 SDK (see a corresponding [readme section](https://github.com/aws/aws-iot-device-sdk-java/tree/master?tab=readme-ov-file#sample-applications)
 and [source code](https://github.com/aws/aws-iot-device-sdk-java/blob/master/aws-iot-device-sdk-java-samples/src/main/java/com/amazonaws/services/iot/client/sample/pubSub/PublishSubscribeSample.java)).
 

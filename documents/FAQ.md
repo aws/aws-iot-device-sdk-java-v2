@@ -16,7 +16,7 @@
 
 ### Where should I start?
 
-If you are just getting started make sure you [install this sdk](https://github.com/aws/aws-iot-device-sdk-java-v2#installation) and then build and run the [basic PubSub](https://github.com/aws/aws-iot-device-sdk-java-v2/tree/main/samples#pubsub)
+If you are just getting started make sure you [install this sdk](https://github.com/aws/aws-iot-device-sdk-java-v2#installation) and then build and run the [Mqtt5 X509 Sample](https://github.com/aws/aws-iot-device-sdk-java-v2/tree/main/samples/Mqtt/Mqtt5X509)
 
 ### How do I enable logging?
 
@@ -34,7 +34,7 @@ To enable logging in the samples, you will need to set the following system prop
 * `aws.crt.log.level`: The level of logging shown. Can be `Trace`, `Debug`, `Info`, `Warn`, `Error`, `Fatal`, or `None`. Defaults to `Warn`.
 * `aws.crt.log.filename`: The path to save the log file. Only needed if `aws.crt.log.destination` is set to `File`.
 
-For example, to run `BasicPubSub` with logging you could use the following:
+For example, to run `Mqtt X509` with logging you could use the following:
 
 ```sh
 mvn compile exec:java -pl samples/Mqtt/Mqtt5X509 -Daws.crt.debugnative=true -Daws.crt.log.level=Debug -Daws.crt.log.destination=Stdout -Dexec.args='--endpoint <endpoint> --cert <path to cert> --key <path to key>'
