@@ -12,6 +12,7 @@
 * [How do I build and use the Android SDK?](#how-do-i-build-and-use-the-android-sdk)
 * [Where can I find MQTT 311 Samples?](#where-can-i-find-mqtt-311-samples)
 * [How can I improve the library size?](#how-can-i-improve-the-library-size)
+* [Certificate and Private Key Usage Across Different Versions of the SDK on macOS](#certificate-and-private-key-usage-across-different-versions-of-the-sdk-on-macos)
 * [I still have more questions about this sdk?](#i-still-have-more-questions-about-this-sdk)
 
 ### Where should I start?
@@ -172,6 +173,8 @@ For maximum control, build both CRT and SDK locally:
    ```
 3. [Build the SDK from source](./DEVELOPING.md#building-from-source)
 
+### Certificate and Private Key Usage Across Different Versions of the SDK on macOS
+A certificate and private key pair cannot be shared on a macOS device between aws-iot-device-sdk-java-v2 v1.29.0 and an earlier version. In the update to v1.29.0 we migrated macOS from using Apple's deprecated Security Framework to SecItem API. In doing so, certificate and private keys are imported in a non-backwards compatible manner into the Apple Keychain.
 
 ### I still have more questions about this sdk?
 
