@@ -174,7 +174,7 @@ For maximum control, build both CRT and SDK locally:
 3. [Build the SDK from source](./DEVELOPING.md#building-from-source)
 
 ### Certificate and Private Key Usage Across Different Versions of the SDK on macOS
-A certificate and private key pair cannot be shared on a macOS device between aws-iot-device-sdk-java-v2 v1.29.0 and an earlier version. In the update to v1.29.0 we migrated macOS from using Apple's deprecated Security Framework to SecItem API. In doing so, certificate and private keys are imported in a non-backwards compatible manner into the Apple Keychain.
+A certificate and private key pair cannot be shared on a macOS device between aws-iot-device-sdk-java-v2 v1.29.0 and other versions. In the update to v1.29.0 we migrated macOS from using Apple's deprecated Security Framework to SecItem API. In doing so, certificate and private keys are imported in a non-backwards compatible manner into the Apple Keychain.
 
 ### I still have more questions about this sdk?
 
