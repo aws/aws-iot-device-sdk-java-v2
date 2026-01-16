@@ -54,11 +54,11 @@ Add the following to your `pom.xml` dependencies:
 <dependency>
   <groupId>software.amazon.awssdk.iotdevicesdk</groupId>
   <artifactId>aws-iot-device-sdk</artifactId>
-  <version>1.29.1</version>
+  <version>1.30.0</version>
 </dependency>
 ```
 
-Replace `1.29.1` in `<version>1.29.1</version>` with the latest release version for the SDK.
+Replace `1.30.0` in `<version>1.30.0</version>` with the latest release version for the SDK.
 Look up the latest SDK version here: https://github.com/aws/aws-iot-device-sdk-java-v2/releases
 
 ### Building AWS IoT SDK from source
@@ -127,4 +127,4 @@ Check out our resources for additional guidance too before opening an issue:
 
 This library is licensed under the [Apache 2.0 License](./documents/LICENSE).
 
-Latest released version: v1.29.1
+Latest released version: v1.30.0
