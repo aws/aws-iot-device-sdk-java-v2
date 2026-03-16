@@ -34,6 +34,8 @@ import software.amazon.awssdk.aws.greengrass.model.ConfigurationUpdateEvents;
 import software.amazon.awssdk.aws.greengrass.model.ConfigurationValidityReport;
 import software.amazon.awssdk.aws.greengrass.model.ConfigurationValidityStatus;
 import software.amazon.awssdk.aws.greengrass.model.ConflictError;
+import software.amazon.awssdk.aws.greengrass.model.ConnectionStatus;
+import software.amazon.awssdk.aws.greengrass.model.ConnectionStatusEvent;
 import software.amazon.awssdk.aws.greengrass.model.CreateDebugPasswordRequest;
 import software.amazon.awssdk.aws.greengrass.model.CreateDebugPasswordResponse;
 import software.amazon.awssdk.aws.greengrass.model.CreateLocalDeploymentRequest;
@@ -66,6 +68,7 @@ import software.amazon.awssdk.aws.greengrass.model.InvalidClientDeviceAuthTokenE
 import software.amazon.awssdk.aws.greengrass.model.InvalidCredentialError;
 import software.amazon.awssdk.aws.greengrass.model.InvalidRecipeDirectoryPathError;
 import software.amazon.awssdk.aws.greengrass.model.InvalidTokenError;
+import software.amazon.awssdk.aws.greengrass.model.IoTCoreConnectionStatusEvent;
 import software.amazon.awssdk.aws.greengrass.model.IoTCoreMessage;
 import software.amazon.awssdk.aws.greengrass.model.JsonMessage;
 import software.amazon.awssdk.aws.greengrass.model.LifecycleState;
@@ -115,6 +118,8 @@ import software.amazon.awssdk.aws.greengrass.model.SubscribeToComponentUpdatesRe
 import software.amazon.awssdk.aws.greengrass.model.SubscribeToComponentUpdatesResponse;
 import software.amazon.awssdk.aws.greengrass.model.SubscribeToConfigurationUpdateRequest;
 import software.amazon.awssdk.aws.greengrass.model.SubscribeToConfigurationUpdateResponse;
+import software.amazon.awssdk.aws.greengrass.model.SubscribeToIoTCoreConnectionStatusRequest;
+import software.amazon.awssdk.aws.greengrass.model.SubscribeToIoTCoreConnectionStatusResponse;
 import software.amazon.awssdk.aws.greengrass.model.SubscribeToIoTCoreRequest;
 import software.amazon.awssdk.aws.greengrass.model.SubscribeToIoTCoreResponse;
 import software.amazon.awssdk.aws.greengrass.model.SubscribeToTopicRequest;
@@ -262,6 +267,10 @@ public class GreengrassCoreIPCServiceModel extends EventStreamRPCServiceModel {
 
   private static final SubscribeToIoTCoreOperationContext _SUBSCRIBE_TO_IOT_CORE_OPERATION_CONTEXT = new SubscribeToIoTCoreOperationContext();
 
+  public static final String SUBSCRIBE_TO_IOT_CORE_CONNECTION_STATUS = SERVICE_NAMESPACE + "#" + "SubscribeToIoTCoreConnectionStatus";
+
+  private static final SubscribeToIoTCoreConnectionStatusOperationContext _SUBSCRIBE_TO_IOT_CORE_CONNECTION_STATUS_OPERATION_CONTEXT = new SubscribeToIoTCoreConnectionStatusOperationContext();
+
   public static final String SUBSCRIBE_TO_TOPIC = SERVICE_NAMESPACE + "#" + "SubscribeToTopic";
 
   private static final SubscribeToTopicOperationContext _SUBSCRIBE_TO_TOPIC_OPERATION_CONTEXT = new SubscribeToTopicOperationContext();
@@ -345,6 +354,8 @@ public class GreengrassCoreIPCServiceModel extends EventStreamRPCServiceModel {
     SERVICE_OPERATION_SET.add(SUBSCRIBE_TO_CONFIGURATION_UPDATE);
     SERVICE_OPERATION_MODEL_MAP.put(SUBSCRIBE_TO_IOT_CORE, _SUBSCRIBE_TO_IOT_CORE_OPERATION_CONTEXT);
     SERVICE_OPERATION_SET.add(SUBSCRIBE_TO_IOT_CORE);
+    SERVICE_OPERATION_MODEL_MAP.put(SUBSCRIBE_TO_IOT_CORE_CONNECTION_STATUS, _SUBSCRIBE_TO_IOT_CORE_CONNECTION_STATUS_OPERATION_CONTEXT);
+    SERVICE_OPERATION_SET.add(SUBSCRIBE_TO_IOT_CORE_CONNECTION_STATUS);
     SERVICE_OPERATION_MODEL_MAP.put(SUBSCRIBE_TO_TOPIC, _SUBSCRIBE_TO_TOPIC_OPERATION_CONTEXT);
     SERVICE_OPERATION_SET.add(SUBSCRIBE_TO_TOPIC);
     SERVICE_OPERATION_MODEL_MAP.put(SUBSCRIBE_TO_VALIDATE_CONFIGURATION_UPDATES, _SUBSCRIBE_TO_VALIDATE_CONFIGURATION_UPDATES_OPERATION_CONTEXT);
@@ -377,6 +388,8 @@ public class GreengrassCoreIPCServiceModel extends EventStreamRPCServiceModel {
     SERVICE_OBJECT_MODEL_MAP.put(ConfigurationValidityReport.APPLICATION_MODEL_TYPE, ConfigurationValidityReport.class);
     SERVICE_OBJECT_MODEL_MAP.put(ConfigurationValidityStatus.APPLICATION_MODEL_TYPE, ConfigurationValidityStatus.class);
     SERVICE_OBJECT_MODEL_MAP.put(ConflictError.APPLICATION_MODEL_TYPE, ConflictError.class);
+    SERVICE_OBJECT_MODEL_MAP.put(ConnectionStatus.APPLICATION_MODEL_TYPE, ConnectionStatus.class);
+    SERVICE_OBJECT_MODEL_MAP.put(ConnectionStatusEvent.APPLICATION_MODEL_TYPE, ConnectionStatusEvent.class);
     SERVICE_OBJECT_MODEL_MAP.put(CreateDebugPasswordRequest.APPLICATION_MODEL_TYPE, CreateDebugPasswordRequest.class);
     SERVICE_OBJECT_MODEL_MAP.put(CreateDebugPasswordResponse.APPLICATION_MODEL_TYPE, CreateDebugPasswordResponse.class);
     SERVICE_OBJECT_MODEL_MAP.put(CreateLocalDeploymentRequest.APPLICATION_MODEL_TYPE, CreateLocalDeploymentRequest.class);
@@ -409,6 +422,7 @@ public class GreengrassCoreIPCServiceModel extends EventStreamRPCServiceModel {
     SERVICE_OBJECT_MODEL_MAP.put(InvalidCredentialError.APPLICATION_MODEL_TYPE, InvalidCredentialError.class);
     SERVICE_OBJECT_MODEL_MAP.put(InvalidRecipeDirectoryPathError.APPLICATION_MODEL_TYPE, InvalidRecipeDirectoryPathError.class);
     SERVICE_OBJECT_MODEL_MAP.put(InvalidTokenError.APPLICATION_MODEL_TYPE, InvalidTokenError.class);
+    SERVICE_OBJECT_MODEL_MAP.put(IoTCoreConnectionStatusEvent.APPLICATION_MODEL_TYPE, IoTCoreConnectionStatusEvent.class);
     SERVICE_OBJECT_MODEL_MAP.put(IoTCoreMessage.APPLICATION_MODEL_TYPE, IoTCoreMessage.class);
     SERVICE_OBJECT_MODEL_MAP.put(JsonMessage.APPLICATION_MODEL_TYPE, JsonMessage.class);
     SERVICE_OBJECT_MODEL_MAP.put(LifecycleState.APPLICATION_MODEL_TYPE, LifecycleState.class);
@@ -458,6 +472,8 @@ public class GreengrassCoreIPCServiceModel extends EventStreamRPCServiceModel {
     SERVICE_OBJECT_MODEL_MAP.put(SubscribeToComponentUpdatesResponse.APPLICATION_MODEL_TYPE, SubscribeToComponentUpdatesResponse.class);
     SERVICE_OBJECT_MODEL_MAP.put(SubscribeToConfigurationUpdateRequest.APPLICATION_MODEL_TYPE, SubscribeToConfigurationUpdateRequest.class);
     SERVICE_OBJECT_MODEL_MAP.put(SubscribeToConfigurationUpdateResponse.APPLICATION_MODEL_TYPE, SubscribeToConfigurationUpdateResponse.class);
+    SERVICE_OBJECT_MODEL_MAP.put(SubscribeToIoTCoreConnectionStatusRequest.APPLICATION_MODEL_TYPE, SubscribeToIoTCoreConnectionStatusRequest.class);
+    SERVICE_OBJECT_MODEL_MAP.put(SubscribeToIoTCoreConnectionStatusResponse.APPLICATION_MODEL_TYPE, SubscribeToIoTCoreConnectionStatusResponse.class);
     SERVICE_OBJECT_MODEL_MAP.put(SubscribeToIoTCoreRequest.APPLICATION_MODEL_TYPE, SubscribeToIoTCoreRequest.class);
     SERVICE_OBJECT_MODEL_MAP.put(SubscribeToIoTCoreResponse.APPLICATION_MODEL_TYPE, SubscribeToIoTCoreResponse.class);
     SERVICE_OBJECT_MODEL_MAP.put(SubscribeToTopicRequest.APPLICATION_MODEL_TYPE, SubscribeToTopicRequest.class);
@@ -605,6 +621,11 @@ public class GreengrassCoreIPCServiceModel extends EventStreamRPCServiceModel {
 
   public static SubscribeToIoTCoreOperationContext getSubscribeToIoTCoreModelContext() {
     return _SUBSCRIBE_TO_IOT_CORE_OPERATION_CONTEXT;
+  }
+
+  public static SubscribeToIoTCoreConnectionStatusOperationContext getSubscribeToIoTCoreConnectionStatusModelContext(
+      ) {
+    return _SUBSCRIBE_TO_IOT_CORE_CONNECTION_STATUS_OPERATION_CONTEXT;
   }
 
   public static SubscribeToTopicOperationContext getSubscribeToTopicModelContext() {

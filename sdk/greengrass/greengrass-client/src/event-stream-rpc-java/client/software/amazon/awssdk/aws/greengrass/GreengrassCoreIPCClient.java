@@ -24,6 +24,7 @@ import software.amazon.awssdk.aws.greengrass.model.GetConfigurationRequest;
 import software.amazon.awssdk.aws.greengrass.model.GetLocalDeploymentStatusRequest;
 import software.amazon.awssdk.aws.greengrass.model.GetSecretValueRequest;
 import software.amazon.awssdk.aws.greengrass.model.GetThingShadowRequest;
+import software.amazon.awssdk.aws.greengrass.model.IoTCoreConnectionStatusEvent;
 import software.amazon.awssdk.aws.greengrass.model.IoTCoreMessage;
 import software.amazon.awssdk.aws.greengrass.model.ListComponentsRequest;
 import software.amazon.awssdk.aws.greengrass.model.ListLocalDeploymentsRequest;
@@ -39,6 +40,7 @@ import software.amazon.awssdk.aws.greengrass.model.StopComponentRequest;
 import software.amazon.awssdk.aws.greengrass.model.SubscribeToCertificateUpdatesRequest;
 import software.amazon.awssdk.aws.greengrass.model.SubscribeToComponentUpdatesRequest;
 import software.amazon.awssdk.aws.greengrass.model.SubscribeToConfigurationUpdateRequest;
+import software.amazon.awssdk.aws.greengrass.model.SubscribeToIoTCoreConnectionStatusRequest;
 import software.amazon.awssdk.aws.greengrass.model.SubscribeToIoTCoreRequest;
 import software.amazon.awssdk.aws.greengrass.model.SubscribeToTopicRequest;
 import software.amazon.awssdk.aws.greengrass.model.SubscribeToValidateConfigurationUpdatesRequest;
@@ -262,6 +264,14 @@ public class GreengrassCoreIPCClient extends EventStreamRPCClient implements Gre
       final Optional<StreamResponseHandler<IoTCoreMessage>> streamResponseHandler) {
     final SubscribeToIoTCoreOperationContext operationContext = GreengrassCoreIPCServiceModel.getSubscribeToIoTCoreModelContext();
     return new SubscribeToIoTCoreResponseHandler(doOperationInvoke(operationContext, request, streamResponseHandler));
+  }
+
+  @Override
+  public SubscribeToIoTCoreConnectionStatusResponseHandler subscribeToIoTCoreConnectionStatus(
+      final SubscribeToIoTCoreConnectionStatusRequest request,
+      final Optional<StreamResponseHandler<IoTCoreConnectionStatusEvent>> streamResponseHandler) {
+    final SubscribeToIoTCoreConnectionStatusOperationContext operationContext = GreengrassCoreIPCServiceModel.getSubscribeToIoTCoreConnectionStatusModelContext();
+    return new SubscribeToIoTCoreConnectionStatusResponseHandler(doOperationInvoke(operationContext, request, streamResponseHandler));
   }
 
   @Override

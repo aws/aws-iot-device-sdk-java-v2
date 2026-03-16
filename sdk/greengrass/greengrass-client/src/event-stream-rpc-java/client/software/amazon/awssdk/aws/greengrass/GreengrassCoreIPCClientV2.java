@@ -53,6 +53,7 @@ import software.amazon.awssdk.aws.greengrass.model.GetSecretValueRequest;
 import software.amazon.awssdk.aws.greengrass.model.GetSecretValueResponse;
 import software.amazon.awssdk.aws.greengrass.model.GetThingShadowRequest;
 import software.amazon.awssdk.aws.greengrass.model.GetThingShadowResponse;
+import software.amazon.awssdk.aws.greengrass.model.IoTCoreConnectionStatusEvent;
 import software.amazon.awssdk.aws.greengrass.model.IoTCoreMessage;
 import software.amazon.awssdk.aws.greengrass.model.ListComponentsRequest;
 import software.amazon.awssdk.aws.greengrass.model.ListComponentsResponse;
@@ -82,6 +83,8 @@ import software.amazon.awssdk.aws.greengrass.model.SubscribeToComponentUpdatesRe
 import software.amazon.awssdk.aws.greengrass.model.SubscribeToComponentUpdatesResponse;
 import software.amazon.awssdk.aws.greengrass.model.SubscribeToConfigurationUpdateRequest;
 import software.amazon.awssdk.aws.greengrass.model.SubscribeToConfigurationUpdateResponse;
+import software.amazon.awssdk.aws.greengrass.model.SubscribeToIoTCoreConnectionStatusRequest;
+import software.amazon.awssdk.aws.greengrass.model.SubscribeToIoTCoreConnectionStatusResponse;
 import software.amazon.awssdk.aws.greengrass.model.SubscribeToIoTCoreRequest;
 import software.amazon.awssdk.aws.greengrass.model.SubscribeToIoTCoreResponse;
 import software.amazon.awssdk.aws.greengrass.model.SubscribeToTopicRequest;
@@ -1046,6 +1049,89 @@ public class GreengrassCoreIPCClientV2 implements AutoCloseable {
       final SubscribeToIoTCoreRequest request,
       final StreamResponseHandler<IoTCoreMessage> streamResponseHandler) {
     SubscribeToIoTCoreResponseHandler r = client.subscribeToIoTCore(request, Optional.ofNullable(getStreamingResponseHandler(streamResponseHandler)));
+    return new StreamingResponse<>(r.getResponse(), r);
+  }
+
+  /**
+   * Perform the subscribeToIoTCoreConnectionStatus operation asynchronously.
+   * The initial response or error will be returned as the result of the asynchronous future, further events will
+   * arrive via the streaming callbacks.
+   *
+   * @return a future which resolves to the response
+   *
+   * @param request request object
+   * @param onStreamEvent Callback for stream events. If an executor is provided, this method will run in the executor.
+   * @param onStreamError Callback for stream errors. Return true to close the stream,
+   *     return false to keep the stream open. Even if an executor is provided,
+   *     this method will not run in the executor.
+   * @param onStreamClosed Callback for when the stream closes. If an executor is provided, this method will run in the executor.
+   */
+  public StreamingResponse<CompletableFuture<SubscribeToIoTCoreConnectionStatusResponse>, SubscribeToIoTCoreConnectionStatusResponseHandler> subscribeToIoTCoreConnectionStatusAsync(
+      final SubscribeToIoTCoreConnectionStatusRequest request,
+      Consumer<IoTCoreConnectionStatusEvent> onStreamEvent,
+      Optional<Function<Throwable, Boolean>> onStreamError, Optional<Runnable> onStreamClosed) {
+    return this.subscribeToIoTCoreConnectionStatusAsync(request, getStreamingResponseHandler(onStreamEvent, onStreamError, onStreamClosed));
+  }
+
+  /**
+   * Perform the subscribeToIoTCoreConnectionStatus operation synchronously.
+   * The initial response or error will be returned synchronously,
+   * further events will arrive via the streaming callbacks.
+   *
+   * @throws InterruptedException if thread is interrupted while waiting for the response
+   * @return the response
+   *
+   * @param request request object
+   * @param onStreamEvent Callback for stream events. If an executor is provided, this method will run in the executor.
+   * @param onStreamError Callback for stream errors. Return true to close the stream,
+   *     return false to keep the stream open. Even if an executor is provided,
+   *     this method will not run in the executor.
+   * @param onStreamClosed Callback for when the stream closes. If an executor is provided, this method will run in the executor.
+   */
+  public StreamingResponse<SubscribeToIoTCoreConnectionStatusResponse, SubscribeToIoTCoreConnectionStatusResponseHandler> subscribeToIoTCoreConnectionStatus(
+      final SubscribeToIoTCoreConnectionStatusRequest request,
+      Consumer<IoTCoreConnectionStatusEvent> onStreamEvent,
+      Optional<Function<Throwable, Boolean>> onStreamError, Optional<Runnable> onStreamClosed)
+      throws InterruptedException {
+    StreamingResponse<CompletableFuture<SubscribeToIoTCoreConnectionStatusResponse>, SubscribeToIoTCoreConnectionStatusResponseHandler> r = this.subscribeToIoTCoreConnectionStatusAsync(request, onStreamEvent, onStreamError, onStreamClosed);
+    return new StreamingResponse<>(getResponse(r.getResponse()), r.getHandler());
+  }
+
+  /**
+   * Perform the subscribeToIoTCoreConnectionStatus operation synchronously.
+   * The initial response or error will be returned synchronously, further events will
+   * arrive via the streaming callbacks.
+   *
+   * @throws InterruptedException if thread is interrupted while waiting for the response
+   * @return the response
+   *
+   * @param request request object
+   * @param streamResponseHandler Methods on this object will be called as stream events happen on this operation.
+   *     If an executor is provided, the onStreamEvent and onStreamClosed methods will run in the executor.
+   */
+  public StreamingResponse<SubscribeToIoTCoreConnectionStatusResponse, SubscribeToIoTCoreConnectionStatusResponseHandler> subscribeToIoTCoreConnectionStatus(
+      final SubscribeToIoTCoreConnectionStatusRequest request,
+      final StreamResponseHandler<IoTCoreConnectionStatusEvent> streamResponseHandler) throws
+      InterruptedException {
+    StreamingResponse<CompletableFuture<SubscribeToIoTCoreConnectionStatusResponse>, SubscribeToIoTCoreConnectionStatusResponseHandler> r = this.subscribeToIoTCoreConnectionStatusAsync(request, streamResponseHandler);
+    return new StreamingResponse<>(getResponse(r.getResponse()), r.getHandler());
+  }
+
+  /**
+   * Perform the subscribeToIoTCoreConnectionStatus operation asynchronously.
+   * The initial response or error will be returned as the result of the asynchronous future, further events will
+   * arrive via the streaming callbacks.
+   *
+   * @return a future which resolves to the response
+   *
+   * @param request request object
+   * @param streamResponseHandler Methods on this object will be called as stream events happen on this operation.
+   *     If an executor is provided, the onStreamEvent and onStreamClosed methods will run in the executor.
+   */
+  public StreamingResponse<CompletableFuture<SubscribeToIoTCoreConnectionStatusResponse>, SubscribeToIoTCoreConnectionStatusResponseHandler> subscribeToIoTCoreConnectionStatusAsync(
+      final SubscribeToIoTCoreConnectionStatusRequest request,
+      final StreamResponseHandler<IoTCoreConnectionStatusEvent> streamResponseHandler) {
+    SubscribeToIoTCoreConnectionStatusResponseHandler r = client.subscribeToIoTCoreConnectionStatus(request, Optional.ofNullable(getStreamingResponseHandler(streamResponseHandler)));
     return new StreamingResponse<>(r.getResponse(), r);
   }
 
