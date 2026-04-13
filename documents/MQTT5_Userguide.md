@@ -24,6 +24,8 @@
         + [Publish](#publish)
         + [Subscribe and Unsubscribe](#subscribe-and-unsubscribe)
     + [MQTT5 Best Practices](#mqtt5-best-practices)
+* [Advanced Operations and Settings](#advanced-operations-and-settings)
+    + [Manual Publish Acknowledgement](#manual-publish-acknowledgement)
 
 # Introduction
 
@@ -564,3 +566,54 @@ Below are some best practices for the MQTT5 client that are recommended to follo
 * Make sure to always call `close()` when finished a MQTT5 client to avoid native resource leaks!
 * For [publish](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5Client.html#publish(software.amazon.awssdk.crt.mqtt5.packets.PublishPacket)), [subscribe](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5Client.html#subscribe(software.amazon.awssdk.crt.mqtt5.packets.SubscribePacket)), and [unsubscribe](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5Client.html#unsubscribe(software.amazon.awssdk.crt.mqtt5.packets.UnsubscribePacket)), make sure to check the reason codes in the ACK ([PubAckPacket](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/packets/PubAckPacket.html), [SubAckPacket](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/packets/SubAckPacket.html), and [UnsubAckPacket](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/packets/UnsubAckPacket.html) respectively) to see if the operation actually succeeded.
 * You MUST NOT perform blocking operations on any callback, or you will cause a deadlock. For example: in the `onMessageReceived` callback, do not send a publish, and then wait for the future to complete within the callback. The Client cannot do work until your callback returns, so the thread will be stuck.
+
+## Advanced Operations and Settings
+
+### Manual Publish Acknowledgement
+
+By default, the MQTT5 client automatically sends a PUBACK for every QoS 1 PUBLISH it receives, immediately after the `onMessageReceived` callback returns. Manual publish acknowledgement gives you control over when that PUBACK is sent, allowing you to defer acknowledgement until after your application has fully processed the message — for example, after persisting it to a database or forwarding it to another service.
+
+To take manual control of the PUBACK, call `publishReturn.acquirePublishAcknowledgementControl()` **within** the `onMessageReceived` callback. This returns a `Mqtt5PublishAcknowledgementControlHandle` that you can store and use later to send the PUBACK by calling `client.invokePublishAcknowledgement()`.
+
+**Important constraints:**
+* `acquirePublishAcknowledgementControl()` must be called within the `onMessageReceived` callback. Calling it outside the callback or after it returns will return `null`.
+* `acquirePublishAcknowledgementControl()` may only be called once per received PUBLISH. Subsequent calls will return `null`.
+* This is only relevant for QoS 1 messages. Calling it on a QoS 0 message will return `null`.
+* If `acquirePublishAcknowledgementControl()` is not called, the client will automatically send the PUBACK when the callback returns.
+
+The following example shows how to acquire the acknowledgement handle within the callback and invoke it later:
+
+~~~ java
+// A shared location to store the acknowledgement handle for later use
+final AtomicReference<Mqtt5PublishAcknowledgementControlHandle> pendingAck = new AtomicReference<>();
+
+class MyPublishEvents implements Mqtt5ClientOptions.PublishEvents {
+    @Override
+    public void onMessageReceived(Mqtt5Client client, PublishReturn publishReturn) {
+        System.out.println("Message received on topic: " +
+            publishReturn.getPublishPacket().getTopic());
+
+        if (publishReturn.getPublishPacket().getQOS() == QOS.AT_LEAST_ONCE) {
+            // Acquire manual control of the PUBACK for this QoS 1 message.
+            // This must be called within the callback. Calling it outside the callback
+            // or after it returns will return null.
+            Mqtt5PublishAcknowledgementControlHandle handle =
+                publishReturn.acquirePublishAcknowledgementControl();
+
+            if (handle != null) {
+                // The PUBACK will NOT be sent automatically because we acquired the handle.
+                // Store it for later use after processing is complete.
+                pendingAck.set(handle);
+            }
+        }
+    }
+}
+
+// ... build client, connect, and subscribe ...
+
+// After processing is complete, send the PUBACK by invoking the acknowledgement.
+Mqtt5PublishAcknowledgementControlHandle handle = pendingAck.getAndSet(null);
+if (handle != null) {
+    client.invokePublishAcknowledgement(handle);
+}
+~~~
