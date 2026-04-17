@@ -9,8 +9,8 @@
     + [How to setup a MQTT5 builder based on desired connection method](#how-to-setup-mqtt5-builder-based-on-desired-connection-method)
         * [Direct MQTT with X509-based Mutual TLS Method](#direct-mqtt-with-x509-based-mutual-tls-method)
         * [Direct MQTT with Custom Authorizer Method](#direct-mqtt-with-custom-authorizer-method)
-        * [Direct MQTT with PKCS11 Method](#direct-mqtt-with-pkcs11-method)
-        * [Direct MQTT with PKCS12 Method](#direct-mqtt-with-pkcs12-method)
+        * [Direct MQTT with PKCS11 Method (Unix Only)](#direct-mqtt-with-pkcs11-method-unix-only)
+        * [Direct MQTT with PKCS12 Method (macOS Only)](#direct-mqtt-with-pkcs12-method-macos-only)
         * [Direct MQTT with Custom Key Operations Method](#direct-mqtt-with-custom-key-operation-method)
         * [Direct MQTT with Windows Certificate Store Method](#direct-mqtt-with-windows-certificate-store-method)
         * [Direct MQTT with Java Keystore Method](#direct-mqtt-with-java-keystore-method)
@@ -147,14 +147,14 @@ AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newDirectMqttBuilder
 
 In both cases, the builder will construct a final CONNECT packet username field value for you based on the values configured. Do not add the token-signing fields to the value of the username that you assign within the custom authentication config structure. Similarly, do not add any custom authentication related values to the username in the CONNECT configuration optionally attached to the client configuration. The builder will do everything for you.
 
-### **Direct MQTT with PKCS11 Method**
+### **Direct MQTT with PKCS11 Method (Unix Only)**
 
 A MQTT5 direct connection can be made using a PKCS11 device rather than using a PEM encoded private key, the private key for mutual TLS is stored on a PKCS#11 compatible smart card or Hardware Security Module (HSM). To create a MQTT5 builder configured for this connection, see the following code:
 
 ~~~ java
 
 Pkcs11Lib pkcs11Lib = new Pkcs11Lib("<path to PKCS11 library>");
-TlsContextPkcs11Options pkcs11Options = new TlsContextPkcs11Options(pkcs11Lib)) {
+TlsContextPkcs11Options pkcs11Options = new TlsContextPkcs11Options(pkcs11Lib)
 pkcs11Options.withCertificateFilePath("<certificate file path>");
 pkcs11Options.withUserPin("<pkcs11 user pin>");
 
@@ -182,7 +182,7 @@ AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newDirectMqttBuilder
 
 **Note**: Currently, TLS integration with PKCS#11 is only available on Unix devices.
 
-### **Direct MQTT with PKCS12 Method**
+### **Direct MQTT with PKCS12 Method (macOS only)**
 
 A MQTT5 direct connection can be made using a PKCS12 file rather than using a PEM encoded private key. To create a MQTT5 builder configured for this connection, see the following code:
 
