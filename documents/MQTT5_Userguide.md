@@ -154,7 +154,7 @@ A MQTT5 direct connection can be made using a PKCS11 device rather than using a 
 ~~~ java
 
 Pkcs11Lib pkcs11Lib = new Pkcs11Lib("<path to PKCS11 library>");
-TlsContextPkcs11Options pkcs11Options = new TlsContextPkcs11Options(pkcs11Lib)
+TlsContextPkcs11Options pkcs11Options = new TlsContextPkcs11Options(pkcs11Lib);
 pkcs11Options.withCertificateFilePath("<certificate file path>");
 pkcs11Options.withUserPin("<pkcs11 user pin>");
 
