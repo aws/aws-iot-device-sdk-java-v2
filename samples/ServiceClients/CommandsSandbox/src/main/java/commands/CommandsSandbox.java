@@ -319,12 +319,12 @@ public class CommandsSandbox {
         System.out.println("                         application/json - subscribe to commands with JSON payload");
         System.out.println("                         application/cbor - subscribe to commands with CBOR payload");
         System.out.println("                         for any other value, subscribe to a generic topic");
-        System.out.println("    update-command-execution <executionId> <status> [<reason-code>] [<reason-description>]");
+        System.out.println("    update-command-execution <executionId> <status> [reason-code=<value>] [reason-description=<value>] [result=<key>:<value>;<key>:<value>]");
         System.out.println("                     updates a command execution with a new status");
         System.out.println("                     <status> can be one of the following:");
         System.out.println("                         IN_PROGRESS, SUCCEEDED, REJECTED, FAILED, TIMED_OUT");
-        System.out.println("                     <reason-code> and <reason-description> may be optionally provided for");
-        System.out.println("                         the REJECTED, FAILED, or TIMED_OUT statuses\n");
+        System.out.println("                     reason-code and reason-description may be optionally provided for any status");
+        System.out.println("                     result is a semicolon-separated list of key:value pairs; if a value is true/false it is treated as boolean, otherwise as string\n");
         System.out.println("  Miscellaneous commands:");
         System.out.println("    list-streams      list all open streaming operations");
         System.out.println("    close-stream <streamID>");
@@ -426,6 +426,7 @@ public class CommandsSandbox {
             GetCommandExecutionRequest getCommandExecutionRequest = GetCommandExecutionRequest.builder()
                     .executionId(commandExecutionId)
                     .targetArn(commandExecutionContext.deviceArn)
+                    .includeResult(true)
                     .build();
             GetCommandExecutionResponse getCommandExecutionResponse = context.controlPlaneClient.getCommandExecution(getCommandExecutionRequest);
             System.out.printf("Status of command execution '%s' is %s\n", commandExecutionId, getCommandExecutionResponse.status());
@@ -433,32 +434,78 @@ public class CommandsSandbox {
                 System.out.printf("  Reason code: %s\n", getCommandExecutionResponse.statusReason().reasonCode());
                 System.out.printf("  Reason description: %s\n", getCommandExecutionResponse.statusReason().reasonDescription());
             }
+            if (getCommandExecutionResponse.hasResult()) {
+                System.out.println("  Result:");
+                getCommandExecutionResponse.result().forEach((key, value) -> {
+                    if (value.b() != null) {
+                        System.out.printf("    %s: %s (boolean)\n", key, value.b());
+                    } else if (value.s() != null) {
+                        System.out.printf("    %s: %s (string)\n", key, value.s());
+                    }
+                });
+            }
         } catch (Exception ex) {
             handleOperationException("get-command-execution", ex, context);
         }
     }
 
+    private static Map<String, String> parseKeyValueArgs(String input) {
+        Pattern pattern = Pattern.compile("(\\S+?)=([^\\s\"]*(?:\"[^\"]*\"[^\\s\"]*)*)");
+        Matcher matcher = pattern.matcher(input);
+
+        Map<String, String> result = new HashMap<>();
+
+        while (matcher.find()) {
+            String key = matcher.group(1);
+            String value = matcher.group(2);
+            result.put(key, value);
+        }
+
+        return result;
+    }
+
+    private static HashMap<String, software.amazon.awssdk.iot.iotcommands.model.CommandExecutionResult> parseResult(String resultStr) {
+        HashMap<String, software.amazon.awssdk.iot.iotcommands.model.CommandExecutionResult> result = new HashMap<>();
+
+        Pattern pattern = Pattern.compile("([^;:]*):([^;\"]*(?:\"[^\"]*\"[^;\"]*)*)");
+        Matcher matcher = pattern.matcher(resultStr);
+
+        while (matcher.find()) {
+            String key = matcher.group(1);
+            String value = matcher.group(2).replaceAll("^\"|\"$", "");
+
+            software.amazon.awssdk.iot.iotcommands.model.CommandExecutionResult entry =
+                    new software.amazon.awssdk.iot.iotcommands.model.CommandExecutionResult();
+
+            /* NOTE: CommandExecutionResult also supports binary data via the `bin` member, which is not demonstrated in this
+             * sample. */
+            if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false")) {
+                entry.b = Boolean.parseBoolean(value);
+            } else {
+                entry.s = value;
+            }
+
+            result.put(key, entry);
+        }
+
+        return result;
+    }
+
     private static void handleUpdateCommandExecution(ApplicationContext context, String arguments) {
-        String[] argumentSplit = arguments.trim().split(" ", 4);
-        if (argumentSplit.length < 2) {
+        String[] parts = arguments.trim().split(" ", 3);
+        if (parts.length < 2) {
             printCommandHelp();
             return;
         }
 
-        String commandExecutionId = argumentSplit[0];
+        String commandExecutionId = parts[0];
         if (!context.activeCommandExecutions.containsKey(commandExecutionId)) {
             System.out.printf("Failed to update command execution status: unknown command execution ID '%s'\n", commandExecutionId);
             return;
         }
 
-        String statusStr = argumentSplit[1];
-
-        String reasonCode = null;
-        String reasonDescription = null;
-        if (argumentSplit.length > 3) {
-            reasonCode = argumentSplit[2];
-            reasonDescription = argumentSplit[3];
-        }
+        String statusStr = parts[1];
+        Map<String, String> kvArgs = parseKeyValueArgs(parts.length > 2 ? parts[2] : "");
 
         try {
             CommandExecutionContext commandExecutionContext = context.activeCommandExecutions.get(commandExecutionId);
@@ -467,10 +514,18 @@ public class CommandsSandbox {
             request.deviceType = commandExecutionContext.deviceType;
             request.deviceId = commandExecutionContext.deviceId;
             request.status = CommandExecutionStatus.valueOf(statusStr);
-            if (reasonCode != null && reasonDescription != null) {
+
+            String reasonCode = kvArgs.get("reason-code");
+            String reasonDescription = kvArgs.get("reason-description");
+            if (reasonCode != null || reasonDescription != null) {
                 request.statusReason = new StatusReason();
                 request.statusReason.reasonCode = reasonCode;
-                request.statusReason.reasonDescription = reasonDescription;
+                request.statusReason.reasonDescription = reasonDescription.replaceAll("^\"|\"$", "");
+            }
+
+            String resultStr = kvArgs.get("result");
+            if (resultStr != null) {
+                request.result = parseResult(resultStr);
             }
 
             UpdateCommandExecutionResponse response = context.commandsClient.updateCommandExecution(request).get();
