@@ -37,6 +37,7 @@ import software.amazon.awssdk.crt.mqtt5.packets.PublishPacket;
 import software.amazon.awssdk.crt.mqtt5.TopicAliasingOptions;
 import software.amazon.awssdk.crt.utils.PackageInfo;
 import software.amazon.awssdk.crt.mqtt5.packets.UserProperty;
+import software.amazon.awssdk.crt.internal.IoTDeviceSDKMetrics;
 
 /**
  * Builders for making MQTT5 clients with different connection methods for AWS IoT Core.
@@ -50,6 +51,7 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
     private ConnectPacketBuilder configConnect;
     private TlsContextOptions configTls;
     private MqttConnectCustomAuthConfig configCustomAuth;
+    private CertificateSource certificateSource = null;
 
     private AwsIotMqtt5ClientBuilder(String hostName, Long port, TlsContextOptions tlsContext) {
         config = new Mqtt5ClientOptionsBuilder(hostName, port);
@@ -80,6 +82,7 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
         if (TlsContextOptions.isAlpnSupported()) {
             builder.configTls.withAlpnList("x-amzn-mqtt-ca");
         }
+        builder.certificateSource = CertificateSource.CERTIFICATE_FILES;
         return builder;
     }
 
@@ -98,6 +101,7 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
         if (TlsContextOptions.isAlpnSupported()) {
             builder.configTls.withAlpnList("x-amzn-mqtt-ca");
         }
+        builder.certificateSource = CertificateSource.CERTIFICATE_FILES;
         return builder;
     }
 
@@ -117,6 +121,7 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
         if (TlsContextOptions.isAlpnSupported()) {
             builder.configTls.withAlpnList("x-amzn-mqtt-ca");
         }
+        builder.certificateSource = CertificateSource.PKCS11;
         return builder;
     }
 
@@ -136,6 +141,7 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
         if (TlsContextOptions.isAlpnSupported()) {
             builder.configTls.withAlpnList("x-amzn-mqtt-ca");
         }
+        builder.certificateSource = CertificateSource.CERTIFICATE_FILES;
         return builder;
     }
 
@@ -157,6 +163,7 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
         if (TlsContextOptions.isAlpnSupported()) {
             builder.configTls.withAlpnList("x-amzn-mqtt-ca");
         }
+        builder.certificateSource = CertificateSource.WINDOWS_CERT_STORE;
         return builder;
     }
 
@@ -214,6 +221,7 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
         if (TlsContextOptions.isAlpnSupported()) {
             builder.configTls.withAlpnList("x-amzn-mqtt-ca");
         }
+        builder.certificateSource = CertificateSource.PKCS12_FILE;
         return builder;
     }
 
@@ -328,6 +336,7 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
         if (TlsContextOptions.isAlpnSupported()) {
             builder.configTls.withAlpnList("x-amzn-mqtt-ca");
         }
+        builder.certificateSource = CertificateSource.JAVA_KEYSTORE;
         return builder;
     }
 
@@ -865,6 +874,10 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
         }
 
         this.config.withConnectOptions(this.configConnect.build());
+
+        // Set SDK metrics for the CRT layer to embed in the CONNECT packet username
+        IoTDeviceSDKMetrics sdkMetrics = IoTSdkMetrics.buildSdkMetrics(this.certificateSource);
+        this.config.withMetrics(sdkMetrics);
 
         Mqtt5Client returnClient = new Mqtt5Client(this.config.build());
 
