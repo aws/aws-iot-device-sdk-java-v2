@@ -8,6 +8,7 @@ package software.amazon.awssdk.iot;
 import java.util.ArrayList;
 import java.util.List;
 
+import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.crt.iot.IoTDeviceSDKMetrics;
 import software.amazon.awssdk.crt.iot.IoTMetricsMetadata;
 
@@ -18,8 +19,15 @@ import software.amazon.awssdk.crt.iot.IoTMetricsMetadata;
  */
 class IoTSdkMetrics {
 
-    /** SDK library name reported in the metrics string. */
-    private static final String SDK_LIBRARY_NAME = "IoTDeviceSDK/Java";
+    private static final String SDK_LIBRARY_NAME_JAVA = "IoTDeviceSDK/Java";
+    private static final String SDK_LIBRARY_NAME_ANDROID = "IoTDeviceSDK/Android";
+
+    private static String getLibraryName() {
+        if ("android".equals(CRT.getOSIdentifier())) {
+            return SDK_LIBRARY_NAME_ANDROID;
+        }
+        return SDK_LIBRARY_NAME_JAVA;
+    }
 
     /**
      * The current version of the IoT SDK metrics format.
@@ -73,7 +81,7 @@ class IoTSdkMetrics {
         List<IoTMetricsMetadata> metadata = new ArrayList<>();
         metadata.add(new IoTMetricsMetadata("IoTSDKVersion", getSdkVersion()));
         metadata.add(new IoTMetricsMetadata("IoTSDKMetricsVersion", IOT_SDK_METRICS_VERSION));
-        return new IoTDeviceSDKMetrics(SDK_LIBRARY_NAME, metadata);
+        return new IoTDeviceSDKMetrics(getLibraryName(), metadata);
     }
 
 }
