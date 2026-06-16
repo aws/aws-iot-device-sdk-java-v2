@@ -8,71 +8,74 @@ package software.amazon.awssdk.iot;
 import java.util.ArrayList;
 import java.util.List;
 
-import software.amazon.awssdk.crt.internal.IoTDeviceSDKMetrics;
-import software.amazon.awssdk.crt.internal.IoTMetricsMetadata;
-import software.amazon.awssdk.crt.internal.IoTMetricEncoder;
+import software.amazon.awssdk.crt.iot.IoTDeviceSDKMetrics;
+import software.amazon.awssdk.crt.iot.IoTMetricsMetadata;
 
 /**
- * Builds SDK-layer metrics for embedding in the MQTT CONNECT packet username field.
- * Collects SDK-layer feature usage (e.g., CERTIFICATE_SOURCE) and packages it
- * into an IoTDeviceSDKMetrics object for the CRT layer to merge with CRT features.
+ * Provides SDK-level metadata (version info) to the CRT layer.
+ * The CRT handles all feature detection (certificate source, TLS settings, etc.)
+ * and embeds the combined metrics in the MQTT CONNECT packet username field.
  */
-public class IoTSdkMetrics {
+class IoTSdkMetrics {
 
-    private static final String CERTIFICATE_SOURCE = "I";
+    /** SDK library name reported in the metrics string. */
+    private String sdkLibraryName = "IoTDeviceSDK/JAVA";
+
+    /**
+     * The current version of the IoT SDK metrics format.
+     * This must match the version expected by the CRT layer.
+     */
+    private String iotSdkMetricsVersion = "1";
 
     /**
      * Returns the installed SDK version string.
+     *
+     * <p>Attempts to read the specification version from the package manifest first,
+     * falling back to the implementation version. Returns {@code "dev"} if the package
+     * metadata is unavailable (e.g. when running from a source checkout without installing).
+     *
+     * @return a version string such as {@code "1.32.0"} or {@code "dev"}
      */
-    private static String getSdkVersion(){
-        try{
+    private static String getSdkVersion() {
+        try {
             Package pkg = IoTSdkMetrics.class.getPackage();
             String version = pkg.getSpecificationVersion();
-            if(version == null){
+            if (version == null) {
                 version = pkg.getImplementationVersion();
             }
-            if(version == null){
+            if (version == null) {
                 version = "dev";
             }
             return version;
-        }catch (Exception e){
+        } catch (Exception e) {
             return "dev";
         }
     }
 
     /**
-     * Encodes SDK features into "ID/Value" format.
-     * @param certificateSource the certificate method in use or null if none
-     * @return encoded feature string (e.g., "I/A"), or empty string if no feature.
-     */
-    private static String encodedFeatureList(CertificateSource certificateSource){
-        if(certificateSource!=null){
-            return CERTIFICATE_SOURCE + "/" + certificateSource.getValue();
-        }
-        return "";
-    }
-
-    /**
-     * Builds an IoTDeviceSDKMetrics instance for CRT layer.
-     * Always include IoTSDKVersion. When a certificate source is provided,
-     * also includes IoTSDKFeature and IoTSDKMetricsVersion.
+     * Builds the SDK-level {@link IoTDeviceSDKMetrics} payload that is passed down to the CRT layer.
      *
-     * @param certificateSource the certificate method used, or null for connections
-     *                           without client certs (websocket, custom auth)
-     * @return metrics object ready to pass to CRT via withMetrics() or setMetrics()
+     * <p>The returned object carries SDK identity and the metrics format version via two metadata entries:
+     * <ul>
+     *   <li>{@code IoTSDKVersion} — the installed SDK package version, used to identify the
+     *       SDK release on the server side.</li>
+     *   <li>{@code IoTSDKMetricsVersion} — the metrics format version this SDK supports.
+     *       The CRT only merges SDK-supplied features when this value matches the version it expects,
+     *       so bumping {@link #iotSdkMetricsVersion} should be done in lockstep with CRT changes.</li>
+     * </ul>
+     *
+     * <p>The CRT layer is responsible for detecting connection-level features (protocol version,
+     * certificate source, TLS settings, proxy type, etc.) and appending them to the metadata
+     * before embedding the result in the MQTT CONNECT packet username field.
+     *
+     * @return a populated {@link IoTDeviceSDKMetrics} object ready to attach to an
+     *         MQTT5 client or MQTT3 connection configuration
      */
-    public static IoTDeviceSDKMetrics buildSdkMetrics(CertificateSource certificateSource) {
+    IoTDeviceSDKMetrics buildSdkMetrics() {
         List<IoTMetricsMetadata> metadata = new ArrayList<>();
-
         metadata.add(new IoTMetricsMetadata("IoTSDKVersion", getSdkVersion()));
-
-        String featureList = encodedFeatureList(certificateSource);
-        if (!featureList.isEmpty()) {
-            metadata.add(new IoTMetricsMetadata("IoTSDKFeature", featureList));
-            metadata.add(new IoTMetricsMetadata("IoTSDKMetricsVersion",
-            String.valueOf(IoTMetricEncoder.IOT_SDK_METRICS_FEATURE_VERSION)));
-        }
-        return new IoTDeviceSDKMetrics("IoTDeviceSDK/Java", metadata);
+        metadata.add(new IoTMetricsMetadata("IoTSDKMetricsVersion", iotSdkMetricsVersion));
+        return new IoTDeviceSDKMetrics(sdkLibraryName, metadata);
     }
 
 }

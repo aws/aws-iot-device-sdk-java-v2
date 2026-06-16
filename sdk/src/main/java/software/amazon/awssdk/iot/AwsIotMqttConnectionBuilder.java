@@ -36,7 +36,6 @@ import software.amazon.awssdk.crt.mqtt.MqttException;
 import software.amazon.awssdk.crt.mqtt.MqttMessage;
 import software.amazon.awssdk.crt.mqtt.QualityOfService;
 import software.amazon.awssdk.crt.mqtt.WebsocketHandshakeTransformArgs;
-import software.amazon.awssdk.crt.internal.IoTDeviceSDKMetrics;
 
 /**
  * A central class for building Mqtt connections without manually managing a large variety of native objects (some
@@ -61,7 +60,6 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     private boolean resetLazilyCreatedResources = true;
     // Used to detect if we need to set the ALPN list for custom authorizer
     private boolean isUsingCustomAuthorizer = false;
-    private CertificateSource certificateSource = null;
 
     private void resetDefaultPort() {
         if (TlsContextOptions.isAlpnSupported()) {
@@ -109,7 +107,6 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     public static AwsIotMqttConnectionBuilder newMtlsBuilderFromPath(String certPath, String privateKeyPath) {
         try (TlsContextOptions tlsContextOptions = TlsContextOptions.createWithMtlsFromPath(certPath, privateKeyPath)) {
             AwsIotMqttConnectionBuilder builder = new AwsIotMqttConnectionBuilder(tlsContextOptions);
-            builder.certificateSource = CertificateSource.CERTIFICATE_FILES;
             return builder;
         }
     }
@@ -124,7 +121,6 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     public static AwsIotMqttConnectionBuilder newMtlsBuilder(String certificate, String privateKey) {
         try (TlsContextOptions tlsContextOptions = TlsContextOptions.createWithMtls(certificate, privateKey)) {
             AwsIotMqttConnectionBuilder builder = new AwsIotMqttConnectionBuilder(tlsContextOptions);
-            builder.certificateSource = CertificateSource.CERTIFICATE_FILES;
             return builder;
         }
     }
@@ -153,7 +149,6 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     public static AwsIotMqttConnectionBuilder newMtlsPkcs11Builder(TlsContextPkcs11Options pkcs11Options) {
         try (TlsContextOptions tlsContextOptions = TlsContextOptions.createWithMtlsPkcs11(pkcs11Options)) {
             AwsIotMqttConnectionBuilder builder = new AwsIotMqttConnectionBuilder(tlsContextOptions);
-            builder.certificateSource = CertificateSource.PKCS11;
             return builder;
         }
     }
@@ -167,7 +162,6 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     public static AwsIotMqttConnectionBuilder newMtlsCustomKeyOperationsBuilder(TlsContextCustomKeyOperationOptions operationOptions) {
         try (TlsContextOptions tlsContextOptions = TlsContextOptions.createWithMtlsCustomKeyOperations(operationOptions)) {
             AwsIotMqttConnectionBuilder builder = new AwsIotMqttConnectionBuilder(tlsContextOptions);
-            builder.certificateSource = CertificateSource.CERTIFICATE_FILES;
             return builder;
         }
     }
@@ -187,7 +181,6 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
         try (TlsContextOptions tlsContextOptions = TlsContextOptions
                 .createWithMtlsWindowsCertStorePath(certificatePath)) {
             AwsIotMqttConnectionBuilder builder = new AwsIotMqttConnectionBuilder(tlsContextOptions);
-            builder.certificateSource = CertificateSource.WINDOWS_CERT_STORE;
             return builder;
         }
     }
@@ -208,7 +201,6 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
         try (TlsContextOptions tlsContextOptions = TlsContextOptions
                 .createWithMtlsJavaKeystore(keyStore, certificateAlias, certificatePassword)) {
             AwsIotMqttConnectionBuilder builder = new AwsIotMqttConnectionBuilder(tlsContextOptions);
-            builder.certificateSource = CertificateSource.JAVA_KEYSTORE;
             return builder;
         }
     }
@@ -226,7 +218,6 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
             String pkcs12Path, String pkcs12Password) {
         try (TlsContextOptions tlsContextOptions = TlsContextOptions.createWithMtlsPkcs12(pkcs12Path, pkcs12Password)) {
             AwsIotMqttConnectionBuilder builder = new AwsIotMqttConnectionBuilder(tlsContextOptions);
-            builder.certificateSource = CertificateSource.PKCS12_FILE;
             return builder;
         }
     }
@@ -775,9 +766,6 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
 
         resetLazilyCreatedResources = false;
 
-        // Set SDK metrics for the CRT layer to embed in the CONNECT packet username
-        IoTDeviceSDKMetrics sdkMetrics = IoTSdkMetrics.buildSdkMetrics(this.certificateSource);
-        config.setMetrics(sdkMetrics);
 
         // Connection create
         try (MqttConnectionConfig connectionConfig = config.clone()) {
