@@ -38,11 +38,17 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 /**
+ * <p><b>Deprecated.</b> We strongly recommend using {@link software.amazon.awssdk.iot.iotidentity.IotIdentityV2Client }. </p>
+ *
+ * <p>There are no current plans to ully deprecate IotIdentityClient but it is highly recommended customers
+ * migrate to IotIdentityV2Client. More details can be found in the GitHub Repo FAQ.</p>
+ *
  * An AWS IoT service that assists with provisioning a device and installing unique client certificates on it
  *
  * AWS documentation: https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html
  *
 */
+@Deprecated
 public class IotIdentityClient {
     private MqttClientConnection connection = null;
     private final Gson gson = getGson();
