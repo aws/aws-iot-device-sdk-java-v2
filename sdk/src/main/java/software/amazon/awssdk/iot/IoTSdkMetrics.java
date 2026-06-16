@@ -19,13 +19,13 @@ import software.amazon.awssdk.crt.iot.IoTMetricsMetadata;
 class IoTSdkMetrics {
 
     /** SDK library name reported in the metrics string. */
-    private String sdkLibraryName = "IoTDeviceSDK/JAVA";
+    private static final SDK_LIBRARY_NAME = "IoTDeviceSDK/JAVA";
 
     /**
      * The current version of the IoT SDK metrics format.
      * This must match the version expected by the CRT layer.
      */
-    private String iotSdkMetricsVersion = "1";
+    private static final String IOT_SDK_METRICS_VERSION = "1";
 
     /**
      * Returns the installed SDK version string.
@@ -71,11 +71,11 @@ class IoTSdkMetrics {
      * @return a populated {@link IoTDeviceSDKMetrics} object ready to attach to an
      *         MQTT5 client or MQTT3 connection configuration
      */
-    IoTDeviceSDKMetrics buildSdkMetrics() {
+    static IoTDeviceSDKMetrics buildSdkMetrics() {
         List<IoTMetricsMetadata> metadata = new ArrayList<>();
         metadata.add(new IoTMetricsMetadata("IoTSDKVersion", getSdkVersion()));
-        metadata.add(new IoTMetricsMetadata("IoTSDKMetricsVersion", iotSdkMetricsVersion));
-        return new IoTDeviceSDKMetrics(sdkLibraryName, metadata);
+        metadata.add(new IoTMetricsMetadata("IoTSDKMetricsVersion", IOT_SDK_METRICS_VERSION));
+        return new IoTDeviceSDKMetrics(SDK_LIBRARY_NAME, metadata);
     }
 
 }
