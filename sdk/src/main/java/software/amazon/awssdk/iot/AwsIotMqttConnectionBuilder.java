@@ -105,8 +105,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      */
     public static AwsIotMqttConnectionBuilder newMtlsBuilderFromPath(String certPath, String privateKeyPath) {
         try (TlsContextOptions tlsContextOptions = TlsContextOptions.createWithMtlsFromPath(certPath, privateKeyPath)) {
-            AwsIotMqttConnectionBuilder builder = new AwsIotMqttConnectionBuilder(tlsContextOptions);
-            return builder;
+            return new AwsIotMqttConnectionBuilder(tlsContextOptions);
         }
     }
 
@@ -119,8 +118,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      */
     public static AwsIotMqttConnectionBuilder newMtlsBuilder(String certificate, String privateKey) {
         try (TlsContextOptions tlsContextOptions = TlsContextOptions.createWithMtls(certificate, privateKey)) {
-            AwsIotMqttConnectionBuilder builder = new AwsIotMqttConnectionBuilder(tlsContextOptions);
-            return builder;
+            return new AwsIotMqttConnectionBuilder(tlsContextOptions);
         }
     }
 
@@ -147,8 +145,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      */
     public static AwsIotMqttConnectionBuilder newMtlsPkcs11Builder(TlsContextPkcs11Options pkcs11Options) {
         try (TlsContextOptions tlsContextOptions = TlsContextOptions.createWithMtlsPkcs11(pkcs11Options)) {
-            AwsIotMqttConnectionBuilder builder = new AwsIotMqttConnectionBuilder(tlsContextOptions);
-            return builder;
+            return new AwsIotMqttConnectionBuilder(tlsContextOptions);
         }
     }
 
@@ -160,8 +157,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
      */
     public static AwsIotMqttConnectionBuilder newMtlsCustomKeyOperationsBuilder(TlsContextCustomKeyOperationOptions operationOptions) {
         try (TlsContextOptions tlsContextOptions = TlsContextOptions.createWithMtlsCustomKeyOperations(operationOptions)) {
-            AwsIotMqttConnectionBuilder builder = new AwsIotMqttConnectionBuilder(tlsContextOptions);
-            return builder;
+            return new AwsIotMqttConnectionBuilder(tlsContextOptions);
         }
     }
 
@@ -179,8 +175,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     public static AwsIotMqttConnectionBuilder newMtlsWindowsCertStorePathBuilder(String certificatePath) {
         try (TlsContextOptions tlsContextOptions = TlsContextOptions
                 .createWithMtlsWindowsCertStorePath(certificatePath)) {
-            AwsIotMqttConnectionBuilder builder = new AwsIotMqttConnectionBuilder(tlsContextOptions);
-            return builder;
+            return new AwsIotMqttConnectionBuilder(tlsContextOptions);
         }
     }
 
@@ -199,8 +194,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
         java.security.KeyStore keyStore, String certificateAlias, String certificatePassword) throws CrtRuntimeException {
         try (TlsContextOptions tlsContextOptions = TlsContextOptions
                 .createWithMtlsJavaKeystore(keyStore, certificateAlias, certificatePassword)) {
-            AwsIotMqttConnectionBuilder builder = new AwsIotMqttConnectionBuilder(tlsContextOptions);
-            return builder;
+            return new AwsIotMqttConnectionBuilder(tlsContextOptions);
         }
     }
 
@@ -216,8 +210,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     public static AwsIotMqttConnectionBuilder newMtlsPkcs12Builder(
             String pkcs12Path, String pkcs12Password) {
         try (TlsContextOptions tlsContextOptions = TlsContextOptions.createWithMtlsPkcs12(pkcs12Path, pkcs12Password)) {
-            AwsIotMqttConnectionBuilder builder = new AwsIotMqttConnectionBuilder(tlsContextOptions);
-            return builder;
+            return new AwsIotMqttConnectionBuilder(tlsContextOptions);
         }
     }
 

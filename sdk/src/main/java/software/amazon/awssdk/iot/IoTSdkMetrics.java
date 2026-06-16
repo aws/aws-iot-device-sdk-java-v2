@@ -19,7 +19,7 @@ import software.amazon.awssdk.crt.iot.IoTMetricsMetadata;
 class IoTSdkMetrics {
 
     /** SDK library name reported in the metrics string. */
-    private static final SDK_LIBRARY_NAME = "IoTDeviceSDK/JAVA";
+    private static final String SDK_LIBRARY_NAME = "IoTDeviceSDK/Java";
 
     /**
      * The current version of the IoT SDK metrics format.
@@ -59,9 +59,7 @@ class IoTSdkMetrics {
      * <ul>
      *   <li>{@code IoTSDKVersion} — the installed SDK package version, used to identify the
      *       SDK release on the server side.</li>
-     *   <li>{@code IoTSDKMetricsVersion} — the metrics format version this SDK supports.
-     *       The CRT only merges SDK-supplied features when this value matches the version it expects,
-     *       so bumping {@link #iotSdkMetricsVersion} should be done in lockstep with CRT changes.</li>
+     *   <li>{@code IoTSDKMetricsVersion} — the metrics format version this SDK supports.</li>
      * </ul>
      *
      * <p>The CRT layer is responsible for detecting connection-level features (protocol version,
