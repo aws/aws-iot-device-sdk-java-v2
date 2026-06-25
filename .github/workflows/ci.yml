@@ -7,8 +7,8 @@ on:
       - 'docs'
 
 env:
-  BUILDER_VERSION: v0.9.84
-  BUILDER_SOURCE: releases
+  BUILDER_VERSION: default_appleclang
+  BUILDER_SOURCE: channels
   BUILDER_HOST: https://d19elf31gohf1l.cloudfront.net
   PACKAGE_NAME: aws-iot-device-sdk-java-v2
   RUN: ${{ github.run_id }}-${{ github.run_number }}
