@@ -36,11 +36,10 @@ jobs:
         Title: ${{ github.event.inputs.release_title }}
         ReleaseType: ${{ github.event.inputs.release_type }}
       run: |
-        # Escape Special characters
-        Title="${Title//\`/}"
-        Title="${Title//\$/}"
-        Title="${Title//\"/\\\"}"
-        Title="${Title//\'/\\\'}"
+        # Escape special characters
+        Title=$(echo ${Title//[\"]\\\"})
+        Title=$(echo ${Title//[\']\\\'})
+        Title=$(echo ${Title//[\$]})
 
         ./utils/publish-release.sh "$ReleaseType" "$Title"
 
