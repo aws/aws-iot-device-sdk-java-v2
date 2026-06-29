@@ -5,14 +5,11 @@
  */
 package software.amazon.awssdk.iot;
 
-import software.amazon.awssdk.crt.utils.PackageInfo;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.function.Consumer;
 
-import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.crt.CrtResource;
 import software.amazon.awssdk.crt.CrtRuntimeException;
 import software.amazon.awssdk.crt.Log;
@@ -58,6 +55,8 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     private ClientBootstrap bootstrap;
 
     private boolean resetLazilyCreatedResources = true;
+    /** Whether to disable SDK metrics collection. Defaults to {@code false} (metrics enabled). */
+    private boolean disableMetrics = false;
     // Used to detect if we need to set the ALPN list for custom authorizer
     private boolean isUsingCustomAuthorizer = false;
 
@@ -697,6 +696,18 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     }
 
     /**
+     * Disables IoT SDK metrics in the CONNECT packet username field.
+     * Defaults to false (metrics enabled).
+     *
+     * @param disableMetrics true to disable metrics collection
+     * @return The AwsIotMqttConnectionBuilder after setting the disable metrics flag.
+     */
+    public AwsIotMqttConnectionBuilder withDisableMetrics(boolean disableMetrics) {
+        this.disableMetrics = disableMetrics;
+        return this;
+    }
+
+    /**
      * Builds a new mqtt connection from the configuration stored in the builder.  Because some objects are created
      * lazily, certain properties should not be modified after this is first invoked (tls options, bootstrap).
      *
@@ -759,29 +770,15 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
 
         resetLazilyCreatedResources = false;
 
+
         // Connection create
         try (MqttConnectionConfig connectionConfig = config.clone()) {
 
-            // Whether or not a username has been added, append our metrics tokens
-            String usernameOrEmpty = "";
-            if (connectionConfig.getUsername() != null) {
-                usernameOrEmpty = connectionConfig.getUsername();
-            }
-            String queryStringConcatenation = "?";
-            if (usernameOrEmpty.contains("?")) {
-                queryStringConcatenation = "&";
-            }
-
-            if(CRT.getOSIdentifier() == "android"){
-                connectionConfig.setUsername(String.format("%s%sSDK=AndroidV2&Version=%s",
-                usernameOrEmpty,
-                queryStringConcatenation,
-                new PackageInfo().version.toString()));
+            connectionConfig.setDisableMetrics(this.disableMetrics);
+            if (this.disableMetrics) {
+                connectionConfig.setMetrics(null);
             } else {
-                connectionConfig.setUsername(String.format("%s%sSDK=JavaV2&Version=%s",
-                usernameOrEmpty,
-                queryStringConcatenation,
-                new PackageInfo().version.toString()));
+                connectionConfig.setMetrics(IoTSdkMetrics.buildSdkMetrics());
             }
 
             if (connectionConfig.getUseWebsockets() && connectionConfig.getWebsocketHandshakeTransform() == null) {
