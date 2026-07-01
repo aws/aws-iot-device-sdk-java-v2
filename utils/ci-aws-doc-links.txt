@@ -1,0 +1,2 @@
+samples/Mqtt/Mqtt5X509/pom.xml
+samples/Greengrass/Discovery/pom.xml

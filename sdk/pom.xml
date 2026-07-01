@@ -40,9 +40,27 @@
 
   <dependencies>
     <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>iot</artifactId>
+      <version>2.31.44</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>iotjobsdataplane</artifactId>
+      <version>2.31.44</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>sts</artifactId>
+      <version>2.31.44</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>software.amazon.awssdk.crt</groupId>
       <artifactId>aws-crt</artifactId>
-      <version>0.30.0</version>
+      <version>0.47.0</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -71,7 +89,7 @@
     <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
-      <version>2.9.0</version>
+      <version>2.10.1</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>
@@ -114,11 +132,10 @@
                 <source>greengrass/event-stream-rpc-server/src/main/java</source>
                 <source>greengrass/event-stream-rpc-server/src/test/java</source>
                 <source>greengrass/greengrass-client/src/test/java</source>
-                <!-- IOT tests -->
-                <source>tests/iot</source>
+                <!-- MQTT tests -->
                 <source>tests/mqtt</source>
-                <!-- MQTT5 tests -->
                 <source>tests/mqtt5</source>
+                <source>tests/v2serviceclients</source>
               </sources>
             </configuration>
           </execution>
@@ -179,24 +196,18 @@
   <profiles>
     <profile>
       <id>release</id>
-      <distributionManagement>
-        <snapshotRepository>
-          <id>ossrh</id>
-          <url>https://aws.oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-      </distributionManagement>
       <build>
         <plugins>
           <!-- staging/release to Sonatype -->
           <plugin>
-            <groupId>org.sonatype.plugins</groupId>
-            <artifactId>nexus-staging-maven-plugin</artifactId>
-            <version>1.6.13</version>
+            <!-- staging/release to Sonatype Central -->
+            <groupId>org.sonatype.central</groupId>
+            <artifactId>central-publishing-maven-plugin</artifactId>
+            <version>0.7.0</version>
             <extensions>true</extensions>
             <configuration>
-              <serverId>ossrh</serverId>
-              <nexusUrl>https://aws.oss.sonatype.org/</nexusUrl>
-              <autoReleaseAfterClose>false</autoReleaseAfterClose>
+             <publishingServerId>central</publishingServerId>
+             <autoPublish>true</autoPublish>
             </configuration>
           </plugin>
           <!-- source jar -->
@@ -231,7 +242,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>
-            <version>1.6</version>
+            <version>3.2.7</version>
             <executions>
               <execution>
                 <id>sign-artifacts</id>

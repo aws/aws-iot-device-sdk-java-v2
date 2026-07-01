@@ -33,6 +33,7 @@ import software.amazon.awssdk.iot.iotshadow.model.UpdateNamedShadowSubscriptionR
 import software.amazon.awssdk.iot.iotshadow.model.UpdateShadowRequest;
 import software.amazon.awssdk.iot.iotshadow.model.UpdateShadowResponse;
 import software.amazon.awssdk.iot.iotshadow.model.UpdateShadowSubscriptionRequest;
+import software.amazon.awssdk.iot.iotshadow.model.V2ErrorResponse;
 
 import java.nio.charset.StandardCharsets;
 

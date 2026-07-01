@@ -9,8 +9,8 @@
     + [How to setup a MQTT5 builder based on desired connection method](#how-to-setup-mqtt5-builder-based-on-desired-connection-method)
         * [Direct MQTT with X509-based Mutual TLS Method](#direct-mqtt-with-x509-based-mutual-tls-method)
         * [Direct MQTT with Custom Authorizer Method](#direct-mqtt-with-custom-authorizer-method)
-        * [Direct MQTT with PKCS11 Method](#direct-mqtt-with-pkcs11-method)
-        * [Direct MQTT with PKCS12 Method](#direct-mqtt-with-pkcs12-method)
+        * [Direct MQTT with PKCS11 Method (Unix Only)](#direct-mqtt-with-pkcs11-method-unix-only)
+        * [Direct MQTT with PKCS12 Method (macOS Only)](#direct-mqtt-with-pkcs12-method-macos-only)
         * [Direct MQTT with Custom Key Operations Method](#direct-mqtt-with-custom-key-operation-method)
         * [Direct MQTT with Windows Certificate Store Method](#direct-mqtt-with-windows-certificate-store-method)
         * [Direct MQTT with Java Keystore Method](#direct-mqtt-with-java-keystore-method)
@@ -18,9 +18,13 @@
         * [Websocket Connection with Cognito Authentication Method](#websocket-connection-with-cognito-authentication-method)
     + [Adding an HTTP Proxy](#adding-an-http-proxy)
     + [How to create a MQTT5 client](#how-to-create-a-mqtt5-client)
+        * [Lifecycle Management](#lifecycle-management)
     + [How to Start and Stop](#how-to-start-and-stop)
-    + [How to Publish](#how-to-publish)
-    + [How to Subscribe and Unsubscribe](#how-to-subscribe-and-unsubscribe)
+    + [Client Operations](#client-operations)
+        + [Publish](#publish)
+        + [Subscribe and Unsubscribe](#subscribe-and-unsubscribe)
+    + [Advanced Operations and Settings](#advanced-operations-and-settings)
+        * [Manual Publish Acknowledgement](#manual-publish-acknowledgement)
     + [MQTT5 Best Practices](#mqtt5-best-practices)
 
 # Introduction
@@ -105,7 +109,7 @@ static String readFile(String path, Charset encoding)
 String clientEndpoint = "<prefix>-ats.iot.<region>.amazonaws.com";
 String certificateData = readFile("<certificate file path>", StandardCharsets.UTF_8);
 String keyData = readFile("<private key file path>", StandardCharsets.UTF_8);
-AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newMtlsBuilder(clientEndpoint, certificateData, keyData);
+AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newDirectMqttBuilderWithMtlsFromMemory(clientEndpoint, certificateData, keyData);
 ~~~
 
 ### **Direct MQTT with Custom Authorizer Method**
@@ -143,14 +147,14 @@ AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newDirectMqttBuilder
 
 In both cases, the builder will construct a final CONNECT packet username field value for you based on the values configured. Do not add the token-signing fields to the value of the username that you assign within the custom authentication config structure. Similarly, do not add any custom authentication related values to the username in the CONNECT configuration optionally attached to the client configuration. The builder will do everything for you.
 
-### **Direct MQTT with PKCS11 Method**
+### **Direct MQTT with PKCS11 Method (Unix Only)**
 
 A MQTT5 direct connection can be made using a PKCS11 device rather than using a PEM encoded private key, the private key for mutual TLS is stored on a PKCS#11 compatible smart card or Hardware Security Module (HSM). To create a MQTT5 builder configured for this connection, see the following code:
 
 ~~~ java
 
 Pkcs11Lib pkcs11Lib = new Pkcs11Lib("<path to PKCS11 library>");
-TlsContextPkcs11Options pkcs11Options = new TlsContextPkcs11Options(pkcs11Lib)) {
+TlsContextPkcs11Options pkcs11Options = new TlsContextPkcs11Options(pkcs11Lib);
 pkcs11Options.withCertificateFilePath("<certificate file path>");
 pkcs11Options.withUserPin("<pkcs11 user pin>");
 
@@ -178,14 +182,14 @@ AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newDirectMqttBuilder
 
 **Note**: Currently, TLS integration with PKCS#11 is only available on Unix devices.
 
-### **Direct MQTT with PKCS12 Method**
+### **Direct MQTT with PKCS12 Method (macOS only)**
 
 A MQTT5 direct connection can be made using a PKCS12 file rather than using a PEM encoded private key. To create a MQTT5 builder configured for this connection, see the following code:
 
 ~~~ java
 
 String clientEndpoint = "<prefix>-ats.iot.<region>.amazonaws.com";
-AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newDirectMqttBuilderWithMtlsFromPkcs11(clientEndpoint, "<PKCS12 file path>", "<PKCS12 password>");
+AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newDirectMqttBuilderWithMtlsFromPkcs12(clientEndpoint, "<PKCS12 file path>", "<PKCS12 password>");
 ~~~
 
 **Note**: Currently, TLS integration with PKCS12 is only available on MacOS devices.
@@ -289,7 +293,7 @@ String clientEndpoint = "<prefix>-ats.iot.<region>.amazonaws.com";
 AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newWebsocketMqttBuilderWithSigv4Auth(clientEndpoint, null);
 ~~~
 
-See the [authorizing direct AWS](https://docs.aws.amazon.com/iot/latest/developerguide/authorizing-direct-aws.html) page for documentation on how to get the AWS credentials, which then can be set to the `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS`, and `AWS_SESSION_TOKEN` environment variables prior to running the application.
+See the [authorizing direct AWS](https://docs.aws.amazon.com/iot/latest/developerguide/authorizing-direct-aws.html) page for documentation on how to get the AWS credentials, which then can be set to the `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, and `AWS_SESSION_TOKEN` environment variables prior to running the application.
 
 Alternatively, if you're connecting to a special region for which standard pattern matching does not work, or if you need a specific credentials provider, you can specify advanced websocket configuration options using the following code:
 
@@ -350,6 +354,8 @@ SDK Proxy support also includes support for basic authentication and TLS-to-prox
 ## How to create a MQTT5 client
 
 Once a MQTT5 client builder has been created, it is ready to make a [MQTT5 client](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5Client.html). Something important to note is that once a MQTT5 client is built and finalized, the resulting MQTT5 client cannot have its settings modified! Further, modifications to the MQTT5 client builder will not change the settings of already created the MQTT5 clients. Before building a MQTT5 client from a MQTT5 client builder, make sure to have everything fully setup.
+
+### Lifecycle Management
 
 For almost every MQTT5 client, it is extremely important to setup [LifecycleEvents](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5ClientOptions.LifecycleEvents.html) callbacks. [LifecycleEvents](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5ClientOptions.LifecycleEvents.html) are invoked when the MQTT5 client connects, fails to connect, disconnects, and is stopped. Without these callbacks setup, it will be incredibly hard to determine the state of the MQTT5 client. To setup [LifecycleEvents](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5ClientOptions.LifecycleEvents.html) callbacks, see the following code:
 
@@ -482,7 +488,9 @@ client.stop(disconnectBuilder.build());
 client.close();
 ~~~
 
-## How to Publish
+## Client Operations
+
+### Publish
 
 The [publish](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5Client.html#publish(software.amazon.awssdk.crt.mqtt5.packets.PublishPacket)) operation takes a description of the PUBLISH packet you wish to send and returns a promise containing a [PublishResult](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/PublishResult.html). The returned [PublishResult](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/PublishResult.html) will contain different data depending on the QoS used in the publish.
 
@@ -518,7 +526,7 @@ PublishResult result = published.get(60, TimeUnit.SECONDS);
 
 Note that publishes made while a MQTT5 client is disconnected and offline will be put into a queue. Once reconnected, the MQTT5 client will send any publishes made while disconnected and offline automatically.
 
-## How to Subscribe and Unsubscribe
+### Subscribe and Unsubscribe
 
 The [subscribe](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5Client.html#subscribe(software.amazon.awssdk.crt.mqtt5.packets.SubscribePacket)) operation takes a description of the [SubscribePacket](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/packets/SubscribePacket.html) you wish to send and returns a promise that resolves successfully with the corresponding [SubAckPacket](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/packets/SubAckPacket.html) returned by the broker; the promise is rejected with an error if anything goes wrong before the [SubAckPacket](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/packets/SubAckPacket.html) is received.
 You should always check the reason codes of a [SubAckPacket](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/packets/SubAckPacket.html) completion to determine if the subscribe operation actually succeeded.
@@ -548,13 +556,72 @@ unsubBuilder.withSubscription("hello/world/qos1");
 client.unsubscribe(unsubBuilder.build()).get(60, TimeUnit.SECONDS);
 ~~~
 
+## Advanced Operations and Settings
+
+### Manual Publish Acknowledgement
+
+By default, the MQTT5 client automatically sends a PUBACK for every QoS 1 PUBLISH it receives, immediately after the `onMessageReceived` callback returns. Manual publish acknowledgement gives you control over when that PUBACK is sent, allowing you to defer acknowledgement until after your application has fully processed the message — for example, after persisting it to a database or forwarding it to another service.
+
+To take manual control of the PUBACK, call `publishReturn.acquirePublishAcknowledgementControl()` **within** the `onMessageReceived` callback. This returns a `Mqtt5PublishAcknowledgementControlHandle` that you can store and use later to send the PUBACK by calling `client.invokePublishAcknowledgement()`.
+
+**Important constraints:**
+* `acquirePublishAcknowledgementControl()` must be called within the `onMessageReceived` callback. Calling it outside the callback after it returns or from a different thread will return `null`.
+* `acquirePublishAcknowledgementControl()` may only be called once per received PUBLISH. Subsequent calls will return `null`.
+* This is only relevant for QoS 1 messages. Calling it on a QoS 0 message will return `null`.
+* If `acquirePublishAcknowledgementControl()` is not called, the client will automatically send the PUBACK when the callback returns.
+
+The following example shows how to acquire the acknowledgement handle within the callback and invoke it later:
+
+~~~ java
+// A shared location to store the acknowledgement handle for later use
+final AtomicReference<Mqtt5PublishAcknowledgementControlHandle> pendingAck = new AtomicReference<>();
+
+class MyPublishEvents implements Mqtt5ClientOptions.PublishEvents {
+    @Override
+    public void onMessageReceived(Mqtt5Client client, PublishReturn publishReturn) {
+        System.out.println("Message received on topic: " +
+            publishReturn.getPublishPacket().getTopic());
+
+        if (publishReturn.getPublishPacket().getQOS() == QOS.AT_LEAST_ONCE) {
+            // Acquire manual control of the PUBACK for this QoS 1 message.
+            // This must be called within the callback. Calling it outside the callback
+            // or after it returns will return null.
+            Mqtt5PublishAcknowledgementControlHandle handle =
+                publishReturn.acquirePublishAcknowledgementControl();
+
+            if (handle != null) {
+                // The PUBACK will NOT be sent automatically because we acquired the handle.
+                // Store it for later use after processing is complete.
+                pendingAck.set(handle);
+            }
+        }
+    }
+}
+
+// ... build client, connect, and subscribe ...
+
+// After processing is complete, send the PUBACK by invoking the acknowledgement.
+Mqtt5PublishAcknowledgementControlHandle handle = pendingAck.getAndSet(null);
+if (handle != null) {
+    client.invokePublishAcknowledgement(handle);
+}
+~~~
+
+**AWS IoT broker redelivery behavior**
+
+The AWS IoT broker will periodically resend unacknowledged QoS 1 PUBLISH packets. These redeliveries should be treated as duplicates even if the DUP flag in the PUBLISH packet is not set. If `acquirePublishAcknowledgementControl()` is not called again for a redelivered packet, the acknowledgement will be sent automatically.
+
+**Session resumption after disconnect/reconnect**
+
+Upon a disconnect and reconnect of the MQTT5 client, if a session is resumed, any previously acquired `Mqtt5PublishAcknowledgementControlHandle` is void. The broker will resend the unacknowledged PUBLISH packet, and `acquirePublishAcknowledgementControl()` must be called again within the callback for that resent packet. If the resent packet is not handled for manual acknowledgement, the acknowledgement will be sent automatically.
+
 ## MQTT5 Best Practices
 
 Below are some best practices for the MQTT5 client that are recommended to follow for the best development experience:
 
 * When creating MQTT5 clients, make sure to use ClientIDs that are unique! If you connect two MQTT5 clients with the same ClientID, they will Disconnect each other! If you do not configure a ClientID, the MQTT5 server will automatically assign one.
 * Use the minimum QoS you can get away with for the lowest latency and bandwidth costs. For example, if you are sending data consistently multiple times per second and do not have to have a guarantee the server got each and every publish, using QoS 0 may be ideal compared to QoS 1. Of course, this heavily depends on your use case but generally it is recommended to use the lowest QoS possible.
-* If you are getting unexpected disconnects when trying to connect to AWS IoT Core, make sure to check your IoT Core Thing’s policy and permissions to make sure your device is has the permissions it needs to connect!
+* If you are getting unexpected disconnects when trying to connect to AWS IoT Core, make sure to check your IoT Core Thing's policy and permissions to make sure your device is has the permissions it needs to connect!
 * Make sure to always call `close()` when finished a MQTT5 client to avoid native resource leaks!
 * For [publish](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5Client.html#publish(software.amazon.awssdk.crt.mqtt5.packets.PublishPacket)), [subscribe](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5Client.html#subscribe(software.amazon.awssdk.crt.mqtt5.packets.SubscribePacket)), and [unsubscribe](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5Client.html#unsubscribe(software.amazon.awssdk.crt.mqtt5.packets.UnsubscribePacket)), make sure to check the reason codes in the ACK ([PubAckPacket](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/packets/PubAckPacket.html), [SubAckPacket](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/packets/SubAckPacket.html), and [UnsubAckPacket](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/packets/UnsubAckPacket.html) respectively) to see if the operation actually succeeded.
 * You MUST NOT perform blocking operations on any callback, or you will cause a deadlock. For example: in the `onMessageReceived` callback, do not send a publish, and then wait for the future to complete within the callback. The Client cannot do work until your callback returns, so the thread will be stuck.
