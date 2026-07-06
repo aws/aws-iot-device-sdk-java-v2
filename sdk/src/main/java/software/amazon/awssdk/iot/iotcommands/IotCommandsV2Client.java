@@ -86,7 +86,11 @@ public class IotCommandsV2Client implements AutoCloseable {
 
     private CommandExecutionEvent createCommandExecutionEvent(IncomingPublishEvent publishEvent) {
         CommandExecutionEvent event = new CommandExecutionEvent();
-        event.executionId = publishEvent.getTopic().split("/")[5];
+        String[] segments = publishEvent.getTopic().split("/");
+        if (segments.length <= 5) {
+            throw new CrtRuntimeException("Invalid topic: " + publishEvent.getTopic());
+        }
+        event.executionId = segments[5];
         event.payload = publishEvent.getPayload();
         String contentType = publishEvent.getContentType();
         if (contentType != null) {

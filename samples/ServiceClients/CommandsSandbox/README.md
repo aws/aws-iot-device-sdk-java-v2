@@ -51,10 +51,11 @@ Data Plane
   targeting the IoT Thing set on the application startup
 * `open-client-stream <payload-format>` - subscribe to a stream of AWS IoT command executions with a specified payload format
   targeting the MQTT client ID set on the application startup
-* `update-command-execution <execution-id> \<status> \[\<reason-code>] \[\<reason-description>]` - update status for specified
-  execution ID;
+* `update-command-execution <execution-id> <status> [reason-code=<value>] [reason-description=<value>] [result=<key>:<value>;<key>:<value>]` -
+  update status for specified execution ID;
     * status can be one of the following: IN_PROGRESS, SUCCEEDED, REJECTED, FAILED, TIMED_OUT
-    * reason-code and reason-description may be optionally provided for the REJECTED, FAILED, or TIMED_OUT statuses
+    * reason-code and reason-description may be optionally provided for any status
+    * result is a semicolon-separated list of key:value pairs; if a value is true/false it is treated as boolean, otherwise as string
 
 Miscellaneous
 * `list-streams` - list all open streaming operations
@@ -353,6 +354,15 @@ Take an AWS IoT command execution ID your sample received at the end of the prev
 update-command-execution 33333333-3333-3333-3333-333333333333 IN_PROGRESS
 ```
 
+You can also provide execution results when updating the status. Results are specified as semicolon-separated
+key:value pairs. Values of `true` or `false` are treated as booleans, everything else is treated as a string:
+```
+update-command-execution 33333333-3333-3333-3333-333333333333 IN_PROGRESS result=batteryStatus:"unknown status";alive:true
+```
+
+> [!NOTE]
+> You can also pass binary data in the result field using the CommandExecutionResult::bin member, which is not supported in this sample.
+
 Then checking once again for the AWS IoT command execution status with
 ```
 get-command-execution 33333333-3333-3333-3333-333333333333
@@ -362,6 +372,9 @@ should return
 
 ```
 Status of Command execution '33333333-3333-3333-3333-333333333333' is IN_PROGRESS
+  Result:
+    alive: true (boolean)
+    batteryStatus: unknown (string)
 ```
 
 `IN_PROGRESS` is an intermediary execution status, i.e. it's possible to change this status.
@@ -378,7 +391,7 @@ update-command-execution 33333333-3333-3333-3333-333333333333 SUCCEEDED
 ```
 or
 ```
-update-command-execution 33333333-3333-3333-3333-333333333333 FAILED SHORT_FAILURE_CODE A longer description
+update-command-execution 33333333-3333-3333-3333-333333333333 FAILED reason-code=SHORT_FAILURE_CODE reason-description="A longer description"
 ```
 
 If you try to update the status of the same AWS IoT command execution to something else, it'll fail:

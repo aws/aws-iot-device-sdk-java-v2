@@ -41,10 +41,6 @@ class MainActivityTest {
 
         // Add sample specific file loading here
         when(name) {
-            "pubsub.PubSub" -> {
-                resourceNames.add("pubSubCertificate.pem")
-                resourceNames.add("pubSubPrivatekey.pem")
-            }
 
             "shadow.ShadowSample" -> {
                 resourceNames.add("shadowCertificate.pem")
@@ -58,11 +54,6 @@ class MainActivityTest {
 
             "cognitoconnect.CognitoConnect" -> {
                 resourceNames.add("cognitoIdentity.txt")
-            }
-
-            "mqtt5.pubsub.PubSub" -> {
-                resourceNames.add("mqtt5PubSubCertificate.pem")
-                resourceNames.add("mqtt5PubSubPrivatekey.pem")
             }
 
             "mqtt5x509.Mqtt5X509" -> {
@@ -99,13 +90,6 @@ class MainActivityTest {
 
         // Set sample specific args
         when(name){
-            "pubsub.PubSub" -> {
-                args.addAll(arrayOf(
-                    "--cert", resourceMap["pubSubCertificate.pem"],
-                    "--key", resourceMap["pubSubPrivatekey.pem"],
-                    "--port", "8883",
-                    "--message", "message.txt", "Hello World From Android"))
-            }
 
             "jobs.JobsSample"  -> {
                 args.addAll(arrayOf(
