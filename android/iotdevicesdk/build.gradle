@@ -61,10 +61,10 @@ android {
         }
     }
 
-    buildFeatures { 
+    buildFeatures {
         // AGP 8 disables buildConfig generation by default. We set this to true
         // to resstore BuildConfig.VERSION_NAME for both debug and release build types.
-        buildConfig true 
+        buildConfig true
     }
 
     // Make the 'release' SoftwareComponent available for publishing on AGP 8
@@ -203,7 +203,6 @@ afterEvaluate {
                     (String) project.property("signingKey"),
                     (String) project.property("signingPassword")
                 )
-                println("key=" + project.property("signingKey"))
                 sign(publications)
             }
         }
