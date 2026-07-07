@@ -7,6 +7,8 @@
 
 package software.amazon.awssdk.iot.iotcommands.model;
 
+import java.util.HashMap;
+import software.amazon.awssdk.iot.iotcommands.model.CommandExecutionResult;
 import software.amazon.awssdk.iot.iotcommands.model.CommandExecutionStatus;
 import software.amazon.awssdk.iot.iotcommands.model.DeviceType;
 import software.amazon.awssdk.iot.iotcommands.model.StatusReason;
@@ -50,6 +52,13 @@ public class UpdateCommandExecutionRequest {
      *
      */
     public StatusReason statusReason;
+
+
+    /**
+     * The result value for the current state of the command execution. The status provides information about the progress of the command execution. The device can use the result field to share additional details about the execution such as a return value of a remote function call.
+     *
+     */
+    public HashMap<String, software.amazon.awssdk.iot.iotcommands.model.CommandExecutionResult> result;
 
 
 }

@@ -12,11 +12,13 @@
 * [How do I build and use the Android SDK?](#how-do-i-build-and-use-the-android-sdk)
 * [Where can I find MQTT 311 Samples?](#where-can-i-find-mqtt-311-samples)
 * [How can I improve the library size?](#how-can-i-improve-the-library-size)
+* [Certificate and Private Key Usage Across Different Versions of the SDK on macOS](#certificate-and-private-key-usage-across-different-versions-of-the-sdk-on-macos)
+* [Manual Publish Acknowledgement and QoS 1 Redelivery](#manual-publish-acknowledgement-and-qos-1-redelivery)
 * [I still have more questions about this sdk?](#i-still-have-more-questions-about-this-sdk)
 
 ### Where should I start?
 
-If you are just getting started make sure you [install this sdk](https://github.com/aws/aws-iot-device-sdk-java-v2#installation) and then build and run the [basic PubSub](https://github.com/aws/aws-iot-device-sdk-java-v2/tree/main/samples#pubsub)
+If you are just getting started make sure you [install this sdk](https://github.com/aws/aws-iot-device-sdk-java-v2#installation) and then build and run the [Mqtt5 X509 Sample](https://github.com/aws/aws-iot-device-sdk-java-v2/tree/main/samples/Mqtt/Mqtt5X509)
 
 ### How do I enable logging?
 
@@ -34,7 +36,7 @@ To enable logging in the samples, you will need to set the following system prop
 * `aws.crt.log.level`: The level of logging shown. Can be `Trace`, `Debug`, `Info`, `Warn`, `Error`, `Fatal`, or `None`. Defaults to `Warn`.
 * `aws.crt.log.filename`: The path to save the log file. Only needed if `aws.crt.log.destination` is set to `File`.
 
-For example, to run `BasicPubSub` with logging you could use the following:
+For example, to run `Mqtt X509` with logging you could use the following:
 
 ```sh
 mvn compile exec:java -pl samples/Mqtt/Mqtt5X509 -Daws.crt.debugnative=true -Daws.crt.log.level=Debug -Daws.crt.log.destination=Stdout -Dexec.args='--endpoint <endpoint> --cert <path to cert> --key <path to key>'
@@ -172,6 +174,20 @@ For maximum control, build both CRT and SDK locally:
    ```
 3. [Build the SDK from source](./DEVELOPING.md#building-from-source)
 
+### Certificate and Private Key Usage Across Different Versions of the SDK on macOS
+A certificate and private key pair cannot be shared on a macOS device between aws-iot-device-sdk-java-v2 v1.29.0 and other versions. In the update to v1.29.0 we migrated macOS from using Apple's deprecated Security Framework to SecItem API. In doing so, certificate and private keys are imported in a non-backwards compatible manner into the Apple Keychain.
+
+### Manual Publish Acknowledgement and QoS 1 Redelivery
+
+When using [manual publish acknowledgement](./MQTT5_Userguide.md#manual-publish-acknowledgement), there are two important behaviors to be aware of regarding QoS 1 message redelivery:
+
+**Broker redelivery of unacknowledged publishes**
+
+The AWS IoT broker will periodically resend unacknowledged QoS 1 PUBLISH packets. These redeliveries should be treated as duplicates even if the DUP flag in the PUBLISH packet is not set. If the manual publish acknowledgement is not acquired again for a redelivered packet, the acknowledgement will be sent automatically.
+
+**Session resumption after disconnect/reconnect**
+
+Upon a disconnect and reconnect of the MQTT5 client, if a session is resumed, any previously acquired acknowledgement handle is void. The broker will resend the unacknowledged PUBLISH packet, and the acknowledgement must be reacquired from that resent packet. If the resent packet is not handled for manual acknowledgement, the acknowledgement will be sent automatically.
 
 ### I still have more questions about this sdk?
 
