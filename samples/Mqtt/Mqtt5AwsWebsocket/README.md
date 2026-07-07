@@ -67,6 +67,12 @@ Note that in a real application, you may want to avoid the use of wildcards in y
 
 </details>
 
+### Determining your signing region
+
+The `signing_region` parameter specifies the AWS region used to sign WebSocket connection requests via [SigV4 authentication](https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html). It must match the region of your AWS IoT Core endpoint.
+For example, if your endpoint is `abcdef12345-ats.iot.us-west-2.amazonaws.com`, the signing region is `us-west-2`.
+
+
 ## How to run
 
 To run this sample from the `aws-iot-device-sdk-java-v2` folder use the following command:

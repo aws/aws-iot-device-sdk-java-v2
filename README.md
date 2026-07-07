@@ -14,6 +14,7 @@ The AWS IoT Device SDK for Java v2 connects your Java applications and devices t
 * [Getting Started](#getting-started)
 * [Samples](samples)
 * [MQTT5 User Guide](./documents/MQTT5_Userguide.md)
+* [Specifics](#specifics)
 * [Getting Help](#getting-help)
 * [Resources](#resources)
 
@@ -24,6 +25,7 @@ The primary purpose of the AWS IoT Device SDK for Java v2 is to simplify the pro
 * Integrated service clients for AWS IoT Core services
 * Secure device connections to AWS IoT Core using MQTT protocol including MQTT 5.0
 * Support for [multiple authentication methods and connection types](./documents/MQTT5_Userguide.md#how-to-setup-mqtt5-builder-based-on-desired-connection-method)
+* Support for [manual publish acknowledgement](./documents/MQTT5_Userguide.md#manual-publish-acknowledgement) for control over QoS 1 PUBACK delivery
 * Android [support](./documents/ANDROID.md)
 
 #### Supported AWS IoT Core services
@@ -54,11 +56,11 @@ Add the following to your `pom.xml` dependencies:
 <dependency>
   <groupId>software.amazon.awssdk.iotdevicesdk</groupId>
   <artifactId>aws-iot-device-sdk</artifactId>
-  <version>1.30.2</version>
+  <version>1.33.0</version>
 </dependency>
 ```
 
-Replace `1.30.2` in `<version>1.30.2</version>` with the latest release version for the SDK.
+Replace `1.33.0` in `<version>1.33.0</version>` with the latest release version for the SDK.
 Look up the latest SDK version here: https://github.com/aws/aws-iot-device-sdk-java-v2/releases
 
 ### Building AWS IoT SDK from source
@@ -88,6 +90,24 @@ Check out the [samples](samples) directory for working code examples that demons
 
 The samples provide ready-to-run code with detailed setup instructions for each authentication method and use case.
 
+## Specifics
+
+#### Mac-Only TLS 1.3
+
+By default, macOS uses Apple Secure Transport as the TLS implementation, which supports up to TLS 1.2. To enable TLS 1.3 on macOS, set the environment variable `AWS_CRT_USE_NON_FIPS_TLS_13=1` before running your application. This switches the TLS backend to s2n-tls with aws-lc at runtime.
+
+> [!IMPORTANT]
+> Enabling `AWS_CRT_USE_NON_FIPS_TLS_13` trades FIPS compliance and macOS Keychain/PKCS#12 integration for TLS 1.3 support. This variable has no effect on Linux or Windows.
+
+#### Mac Keychain
+
+When using the default Apple Secure Transport backend, once a private key is used with a certificate, that certificate-key pair is imported into the Mac Keychain. All subsequent uses of that certificate will use the stored private key and ignore anything passed in programmatically. When a stored private key from the Keychain is used, the following will be logged at the "info" log level:
+
+```
+static: certificate has an existing certificate-key pair that was previously imported into the Keychain.
+ Using key from Keychain instead of the one provided.
+```
+
 ## Getting Help
 
 The best way to interact with our team is through GitHub.
@@ -96,18 +116,6 @@ The best way to interact with our team is through GitHub.
 * Create an [issue](https://github.com/aws/aws-iot-device-sdk-java-v2/issues/new/choose): New feature request or file a bug
 
 If you have a support plan with [AWS Support](https://aws.amazon.com/premiumsupport/), you can also create a new support case.
-
-#### Mac-Only TLS Behavior
-
-> [!NOTE]
-> This SDK does not support TLS 1.3 on macOS. Support for TLS 1.3 on macOS is planned for a future release.
-
-Please note that on Mac, once a private key is used with a certificate, that certificate-key pair is imported into the Mac Keychain.  All subsequent uses of that certificate will use the stored private key and ignore anything passed in programmatically.  Beginning in v1.7.3, when a stored private key from the Keychain is used, the following will be logged at the "info" log level:
-
-```
-static: certificate has an existing certificate-key pair that was previously imported into the Keychain.
- Using key from Keychain instead of the one provided.
-```
 
 ## Resources
 
@@ -127,4 +135,4 @@ Check out our resources for additional guidance too before opening an issue:
 
 This library is licensed under the [Apache 2.0 License](./documents/LICENSE).
 
-Latest released version: v1.30.2
+Latest released version: v1.33.0
