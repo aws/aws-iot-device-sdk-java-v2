@@ -49,8 +49,6 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
     private ConnectPacketBuilder configConnect;
     private TlsContextOptions configTls;
     private MqttConnectCustomAuthConfig configCustomAuth;
-    /** Whether to disable SDK metrics collection. Defaults to {@code false} (metrics enabled). */
-    private boolean disableMetrics = false;
 
     private AwsIotMqtt5ClientBuilder(String hostName, Long port, TlsContextOptions tlsContext) {
         config = new Mqtt5ClientOptionsBuilder(hostName, port);
@@ -838,18 +836,6 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
     }
 
     /**
-     * Disables IoT SDK metrics in the CONNECT packet username field.
-     * Defaults to false (metrics enabled).
-     *
-     * @param disableMetrics true to disable metrics collection. By default {@code false} [metrics enabled].
-     * @return The AwsIotMqtt5ClientBuilder after setting the disable metrics flag.
-     */
-    public AwsIotMqtt5ClientBuilder withDisableMetrics(boolean disableMetrics) {
-        this.disableMetrics = disableMetrics;
-        return this;
-    }
-
-    /**
      * Constructs an MQTT5 client object configured with the options set.
      * @return A MQTT5ClientOptions
      */
@@ -878,14 +864,8 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
         }
 
         this.config.withConnectOptions(this.configConnect.build());
-
-        this.config.withDisableMetrics(this.disableMetrics);
-        if (this.disableMetrics) {
-            this.config.withMetrics(null);
-        } else {
-            this.config.withMetrics(IoTSdkMetrics.buildSdkMetrics());
-        }
-
+        this.config.withMetrics(IoTSdkMetrics.buildSdkMetrics());
+        
         Mqtt5Client returnClient = new Mqtt5Client(this.config.build());
 
         // Keep a reference to the TLS configuration so any possible Websockets-related CrtResources are kept alive
@@ -1069,7 +1049,7 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
 
     /**
      * Builds the final value for the CONNECT packet's username property based on AWS IoT custom auth configuration
-     * 
+     *
      *
      * @param config - The intended AWS IoT custom auth client configuration (optional - leave null if not used)
      * @return The final username string

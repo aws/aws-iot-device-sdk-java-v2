@@ -55,8 +55,6 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
     private ClientBootstrap bootstrap;
 
     private boolean resetLazilyCreatedResources = true;
-    /** Whether to disable SDK metrics collection. Defaults to {@code false} (metrics enabled). */
-    private boolean disableMetrics = false;
     // Used to detect if we need to set the ALPN list for custom authorizer
     private boolean isUsingCustomAuthorizer = false;
 
@@ -695,17 +693,6 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
         return AwsIotMqtt5ClientBuilder.newMqttBuilderFromMqtt311ConnectionConfig(config, tlsOptions);
     }
 
-    /**
-     * Disables IoT SDK metrics in the CONNECT packet username field.
-     * Defaults to false (metrics enabled).
-     *
-     * @param disableMetrics true to disable metrics collection
-     * @return The AwsIotMqttConnectionBuilder after setting the disable metrics flag.
-     */
-    public AwsIotMqttConnectionBuilder withDisableMetrics(boolean disableMetrics) {
-        this.disableMetrics = disableMetrics;
-        return this;
-    }
 
     /**
      * Builds a new mqtt connection from the configuration stored in the builder.  Because some objects are created
@@ -773,14 +760,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
 
         // Connection create
         try (MqttConnectionConfig connectionConfig = config.clone()) {
-
-            connectionConfig.setDisableMetrics(this.disableMetrics);
-            if (this.disableMetrics) {
-                connectionConfig.setMetrics(null);
-            } else {
-                connectionConfig.setMetrics(IoTSdkMetrics.buildSdkMetrics());
-            }
-
+            connectionConfig.setMetrics(IoTSdkMetrics.buildSdkMetrics());
             if (connectionConfig.getUseWebsockets() && connectionConfig.getWebsocketHandshakeTransform() == null) {
                 if (websocketCredentialsProvider == null) {
                     DefaultChainCredentialsProvider.DefaultChainCredentialsProviderBuilder providerBuilder = new DefaultChainCredentialsProvider.DefaultChainCredentialsProviderBuilder();
