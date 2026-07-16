@@ -8,7 +8,6 @@ package software.amazon.awssdk.iot;
 import java.util.ArrayList;
 import java.util.List;
 
-import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.crt.iot.AWSIoTMetrics;
 import software.amazon.awssdk.crt.iot.IoTMetricsMetadata;
 
@@ -18,16 +17,6 @@ import software.amazon.awssdk.crt.iot.IoTMetricsMetadata;
  * and embeds the combined metrics in the MQTT CONNECT packet username field.
  */
 class IoTSdkMetrics {
-
-    private static final String SDK_LIBRARY_NAME_JAVA = "IoTDeviceSDK/Java";
-    private static final String SDK_LIBRARY_NAME_ANDROID = "IoTDeviceSDK/Android";
-
-    private static String getLibraryName() {
-        if ("android".equals(CRT.getOSIdentifier())) {
-            return SDK_LIBRARY_NAME_ANDROID;
-        }
-        return SDK_LIBRARY_NAME_JAVA;
-    }
 
     /**
      * The current version of the IoT SDK metrics format.
@@ -81,7 +70,9 @@ class IoTSdkMetrics {
         List<IoTMetricsMetadata> metadata = new ArrayList<>();
         metadata.add(new IoTMetricsMetadata("IoTSDKVersion", getSdkVersion()));
         metadata.add(new IoTMetricsMetadata("IoTSDKMetricsVersion", IOT_SDK_METRICS_VERSION));
-        return new AWSIoTMetrics(getLibraryName(), metadata);
+        AWSIoTMetrics metrics = new AWSIoTMetrics();
+        metrics.setMetadataEntries(metadata);
+        return metrics;
     }
 
 }

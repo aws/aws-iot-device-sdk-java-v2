@@ -4,7 +4,6 @@
  */
 package software.amazon.awssdk.iot;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -32,12 +31,6 @@ public class IoTSdkMetricsTest {
     public void testBuildSdkMetricsReturnsValidObject() {
         AWSIoTMetrics metrics = IoTSdkMetrics.buildSdkMetrics();
         assertNotNull(metrics);
-    }
-
-    @Test
-    public void testLibraryName() {
-        AWSIoTMetrics metrics = IoTSdkMetrics.buildSdkMetrics();
-        assertEquals("IoTDeviceSDK/Java", metrics.getLibraryName());
     }
 
     @Test
