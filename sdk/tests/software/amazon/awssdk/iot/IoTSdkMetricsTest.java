@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import org.junit.jupiter.api.Test;
 
-import software.amazon.awssdk.crt.iot.IoTDeviceSDKMetrics;
+import software.amazon.awssdk.crt.iot.AWSIoTMetrics;
 import software.amazon.awssdk.crt.iot.IoTMetricsMetadata;
 
 import java.util.List;
@@ -30,19 +30,19 @@ public class IoTSdkMetricsTest {
 
     @Test
     public void testBuildSdkMetricsReturnsValidObject() {
-        IoTDeviceSDKMetrics metrics = IoTSdkMetrics.buildSdkMetrics();
+        AWSIoTMetrics metrics = IoTSdkMetrics.buildSdkMetrics();
         assertNotNull(metrics);
     }
 
     @Test
     public void testLibraryName() {
-        IoTDeviceSDKMetrics metrics = IoTSdkMetrics.buildSdkMetrics();
+        AWSIoTMetrics metrics = IoTSdkMetrics.buildSdkMetrics();
         assertEquals("IoTDeviceSDK/Java", metrics.getLibraryName());
     }
 
     @Test
     public void testSdkVersionPresent() {
-        IoTDeviceSDKMetrics metrics = IoTSdkMetrics.buildSdkMetrics();
+        AWSIoTMetrics metrics = IoTSdkMetrics.buildSdkMetrics();
         String version = findMetadataValue(metrics.getMetadataEntries(), "IoTSDKVersion");
         assertNotNull(version);
         assertFalse(version.isEmpty());

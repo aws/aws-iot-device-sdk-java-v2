@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import software.amazon.awssdk.crt.CRT;
-import software.amazon.awssdk.crt.iot.IoTDeviceSDKMetrics;
+import software.amazon.awssdk.crt.iot.AWSIoTMetrics;
 import software.amazon.awssdk.crt.iot.IoTMetricsMetadata;
 
 /**
@@ -61,7 +61,7 @@ class IoTSdkMetrics {
     }
 
     /**
-     * Builds the SDK-level {@link IoTDeviceSDKMetrics} payload that is passed down to the CRT layer.
+     * Builds the SDK-level {@link AWSIoTMetrics} payload that is passed down to the CRT layer.
      *
      * <p>The returned object carries SDK identity and the metrics format version via two metadata entries:
      * <ul>
@@ -74,14 +74,14 @@ class IoTSdkMetrics {
      * certificate source, TLS settings, proxy type, etc.) and appending them to the metadata
      * before embedding the result in the MQTT CONNECT packet username field.
      *
-     * @return a populated {@link IoTDeviceSDKMetrics} object ready to attach to an
+     * @return a populated {@link AWSIoTMetrics} object ready to attach to an
      *         MQTT5 client or MQTT3 connection configuration
      */
-    static IoTDeviceSDKMetrics buildSdkMetrics() {
+    static AWSIoTMetrics buildSdkMetrics() {
         List<IoTMetricsMetadata> metadata = new ArrayList<>();
         metadata.add(new IoTMetricsMetadata("IoTSDKVersion", getSdkVersion()));
         metadata.add(new IoTMetricsMetadata("IoTSDKMetricsVersion", IOT_SDK_METRICS_VERSION));
-        return new IoTDeviceSDKMetrics(getLibraryName(), metadata);
+        return new AWSIoTMetrics(getLibraryName(), metadata);
     }
 
 }
