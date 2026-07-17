@@ -35,7 +35,7 @@ public class IoTSdkMetricsTest {
     }
 
     @Test
-    public void testDefaultLibraryNameIsSet() {
+    public void testLibraryName() {
         AWSIoTMetrics metrics = IoTSdkMetrics.buildSdkMetrics();
         assertEquals("IoTDeviceSDK/Java", metrics.getLibraryName());
     }
