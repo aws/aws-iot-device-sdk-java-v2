@@ -184,4 +184,9 @@ public class CertificateUpdate implements EventStreamJsonMessage {
   public int hashCode() {
     return Objects.hash(privateKey, publicKey, certificate, caCertificates);
   }
+
+  @Override
+  public String toString() {
+    return "CertificateUpdate{" + "privateKey=" + "*** REDACTED ***" + ", publicKey=" + "*** REDACTED ***" + ", certificate=" + "*** REDACTED ***" + ", caCertificates=" + "*** REDACTED ***" + "}";
+  }
 }

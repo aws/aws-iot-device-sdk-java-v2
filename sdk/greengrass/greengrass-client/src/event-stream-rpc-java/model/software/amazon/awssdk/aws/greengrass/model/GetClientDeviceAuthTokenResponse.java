@@ -85,4 +85,9 @@ public class GetClientDeviceAuthTokenResponse implements EventStreamJsonMessage 
   public int hashCode() {
     return Objects.hash(clientDeviceAuthToken);
   }
+
+  @Override
+  public String toString() {
+    return "GetClientDeviceAuthTokenResponse{" + "clientDeviceAuthToken=" + "*** REDACTED ***" + "}";
+  }
 }
