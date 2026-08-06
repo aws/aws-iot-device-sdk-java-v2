@@ -5,14 +5,11 @@
  */
 package software.amazon.awssdk.iot;
 
-import software.amazon.awssdk.crt.utils.PackageInfo;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.function.Consumer;
 
-import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.crt.CrtResource;
 import software.amazon.awssdk.crt.CrtRuntimeException;
 import software.amazon.awssdk.crt.Log;
@@ -696,6 +693,7 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
         return AwsIotMqtt5ClientBuilder.newMqttBuilderFromMqtt311ConnectionConfig(config, tlsOptions);
     }
 
+
     /**
      * Builds a new mqtt connection from the configuration stored in the builder.  Because some objects are created
      * lazily, certain properties should not be modified after this is first invoked (tls options, bootstrap).
@@ -759,31 +757,10 @@ public final class AwsIotMqttConnectionBuilder extends CrtResource {
 
         resetLazilyCreatedResources = false;
 
+
         // Connection create
         try (MqttConnectionConfig connectionConfig = config.clone()) {
-
-            // Whether or not a username has been added, append our metrics tokens
-            String usernameOrEmpty = "";
-            if (connectionConfig.getUsername() != null) {
-                usernameOrEmpty = connectionConfig.getUsername();
-            }
-            String queryStringConcatenation = "?";
-            if (usernameOrEmpty.contains("?")) {
-                queryStringConcatenation = "&";
-            }
-
-            if(CRT.getOSIdentifier() == "android"){
-                connectionConfig.setUsername(String.format("%s%sSDK=AndroidV2&Version=%s",
-                usernameOrEmpty,
-                queryStringConcatenation,
-                new PackageInfo().version.toString()));
-            } else {
-                connectionConfig.setUsername(String.format("%s%sSDK=JavaV2&Version=%s",
-                usernameOrEmpty,
-                queryStringConcatenation,
-                new PackageInfo().version.toString()));
-            }
-
+            connectionConfig.setMetrics(IoTSdkMetrics.buildSdkMetrics());
             if (connectionConfig.getUseWebsockets() && connectionConfig.getWebsocketHandshakeTransform() == null) {
                 if (websocketCredentialsProvider == null) {
                     DefaultChainCredentialsProvider.DefaultChainCredentialsProviderBuilder providerBuilder = new DefaultChainCredentialsProvider.DefaultChainCredentialsProviderBuilder();
