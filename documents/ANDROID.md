@@ -55,6 +55,7 @@ a dependency of the aws-iot-device-sdk-android library.
 > }
 >
 > dependencies {
+>     // Use the latest version compatible with your AGP (2.0.4 requires AGP 7.4+)
 >     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
 > }
 > ```
