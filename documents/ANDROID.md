@@ -59,7 +59,7 @@ a dependency of the aws-iot-device-sdk-android library.
 > }
 > ```
 >
-> If you build from source with a `minSdk` of 26 or higher, you may remove the desugaring requirement — but you must do so in **both** libraries: this SDK (`aws-iot-device-sdk-android`) **and** its [`aws-crt-java`](https://github.com/awslabs/aws-crt-java) dependency (`aws-crt-android`), which is pulled in transitively and enforces the same requirement on its own. Once both are rebuilt at `minSdk` 26+ with the flag removed, consuming apps at API 26+ no longer need to enable desugaring.
+> If you build from source with a `minSdk` of 26 or higher, you may remove the desugaring requirement but you must do so in **both** libraries: this SDK (`aws-iot-device-sdk-android`) **and** its [`aws-crt-java`](https://github.com/awslabs/aws-crt-java) dependency (`aws-crt-android`), which is pulled in transitively and enforces the same requirement on its own. Once both are rebuilt at `minSdk` 26+ with the flag removed, consuming apps at API 26+ no longer need to enable desugaring.
 
 ### Build and install IoT Device SDK from source
 > [!NOTE]
