@@ -40,8 +40,27 @@ a dependency of the aws-iot-device-sdk-android library.
 * Android SDK 24 ([Download SDK Manager](https://developer.android.com/tools/releases/platform-tools#downloads))
   * [Set ANDROID_HOME](./PREREQUISITES.md#set-android_home)
 
-> [!NOTE]
-> The SDK supports Android minimum API of 24 but requires [desugaring](https://developer.android.com/studio/write/java8-support#library-desugaring) to support Java 8 language APIs used in by the SDK. If minimum Android API Version is set to 26+ desugaring is not required.
+> [!IMPORTANT]
+> The published `aws-iot-device-sdk-android` artifact (and its `aws-crt-android` dependency) are built with [core library desugaring](https://developer.android.com/studio/write/java8-support#library-desugaring) enabled, because the SDK uses Java 8 library APIs such as `java.time` while supporting a minimum Android API of 24.
+>
+> As a result, **every app that consumes the SDK must also enable core library desugaring, regardless of its own `minSdk`** (including API 26+). If it is not enabled, the build fails at `checkDebugAarMetadata` with `requires core library desugaring to be enabled`.
+>
+> Add the following to your app module's `build.gradle`:
+>
+> ```groovy
+> android {
+>     compileOptions {
+>         coreLibraryDesugaringEnabled true
+>     }
+> }
+>
+> dependencies {
+>     // Use the latest version compatible with your AGP (2.0.4 requires AGP 7.4+)
+>     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
+> }
+> ```
+>
+> If you build from source with a `minSdk` of 26 or higher, you may remove the desugaring requirement but you must do so in **both** libraries: this SDK (`aws-iot-device-sdk-android`) **and** its [`aws-crt-java`](https://github.com/awslabs/aws-crt-java) dependency (`aws-crt-android`), which is pulled in transitively and enforces the same requirement on its own. Once both are rebuilt at `minSdk` 26+ with the flag removed, consuming apps at API 26+ no longer need to enable desugaring.
 
 ### Build and install IoT Device SDK from source
 > [!NOTE]
