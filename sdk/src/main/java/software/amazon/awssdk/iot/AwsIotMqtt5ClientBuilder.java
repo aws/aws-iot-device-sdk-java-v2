@@ -12,7 +12,6 @@ import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import software.amazon.awssdk.crt.CRT;
 import software.amazon.awssdk.crt.auth.credentials.CredentialsProvider;
 import software.amazon.awssdk.crt.auth.credentials.DefaultChainCredentialsProvider;
 import software.amazon.awssdk.crt.auth.signing.AwsSigningConfig;
@@ -35,8 +34,8 @@ import software.amazon.awssdk.crt.mqtt5.Mqtt5ClientOptions.Mqtt5ClientOptionsBui
 import software.amazon.awssdk.crt.mqtt5.packets.ConnectPacket.ConnectPacketBuilder;
 import software.amazon.awssdk.crt.mqtt5.packets.PublishPacket;
 import software.amazon.awssdk.crt.mqtt5.TopicAliasingOptions;
-import software.amazon.awssdk.crt.utils.PackageInfo;
 import software.amazon.awssdk.crt.mqtt5.packets.UserProperty;
+
 
 /**
  * Builders for making MQTT5 clients with different connection methods for AWS IoT Core.
@@ -834,7 +833,7 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
     {
         this.configConnect.withUserProperties(userProperties);
         return this;
-    } 
+    }
 
     /**
      * Constructs an MQTT5 client object configured with the options set.
@@ -865,7 +864,8 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
         }
 
         this.config.withConnectOptions(this.configConnect.build());
-
+        this.config.withMetrics(IoTSdkMetrics.buildSdkMetrics());
+        
         Mqtt5Client returnClient = new Mqtt5Client(this.config.build());
 
         // Keep a reference to the TLS configuration so any possible Websockets-related CrtResources are kept alive
@@ -1049,7 +1049,7 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
 
     /**
      * Builds the final value for the CONNECT packet's username property based on AWS IoT custom auth configuration
-     * and SDK metrics properties.
+     *
      *
      * @param config - The intended AWS IoT custom auth client configuration (optional - leave null if not used)
      * @return The final username string
@@ -1117,13 +1117,6 @@ public class AwsIotMqtt5ClientBuilder extends software.amazon.awssdk.crt.CrtReso
                 addToUsernameParam(paramList, "x-amz-customauthorizer-signature", encodedSignature);
             }
         }
-
-        if(CRT.getOSIdentifier() == "android"){
-            addToUsernameParam(paramList, "SDK", "AndroidV2");
-        } else {
-            addToUsernameParam(paramList, "SDK", "JavaV2");
-        }
-        addToUsernameParam(paramList, "Version", new PackageInfo().version.toString());
 
         return formUsernameFromParam(paramList);
     }
