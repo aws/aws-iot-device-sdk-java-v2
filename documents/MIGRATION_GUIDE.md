@@ -677,13 +677,13 @@ provides access to thing shadows (sometimes referred to as device shadows). It a
 which allows developers to exchange data with their shadows by just using `getter` and `setter` methods without having to serialize
 or deserialize any JSON documents.
 
-The v2 SDK also supports device shadow service, but with completely different APIs.
-First, you subscribe to special topics to get data and feedback from a service. The service client provides API for that.
-For example, `SubscribeToGetShadowAccepted` subscribes to a topic to which AWS IoT Core will publish a shadow document. The server will notify you if it cannot send you a requested document via `SubscribeToGetShadowRejected`.\
-After subscribing to all the required topics, the service client can start interacting with the server, for example, update
-the status or request for data. These actions are also performed via client API calls. For example, `PublishGetShadow`
-sends a request to AWS IoT Core to get a shadow document. The requested shadow document will be received in a callback
-specified in the `SubscribeToGetShadowAccepted` call.
+The v2 SDK also supports the device shadow service, but with completely different APIs.
+The v2 service client exposes a request-response API: each operation (for example, `getShadow` or `updateShadow`)
+is a single method call that returns a `CompletableFuture` completing with the modeled response, or completing
+exceptionally with a `V2ErrorResponseException` that carries the modeled error. The client handles the underlying
+MQTT topic subscriptions for you, so you no longer subscribe to accepted/rejected topics manually.
+For change notifications that are not tied to a specific request (for example, `ShadowUpdated` and `ShadowDeltaUpdated`
+events), the client provides streaming operations that you open once and receive events from continuously.
 
 AWS IoT Core [documentation for Device Shadow](https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-mqtt.html)
 service provides detailed descriptions for the topics used to interact with the service.
@@ -723,10 +723,18 @@ MyDevice device = new MyDevice(thingName);
 
 A thing name in v2 SDK shadow client is specified for the operations with shadow documents.
 
+The v2 SDK shadow client is created directly from an MQTT5 client using `IotShadowV2Client.newFromMqtt5`.
+
 ```java
-MqttClientConnection connection = new MqttClientConnection(mqtt5Client, null);
-shadowClient = new IotShadowClient(connection);
 mqtt5Client.start();
+
+MqttRequestResponseClientOptions rrClientOptions = MqttRequestResponseClientOptions.builder()
+        .withMaxRequestResponseSubscriptions(5)
+        .withMaxStreamingSubscriptions(2)
+        .withOperationTimeoutSeconds(30)
+        .build();
+
+IotShadowV2Client shadowClient = IotShadowV2Client.newFromMqtt5(mqtt5Client, rrClientOptions);
 ```
 
 #### Example of getting a shadow document in the v1 SDK
@@ -773,41 +781,22 @@ String state = device.getSomeValue();
 #### Example of getting a shadow document in the v2 SDK
 
 ```java
-static void onGetShadowAccepted(GetShadowResponse response) {
-    // Called when a get request succeeded.
-    // The `response` object contains the shadow document.
-}
-
-static void onGetShadowRejected(ErrorResponse response) {
-    // Called when a get request failed.
-}
-
-GetShadowSubscriptionRequest requestGetShadow = new GetShadowSubscriptionRequest();
-requestGetShadow.thingName = "<thing name>";
-
-// Subscribe to the topic providing shadow documents.
-CompletableFuture<Integer> accepted = shadowClient.SubscribeToGetShadowAccepted(
-        requestGetShadow,
-        QualityOfService.AT_LEAST_ONCE,
-        onGetShadowAccepted);
-// Subscribe to the topic reporting errors.
-CompletableFuture<Integer> rejected = shadowClient.SubscribeToGetShadowRejected(
-        requestGetShadow,
-        QualityOfService.AT_LEAST_ONCE,
-        onGetShadowRejected);
-
-accepted.get();
-rejected.get();
-
-// Send request for a shadow document.
-// On success, the document will be received on `onGetShadowAccepted` callback.
-// On failure, the `onGetShadowRejected` callback will be called.
+// The v2 service client uses a request-response API: a single call sends the
+// request and returns a future that completes with the modeled response.
 GetShadowRequest getShadowRequest = new GetShadowRequest();
 getShadowRequest.thingName = "<thing name>";
-CompletableFuture<Integer> published = shadowClient.PublishGetShadow(
-        getShadowRequest,
-        QualityOfService.AT_LEAST_ONCE);
-published.get();
+
+try {
+    GetShadowResponse response = shadowClient.getShadow(getShadowRequest).get();
+    // On success, the `response` object contains the shadow document.
+} catch (ExecutionException ex) {
+    // On failure, the cause is a V2ErrorResponseException carrying the modeled error.
+    Throwable cause = ex.getCause();
+    if (cause instanceof V2ErrorResponseException) {
+        V2ErrorResponseException v2Error = (V2ErrorResponseException) cause;
+        // v2Error.getModeledError() contains the error details.
+    }
+}
 ```
 
 #### Example of updating a shadow document in the v1 SDK
@@ -826,32 +815,8 @@ device.setSomeValue("{\"state\":{\"reported\":{\"sensor\":3.0}}}");
 #### Example of updating a shadow document in the v2 SDK
 
 ```java
-static void onUpdateShadowAccepted(UpdateShadowResponse response) {
-    // Called when an update request succeeded.
-}
-
-static void onUpdateShadowRejected(ErrorResponse response) {
-    // Called when an update request failed.
-}
-
-UpdateShadowSubscriptionRequest requestUpdateShadow = new UpdateShadowSubscriptionRequest();
-requestUpdateShadow.thingName = "<thing name>";
-
-// Subscribe to update responses.
-CompletableFuture<Integer> accepted = shadowClient.SubscribeToUpdateShadowAccepted(
-        requestUpdateShadow,
-        QualityOfService.AT_LEAST_ONCE,
-        onUpdateShadowAccepted);
-
-// Subscribe to the topic reporting errors.
-CompletableFuture<Integer> rejected = shadowClient.SubscribeToUpdateShadowRejected(
-        requestUpdateShadow,
-        QualityOfService.AT_LEAST_ONCE,
-        onUpdateShadowRejected);
-accepted.get();
-rejected.get();
-
-// Update shadow document
+// The v2 service client uses a request-response API: a single call sends the
+// update and returns a future that completes with the modeled response.
 UpdateShadowRequest request = new UpdateShadowRequest();
 request.thingName = "<thing name>";
 request.state = new ShadowState();
@@ -859,13 +824,24 @@ request.state.reported = new HashMap<String, Object>() {
     {
         put("sensor", 3.0);
     }
+};
+
+try {
+    UpdateShadowResponse response = shadowClient.updateShadow(request).get();
+    // On success, `response` contains the accepted update.
+} catch (ExecutionException ex) {
+    // On failure, the cause is a V2ErrorResponseException carrying the modeled error.
+    Throwable cause = ex.getCause();
+    if (cause instanceof V2ErrorResponseException) {
+        V2ErrorResponseException v2Error = (V2ErrorResponseException) cause;
+        // v2Error.getModeledError() contains the error details.
+    }
 }
-shadowClient.PublishUpdateShadow(request, QualityOfService.AT_LEAST_ONCE);
 ```
 
-For more information, see API documentation for the v2 SDK [Device Shadow](https://aws.github.io/aws-iot-device-sdk-java-v2/software/amazon/awssdk/iot/iotshadow/IotShadowClient.html).
+For more information, see API documentation for the v2 SDK [Device Shadow](https://aws.github.io/aws-iot-device-sdk-java-v2/software/amazon/awssdk/iot/iotshadow/IotShadowV2Client.html).
 
-For code examples, see the v2 SDK [Device Shadow](https://github.com/aws/aws-iot-device-sdk-java-v2/tree/main/samples/Shadow).
+For code examples, see the v2 SDK [Device Shadow](https://github.com/aws/aws-iot-device-sdk-java-v2/tree/main/samples/ServiceClients/ShadowSandbox).
 
 ### Client for AWS IoT Jobs
 
@@ -873,16 +849,16 @@ The v2 SDK expands support of AWS IoT Core services implementing a service clien
 service. The Jobs service helps with defining a set of remote operations that can be sent to and run on one or more devices connected
 to AWS IoT.
 
-The Jobs service client provides API similar to API provided by [Client for AWS IoT Device Shadow](#client-for-device-shadow-service).
-First, you subscribe to special topics to get data and feedback from a service. The service client provides API for that.
-After subscribing to all the required topics, the service client can start interacting with the server, for example, update
-the status or request for data. These actions are also performed via client API calls.
+The Jobs service client provides an API similar to the API provided by [Client for AWS IoT Device Shadow](#client-for-device-shadow-service).
+It exposes a request-response API where each operation is a single method call returning a `CompletableFuture`, and the
+client manages the underlying MQTT topic subscriptions for you. Notifications that are not tied to a specific request are
+delivered through streaming operations.
 
 For detailed descriptions for the topics used to interact with the Jobs service, see AWS IoT Core documentation for the [Jobs](https://docs.aws.amazon.com/iot/latest/developerguide/jobs-mqtt-api.html) service.
 
-For more information about the service clients, see API documentation for the v2 SDK [Jobs](https://aws.github.io/aws-iot-device-sdk-java-v2/software/amazon/awssdk/iot/iotjobs/IotJobsClient.html).
+For more information about the service clients, see API documentation for the v2 SDK [Jobs](https://aws.github.io/aws-iot-device-sdk-java-v2/software/amazon/awssdk/iot/iotjobs/IotJobsV2Client.html).
 
-For code example, see the v2 SDK [Jobs](https://github.com/aws/aws-iot-device-sdk-java-v2/tree/main/samples/Jobs) samples.
+For code example, see the v2 SDK [Jobs](https://github.com/aws/aws-iot-device-sdk-java-v2/tree/main/samples/ServiceClients/JobsSandbox) samples.
 
 ### Client for AWS IoT fleet provisioning
 
@@ -891,15 +867,15 @@ For code example, see the v2 SDK [Jobs](https://github.com/aws/aws-iot-device-sd
 certificates and private keys to your devices when they connect to AWS IoT for the first time.
 
 The fleet provisioning service client provides an API similar to the APIs provided by [Client for AWS IoT Device Shadow](#client-for-device-shadow-service).
-First, you subscribe to special topics to get data and feedback from a service. The service client provides API for that.
-After subscribing to all the required topics, the service client can start interacting with the server, for example, update
-the status or request for data. These actions are also performed via client API calls.
+It exposes a request-response API where each operation is a single method call returning a `CompletableFuture`, and the
+client manages the underlying MQTT topic subscriptions for you. Notifications that are not tied to a specific request are
+delivered through streaming operations.
 
 For detailed descriptions for the topics used to interact with the Fleet Provisioning service, see AWS IoT Core documentation for [Fleet Provisioning](https://docs.aws.amazon.com/iot/latest/developerguide/fleet-provision-api.html).
 
-For more information about the Fleet Provisioning service client, see API documentation for the v2 SDK [Fleet Provisioning](https://aws.github.io/aws-iot-device-sdk-java-v2/software/amazon/awssdk/iot/iotidentity/IotIdentityClient.html).
+For more information about the Fleet Provisioning service client, see API documentation for the v2 SDK [Fleet Provisioning](https://aws.github.io/aws-iot-device-sdk-java-v2/software/amazon/awssdk/iot/iotidentity/IotIdentityV2Client.html).
 
-For code examples, see the v2 SDK [Fleet Provisioning](https://github.com/aws/aws-iot-device-sdk-java-v2/tree/main/samples/FleetProvisioning)
+For code examples, see the v2 SDK [Fleet Provisioning](https://github.com/aws/aws-iot-device-sdk-java-v2/tree/main/samples/ServiceClients/Provisioning/Basic)
 samples.
 
 ### Example
