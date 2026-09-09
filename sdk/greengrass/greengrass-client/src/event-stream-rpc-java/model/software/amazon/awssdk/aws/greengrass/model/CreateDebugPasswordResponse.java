@@ -172,4 +172,9 @@ public class CreateDebugPasswordResponse implements EventStreamJsonMessage {
   public int hashCode() {
     return Objects.hash(password, username, passwordExpiration, certificateSHA256Hash, certificateSHA1Hash);
   }
+
+  @Override
+  public String toString() {
+    return "CreateDebugPasswordResponse{" + "password=" + "*** REDACTED ***" + ", username=" + username + ", passwordExpiration=" + passwordExpiration + ", certificateSHA256Hash=" + certificateSHA256Hash + ", certificateSHA1Hash=" + certificateSHA1Hash + "}";
+  }
 }

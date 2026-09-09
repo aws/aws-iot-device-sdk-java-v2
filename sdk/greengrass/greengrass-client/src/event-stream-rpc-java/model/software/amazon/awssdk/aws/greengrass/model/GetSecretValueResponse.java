@@ -184,4 +184,9 @@ public class GetSecretValueResponse implements EventStreamJsonMessage {
   public int hashCode() {
     return Objects.hash(secretId, versionId, versionStage, secretValue);
   }
+
+  @Override
+  public String toString() {
+    return "GetSecretValueResponse{" + "secretId=" + secretId + ", versionId=" + versionId + ", versionStage=" + versionStage + ", secretValue=" + "*** REDACTED ***" + "}";
+  }
 }
