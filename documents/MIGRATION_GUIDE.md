@@ -5,7 +5,7 @@ such as improved consistency, ease of use, more detailed information about clien
 control. This guide describes the major features that are new in the v2 SDK, and provides guidance on how to migrate
 your code to v2 from v1 of the AWS IoT SDK for Java.
 
-> [!NOTE]  
+> [!NOTE]
 > If you can't find the information you need in this guide, visit the [How to get help](#how-to-get-help) section for more help and guidance.
 
 * [What's new in AWS IoT Device SDK for Java v2](#whats-new-in-aws-iot-device-sdk-for-java-v2)
@@ -287,7 +287,7 @@ class MyLifecycleEvents implements Mqtt5ClientOptions.LifecycleEvents {
     @Override
     public void onConnectionSuccess(Mqtt5Client client, OnConnectionSuccessReturn onConnectionSuccessReturn) {
     }
-    
+
     @Override
     public void onConnectionFailure(Mqtt5Client client, OnConnectionFailureReturn onConnectionFailureReturn) {
     }
@@ -398,7 +398,7 @@ to. With this callback, you can process messages made to subscribed topics.
 #### Example of subscribing in the v1 SDK
 
 ```java
-public class MyTopic extends AWSIotTopic {    
+public class MyTopic extends AWSIotTopic {
     public MyTopic(String topic, AWSIotQos qos) {
         super(topic, qos);
     }
@@ -467,7 +467,7 @@ client.unsubscribe("another/topic");
 
 ```java
 // Non-blocking API.
-public class MyTopic extends AWSIotTopic {    
+public class MyTopic extends AWSIotTopic {
     public MyTopic(String topic, AWSIotQos qos) {
         super(topic, qos);
     }
@@ -476,7 +476,7 @@ public class MyTopic extends AWSIotTopic {
     public void onSuccess() {
         // Called when unsubscribing succeeds.
     }
-    
+
         @Override
     public void onFailure() {
         // Called when unsubscribing fails.
@@ -590,7 +590,7 @@ builder.withOfflineQueueBehavior(ClientOfflineQueueBehavior.FAIL_QOS0_PUBLISH_ON
 Mqtt5Client client = builder.build();
 ```
 
-> [!NOTE]  
+> [!NOTE]
 > AWS IoT Core [limits the number of allowed operations per second](https://docs.aws.amazon.com/general/latest/gr/iot-core.html#message-broker-limits).
 The [`getOperationStatistics`](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/Mqtt5Client.html#getOperationStatistics())
 method returns the current state of an `Mqtt5Client` object's queue of operations, which may help with tracking the number
@@ -679,7 +679,7 @@ or deserialize any JSON documents.
 
 The v2 SDK also supports the device shadow service, but with completely different APIs.
 The v2 service client exposes a request-response API: each operation (for example, `getShadow` or `updateShadow`)
-is a single method call that returns a `CompletableFuture` completing with the modeled response, or completing
+is a single method call that returns a `CompletableFuture`. On operation success, this future is completed with the modeled response, while on operation failure, it is completed 
 exceptionally with a `V2ErrorResponseException` that carries the modeled error. The client handles the underlying
 MQTT topic subscriptions for you, so you no longer subscribe to accepted/rejected topics manually.
 For change notifications that are not tied to a specific request (for example, `ShadowUpdated` and `ShadowDeltaUpdated`
@@ -930,7 +930,7 @@ class.
 Publishers can request a response be sent by the receiver to a publisher-specified topic upon reception. Use [withResponseTopic](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/packets/PublishPacket.PublishPacketBuilder.html#withResponseTopic(java.lang.String)) method in the `PublishPacketBuilder` class.
 
 **Maximum Packet Size**\
-Client and Server can independently specify the maximum packet size that they support. For more information, see the [connectPacketBuilder.withMaximumPacketSizeBytes](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/packets/ConnectPacket.ConnectPacketBuilder.html#withMaximumPacketSizeBytes(java.lang.Long)), the 
+Client and Server can independently specify the maximum packet size that they support. For more information, see the [connectPacketBuilder.withMaximumPacketSizeBytes](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/packets/ConnectPacket.ConnectPacketBuilder.html#withMaximumPacketSizeBytes(java.lang.Long)), the
 [NegotiatedSettings.getMaximumPacketSizeToServer](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/NegotiatedSettings.html#getMaximumPacketSizeToServer()),
 and the [ConnAckPacket.getMaximumPacketSize](https://awslabs.github.io/aws-crt-java/software/amazon/awssdk/crt/mqtt5/packets/ConnAckPacket.html#getMaximumPacketSize()) methods.
 
@@ -943,5 +943,5 @@ method in the `PublishPacketBuilder` class.
 Shared Subscriptions allow multiple clients to share a subscription to a topic and only one client will receive messages
 published to that topic using a random distribution.
 
-> [!NOTE]  
+> [!NOTE]
 > AWS IoT Core supports Shared Subscriptions for both MQTT3 and MQTT5. For more information, see [Shared Subscriptions](https://docs.aws.amazon.com/iot/latest/developerguide/mqtt.html#mqtt5-shared-subscription) from the AWS IoT Core developer guide.
