@@ -58,7 +58,7 @@ import java.util.function.Consumer;
 /**
  * <p><b>Deprecated.</b> We strongly recommend using {@link software.amazon.awssdk.iot.iotshadow.IotShadowV2Client }. </p>
  *
- * <p>There are no current plans to ully deprecate IotShadowClient but it is highly recommended customers
+ * <p>There are no current plans to fully deprecate IotShadowClient but it is highly recommended customers
  * migrate to IotShadowV2Client. More details can be found in the GitHub Repo FAQ.</p>
  *
  * The AWS IoT Device Shadow service adds shadows to AWS IoT thing objects. Shadows are a simple data store for device properties and state.  Shadows can make a device’s state available to apps and other services whether the device is connected to AWS IoT or not.

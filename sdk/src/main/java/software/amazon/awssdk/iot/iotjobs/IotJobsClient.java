@@ -52,7 +52,7 @@ import java.util.function.Consumer;
 /**
  * <p><b>Deprecated.</b> We strongly recommend using {@link software.amazon.awssdk.iot.iotjobs.IotJobsV2Client }. </p>
  *
- * <p>There are no current plans to ully deprecate IotJobsClient but it is highly recommended customers
+ * <p>There are no current plans to fully deprecate IotJobsClient but it is highly recommended customers
  * migrate to IotJobsV2Client. More details can be found in the GitHub Repo FAQ.</p>
  *
  * The AWS IoT jobs service can be used to define a set of remote operations that are sent to and executed on one or more devices connected to AWS IoT.
@@ -83,8 +83,8 @@ public class IotJobsClient {
     }
 
     private void addTypeAdapters(GsonBuilder gson) {
-        gson.registerTypeAdapter(JobStatus.class, new EnumSerializer<JobStatus>());
         gson.registerTypeAdapter(RejectedErrorCode.class, new EnumSerializer<RejectedErrorCode>());
+        gson.registerTypeAdapter(JobStatus.class, new EnumSerializer<JobStatus>());
     }
 
     /**
