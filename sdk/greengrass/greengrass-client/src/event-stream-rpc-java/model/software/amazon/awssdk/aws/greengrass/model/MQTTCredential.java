@@ -183,4 +183,9 @@ public class MQTTCredential implements EventStreamJsonMessage {
   public int hashCode() {
     return Objects.hash(clientId, certificatePem, username, password);
   }
+
+  @Override
+  public String toString() {
+    return "MQTTCredential{" + "clientId=" + clientId + ", certificatePem=" + certificatePem + ", username=" + username + ", password=" + "*** REDACTED ***" + "}";
+  }
 }
