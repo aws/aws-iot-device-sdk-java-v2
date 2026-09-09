@@ -149,7 +149,7 @@ client.connect();
 #### Example of connecting to a server in the v2 SDK
 
 ```java
-Mqtt5Client client = clientBuilder.build();
+Mqtt5Client client = builder.build();
 client.start();
 ```
 
