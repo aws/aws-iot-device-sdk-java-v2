@@ -152,6 +152,12 @@ public class Mqtt5BuilderTest {
             fail("Exception in subscribing: " + ex.toString());
         }
 
+        try {
+            Thread.sleep(500);
+        } catch (Exception ex) {
+            fail("Exception while sleeping: " + ex.toString());
+        }
+
         // Pub
         PublishPacket.PublishPacketBuilder pubBuilder = new PublishPacket.PublishPacketBuilder();
         String publishPayload = "Hello World";
